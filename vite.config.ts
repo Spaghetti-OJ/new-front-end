@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: process.env.NODE_ENV === "test" ? "https://dev.noj.tw" : "https://api.noj.tw",
+        target: process.env.NODE_ENV === "test" ? "http://localhost:8000" : "https://api.noj.tw",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
