@@ -60,7 +60,7 @@ async function submit() {
     if (testdata.value) {
       await uploadTestCase();
     }
-    router.push(`/course/${route.params.name}/problem/${route.params.id}`);
+    router.push(`/courses/${route.params.name}/problem/${route.params.id}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -110,7 +110,7 @@ async function uploadTestCase() {
 
 async function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/course/${route.params.name}/problems`);
+  router.push(`/courses/${route.params.name}/problems`);
 }
 async function delete_() {
   if (!formElement.value) return;
@@ -118,7 +118,7 @@ async function delete_() {
   if (!confirm("Are u sure?")) return;
   try {
     await api.Problem.delete(route.params.id as string);
-    router.push(`/course/${route.params.name}/problems`);
+    router.push(`/courses/${route.params.name}/problems`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;

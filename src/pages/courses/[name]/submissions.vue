@@ -212,7 +212,7 @@ async function downloadAllSubmissions() {
                     <div class="flex items-center">
                       <div class="tooltip tooltip-bottom" data-tip="show details">
                         <router-link
-                          :to="`/course/${$route.params.name}/submission/${submission.submissionId}`"
+                          :to="`/courses/${$route.params.name}/submission/${submission.submissionId}`"
                           class="link"
                         >
                           {{ submission.submissionId.slice(-6) }}
@@ -227,7 +227,7 @@ async function downloadAllSubmissions() {
                           class="ml-2 h-4 w-4 cursor-pointer"
                           @click="
                             copySubmissionLink(
-                              `/course/${$route.params.name}/submission/${submission.submissionId}`,
+                              `/courses/${$route.params.name}/submission/${submission.submissionId}`,
                             )
                           "
                         />
@@ -240,7 +240,7 @@ async function downloadAllSubmissions() {
                       :data-tip="problemId2Meta[submission.problemId.toString()]?.name || 'loading...'"
                     >
                       <router-link
-                        :to="`/course/${$route.params.name}/problem/${submission.problemId}`"
+                        :to="`/courses/${$route.params.name}/problem/${submission.problemId}`"
                         class="link"
                       >
                         {{ submission.problemId }}

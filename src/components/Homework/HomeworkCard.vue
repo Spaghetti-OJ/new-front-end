@@ -120,10 +120,10 @@ const state = computed(() => {
       </div>
 
       <div v-if="homework.id && !preview && session.isAdmin" class="card-actions justify-end">
-        <router-link class="btn mr-3" :to="`/course/${$route.params.name}/homeworks/${homework.id}/edit`">
+        <router-link class="btn mr-3" :to="`/courses/${$route.params.name}/homeworks/${homework.id}/edit`">
           <i-uil-edit class="mr-1 lg:h-5 lg:w-5" /> {{ t("components.hw.card.description.edit") }}
         </router-link>
-        <router-link class="btn" :to="`/course/${$route.params.name}/homeworks/${homework.id}/stats`">
+        <router-link class="btn" :to="`/courses/${$route.params.name}/homeworks/${homework.id}/stats`">
           <i-uil-chart-line class="mr-1 lg:h-5 lg:w-5" /> {{ t("components.hw.card.description.stats") }}
         </router-link>
       </div>

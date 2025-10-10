@@ -38,24 +38,29 @@ const navs = [
 </script>
 
 <template>
-  <ul v-if="displayType === 'side'" class="menu menu-compact w-40 bg-base-100 p-2 lg:menu-normal">
+  <!-- 僅在 /courses/[name]/... 底下顯示側邊/分頁導覽 -->
+  <ul
+    v-if="displayType === 'side' && $route.params.name"
+    class="menu menu-compact w-40 bg-base-100 p-2 lg:menu-normal"
+  >
     <li
       v-for="{ name, path } in navs"
-      :class="[{ 'border-l-4 border-blue-500': $route.path === `/course/${$route.params.name}${path}` }]"
+      :class="[{ 'border-l-4 border-blue-500': $route.params.name && $route.path === `/courses/${$route.params.name}${path}` }]"
     >
-      <router-link :to="`/course/${$route.params.name}${path}`">{{ name }}</router-link>
+      <router-link :to="`/courses/${$route.params.name}${path}`">{{ name }}</router-link>
     </li>
   </ul>
-  <div v-else class="scrollbar-hide w-full overflow-scroll">
+
+  <div v-else-if="$route.params.name" class="scrollbar-hide w-full overflow-scroll">
     <div class="tabs mx-auto w-max">
       <template v-for="{ name, path } in navs">
         <a
           class="tab tab-bordered h-10 w-32"
           :class="{
-            'tab-active': $route.path === `/course/${$route.params.name}${path}`,
+            'tab-active': $route.params.name && $route.path === `/courses/${$route.params.name}${path}`,
           }"
         >
-          <router-link :to="`/course/${$route.params.name}${path}`">{{ name }}</router-link>
+          <router-link :to="`/courses/${$route.params.name}${path}`">{{ name }}</router-link>
         </a>
       </template>
     </div>
