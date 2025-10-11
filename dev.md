@@ -64,6 +64,43 @@ fix: correct scoreboard sorting when ties exist
 
 ---
 
+## Pull Request Convention
+
+🔹 目標分支
+- 預設 PR 目標為 dev
+- main 僅由 PM/Leader 合併
+
+標題格式：
+```
+[type](scope): summary
+```
+
+| Type       | 說明               |
+| ---------- | ---------------- |
+| `fix`     | 修 bug（含回歸修復）          |
+| `style`      | 不影響邏輯的風格調整（格式、空白、CSS 微調）           |
+| `docs`     | 文件或註解（README/dev.md/註解）        |
+| `refactor` | 重構（非修 bug、非加功能） |
+|`test`|測試相關（新增/調整 Playwright、unit、mock）|
+| `chore`    | 其他雜項（腳本、工具、發版無關業務的改動）     |
+
+✅ **Example**
+
+```
+refactor(course): move course pages under /courses
+```
+
+🔹 何時開 Pull Request
+- 功能尚未完成但需要早期回饋
+- 需要 CI 先跑檢查（lint/test/build）
+
+🔹 PR 內容需包含
+- What: 做了哪些變更（重點清單）
+- How to test: 測試步驟（URL、流程、預期結果）
+- Related: 關聯 Issue/PR、Closes #123（optional）
+
+---
+
 ## 🖥️ Local Server Setup
 
 ### ➤ 同時啟動前後端（建議開發環境）
