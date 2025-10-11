@@ -52,7 +52,7 @@ const getScoreboardUrl = computed<string>(() => {
     start: scoreboardBegin.value,
     end: scoreboardEnd.value,
   });
-  return `/course/${route.params.name}/scoreboard?${qs}`;
+  return `/courses/${route.params.name}/scoreboard?${qs}`;
 });
 const {
   execute,

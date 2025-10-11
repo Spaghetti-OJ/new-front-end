@@ -4,44 +4,47 @@ import { useRoute } from "vue-router";
 
 // FIXME: this sucks
 const route = useRoute();
-const announcementsPage = { path: `/course/${route.params.name}/announcements`, text: "Announcements" };
-const homeworksPage = { path: `/course/${route.params.name}/homeworks`, text: "Homeworks" };
-const problemsPage = { path: `/course/${route.params.name}/problems`, text: "Problems" };
-const submissionsPage = { path: `/course/${route.params.name}/submissions`, text: "Submissions" };
-const membersPage = { path: `/course/${route.params.name}/members`, text: "Members" };
+const announcementsPage = { path: `/courses/${route.params.name}/announcements`, text: "Announcements" };
+const homeworksPage = { path: `/courses/${route.params.name}/homeworks`, text: "Homeworks" };
+const problemsPage = { path: `/courses/${route.params.name}/problems`, text: "Problems" };
+const submissionsPage = { path: `/courses/${route.params.name}/submissions`, text: "Submissions" };
+const membersPage = { path: `/courses/${route.params.name}/members`, text: "Members" };
 const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: string }[] }> = computed(
   () => ({
-    "course-name-announcements": [{ path: null, text: "Announcements" }],
-    "course-name-announcements-new": [announcementsPage, { path: null, text: "New" }],
-    "course-name-announcements-id": [announcementsPage, { path: null, text: `${route.params.id}` }],
-    "course-name-announcements-id-edit": [announcementsPage, { path: null, text: `Edit ${route.params.id}` }],
-    "course-name-homeworks": [{ path: null, text: "Homeworks" }],
-    "course-name-homeworks-new": [homeworksPage, { path: null, text: "New" }],
-    "course-name-homeworks-id-edit": [homeworksPage, { path: null, text: `Edit ${route.params.id}` }],
-    "course-name-homeworks-id-stats": [homeworksPage, { path: null, text: `Stats of ${route.params.id}` }],
-    "course-name-problems": [{ path: null, text: "Problems" }],
-    "course-name-problems-new": [problemsPage, { path: null, text: "New Problem" }],
-    "course-name-problem-id": [problemsPage, { path: null, text: `${route.params.id}` }],
-    "course-name-problem-id-edit": [problemsPage, { path: null, text: `Edit ${route.params.id}` }],
-    "course-name-problem-id-stats": [
+    "courses-name-announcements": [{ path: null, text: "Announcements" }],
+    "courses-name-announcements-new": [announcementsPage, { path: null, text: "New" }],
+    "courses-name-announcements-id": [announcementsPage, { path: null, text: `${route.params.id}` }],
+    "courses-name-announcements-id-edit": [
+      announcementsPage,
+      { path: null, text: `Edit ${route.params.id}` },
+    ],
+    "courses-name-homeworks": [{ path: null, text: "Homeworks" }],
+    "courses-name-homeworks-new": [homeworksPage, { path: null, text: "New" }],
+    "courses-name-homeworks-id-edit": [homeworksPage, { path: null, text: `Edit ${route.params.id}` }],
+    "courses-name-homeworks-id-stats": [homeworksPage, { path: null, text: `Stats of ${route.params.id}` }],
+    "courses-name-problems": [{ path: null, text: "Problems" }],
+    "courses-name-problems-new": [problemsPage, { path: null, text: "New Problem" }],
+    "courses-name-problem-id": [problemsPage, { path: null, text: `${route.params.id}` }],
+    "courses-name-problem-id-edit": [problemsPage, { path: null, text: `Edit ${route.params.id}` }],
+    "courses-name-problem-id-stats": [
       problemsPage,
       {
-        path: `/course/${route.params.name}/problem/${route.params.id}`,
+        path: `/courses/${route.params.name}/problem/${route.params.id}`,
         text: `${route.params.id}`,
       },
       { path: null, text: "Stats" },
     ],
-    "course-name-problem-id-submit": [
+    "courses-name-problem-id-submit": [
       problemsPage,
       {
-        path: `/course/${route.params.name}/problem/${route.params.id}`,
+        path: `/courses/${route.params.name}/problem/${route.params.id}`,
         text: `${route.params.id}`,
       },
       { path: null, text: "Submit" },
     ],
-    "course-name-submissions": [{ path: null, text: "Submissions" }],
-    "course-name-submission-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
-    "course-name-members": [{ path: null, text: "Members" }],
+    "courses-name-submissions": [{ path: null, text: "Submissions" }],
+    "courses-name-submission-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
+    "courses-name-members": [{ path: null, text: "Members" }],
   }),
 );
 </script>
@@ -51,7 +54,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     <div class="breadcrumbs flex-1 text-sm">
       <ul>
         <li>
-          <router-link :to="`/course/${route.params.name}`">{{ route.params.name }}</router-link>
+          <router-link :to="`/courses/${route.params.name}`">{{ route.params.name }}</router-link>
         </li>
         <template v-if="route.name">
           <li v-for="{ path, text } in items[route.name]" :key="text">

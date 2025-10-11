@@ -1,55 +1,57 @@
 <script setup lang="ts">
-import dayjs from "dayjs";
-import { ref, watchEffect, computed } from "vue";
+import { ref, watchEffect } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
+import { useAxios } from "@vueuse/integrations/useAxios";
 import api, { fetcher } from "@/models/api";
 import axios from "axios";
-import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
+import { useProblemSelection } from "@/composables/useProblemSelection";
+import HomeworkForm from "@/components/Homework/HomeworkForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`Edit Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Edit Homework - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
-const formElement = ref<InstanceType<typeof AnnouncementForm>>();
+const formElement = ref<InstanceType<typeof HomeworkForm>>();
 
 const {
-  data: announcements,
+  data: homework,
   error: fetchError,
   isLoading: isFetching,
-} = useAxios<AnnouncementList>(`/ann/${route.params.name}/${route.params.id}`, fetcher);
-const announcement = computed(() => announcements.value && announcements.value[0]);
+} = useAxios<Homework>(`/homework/${route.params.id}`, fetcher);
 
-const edittingAnnouncement = ref<AnnouncementForm>();
+const edittingHomework = ref<Homework>();
 watchEffect(() => {
-  if (announcement.value) {
-    edittingAnnouncement.value = announcement.value;
+  if (homework.value) {
+    edittingHomework.value = { ...homework.value };
   }
 });
-
-function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementForm[K]) {
-  if (!edittingAnnouncement.value) return;
-  edittingAnnouncement.value[key] = value;
+function update<K extends keyof Homework>(key: K, value: Homework[K]) {
+  if (!edittingHomework.value) return;
+  edittingHomework.value[key] = value;
 }
 
+const {
+  problemSelections,
+  problemId2Meta,
+  error: fetchProblemError,
+  isLoading: isFetchingProblem,
+} = useProblemSelection(route.params.name as string);
+
 const openPreview = ref<boolean>(false);
-const previewPostMockMeta = computed(() => ({
-  creator: announcement.value?.creator || { displayedName: "Ijichi Nijika" },
-  createTime: announcement.value?.createTime || dayjs().unix(),
-  updateTime: announcement.value?.updateTime || dayjs().unix(),
-}));
 
 async function submit() {
-  if (!edittingAnnouncement.value || !formElement.value) return;
+  if (!edittingHomework.value || !homework.value || !formElement.value) return;
 
   formElement.value.isLoading = true;
   try {
-    await api.Announcement.modify({
-      ...edittingAnnouncement.value,
-      annId: route.params.id as string,
+    await api.Homework.modify(route.params.id as string, {
+      ...edittingHomework.value,
+      scoreboardStatus: 0,
+      // TODO: backend bug
+      name: edittingHomework.value.name === homework.value.name ? undefined : edittingHomework.value.name,
     });
-    router.push(`/course/${route.params.name}/announcements/${route.params.id}`);
+    router.push(`/courses/${route.params.name}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -63,12 +65,11 @@ async function submit() {
 }
 async function delete_() {
   if (!formElement.value) return;
-
   formElement.value.isLoading = true;
   if (!confirm("Are u sure?")) return;
   try {
-    await api.Announcement.delete({ annId: route.params.id as string });
-    router.push(`/course/${route.params.name}/announcements`);
+    await api.Homework.delete(route.params.id as string);
+    router.push(`/courses/${route.params.name}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -82,7 +83,7 @@ async function delete_() {
 }
 function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/course/${route.params.name}/announcements`);
+  router.push(`/courses/${route.params.name}/homeworks`);
 }
 </script>
 
@@ -90,8 +91,8 @@ function discard() {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title mb-3 flex-wrap justify-between lg:flex-nowrap">
-          Edit Announcement
+        <div class="card-title mb-3 justify-between">
+          Edit homework: {{ edittingHomework?.name }}
           <div class="flex gap-x-3">
             <button
               :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
@@ -108,14 +109,18 @@ function discard() {
           </div>
         </div>
 
-        <data-status-wrapper :error="fetchError" :is-loading="isFetching">
+        <data-status-wrapper
+          :error="fetchError || fetchProblemError"
+          :is-loading="isFetching || isFetchingProblem"
+        >
           <template #loading>
             <skeleton-card />
           </template>
           <template #data>
-            <template v-if="edittingAnnouncement">
-              <announcement-form
-                :value="edittingAnnouncement"
+            <template v-if="edittingHomework">
+              <homework-form
+                :form="edittingHomework"
+                :problem-selections="problemSelections"
                 ref="formElement"
                 @update="update"
                 @submit="submit"
@@ -128,10 +133,11 @@ function discard() {
                 <input v-model="openPreview" type="checkbox" class="toggle" />
               </div>
 
-              <announcement-card
+              <homework-card
                 v-show="openPreview"
-                :announcement="{ ...previewPostMockMeta, ...edittingAnnouncement }"
-                class="rounded border-2 border-slate-300"
+                :homework="{ ...edittingHomework, id: route.params.id as string }"
+                :problems="problemId2Meta"
+                preview
               />
             </template>
           </template>

@@ -1,57 +1,55 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import dayjs from "dayjs";
+import { ref, watchEffect, computed } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useRoute, useRouter } from "vue-router";
 import { useAxios } from "@vueuse/integrations/useAxios";
+import { useRoute, useRouter } from "vue-router";
 import api, { fetcher } from "@/models/api";
 import axios from "axios";
-import { useProblemSelection } from "@/composables/useProblemSelection";
-import HomeworkForm from "@/components/Homework/HomeworkForm.vue";
+import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`Edit Homework - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Edit Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
-const formElement = ref<InstanceType<typeof HomeworkForm>>();
+const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
 const {
-  data: homework,
+  data: announcements,
   error: fetchError,
   isLoading: isFetching,
-} = useAxios<Homework>(`/homework/${route.params.id}`, fetcher);
+} = useAxios<AnnouncementList>(`/ann/${route.params.name}/${route.params.id}`, fetcher);
+const announcement = computed(() => announcements.value && announcements.value[0]);
 
-const edittingHomework = ref<Homework>();
+const edittingAnnouncement = ref<AnnouncementForm>();
 watchEffect(() => {
-  if (homework.value) {
-    edittingHomework.value = { ...homework.value };
+  if (announcement.value) {
+    edittingAnnouncement.value = announcement.value;
   }
 });
-function update<K extends keyof Homework>(key: K, value: Homework[K]) {
-  if (!edittingHomework.value) return;
-  edittingHomework.value[key] = value;
+
+function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementForm[K]) {
+  if (!edittingAnnouncement.value) return;
+  edittingAnnouncement.value[key] = value;
 }
 
-const {
-  problemSelections,
-  problemId2Meta,
-  error: fetchProblemError,
-  isLoading: isFetchingProblem,
-} = useProblemSelection(route.params.name as string);
-
 const openPreview = ref<boolean>(false);
+const previewPostMockMeta = computed(() => ({
+  creator: announcement.value?.creator || { displayedName: "Ijichi Nijika" },
+  createTime: announcement.value?.createTime || dayjs().unix(),
+  updateTime: announcement.value?.updateTime || dayjs().unix(),
+}));
 
 async function submit() {
-  if (!edittingHomework.value || !homework.value || !formElement.value) return;
+  if (!edittingAnnouncement.value || !formElement.value) return;
 
   formElement.value.isLoading = true;
   try {
-    await api.Homework.modify(route.params.id as string, {
-      ...edittingHomework.value,
-      scoreboardStatus: 0,
-      // TODO: backend bug
-      name: edittingHomework.value.name === homework.value.name ? undefined : edittingHomework.value.name,
+    await api.Announcement.modify({
+      ...edittingAnnouncement.value,
+      annId: route.params.id as string,
     });
-    router.push(`/course/${route.params.name}/homeworks`);
+    router.push(`/courses/${route.params.name}/announcements/${route.params.id}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -65,11 +63,12 @@ async function submit() {
 }
 async function delete_() {
   if (!formElement.value) return;
+
   formElement.value.isLoading = true;
   if (!confirm("Are u sure?")) return;
   try {
-    await api.Homework.delete(route.params.id as string);
-    router.push(`/course/${route.params.name}/homeworks`);
+    await api.Announcement.delete({ annId: route.params.id as string });
+    router.push(`/courses/${route.params.name}/announcements`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -83,7 +82,7 @@ async function delete_() {
 }
 function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/course/${route.params.name}/homeworks`);
+  router.push(`/courses/${route.params.name}/announcements`);
 }
 </script>
 
@@ -91,8 +90,8 @@ function discard() {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title mb-3 justify-between">
-          Edit homework: {{ edittingHomework?.name }}
+        <div class="card-title mb-3 flex-wrap justify-between lg:flex-nowrap">
+          Edit Announcement
           <div class="flex gap-x-3">
             <button
               :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
@@ -109,18 +108,14 @@ function discard() {
           </div>
         </div>
 
-        <data-status-wrapper
-          :error="fetchError || fetchProblemError"
-          :is-loading="isFetching || isFetchingProblem"
-        >
+        <data-status-wrapper :error="fetchError" :is-loading="isFetching">
           <template #loading>
             <skeleton-card />
           </template>
           <template #data>
-            <template v-if="edittingHomework">
-              <homework-form
-                :form="edittingHomework"
-                :problem-selections="problemSelections"
+            <template v-if="edittingAnnouncement">
+              <announcement-form
+                :value="edittingAnnouncement"
                 ref="formElement"
                 @update="update"
                 @submit="submit"
@@ -133,11 +128,10 @@ function discard() {
                 <input v-model="openPreview" type="checkbox" class="toggle" />
               </div>
 
-              <homework-card
+              <announcement-card
                 v-show="openPreview"
-                :homework="{ ...edittingHomework, id: route.params.id as string }"
-                :problems="problemId2Meta"
-                preview
+                :announcement="{ ...previewPostMockMeta, ...edittingAnnouncement }"
+                class="rounded border-2 border-slate-300"
               />
             </template>
           </template>

@@ -31,7 +31,7 @@ async function submit() {
   isLoading.value = true;
   try {
     await api.Course.create({ ...newCourse });
-    router.push(`/course/${newCourse.course}`);
+    router.push(`/courses/${newCourse.course}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       errorMsg.value = error.response.data.message;

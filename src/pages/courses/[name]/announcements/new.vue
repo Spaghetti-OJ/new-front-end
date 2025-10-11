@@ -41,7 +41,7 @@ async function submit() {
         courseName: route.params.name as string,
       })
     ).data;
-    router.push(`/course/${route.params.name}/announcements/${annId}`);
+    router.push(`/courses/${route.params.name}/announcements/${annId}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;

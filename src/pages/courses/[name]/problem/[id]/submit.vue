@@ -75,7 +75,7 @@ async function submit() {
       })
     ).data;
     await api.Submission.modify(submissionId, formData);
-    router.push(`/course/${route.params.name}/submission/${submissionId}`);
+    router.push(`/courses/${route.params.name}/submission/${submissionId}`);
   } catch (error) {
     form.isSubmitError = true;
     throw error;
