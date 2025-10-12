@@ -1,3 +1,7 @@
+<route lang="yaml">
+  path: /courses/:name/problems
+</route>
+
 <script setup lang="ts">
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
