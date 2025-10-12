@@ -3,9 +3,7 @@ import { computed } from "vue";
 import useInteractions from "@/composables/useInteractions";
 
 const { isDesktop } = useInteractions();
-const sidebarType = computed(() => {
-  return isDesktop.value ? "side" : "tab";
-});
+const sidebarType = computed(() => (isDesktop.value ? "side" : "tab"));
 </script>
 
 <template>
