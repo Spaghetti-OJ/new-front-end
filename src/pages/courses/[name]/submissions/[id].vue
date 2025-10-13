@@ -119,7 +119,7 @@ async function rejudge() {
                     <tr>
                       <td>
                         <router-link
-                          :to="`/courses/${$route.params.name}/problem/${submission.problemId}`"
+                          :to="`/courses/${$route.params.name}/problems/${submission.problemId}`"
                           class="link"
                         >
                           {{ submission.problemId }}
