@@ -24,9 +24,9 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-name-homeworks-id-stats": [homeworksPage, { path: null, text: `Stats of ${route.params.id}` }],
     "courses-name-problems": [{ path: null, text: "Problems" }],
     "courses-name-problems-new": [problemsPage, { path: null, text: "New Problem" }],
-    "courses-name-problem-id": [problemsPage, { path: null, text: `${route.params.id}` }],
-    "courses-name-problem-id-edit": [problemsPage, { path: null, text: `Edit ${route.params.id}` }],
-    "courses-name-problem-id-stats": [
+    "courses-name-problems-id": [problemsPage, { path: null, text: `${route.params.id}` }],
+    "courses-name-problems-id-edit": [problemsPage, { path: null, text: `Edit ${route.params.id}` }],
+    "courses-name-problems-id-stats": [
       problemsPage,
       {
         path: `/courses/${route.params.name}/problems/${route.params.id}`,
@@ -34,7 +34,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
       },
       { path: null, text: "Stats" },
     ],
-    "courses-name-problem-id-submit": [
+    "courses-name-problems-id-submit": [
       problemsPage,
       {
         path: `/courses/${route.params.name}/problems/${route.params.id}`,
@@ -43,7 +43,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
       { path: null, text: "Submit" },
     ],
     "courses-name-submissions": [{ path: null, text: "Submissions" }],
-    "courses-name-submission-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
+    "courses-name-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-name-members": [{ path: null, text: "Members" }],
   }),
 );
