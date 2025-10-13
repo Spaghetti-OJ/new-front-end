@@ -63,7 +63,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Stats">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm mr-1"
-                :to="`/courses/${$route.params.name}/problem/${id}/stats`"
+                :to="`/courses/${$route.params.name}/problems/${id}/stats`"
               >
                 <i-uil-chart-line class="lg:h-5 lg:w-5" />
               </router-link>
@@ -71,7 +71,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Copycat">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm mr-1"
-                :to="`/courses/${$route.params.name}/problem/${id}/copycat`"
+                :to="`/courses/${$route.params.name}/problems/${id}/copycat`"
               >
                 <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
               </router-link>
@@ -79,7 +79,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Edit">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm"
-                :to="`/courses/${$route.params.name}/problem/${id}/edit`"
+                :to="`/courses/${$route.params.name}/problems/${id}/edit`"
               >
                 <i-uil-edit class="lg:h-5 lg:w-5" />
               </router-link>
@@ -89,7 +89,7 @@ defineProps<Props>();
       </div>
       <div class="grow">
         <button class="btn btn-primary btn-sm">
-          <router-link :to="`/courses/${$route.params.name}/problem/${id}`"> View Problem </router-link>
+          <router-link :to="`/courses/${$route.params.name}/problems/${id}`"> View Problem </router-link>
         </button>
       </div>
     </div>

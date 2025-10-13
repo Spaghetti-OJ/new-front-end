@@ -244,7 +244,7 @@ async function downloadAllSubmissions() {
                       :data-tip="problemId2Meta[submission.problemId.toString()]?.name || 'loading...'"
                     >
                       <router-link
-                        :to="`/courses/${$route.params.name}/problem/${submission.problemId}`"
+                        :to="`/courses/${$route.params.name}/problems/${submission.problemId}`"
                         class="link"
                       >
                         {{ submission.problemId }}

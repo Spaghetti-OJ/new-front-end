@@ -73,10 +73,10 @@ async function submit() {
           ? error.response.data.message
           : "Unknown error occurred :(";
       alert(`Problem created, but testdata upload failed: ${errorMsg}`);
-      router.push(`/courses/${route.params.name}/problem/${problemId}/edit`);
+      router.push(`/courses/${route.params.name}/problems/${problemId}/edit`);
       throw error;
     }
-    router.push(`/courses/${route.params.name}/problem/${problemId}`);
+    router.push(`/courses/${route.params.name}/problems/${problemId}`);
   } catch (error) {
     formElement.value.errorMsg =
       axios.isAxiosError(error) && error.response?.data?.message

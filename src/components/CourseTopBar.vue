@@ -29,7 +29,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-name-problem-id-stats": [
       problemsPage,
       {
-        path: `/courses/${route.params.name}/problem/${route.params.id}`,
+        path: `/courses/${route.params.name}/problems/${route.params.id}`,
         text: `${route.params.id}`,
       },
       { path: null, text: "Stats" },
@@ -37,7 +37,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-name-problem-id-submit": [
       problemsPage,
       {
-        path: `/courses/${route.params.name}/problem/${route.params.id}`,
+        path: `/courses/${route.params.name}/problems/${route.params.id}`,
         text: `${route.params.id}`,
       },
       { path: null, text: "Submit" },

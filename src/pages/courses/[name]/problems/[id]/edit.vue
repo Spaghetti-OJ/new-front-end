@@ -60,7 +60,7 @@ async function submit() {
     if (testdata.value) {
       await uploadTestCase();
     }
-    router.push(`/courses/${route.params.name}/problem/${route.params.id}`);
+    router.push(`/courses/${route.params.name}/problems/${route.params.id}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
