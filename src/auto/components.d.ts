@@ -13,7 +13,7 @@ declare module '@vue/runtime-core' {
     CourseSideBar: typeof import('./../components/Course/CourseSideBar.vue')['default']
     CourseTopBar: typeof import('./../components/Course/CourseTopBar.vue')['default']
     DataStatusWrapper: typeof import('./../components/Shared/DataStatusWrapper.vue')['default']
-    DueCountdown: typeof import('./../components/DueCountdown.vue')['default']
+    DueCountdown: typeof import('./../components/Homework/DueCountdown.vue')['default']
     HomeworkCard: typeof import('./../components/Homework/HomeworkCard.vue')['default']
     HomeworkForm: typeof import('./../components/Homework/HomeworkForm.vue')['default']
     HomeworkProblems: typeof import('./../components/Homework/HomeworkProblems.vue')['default']
