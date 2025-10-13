@@ -70,7 +70,7 @@ declare module '@vue/runtime-core' {
     ProblemTestdataDescriptionModal: typeof import('./../components/Problem/Forms/ProblemTestdataDescriptionModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SampleCodeBlock: typeof import('./../components/SampleCodeBlock.vue')['default']
+    SampleCodeBlock: typeof import('./../components/Problem/SampleCodeBlock.vue')['default']
     SideBar: typeof import('./../components/Shared/SideBar.vue')['default']
     SideBarLink: typeof import('./../components/Shared/SideBarLink.vue')['default']
     SkeletonCard: typeof import('./../components/Shared/SkeletonCard.vue')['default']
