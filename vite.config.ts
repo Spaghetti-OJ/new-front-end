@@ -10,7 +10,16 @@ import IconsResolver from "unplugin-icons/resolver";
 export default defineConfig({
   plugins: [
     vue(),
-    Pages(),
+    Pages({
+      onRoutesGenerated: (routes) =>
+        routes.map((r) => {
+          if (r.path.startsWith("/home")) {
+            const p = r.path.replace(/^\/home/, "");
+            r.path = p.length === 0 ? "/" : p;
+          }
+          return r;
+        }),
+    }),
     Components({
       dts: "./src/auto/components.d.ts",
       resolvers: [IconsResolver()],

@@ -1,7 +1,3 @@
-<route lang="yaml">
-path: /password_reset
-</route>
-
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { useTitle } from "@vueuse/core";

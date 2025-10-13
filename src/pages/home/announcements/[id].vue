@@ -1,7 +1,3 @@
-<route lang="yaml">
-  path: /announcements/:id
-</route>
-
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
