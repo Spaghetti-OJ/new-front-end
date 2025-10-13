@@ -4,6 +4,8 @@ import { useGlobal } from "@/stores/global";
 import { TransitionRoot } from "@headlessui/vue";
 import { useI18n } from "vue-i18n";
 import dayjs from "dayjs";
+import TopBar from "@/components/Shared/TopBar.vue";
+import SideBar from "@/components/Shared/SideBar.vue";
 
 const global = useGlobal();
 
