@@ -216,7 +216,7 @@ async function downloadAllSubmissions() {
                     <div class="flex items-center">
                       <div class="tooltip tooltip-bottom" data-tip="show details">
                         <router-link
-                          :to="`/courses/${$route.params.name}/submission/${submission.submissionId}`"
+                          :to="`/courses/${$route.params.name}/submissions/${submission.submissionId}`"
                           class="link"
                         >
                           {{ submission.submissionId.slice(-6) }}
@@ -231,7 +231,7 @@ async function downloadAllSubmissions() {
                           class="ml-2 h-4 w-4 cursor-pointer"
                           @click="
                             copySubmissionLink(
-                              `/courses/${$route.params.name}/submission/${submission.submissionId}`,
+                              `/courses/${$route.params.name}/submissions/${submission.submissionId}`,
                             )
                           "
                         />
