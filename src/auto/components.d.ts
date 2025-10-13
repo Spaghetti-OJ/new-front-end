@@ -56,7 +56,7 @@ declare module '@vue/runtime-core' {
     IUilTimesCircle: typeof import('~icons/uil/times-circle')['default']
     IUilTrashAlt: typeof import('~icons/uil/trash-alt')['default']
     IUilUser: typeof import('~icons/uil/user')['default']
-    JudgeStatus: typeof import('./../components/JudgeStatus.vue')['default']
+    JudgeStatus: typeof import('./../components/Submission/JudgeStatus.vue')['default']
     LanguageMultiSelect: typeof import('./../components/Problem/Forms/LanguageMultiSelect.vue')['default']
     LoginSection: typeof import('./../components/Home/LoginSection.vue')['default']
     MarkdownRenderer: typeof import('./../components/Shared/MarkdownRenderer.vue')['default']
