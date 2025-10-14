@@ -45,7 +45,12 @@ const navs = [
   >
     <li
       v-for="{ name, path } in navs"
-      :class="[{ 'border-l-4 border-blue-500': $route.params.name && $route.path === `/courses/${$route.params.name}${path}` }]"
+      :class="[
+        {
+          'border-l-4 border-blue-500':
+            $route.params.name && $route.path === `/courses/${$route.params.name}${path}`,
+        },
+      ]"
     >
       <router-link :to="`/courses/${$route.params.name}${path}`">{{ name }}</router-link>
     </li>
