@@ -170,7 +170,7 @@ webServer: {
 
 > 測試模式可透過 `.env.test` 指定後端或 mock server。 -->
 
-I will post this REDAME after researching.
+I will post this README after researching.
 
 ---
 
