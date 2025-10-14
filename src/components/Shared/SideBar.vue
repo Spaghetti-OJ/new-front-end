@@ -7,6 +7,7 @@ import { useSession } from "@/stores/session";
 import { watchEffect } from "vue";
 import { useStorage } from "@vueuse/core";
 import { LOCAL_STORAGE_KEY } from "@/constants";
+import logo from "@/assets/logo.svg";
 
 import useInteractions from "@/composables/useInteractions";
 
@@ -43,7 +44,7 @@ const session = useSession();
     :class="['menu w-40 flex-col overflow-y-auto bg-primary py-4 text-white', isMini ? 'lg:w-14' : 'lg:w-28']"
   >
     <router-link class="my-2 flex cursor-pointer justify-center" to="/">
-      <img src="../assets/logo.svg" alt="NOJ Logo" :class="['mb-2', isMini ? 'w-10' : 'w-14']" />
+      <img :src="logo" alt="NOJ Logo" :class="['mb-2', isMini ? 'w-10' : 'w-14']" />
     </router-link>
     <li>
       <side-bar-link :class="{ 'btn-lg': !isMini, 'btn-active': matchRoute('/') }" to="/">
