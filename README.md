@@ -2,7 +2,7 @@
 
 [![Coverage Badge](https://github.com/Normal-OJ/new-front-end/actions/workflows/playwright.yml/badge.svg)](https://normal-oj.github.io/new-front-end/index.html)
 
-#### Developer Guide: [dev.md](dev.md)
+#### Developer Guide: [CONTRIBUTING README](CONTRIBUTING.md)
 
 ## Development
 
