@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 
 type ProblemSelections = { value: string; text: string }[];
 export type ProblemId2Meta = Record<string, { name: string; quota: number }>;

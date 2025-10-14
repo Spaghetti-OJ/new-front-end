@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSession } from "@/stores/session";
-import api from "@/models/api";
+import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
 
 interface Props {

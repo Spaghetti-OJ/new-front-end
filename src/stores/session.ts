@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import api from "@/models/api";
+import api from "@/api";
 
 export enum SessionState {
   NotValidated = -1,

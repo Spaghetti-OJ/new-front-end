@@ -2,7 +2,7 @@
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
 import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 
 import useInteractions from "@/composables/useInteractions";
 

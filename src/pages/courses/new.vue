@@ -2,7 +2,7 @@
 import { ref, reactive } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import api from "@/models/api";
+import api from "@/api";
 import axios from "axios";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@vuelidate/validators";

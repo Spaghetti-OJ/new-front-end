@@ -10,7 +10,7 @@ import { GridComponent } from "echarts/components";
 import { BarChart } from "echarts/charts";
 import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 import { useTheme } from "@/stores/theme";
 import dayjs from "dayjs";
 

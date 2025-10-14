@@ -3,7 +3,7 @@ import { ref, watchEffect, provide, Ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/models/api";
+import api, { fetcher } from "@/api";
 import axios from "axios";
 import ProblemForm from "@/components/Problem/ProblemForm.vue";
 
