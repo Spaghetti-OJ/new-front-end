@@ -22,7 +22,7 @@ withDefaults(defineProps<Props>(), {
 <template>
   <div class="card card-compact max-w-full bg-base-200/50 shadow-xl">
     <div class="card-body">
-      <router-link :to="`/course/${$route.params.name}/problem/${id}`">
+      <router-link :to="`/courses/${$route.params.name}/problems/${id}`">
         <h2
           class="card-title underline"
           :class="{
@@ -52,14 +52,14 @@ withDefaults(defineProps<Props>(), {
         <router-link
           v-if="showStats"
           class="btn btn-sm gap-2"
-          :to="`/course/${$route.params.name}/problem/${id}/stats`"
+          :to="`/courses/${$route.params.name}/problems/${id}/stats`"
         >
           <i-uil-chart-line class="lg:h-5 lg:w-5" />
         </router-link>
         <router-link
           v-if="showCopycat"
           class="btn btn-sm gap-2"
-          :to="`/course/${$route.params.name}/problem/${id}/copycat`"
+          :to="`/courses/${$route.params.name}/problems/${id}/copycat`"
         >
           <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
         </router-link>

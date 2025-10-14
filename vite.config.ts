@@ -10,7 +10,16 @@ import IconsResolver from "unplugin-icons/resolver";
 export default defineConfig({
   plugins: [
     vue(),
-    Pages(),
+    Pages({
+      onRoutesGenerated: (routes) =>
+        routes.map((r) => {
+          if (r.path.startsWith("/home")) {
+            const p = r.path.replace(/^\/home/, "");
+            r.path = p.length === 0 ? "/" : p;
+          }
+          return r;
+        }),
+    }),
     Components({
       dts: "./src/auto/components.d.ts",
       resolvers: [IconsResolver()],
@@ -20,7 +29,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: process.env.NODE_ENV === "test" ? "https://dev.noj.tw" : "https://api.noj.tw",
+        target: process.env.NODE_ENV === "test" ? "http://localhost:8000" : "https://api.noj.tw",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

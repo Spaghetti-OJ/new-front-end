@@ -2,6 +2,8 @@
 
 [![Coverage Badge](https://github.com/Normal-OJ/new-front-end/actions/workflows/playwright.yml/badge.svg)](https://normal-oj.github.io/new-front-end/index.html)
 
+#### Developer Guide: [CONTRIBUTING README](CONTRIBUTING.md)
+
 ## Development
 
 To run the entire project, including the `new-front-end`, refer to the `README.md` file in the main Normal-OJ repository. However, if you only wanna build the `new-front-end` independently or run end-to-end tests, proceed with the instructions below.

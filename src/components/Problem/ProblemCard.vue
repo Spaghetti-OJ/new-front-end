@@ -58,13 +58,13 @@ function downloadTestCase(problemId: number) {
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/course/${$route.params.name}/problem/${$route.params.id}/submit`"
+              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/submit`"
             >
               <i-uil-file-upload-alt class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.submit") }}
             </router-link>
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/course/${$route.params.name}/problem/${$route.params.id}/stats`"
+              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/stats`"
             >
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
@@ -72,7 +72,7 @@ function downloadTestCase(problemId: number) {
               v-if="session.isAdmin"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
-              :to="`/course/${$route.params.name}/problem/${$route.params.id}/copycat`"
+              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/copycat`"
             >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
@@ -80,7 +80,7 @@ function downloadTestCase(problemId: number) {
               v-if="session.isAdmin"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
-              :to="`/course/${$route.params.name}/problem/${$route.params.id}/edit`"
+              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/edit`"
             >
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
