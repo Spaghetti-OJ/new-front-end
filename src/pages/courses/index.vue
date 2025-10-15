@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 import { useSession, UserRole } from "@/stores/session";
 
 import useInteractions from "@/composables/useInteractions";

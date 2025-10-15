@@ -2,7 +2,7 @@
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 
 const route = useRoute();
 useTitle(`Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);

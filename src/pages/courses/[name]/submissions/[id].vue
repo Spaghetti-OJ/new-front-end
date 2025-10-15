@@ -5,7 +5,7 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import { SUBMISSION_STATUS_CODE, LANG } from "@/constants";
 import { formatTime } from "@/utils/formatTime";
-import api, { fetcher } from "@/models/api";
+import api, { fetcher } from "@/api";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
 

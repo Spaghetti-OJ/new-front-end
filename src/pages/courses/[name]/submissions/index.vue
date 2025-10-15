@@ -3,7 +3,7 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import queryString from "query-string";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 import { useSession } from "@/stores/session";
 import { LANG, LANGUAGE_OPTIONS, SUBMISSION_STATUS_REPR } from "@/constants";
 import { formatTime } from "@/utils/formatTime";

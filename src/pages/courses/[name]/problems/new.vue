@@ -3,7 +3,7 @@ import { ref, provide, Ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
-import api from "@/models/api";
+import api from "@/api";
 import ProblemForm from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();

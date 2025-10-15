@@ -2,7 +2,7 @@
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, watch, watchEffect } from "vue";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 import { UserRole, useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
 import { isQuotaUnlimited } from "@/constants";

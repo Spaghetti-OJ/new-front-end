@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, toRef } from "vue";
 import { useRouter } from "vue-router";
-import api from "@/models/api";
+import api from "@/api";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
 import { required, sameAs, helpers } from "@vuelidate/validators";

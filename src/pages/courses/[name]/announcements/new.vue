@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { ref, reactive } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
-import api from "@/models/api";
+import api from "@/api";
 import axios from "axios";
 import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
 

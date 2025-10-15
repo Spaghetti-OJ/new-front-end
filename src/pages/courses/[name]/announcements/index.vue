@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/models/api";
+import { fetcher } from "@/api";
 import { formatTime } from "@/utils/formatTime";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";

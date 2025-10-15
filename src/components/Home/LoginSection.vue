@@ -4,7 +4,7 @@ import { useSession } from "@/stores/session";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import api from "@/models/api";
+import api from "@/api";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
 // @ts-ignore

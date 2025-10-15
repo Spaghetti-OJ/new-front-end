@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { email } from "@vuelidate/validators";
-import api from "@/models/api";
+import api from "@/api";
 
 const router = useRouter();
 

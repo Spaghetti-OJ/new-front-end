@@ -2,7 +2,7 @@
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/models/api";
+import api, { fetcher } from "@/api";
 import { ROLE } from "@/constants";
 import { useTitle } from "@vueuse/core";
 import { useSession, UserRole } from "@/stores/session";
