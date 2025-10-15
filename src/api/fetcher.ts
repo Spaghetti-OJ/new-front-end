@@ -32,7 +32,9 @@ fetcher.interceptors.response.use(
   (error) => {
     const global = useGlobal();
     if (error?.response?.status >= 500) {
-      global.onServerError?.();
+      if (typeof global.onServerError === "function") {
+        global.onServerError();
+      }
     }
     return Promise.reject(error);
   },
