@@ -59,7 +59,9 @@ export const useSession = defineStore("session", {
   },
 });
 
-setTokenProvider(() => {
-  const session = useSession();
-  return session.token || null;
-});
+// To avoid circular dependency, export a function to set the token provider after store initialization.
+export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
+  setTokenProvider(() => {
+    return sessionStore.token || null;
+  });
+}
