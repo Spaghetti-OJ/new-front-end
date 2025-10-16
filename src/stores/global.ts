@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { promiseTimeout } from "@vueuse/core";
+import { setServerErrorHandler } from "@/api/fetcher";
 
 export const useGlobal = defineStore("global", {
   state: () => {
@@ -14,4 +15,12 @@ export const useGlobal = defineStore("global", {
       this.$state.isServerError = false;
     },
   },
+});
+
+setServerErrorHandler(() => {
+  const global = useGlobal();
+  if (typeof global.onServerError === "function") {
+    return global.onServerError();
+  }
+  return undefined;
 });

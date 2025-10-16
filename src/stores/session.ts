@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/api";
+import { setTokenProvider } from "@/api/fetcher";
 
 export enum SessionState {
   NotValidated = -1,
@@ -56,4 +57,9 @@ export const useSession = defineStore("session", {
       }
     },
   },
+});
+
+setTokenProvider(() => {
+  const session = useSession();
+  return session.token || null;
 });
