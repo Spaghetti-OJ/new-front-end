@@ -1,6 +1,18 @@
 import axios from "axios";
-import { useGlobal } from "@/stores/global";
-import { useSession } from "@/stores/session";
+
+type TokenProvider = () => string | undefined | null;
+type ServerErrorHandler = (error: unknown) => unknown;
+
+let tokenProvider: TokenProvider | null = null;
+let serverErrorHandler: ServerErrorHandler | null = null;
+
+export const setTokenProvider = (provider: TokenProvider | null) => {
+  tokenProvider = provider;
+};
+
+export const setServerErrorHandler = (handler: ServerErrorHandler | null) => {
+  serverErrorHandler = handler;
+};
 
 export const fetcher = axios.create({
   baseURL: (import.meta.env.VITE_APP_API_BASE_URL as string) || "/api",
@@ -9,10 +21,10 @@ export const fetcher = axios.create({
 });
 
 fetcher.interceptors.request.use((config) => {
-  const session = useSession();
-  if (session.token) {
+  const token = tokenProvider?.();
+  if (token) {
     config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${session.token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   const lang = localStorage.getItem("lang");
@@ -30,11 +42,8 @@ fetcher.interceptors.response.use(
     ...response.data,
   }),
   (error) => {
-    const global = useGlobal();
-    if (error?.response?.status >= 500) {
-      if (typeof global.onServerError === "function") {
-        global.onServerError();
-      }
+    if (error?.response?.status >= 500 && serverErrorHandler) {
+      void serverErrorHandler(error);
     }
     return Promise.reject(error);
   },

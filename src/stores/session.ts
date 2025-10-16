@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/api";
+import { setTokenProvider } from "@/api/fetcher";
 
 export enum SessionState {
   NotValidated = -1,
@@ -57,3 +58,10 @@ export const useSession = defineStore("session", {
     },
   },
 });
+
+// To avoid circular dependency, export a function to set the token provider after store initialization.
+export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
+  setTokenProvider(() => {
+    return sessionStore.token || null;
+  });
+}
