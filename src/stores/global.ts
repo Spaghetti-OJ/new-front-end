@@ -17,10 +17,12 @@ export const useGlobal = defineStore("global", {
   },
 });
 
-setServerErrorHandler(() => {
-  const global = useGlobal();
-  if (typeof global.onServerError === "function") {
-    return global.onServerError();
-  }
-  return undefined;
-});
+// Export a function to register the error handler with the store instance
+export function registerGlobalErrorHandler(globalStore: ReturnType<typeof useGlobal>) {
+  setServerErrorHandler(() => {
+    if (typeof globalStore.onServerError === "function") {
+      return globalStore.onServerError();
+    }
+    return undefined;
+  });
+}
