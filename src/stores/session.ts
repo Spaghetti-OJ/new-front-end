@@ -61,7 +61,5 @@ export const useSession = defineStore("session", {
 
 // To avoid circular dependency, export a function to set the token provider after store initialization.
 export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
-  setTokenProvider(() => {
-    return sessionStore.token || null;
-  });
+  setTokenProvider(() => null); // 用 Cookie，不加 Authorization header
 }
