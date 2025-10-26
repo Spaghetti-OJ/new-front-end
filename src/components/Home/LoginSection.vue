@@ -40,14 +40,21 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    await api.Auth.login(body);
+    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
+    console.log("[login] tokens =", tokens); 
+    session.token = tokens.access;
+    const me=await api.Auth.getSession();
+    console.log("me=",me)
     await session.validateSession();
-    if (route.query.redirect) {
+    const redirect = (route.query.redirect as string) ?? "/";
+    router.replace(redirect);
+    /*if (route.query.redirect) {
       router.push(route.query.redirect as string);
     } else {
       router.go(0);
-    }
-  } catch (error) {
+    }*/
+  } catch (error:any) {
+    console.log("[me error]", error?.response?.status, error?.response?.data); // <== 若 401 會印在這
     if (axios.isAxiosError(error)) {
       if (error.response?.data?.message === "Login Failed") {
         loginForm.errorMsg = t("errorCode.ERR001");
@@ -76,7 +83,7 @@ async function login() {
         <div v-else class="card-title mb-2">
           {{
             session.isLogin
-              ? $t("components.loginSection.welcome", { user: session.displayedName })
+              ? $t("components.loginSection.welcome", { user: session.username })
               : $t("components.loginSection.signin")
           }}
         </div>

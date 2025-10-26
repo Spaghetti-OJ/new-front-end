@@ -98,9 +98,9 @@ function clearForm() {
           <tbody>
             <tr>
               <td>{{ session.username }}</td>
-              <td>{{ session.displayedName }}</td>
+              <td>{{ session.realName }}</td>
               <td>{{ session.email }}</td>
-              <td>{{ ROLE[session.role] }}</td>
+              <td>{{ session.identity }}</td>
             </tr>
           </tbody>
         </table>
