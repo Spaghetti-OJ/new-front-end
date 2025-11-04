@@ -30,48 +30,92 @@ const route = useRoute();
 const matchRoute = (path: string) => route.matched.some((r) => r.path === path);
 
 const session = useSession();
+
 </script>
 
 <template>
-  <nav class="navbar bg-primary text-white shadow-md px-6">
-    <!-- Left: Logo -->
-    <div class="flex items-center gap-2">
-      <router-link to="/">
+  <nav class="navbar bg-primary text-white shadow-md px-6 h-16 flex items-center">
+    <!-- 左側：Logo -->
+    <div class="flex items-center gap-3">
+      <router-link to="/" class="flex items-center gap-2">
         <img :src="logo" alt="NOJ Logo" class="w-8 h-8" />
+        <span class="font-bold text-lg">Normal OJ</span>
       </router-link>
-      <span class="font-bold text-lg">Normal OJ</span>
     </div>
 
-    <!-- Middle: Home -->
-    <div class="ml-6">
+    <!-- 中間：導航連結 -->
+    <div class="flex items-center gap-8 ml-8">
+      <router-link :class="['hover:text-accent', matchRoute('/') && 'font-semibold underline']" to="/">
+        {{ $t("components.sideBar.home") || 'Home' }}
+      </router-link>
+
       <router-link
-        :class="['hover:text-accent', matchRoute('/') && 'font-semibold underline']"
-        to="/"
+        
+        :class="['hover:text-accent', matchRoute('/courses') && 'font-semibold underline']"
+        to="/courses"
       >
-        Home
+        {{ $t("components.sideBar.course") || 'Course' }}
+      </router-link>
+
+      <router-link
+        :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']"
+        to="/ranking"
+      >
+        {{ 'Ranking' }}
+      </router-link>
+
+      <router-link
+        :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']"
+        to="/problems"
+      >
+        {{'Problems' }}
       </router-link>
     </div>
 
-    <!-- Right: Other links -->
+    <!-- 右側：功能按鈕 -->
     <div class="flex items-center gap-6 ml-auto">
-      <router-link
-        :class="['hover:text-accent', matchRoute('/about') && 'font-semibold underline']"
-        to="/about"
-      >
-        About
-      </router-link>
+      
 
+      <!-- 設定 -->
       <router-link
-        :class="['hover:text-accent', matchRoute('/settings') && 'font-semibold underline']"
+        :class="['hover:text-accent flex items-center gap-1', matchRoute('/settings') && 'font-semibold underline']"
         to="/settings"
       >
-        Settings
+        <i-uil-setting class="h-5 w-5" />
+        <span class="uppercase text-sm hidden sm:inline">Setting</span>
       </router-link>
 
-      <button class="btn btn-sm btn-ghost text-white" @click="toggleDark()">
+      
+
+      <!-- Profile -->
+      <router-link
+        
+        :class="['hover:text-accent flex items-center gap-1', matchRoute('/profile') && 'font-semibold underline']"
+        to="/profile"
+      >
+        <i-uil-user class="h-5 w-5" />
+        <span class="uppercase text-sm hidden sm:inline">Profile</span>
+      </router-link>
+
+      <!-- 關於 -->
+      <router-link
+        :class="['hover:text-accent flex items-center gap-1', matchRoute('/about') && 'font-semibold underline']"
+        to="/about"
+      >
+        <i-uil-info-circle class="h-5 w-5" />
+        <span class="uppercase text-sm hidden sm:inline">About</span>
+      </router-link>
+      <!-- 夜間模式 -->
+      <button class="btn btn-sm btn-ghost text-white" @click="() => toggleDark()">
         <i-uil-sun v-if="isDark" class="h-6 w-6" />
         <i-uil-moon v-else class="h-6 w-6" />
       </button>
     </div>
   </nav>
 </template>
+
+<style scoped>
+.navbar a {
+  transition: color 0.2s, text-decoration 0.2s;
+}
+</style>
