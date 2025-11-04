@@ -1,0 +1,148 @@
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useTitle } from "@vueuse/core";
+import { fetcher } from "@/api";
+
+useTitle("Ranking | Normal OJ");
+
+const ranking = ref<any[]>([]);
+const isLoading = ref(true);
+const error = ref<Error | null>(null);
+
+// ✅ 五筆假資料
+const mockRanking = [
+  {
+    user: {
+      username: "dog123",
+      display_name: "熱氣ㄚ狗",
+      avatar: "https://i.pravatar.cc/100?img=12",
+    },
+    ACProblem: 66,
+  },
+  {
+    user: {
+      username: "cat666",
+      display_name: "笨貓",
+      avatar: "https://i.pravatar.cc/100?img=32",
+    },
+    ACProblem: 64,
+  },
+  {
+    user: {
+      username: "lion77",
+      display_name: "師大大師",
+      avatar: "https://i.pravatar.cc/100?img=25",
+    },
+    ACProblem: 60,
+  },
+  {
+    user: {
+      username: "omuba",
+      display_name: "歐姆嘎抓",
+      avatar: "https://i.pravatar.cc/100?img=47",
+    },
+    ACProblem: 58,
+  },
+  {
+    user: {
+      username: "black87",
+      display_name: "小黑",
+      avatar: "https://i.pravatar.cc/100?img=65",
+    },
+    ACProblem: 43,
+  },
+];
+
+onMounted(async () => {
+  try {
+    const { data } = await fetcher.get("/ranking");
+    if (data && Array.isArray(data.data)) {
+      ranking.value = data.data;
+    } else {
+      console.warn("Using mock ranking data...");
+      ranking.value = mockRanking;
+    }
+  } catch (err: any) {
+    console.warn("Failed to fetch /ranking, showing mock data.");
+    error.value = err;
+    ranking.value = mockRanking;
+  } finally {
+    isLoading.value = false;
+  }
+});
+</script>
+
+<template>
+  <div class="card mx-auto max-w-6xl shadow-xl">
+    <div class="card-body">
+      <div class="card-title justify-between">
+        <span class="text-lg font-bold">Problem List</span>
+      </div>
+
+      <div class="my-2" />
+
+      <!-- Loading -->
+      <div v-if="isLoading" class="text-center py-10">
+        <span class="loading loading-spinner loading-lg"></span>
+        <p class="mt-2 text-sm opacity-70">Loading ranking data...</p>
+      </div>
+
+      <!-- Error -->
+      <div v-else-if="error" class="alert alert-error shadow-lg">
+        <div>
+          <i-uil-times-circle />
+          <span>Failed to load ranking data. Showing mock data.</span>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <table v-else class="table w-full">
+        <thead>
+          <tr>
+            <th class="w-16 text-center">#</th>
+            <th class="w-24 text-center">Avatar</th>
+            <th>UserID</th>
+            <th>Username</th>
+            <th class="text-right">AC counting</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, index) in ranking"
+            :key="item.user?.username || index"
+            class="hover"
+          >
+            <td class="text-center font-semibold">{{ index + 1 }}</td>
+            <td class="flex justify-center">
+              <div class="avatar">
+                <div class="mask mask-squircle w-10 h-10">
+                  <img
+                    :src="item.user?.avatar || 'https://i.pravatar.cc/100'"
+                    alt="user avatar"
+                  />
+                </div>
+              </div>
+            </td>
+            <td>{{ item.user?.username || 'Unknown' }}</td>
+            <td>{{ item.user?.display_name || '-' }}</td>
+            <td class="text-right">{{ item.ACProblem ?? 0 }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="mt-3 text-xs text-center opacity-50">(Showing mock data)</p>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.table thead tr {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+}
+</style>
