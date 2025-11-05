@@ -41,28 +41,28 @@ const session = useSession();
     <!-- 中間：導航連結 -->
     <div class="ml-8 flex items-center gap-8">
       <router-link :class="['hover:text-accent', matchRoute('/') && 'font-semibold underline']" to="/">
-        {{ $t("components.sideBar.home") || "Home" }}
+        {{ $t("components.topBar.home") || "Home" }}
       </router-link>
 
       <router-link
         :class="['hover:text-accent', matchRoute('/courses') && 'font-semibold underline']"
         to="/courses"
       >
-        {{ $t("components.sideBar.course") || "Course" }}
+        {{ $t("components.topBar.course") || "Course" }}
       </router-link>
 
       <router-link
         :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']"
         to="/ranking"
       >
-        {{ "Ranking" }}
+        {{$t("components.topBar.ranking") || "Ranking" }}
       </router-link>
 
       <router-link
         :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']"
         to="/problems"
       >
-        {{ "Problems" }}
+        {{$t("components.topBar.problems") || "Problems" }}
       </router-link>
     </div>
 
@@ -77,7 +77,9 @@ const session = useSession();
         to="/settings"
       >
         <i-uil-setting class="h-5 w-5" />
-        <span class="hidden text-sm uppercase sm:inline">Setting</span>
+        <span class="hidden text-sm uppercase sm:inline">
+          {{$t("components.topBar.settings") || "Settings" }}
+        </span>
       </router-link>
 
       <!-- Profile -->
@@ -89,7 +91,9 @@ const session = useSession();
         to="/profile"
       >
         <i-uil-user class="h-5 w-5" />
-        <span class="hidden text-sm uppercase sm:inline">Profile</span>
+        <span class="hidden text-sm uppercase sm:inline">
+          {{$t("components.topBar.profile") || "Profile" }}
+        </span>
       </router-link>
 
       <!-- 關於 -->
@@ -101,7 +105,9 @@ const session = useSession();
         to="/about"
       >
         <i-uil-info-circle class="h-5 w-5" />
-        <span class="hidden text-sm uppercase sm:inline">About</span>
+        <span class="hidden text-sm uppercase sm:inline">
+          {{$t("components.topBar.about") || "About" }}
+        </span>
       </router-link>
       <!-- 夜間模式 -->
       <button class="btn btn-ghost btn-sm text-white" @click="() => toggleDark()">
