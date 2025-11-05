@@ -26,9 +26,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen w-screen bg-base-100">
+  <div class="flex h-screen w-screen flex-col bg-base-100">
     <!--input id="noj-drawer" type="checkbox" class="drawer-toggle" /-->
-    
+
     <top-bar class="sticky top-0 z-50" />
     <main class="flex-1 overflow-y-auto">
       <router-view />
@@ -47,7 +47,6 @@ watchEffect(() => {
       <side-bar />
     </div>
     -->
-    
 
     <TransitionRoot
       :show="global.isServerError"
