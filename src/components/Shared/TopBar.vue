@@ -18,7 +18,6 @@ const isDark = useDark({
 });
 const toggleDark = useToggle(isDark);
 
-
 const theme = useTheme();
 watchEffect(() => {
   theme.setIsDark(isDark.value);
