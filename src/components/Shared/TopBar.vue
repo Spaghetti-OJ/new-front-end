@@ -18,8 +18,6 @@ const isDark = useDark({
 });
 const toggleDark = useToggle(isDark);
 
-const isMiniSidebarToggled = useStorage(LOCAL_STORAGE_KEY.MINI_SIDEBAR, false);
-const isMini = computed(() => isMiniSidebarToggled.value && isDesktop.value);
 
 const theme = useTheme();
 watchEffect(() => {
