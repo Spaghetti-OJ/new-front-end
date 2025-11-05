@@ -9,36 +9,25 @@ export enum SessionState {
 }
 
 export enum UserRole {
-  Guest = "guest",
-  Admin = "admin",
-  Teacher = "teacher",
-  Student = "student",
+  Guest = -1,
+  Admin = 0,
+  Teacher = 1,
+  Student = 2,
 }
 
 export const useSession = defineStore("session", {
-  state: () => {
-    return {  
-    state: SessionState.NotValidated,  
-    id: "",  
+  state: () => ({
+      
+    state: SessionState.NotValidated,    
     username: "",  
-    realName: "",  
-    identity: "",  
-    profile: {  
-      studentId: "",  
-      bio: "",  
-      avatar: null as string | null,  
-      emailVerified: false,  
-      updatedAt: "",  
-    },  
-    email: "",  
-    dateJoined: "",  
-    lastLogin: null as string | null,  
-    token:"",
-  }; 
-  },
+    displayedName: "", 
+    role: UserRole.Guest,
+    bio: "",
+    email: "",
+  }),
   getters: {
     isAdmin(state) {
-      return state.identity === UserRole.Admin;
+      return state.role === UserRole.Admin;
     },
     isNotValidated(state) {
       return state.state === SessionState.NotValidated;
@@ -53,27 +42,14 @@ export const useSession = defineStore("session", {
   actions: {
     async validateSession() {
       this.state = SessionState.NotValidated;
-       if (!this.token) {
-    this.state = SessionState.IsNotLogin;
-    return;
-  }
       try {
-        const { id, username, email, real_name, identity, date_joined, last_login, profile } = (await api.Auth.getSession());  
-            this.id = id;  
-            this.username = username;  
-            this.email = email;  
-            this.realName = real_name;  
-            this.identity = identity;  
-            this.dateJoined = date_joined;  
-            this.lastLogin = last_login;  
-            this.profile = {  
-              studentId: profile.student_id,  
-              bio: profile.bio,  
-              avatar: profile.avatar,  
-              emailVerified: profile.email_verified,  
-              updatedAt: profile.updated_at,  
-            };  
-this.state = SessionState.IsLogin;
+        const me = (await api.Auth.getSession());
+        const { username, displayedName, bio, role, email } = me;
+        this.username = username;
+        this.displayedName = displayedName;
+        this.bio = bio;
+        this.role = role;
+        this.email = email;
         this.state = SessionState.IsLogin;
       } catch (error) {
         this.$reset();
@@ -83,9 +59,3 @@ this.state = SessionState.IsLogin;
   },
 });
 
-// To avoid circular dependency, export a function to set the token provider after store initialization.
-export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
-  setTokenProvider(() => {
-    return sessionStore.token || null;
-  });
-}

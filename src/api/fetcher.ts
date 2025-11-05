@@ -19,17 +19,11 @@ export const setServerErrorHandler = (handler: ServerErrorHandler | null) => {
 
 export const fetcher = axios.create({
   baseURL: (import.meta.env.VITE_APP_API_BASE_URL) || "/api",
-  withCredentials: false,//true,
+  withCredentials: true,//true,
   timeout: 20000,
 });
 
 fetcher.interceptors.request.use((config) => {
-  const session = useSession();
-  if (session.token){
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${session.token}`;
-  }
-
   const lang = localStorage.getItem("lang");
   if (lang) {
     config.headers = config.headers ?? {};

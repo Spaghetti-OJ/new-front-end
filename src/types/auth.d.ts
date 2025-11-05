@@ -1,4 +1,12 @@
 interface User {
+  username: string;
+  displayedName: string;
+  bio: string;
+  role: number;
+  email: string;
+  md5: string;
+  active: boolean;
+}/*{
    id: string,
   username:string,
   email: string,
@@ -13,8 +21,8 @@ interface User {
     email_verified: boolean,
     updated_at: string
 }
-}
-type UserInfo = Pick<User, "username" | "real_name" | "identity" | "id">;
+}*/
+type UserInfo = Pick<User, "username" | "real_name" | "role" | "md5">;
 
 interface UserSummary {
   userCount: number;
@@ -49,7 +57,7 @@ interface AuthToken {
   access : string;
   refresh : string;
 }
-interface AuthProfile {
+/*interface AuthProfile {
   id: string;
   username: string;
   email: string;
@@ -64,4 +72,4 @@ interface AuthProfile {
     email_verified: boolean;
     updated_at: string;
   };
-}
+}*/

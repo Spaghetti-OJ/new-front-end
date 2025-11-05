@@ -40,27 +40,25 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
-    console.log("[login] tokens =", tokens); 
-    session.token = tokens.access;
-    const me=await api.Auth.getSession();
-    console.log("me=",me)
+    const msg = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
+    console.log("[login] server says =", msg); 
+    //session.token = tokens.access;
+    //const me=await api.Auth.getSession();
+    //console.log("me=",me)
     await session.validateSession();
     const redirect = (route.query.redirect as string) ?? "/";
     router.replace(redirect);
-    /*if (route.query.redirect) {
-      router.push(route.query.redirect as string);
-    } else {
-      router.go(0);
-    }*/
   } catch (error:any) {
-    console.log("[me error]", error?.response?.status, error?.response?.data); // <== 若 401 會印在這
+    console.log("[login error]", error?.response?.status, error?.response?.data); 
     if (axios.isAxiosError(error)) {
-      if (error.response?.data?.message === "Login Failed") {
+      const text=typeof error.response?.data==="string" ? error.response.data : "UNKNOWN";
+      if (text.includes("Login Failed")) {
         loginForm.errorMsg = t("errorCode.ERR001");
-      } else if (error.response?.data?.message === "Invalid User") {
+      } else if (text.includes("Invalid User")) {
         loginForm.errorMsg = t("errorCode.ERR002");
-      } else {
+      } else if (text.includes("Incomplete Data")){
+        loginForm.errorMsg = t("errorCode.ERR003");
+      } else  {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
       }
     } else {
