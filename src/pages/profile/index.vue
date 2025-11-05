@@ -51,8 +51,8 @@ async function changePassword() {
   changePasswordForm.isLoading = true;
   try {
     await api.Auth.changePassword({
-      oldPassword: changePasswordForm.oldPassword,
-      newPassword: changePasswordForm.newPassword,
+      old_password: changePasswordForm.oldPassword,
+      new_password: changePasswordForm.newPassword,
     });
     clearForm();
   } catch (error) {
