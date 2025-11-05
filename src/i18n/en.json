@@ -366,12 +366,15 @@
       "forgot": "Forgot password?",
       "button": "Sign In"
     },
-    "sideBar": {
+    "topBar": {
       "home": "Home",
       "course": "Course",
       "about": "About",
       "admin": "Admin",
-      "profile": "Profile"
+      "profile": "Profile",
+      "ranking": "Ranking",
+      "problems": "Problems",
+      "settings": "Settings"
     },
     "dueCountdown": {
       "days": "days",
