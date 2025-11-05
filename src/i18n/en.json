@@ -371,9 +371,9 @@
       "course": "Course",
       "about": "About",
       "admin": "Admin",
-      "profile": "Profile", 
+      "profile": "Profile",
       "ranking": "Ranking",
-      "problems": "Problems", 
+      "problems": "Problems",
       "settings": "Settings"
     },
     "dueCountdown": {

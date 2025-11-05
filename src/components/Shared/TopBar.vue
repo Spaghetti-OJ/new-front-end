@@ -55,14 +55,14 @@ const session = useSession();
         :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']"
         to="/ranking"
       >
-        {{$t("components.topBar.ranking") || "Ranking" }}
+        {{ $t("components.topBar.ranking") || "Ranking" }}
       </router-link>
 
       <router-link
         :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']"
         to="/problems"
       >
-        {{$t("components.topBar.problems") || "Problems" }}
+        {{ $t("components.topBar.problems") || "Problems" }}
       </router-link>
     </div>
 
@@ -78,7 +78,7 @@ const session = useSession();
       >
         <i-uil-setting class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
-          {{$t("components.topBar.settings") || "Settings" }}
+          {{ $t("components.topBar.settings") || "Settings" }}
         </span>
       </router-link>
 
@@ -92,7 +92,7 @@ const session = useSession();
       >
         <i-uil-user class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
-          {{$t("components.topBar.profile") || "Profile" }}
+          {{ $t("components.topBar.profile") || "Profile" }}
         </span>
       </router-link>
 
@@ -106,7 +106,7 @@ const session = useSession();
       >
         <i-uil-info-circle class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
-          {{$t("components.topBar.about") || "About" }}
+          {{ $t("components.topBar.about") || "About" }}
         </span>
       </router-link>
       <!-- 夜間模式 -->
