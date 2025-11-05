@@ -4,7 +4,6 @@ import { useRoute } from "vue-router";
 import { useTheme } from "@/stores/theme";
 import { useSession } from "@/stores/session";
 import { useDark, useToggle, useStorage } from "@vueuse/core";
-import { LOCAL_STORAGE_KEY } from "@/constants";
 import logo from "@/assets/logo.svg";
 import useInteractions from "@/composables/useInteractions";
 
