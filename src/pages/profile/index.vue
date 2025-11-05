@@ -148,16 +148,10 @@ function onAvatarUpload(file: File) {
   <ProfileLayout>
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock
-        :avatar-url="form.avatar"
-        :editable-avatar="false"
-        :buttons="[
-          { label: 'Edit', variant: 'primary', action: 'save' },
-          { label: 'Sign Out', variant: 'error', action: 'cancel' }
-        ]"
-        @click="onAvatarAction"
-        @upload="onAvatarUpload"
-      />
+      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" :buttons="[
+        { label: 'Edit', variant: 'primary', action: 'save' },
+        { label: 'Sign Out', variant: 'error', action: 'cancel' }
+      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
@@ -170,26 +164,68 @@ function onAvatarUpload(file: File) {
           <ProfileField label="EMAIL" v-model="form.email" :editable="false" type="email" />
           <ProfileField label="USER ID" v-model="form.id" :editable="false" />
           <ProfileField label="STUDENT ID" :model-value="user.studentId" />
-          <ProfileField
-            label="INTRODUCTION"
-            v-model="form.intro"
-            :editable="false"
-            type="textarea"
-            container-class="md:col-span-2"
-          />
+          <ProfileField label="INTRODUCTION" v-model="form.intro" :editable="false" type="textarea"
+            container-class="md:col-span-2" />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar
-            :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
-          />
+          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
         </div>
       </section>
     </template>
   </ProfileLayout>
-</template>
+  </div>
 
+  <!-- 下：統計區 -->
+  <section class="stats">
+    <label>PROGRESS BAR</label>
+    <div class="heatmap-card">
+      <div class="stats-grid">
+        <!-- 左：上熱力圖、下兩格 -->
+        <div class="left-col">
+          <!-- 熱力圖（資料驅動） -->
+          <div class="heatmap" :style="{ '--cols': weeks.length }" role="grid" aria-label="Contribution heatmap">
+            <div class="hm-col" v-for="(week, wi) in weeks" :key="wi" role="row">
+              <div v-for="(cell, di) in week" :key="di" class="hm-cell"
+                :title="cell.date ? `${cell.date} • ${cell.value} time(s)` : ''"
+                :style="{ backgroundColor: color(cell.value) }" role="gridcell" />
+            </div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi">
+              <p class="kpi-title">Submission</p>
+              <p class="kpi-num sub">{{ user.submission }}</p>
+            </div>
+            <div class="kpi">
+              <p class="kpi-title">Acceptance</p>
+              <p class="kpi-num acc">{{ user.acceptance }}<span class="pct">%</span></p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="totals">
+          <p class="totals-title">Total Solved</p>
+          <div class="totals-line">
+            <p class="totals-num">{{ user.totalsolved }}</p>
+            <p class="totals-sub">Problems</p>
+          </div>
+          <div class="levels">
+            <span class="tag easy">Easy&nbsp;{{ data.easy }}</span>
+            <span class="tag med">Med.&nbsp;{{ data.med }}</span>
+            <span class="tag hard">Hard&nbsp;{{ data.hard }}</span>
+          </div>
+
+          <span class="tag beats">
+            <span class="beats-title">Beats</span>
+            <span class="beats-num">
+              {{ beatrate }}<span class="beats-pct">%</span>
+            </span>
+          </span>
+        </aside>
+      </div>
+    </div>
+  </section>
+  </main>
+  </section>
+</template>
