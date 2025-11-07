@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/api";
-import { setTokenProvider } from "@/api/fetcher";
+import { setTokenProvider,setRefreshProvider } from "@/api/fetcher";
 
 export enum SessionState {
   NotValidated = -1,
@@ -24,6 +24,8 @@ export const useSession = defineStore("session", {
     role: UserRole.Guest,
     bio: "",
     email: "",
+    token:"",
+    refreshtoken:"",
   }),
   getters: {
     isAdmin(state) {
@@ -42,20 +44,50 @@ export const useSession = defineStore("session", {
   actions: {
     async validateSession() {
       this.state = SessionState.NotValidated;
-      try {
-        const me = (await api.Auth.getSession());
+      if (!this.token) {
+    this.state = SessionState.IsNotLogin;
+    return;
+  }   try {
+        const me = await api.Auth.getSession();
         const { username, displayedName, bio, role, email } = me;
         this.username = username;
         this.displayedName = displayedName;
         this.bio = bio;
-        this.role = role;
+        this.role = role as any;
         this.email = email;
         this.state = SessionState.IsLogin;
       } catch (error) {
-        this.$reset();
-        this.state = SessionState.IsNotLogin;
+        this.logoutLocally();
       }
+    },
+     async setTokens(access: string, refresh: string) {
+      this.token = access;
+      this.refreshtoken = refresh;
+      await this.validateSession();
+    },
+    logoutLocally() {
+      this.$reset();
+      this.state = SessionState.IsNotLogin;
     },
   },
 });
 
+
+// To avoid circular dependency, export a function to set the token provider after store initialization.
+export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
+  setTokenProvider(() => {
+    return sessionStore.token || null;
+  });
+
+  setRefreshProvider(async () => {
+    if (!sessionStore.refreshtoken) return null;
+    try {
+      const { access } = await api.Auth.refresh({ refresh: sessionStore.refreshtoken });
+      sessionStore.token = access; // 更新新 access
+      return access;
+    } catch {
+      sessionStore.logoutLocally();
+      return null;
+    }
+  });
+}

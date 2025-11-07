@@ -40,12 +40,9 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    const msg = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
-    console.log("[login] server says =", msg); 
-    //session.token = tokens.access;
-    //const me=await api.Auth.getSession();
-    //console.log("me=",me)
-    await session.validateSession();
+    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
+    console.log("[login] tokens =", tokens); 
+    await session.setTokens(tokens.access,tokens.refresh);
     const redirect = (route.query.redirect as string) ?? "/";
     router.replace(redirect);
   } catch (error:any) {
@@ -57,7 +54,7 @@ async function login() {
       } else if (text.includes("Invalid User")) {
         loginForm.errorMsg = t("errorCode.ERR002");
       } else if (text.includes("Incomplete Data")){
-        loginForm.errorMsg = t("errorCode.ERR003");
+        loginForm.errorMsg = t("errorCode.ERR001");
       } else  {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
       }

@@ -2,7 +2,7 @@ import { fetcher } from "./fetcher";
 
 export const Auth = {
   signup:(body: { username: string; password: string; email: string})=>fetcher.post<string>("/auth/signup",body).then((r: any) => r.data ?? r),
-  login: (body: { username: string; password: string }) => fetcher.post<string>("/auth/session", body).then(r => r.data ?? r),
+  login: (body: { username: string; password: string }) => fetcher.post<AuthToken>("/auth/session", body).then(r => r.data ?? r),
   logout: () => fetcher.get<string>("/auth/session"),
   //activeredirect:(body:{token:string})=>,
   active:(body:{profile:{displayedName:string;bio:string};agreement:boolean})=>fetcher.post<string>("/auth/active").then(r => r.data ?? r),
@@ -13,7 +13,7 @@ export const Auth = {
   adduser:(body:{ username:string;password:string;email:string})=>fetcher.post<string>("/auth/user",body).then(r => r.data ?? r),
   batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>fetcher.post<string>("/auth/batch-signup", body).then(r => r.data ?? r),
   getSession: () => fetcher.get<UserProperties>("/auth/me").then(r => r.data ?? r),
-//  refresh: (body: { refresh: string }) =>fetcher.post<{ access: string }>("/auth/refresh/", body).then((r: any) => r.data ?? r),
+  refresh: (body: { refresh: string }) =>fetcher.post<{ access: string }>("/auth/refresh/", body).then((r: any) => r.data ?? r),
 };
 
 export const Copycat = {
