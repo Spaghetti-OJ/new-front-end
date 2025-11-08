@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
+import { DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
 
 useTitle("Problems | Normal OJ");
@@ -90,11 +91,8 @@ onMounted(async () => {
         <tbody>
           <tr v-for="p in problems" :key="p.id" class="hover">
             <td class="flex items-center gap-2">
-              <span class="h-3 w-3 rounded-full" :class="{
-                'bg-red-500': p.difficulty === 'hard',
-                'bg-yellow-400': p.difficulty === 'medium',
-                'bg-green-500': p.difficulty === 'easy',
-              }"></span>
+              <span class="h-3 w-3 rounded-full"
+                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"></span>
               #{{ p.id }}
             </td>
             <td>
