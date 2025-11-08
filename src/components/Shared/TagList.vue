@@ -2,18 +2,16 @@
 import { getTagColor } from "@/constants";
 interface Props {
   tags: string[];
+  size?: string;
+  colorMode?: string;
 }
 const props = defineProps<Props>();
 </script>
 
 <template>
   <div class="flex flex-wrap gap-2">
-    <span
-      v-for="tag in props.tags"
-      :key="tag"
-      class="badge"
-      :style="{ backgroundColor: getTagColor(tag), color: '#fff', border: 'none' }"
-    >
+    <span v-for="tag in props.tags" :key="tag" class="badge"
+      :style="{ backgroundColor: getTagColor(tag), color: '#fff', border: 'none' }">
       {{ tag }}
     </span>
   </div>
