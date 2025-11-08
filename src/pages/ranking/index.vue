@@ -76,7 +76,7 @@ onMounted(async () => {
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
       <div class="card-title justify-between">
-        <span class="text-lg font-bold">Problem List</span>
+        <span class="text-lg font-bold">Ranking</span>
       </div>
 
       <div class="my-2" />
