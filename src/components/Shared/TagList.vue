@@ -25,11 +25,13 @@ const badgeClass = (tag: string) => {
       :key="tag"
       class="badge"
       :class="[
-        props.size === 'lg' ? 'px-3 py-1 text-sm' : 
-        props.size === 'sm' ? 'px-2 py-0.5 text-xs' : 
-        'px-2 py-1 text-xs',
-        props.colorMode === 'solid' ? 'bg-white/10 border-none' : 'border border-white/20',
-        badgeClass(tag)
+        props.size === 'lg'
+          ? 'px-3 py-1 text-sm'
+          : props.size === 'sm'
+          ? 'px-2 py-0.5 text-xs'
+          : 'px-2 py-1 text-xs',
+        props.colorMode === 'solid' ? 'border-none bg-white/10' : 'border border-white/20',
+        badgeClass(tag),
       ]"
     >
       {{ tag }}

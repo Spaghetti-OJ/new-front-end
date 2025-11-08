@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
     AnnouncementForm: typeof import('./../components/Announcement/AnnouncementForm.vue')['default']
     CodeEditor: typeof import('./../components/Shared/CodeEditor.vue')['default']
@@ -40,6 +41,7 @@ declare module '@vue/runtime-core' {
     IUilFolderDownload: typeof import('~icons/uil/folder-download')['default']
     IUilGithub: typeof import('~icons/uil/github')['default']
     IUilHome: typeof import('~icons/uil/home')['default']
+    IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
     IUilLanguage: typeof import('~icons/uil/language')['default']
     IUilLeftArrowToLeft: typeof import('~icons/uil/left-arrow-to-left')['default']
     IUilLink: typeof import('~icons/uil/link')['default']
@@ -51,6 +53,7 @@ declare module '@vue/runtime-core' {
     IUilPlus: typeof import('~icons/uil/plus')['default']
     IUilPlusCircle: typeof import('~icons/uil/plus-circle')['default']
     IUilRepeat: typeof import('~icons/uil/repeat')['default']
+    IUilSetting: typeof import('~icons/uil/setting')['default']
     IUilSun: typeof import('~icons/uil/sun')['default']
     IUilTimes: typeof import('~icons/uil/times')['default']
     IUilTimesCircle: typeof import('~icons/uil/times-circle')['default']
@@ -77,6 +80,7 @@ declare module '@vue/runtime-core' {
     SkeletonPost: typeof import('./../components/Shared/SkeletonPost.vue')['default']
     SkeletonTable: typeof import('./../components/Shared/SkeletonTable.vue')['default']
     SystemAnnouncements: typeof import('./../components/Home/SystemAnnouncements.vue')['default']
+    TagList: typeof import('./../components/Shared/TagList.vue')['default']
     TopBar: typeof import('./../components/Shared/TopBar.vue')['default']
     UiDialog: typeof import('./../components/ui-dialog.vue')['default']
     UiSpinner: typeof import('./../components/Shared/UiSpinner.vue')['default']

@@ -26,15 +26,27 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="drawer drawer-mobile h-screen w-screen">
-    <input id="noj-drawer" type="checkbox" class="drawer-toggle" />
+  <div class="flex h-screen w-screen flex-col bg-base-100">
+    <!--input id="noj-drawer" type="checkbox" class="drawer-toggle" /-->
+
+    <top-bar class="sticky top-0 z-50" />
+    <main class="flex-1 overflow-y-auto">
+      <router-view />
+    </main>
+
+    <!--
     <div class="drawer-content">
       <top-bar class="sticky top-0 z-50 lg:hidden" />
       <router-view />
     </div>
+    -->
+
+    <!-- UI測試移除 side bar 換成 top bar 效果-->
+    <!-- 
     <div class="drawer-side">
       <side-bar />
     </div>
+    -->
 
     <TransitionRoot
       :show="global.isServerError"
