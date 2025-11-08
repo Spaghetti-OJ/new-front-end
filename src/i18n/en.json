@@ -229,6 +229,18 @@
     "search": {
       "placeholder": "Search problem..."
     }
+  "ranking": {
+    "title": "Ranking",
+    "table": {
+      "id": "#",
+      "avatar": "Avatar",
+      "userId": "UserID",
+      "displayName": "Username",
+      "ac": "AC counting"
+    },
+    "loading": "Loading ranking data...",
+    "error": "Failed to load ranking data. Showing mock data.",
+    "mockHint": "(Showing mock data)"
   },
   "components": {
     "ann": {
@@ -379,12 +391,15 @@
       "forgot": "Forgot password?",
       "button": "Sign In"
     },
-    "sideBar": {
+    "topBar": {
       "home": "Home",
       "course": "Course",
       "about": "About",
       "admin": "Admin",
-      "profile": "Profile"
+      "profile": "Profile",
+      "ranking": "Ranking",
+      "problems": "Problems",
+      "settings": "Settings"
     },
     "dueCountdown": {
       "days": "days",
