@@ -103,7 +103,7 @@ onMounted(async () => {
             <th class="w-24 text-center">Avatar</th>
             <th>UserID</th>
             <th>Username</th>
-            <th class="text-right">AC counting</th>
+            <th class="text-right">AC count</th>
           </tr>
         </thead>
         <tbody>
