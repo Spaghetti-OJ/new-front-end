@@ -67,36 +67,34 @@ onMounted(async () => {
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
       <div class="mb-4 flex items-center justify-between">
-        <h1 class="text-lg font-bold">Problem List</h1>
+        <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
 
-        <input type="text" placeholder="Search problem..." class="input input-bordered input-sm w-64" />
+        <input type="text" :placeholder="$t('problems.search.placeholder')"
+          class="input input-bordered input-sm w-64" />
       </div>
 
       <div v-if="isLoading" class="py-10 text-center">
         <span class="loading-spinner loading-lg loading"></span>
-        <p class="mt-2 text-sm opacity-70">Loading problems...</p>
+        <p class="mt-2 text-sm opacity-70">{{ $t("problems.loading") }}</p>
       </div>
 
       <table v-else class="table w-full">
         <thead>
           <tr>
-            <th>#ID</th>
-            <th>Problem Title</th>
-            <th>Tags</th>
-            <th class="text-right">AC ratio (%)</th>
+            <th>{{ $t("problems.table.id") }}</th>
+            <th>{{ $t("problems.table.name") }}</th>
+            <th>{{ $t("problems.table.tags") }}</th>
+            <th class="text-right">{{ $t("problems.table.ac") }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="p in problems" :key="p.id" class="hover">
             <td class="flex items-center gap-2">
-              <span
-                class="h-3 w-3 rounded-full"
-                :class="{
-                  'bg-red-500': p.difficulty === 'hard',
-                  'bg-yellow-400': p.difficulty === 'medium',
-                  'bg-green-500': p.difficulty === 'easy',
-                }"
-              ></span>
+              <span class="h-3 w-3 rounded-full" :class="{
+                'bg-red-500': p.difficulty === 'hard',
+                'bg-yellow-400': p.difficulty === 'medium',
+                'bg-green-500': p.difficulty === 'easy',
+              }"></span>
               #{{ p.id }}
             </td>
             <td>
@@ -122,10 +120,12 @@ onMounted(async () => {
   background-color: rgba(255, 255, 255, 0.05);
   font-weight: 600;
 }
+
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;
 }
+
 .badge {
   background-color: rgba(255, 255, 255, 0.08);
   color: #f3f3f3;
