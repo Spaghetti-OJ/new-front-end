@@ -82,8 +82,8 @@ onMounted(async () => {
       <div class="my-2" />
 
       <!-- Loading -->
-      <div v-if="isLoading" class="text-center py-10">
-        <span class="loading loading-spinner loading-lg"></span>
+      <div v-if="isLoading" class="py-10 text-center">
+        <span class="loading-spinner loading-lg loading"></span>
         <p class="mt-2 text-sm opacity-70">Loading ranking data...</p>
       </div>
 
@@ -107,30 +107,23 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(item, index) in ranking"
-            :key="item.user?.username || index"
-            class="hover"
-          >
+          <tr v-for="(item, index) in ranking" :key="item.user?.username || index" class="hover">
             <td class="text-center font-semibold">{{ index + 1 }}</td>
             <td class="flex justify-center">
               <div class="avatar">
-                <div class="mask mask-squircle w-10 h-10">
-                  <img
-                    :src="item.user?.avatar || 'https://i.pravatar.cc/100'"
-                    alt="user avatar"
-                  />
+                <div class="mask mask-squircle h-10 w-10">
+                  <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
                 </div>
               </div>
             </td>
-            <td>{{ item.user?.username || 'Unknown' }}</td>
-            <td>{{ item.user?.display_name || '-' }}</td>
+            <td>{{ item.user?.username || "Unknown" }}</td>
+            <td>{{ item.user?.display_name || "-" }}</td>
             <td class="text-right">{{ item.ACProblem ?? 0 }}</td>
           </tr>
         </tbody>
       </table>
 
-      <p class="mt-3 text-xs text-center opacity-50">(Showing mock data)</p>
+      <p class="mt-3 text-center text-xs opacity-50">(Showing mock data)</p>
     </div>
   </div>
 </template>
