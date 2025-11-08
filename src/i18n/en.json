@@ -217,6 +217,19 @@
       "back": "Back"
     }
   },
+  "ranking": {
+    "title": "Ranking",
+    "table": {
+      "id": "#",
+      "avatar": "Avatar",
+      "userId": "UserID",
+      "displayName": "Username",
+      "ac": "AC counting"
+    },
+    "loading": "Loading ranking data...",
+    "error": "Failed to load ranking data. Showing mock data.",
+    "mockHint": "(Showing mock data)"
+  },
   "components": {
     "ann": {
       "form": {
