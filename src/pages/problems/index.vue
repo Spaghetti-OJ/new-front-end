@@ -70,8 +70,11 @@ onMounted(async () => {
       <div class="mb-4 flex items-center justify-between">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
 
-        <input type="text" :placeholder="$t('problems.search.placeholder')"
-          class="input input-bordered input-sm w-64" />
+        <input
+          type="text"
+          :placeholder="$t('problems.search.placeholder')"
+          class="input input-bordered input-sm w-64"
+        />
       </div>
 
       <div v-if="isLoading" class="py-10 text-center">
@@ -91,8 +94,10 @@ onMounted(async () => {
         <tbody>
           <tr v-for="p in problems" :key="p.id" class="hover">
             <td class="flex items-center gap-2">
-              <span class="h-3 w-3 rounded-full"
-                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"></span>
+              <span
+                class="h-3 w-3 rounded-full"
+                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"
+              ></span>
               #{{ p.id }}
             </td>
             <td>

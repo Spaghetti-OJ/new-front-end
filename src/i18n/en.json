@@ -220,8 +220,8 @@
   "problems": {
     "title": "Problem List",
     "loading": "Loading problems...",
-    "table":{
-      "id": "ID", 
+    "table": {
+      "id": "ID",
       "name": "Name",
       "tags": "Tags",
       "ac": "AC Ratio (%)"
@@ -229,6 +229,7 @@
     "search": {
       "placeholder": "Search problem..."
     }
+  },
   "ranking": {
     "title": "Ranking",
     "table": {
