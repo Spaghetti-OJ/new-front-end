@@ -6,22 +6,17 @@ interface User {
   email: string;
   md5: string;
   active: boolean;
-}/*{
-   id: string,
+}
+
+interface UserSignup{
+  id:string,
   username:string,
-  email: string,
+  email: string, 
   real_name: string,
   identity: string,
   date_joined: string,
   last_login: string|null,
-  profile: {
-    student_id: string,
-    bio: string,
-    avatar: string|null,
-    email_verified: boolean,
-    updated_at: string
 }
-}*/
 type UserInfo = Pick<User, "username" | "real_name" | "role" | "md5">;
 
 interface UserSummary {
