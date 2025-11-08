@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { getTagColor } from "@/constants";
-
 interface Props {
   tags: string[];
 }
