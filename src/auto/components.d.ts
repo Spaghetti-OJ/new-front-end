@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
     AnnouncementForm: typeof import('./../components/Announcement/AnnouncementForm.vue')['default']
     CodeEditor: typeof import('./../components/Shared/CodeEditor.vue')['default']
@@ -79,6 +80,7 @@ declare module '@vue/runtime-core' {
     SkeletonPost: typeof import('./../components/Shared/SkeletonPost.vue')['default']
     SkeletonTable: typeof import('./../components/Shared/SkeletonTable.vue')['default']
     SystemAnnouncements: typeof import('./../components/Home/SystemAnnouncements.vue')['default']
+    TagList: typeof import('./../components/Shared/TagList.vue')['default']
     TopBar: typeof import('./../components/Shared/TopBar.vue')['default']
     UiDialog: typeof import('./../components/ui-dialog.vue')['default']
     UiSpinner: typeof import('./../components/Shared/UiSpinner.vue')['default']
