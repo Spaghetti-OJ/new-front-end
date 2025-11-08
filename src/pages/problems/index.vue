@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
 import TagList from "@/components/Shared/TagList.vue";
+import AIVtuberAssistant from "@/components/Shared/AIVtuberAssistant.vue";
 
 useTitle("Problems | Normal OJ");
 
@@ -68,8 +69,11 @@ onMounted(async () => {
     <div class="card-body">
       <div class="mb-4 flex items-center justify-between">
         <h1 class="text-lg font-bold">Problem List</h1>
-
-        <input type="text" placeholder="Search problem..." class="input input-bordered input-sm w-64" />
+        <input
+          type="text"
+          placeholder="Search problem..."
+          class="input input-bordered input-sm w-64"
+        />
       </div>
 
       <div v-if="isLoading" class="py-10 text-center">
@@ -113,6 +117,11 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+
+      <!-- ✅ AI Vtuber Assistant 區塊 -->
+      <div class="mt-10">
+        <AIVtuberAssistant />
+      </div>
     </div>
   </div>
 </template>
