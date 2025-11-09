@@ -14,53 +14,74 @@ const error = ref<Error | null>(null);
 const mockProblems = [
   {
     id: 765,
-    title: "Emergency Medical Dispatch1",
+    title: "Emergency Medical Dispatch 1",
     difficulty: "hard",
     tags: ["linked list", "dynamic programming"],
+    course: "資料結構",
     acceptance: 0.0,
   },
   {
     id: 764,
-    title: "Emergency Medical Dispatch2",
+    title: "Emergency Medical Dispatch 2",
     difficulty: "medium",
     tags: ["dynamic programming"],
+    course: "演算法導論",
     acceptance: 0.1,
   },
   {
     id: 763,
-    title: "Emergency Medical Dispatch3",
+    title: "Emergency Medical Dispatch 3",
     difficulty: "easy",
-    tags: ["dynamic programming"],
+    tags: ["math"],
+    course: "程式設計入門",
     acceptance: 0.2,
   },
   {
     id: 762,
-    title: "Emergency Medical Dispatch4",
+    title: "Emergency Medical Dispatch 4",
     difficulty: "medium",
-    tags: ["dynamic programming"],
+    tags: ["graph", "dynamic programming"],
+    course: "演算法導論",
     acceptance: 0.8,
   },
   {
     id: 761,
-    title: "Emergency Medical Dispatch5",
+    title: "Emergency Medical Dispatch 5",
     difficulty: "easy",
-    tags: ["dynamic programming"],
+    tags: ["linked list"],
+    course: "資料結構",
     acceptance: 0.8,
   },
 ];
 
-onMounted(async () => {
-  try {
-    // 直接用假資料（確認畫面）
-    console.log("💡 Using mockProblems as default data");
-    problems.value = mockProblems;
-  } catch (err: any) {
-    console.warn("Failed to fetch /problems, using mock data.");
-    error.value = err;
-    problems.value = mockProblems;
-  } finally {
-    isLoading.value = false;
-  }
+// ✅ 篩選條件
+const selectedDifficulty = ref("");
+const selectedTag = ref("");
+const selectedCourse = ref("");
+const allTags = ["dynamic programming", "linked list", "graph", "math"];
+const allCourses = ["程式設計入門", "資料結構", "演算法導論"];
+
+function applyFilters() {
+  problems.value = mockProblems.filter((p) => {
+    const matchDifficulty = !selectedDifficulty.value || p.difficulty === selectedDifficulty.value;
+    const matchTag = !selectedTag.value || p.tags.includes(selectedTag.value);
+    const matchCourse = !selectedCourse.value || p.course === selectedCourse.value;
+    return matchDifficulty && matchTag && matchCourse;
+  });
+}
+
+function resetFilters() {
+  selectedDifficulty.value = "";
+  selectedTag.value = "";
+  selectedCourse.value = "";
+  problems.value = mockProblems;
+}
+
+// ✅ 初始化
+onMounted(() => {
+  console.log("💡 Using mockProblems as default data");
+  problems.value = mockProblems;
+  isLoading.value = false;
 });
 </script>
 
@@ -76,6 +97,32 @@ onMounted(async () => {
         />
       </div>
 
+      <!-- ✅ 篩選列 -->
+      <div class="mb-4 flex flex-wrap gap-3 items-center">
+        <select v-model="selectedDifficulty" class="select select-bordered select-sm w-40">
+          <option value="">All Difficulties</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <select v-model="selectedTag" class="select select-bordered select-sm w-48">
+          <option value="">All Tags</option>
+          <option v-for="tag in allTags" :key="tag" :value="tag">{{ tag }}</option>
+        </select>
+
+        <select v-model="selectedCourse" class="select select-bordered select-sm w-48">
+          <option value="">All Courses</option>
+          <option v-for="course in allCourses" :key="course" :value="course">
+            {{ course }}
+          </option>
+        </select>
+
+        <button class="btn btn-primary btn-sm" @click="applyFilters">Apply Filters</button>
+        <button class="btn btn-ghost btn-sm" @click="resetFilters">Reset</button>
+      </div>
+
+      <!-- ✅ 題目表格 -->
       <div v-if="isLoading" class="py-10 text-center">
         <span class="loading-spinner loading-lg loading"></span>
         <p class="mt-2 text-sm opacity-70">Loading problems...</p>
@@ -87,6 +134,7 @@ onMounted(async () => {
             <th>#ID</th>
             <th>Problem Title</th>
             <th>Tags</th>
+            <th>Course</th>
             <th class="text-right">AC ratio (%)</th>
           </tr>
         </thead>
@@ -108,9 +156,8 @@ onMounted(async () => {
                 {{ p.title }}
               </router-link>
             </td>
-            <td>
-              <TagList :tags="p.tags" size="sm" colorMode="outline" />
-            </td>
+            <td><TagList :tags="p.tags" size="sm" colorMode="outline" /></td>
+            <td>{{ p.course }}</td>
             <td class="text-right">
               {{ p.acceptance != null ? (p.acceptance * 100).toFixed(0) + "%" : "—" }}
             </td>
@@ -118,7 +165,7 @@ onMounted(async () => {
         </tbody>
       </table>
 
-      <!-- ✅ AI Vtuber Assistant 區塊 -->
+      <!-- ✅ AI Vtuber Assistant -->
       <div class="mt-10">
         <AIVtuberAssistant />
       </div>

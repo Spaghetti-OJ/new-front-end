@@ -54,7 +54,7 @@ async function askQuestion() {
     const chatBox = document.getElementById("chat-scroll");
     if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
   } catch (err: any) {
-    error.value = "Failed to reach AI server.";
+    error.value = "⚠️ Failed to reach AI server. Please try again later.";
   } finally {
     loading.value = false;
   }
@@ -62,92 +62,64 @@ async function askQuestion() {
 </script>
 
 <template>
-  <div class="fixed bottom-8 right-8 z-50 flex flex-col items-end">
-    <!-- VTuber Avatar -->
-    <div
-      class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
-      @click="toggleAssistant"
-    >
-      <img
-        src="/vtuber-avatar.png"
-        alt="AI Vtuber"
-        class="h-32 w-32 rounded-full shadow-2xl transition-transform duration-300 hover:scale-110"
-      />
-      <div
-        v-if="!isOpen"
-        class="absolute -top-1 -right-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
-      ></div>
-      <p class="text-xs text-indigo-400 mt-1 text-center font-medium">AI Vtuber</p>
-    </div>
-
-    <!-- Chat Box -->
-    <transition name="fade">
+  <div class="fixed bottom-8 right-8 z-50 flex items-end">
+    <!-- Chat Box（左側滑出） -->
+    <transition name="slide-left">
       <div
         v-if="isOpen"
-        class="mt-4 w-96 rounded-2xl border border-slate-700 bg-slate-800/90 backdrop-blur-md shadow-2xl overflow-hidden"
+        class="mr-4 w-96 rounded-2xl border border-base-300 bg-base-200 text-base-content backdrop-blur-md shadow-2xl overflow-hidden"
       >
         <!-- Header -->
-        <div
-          class="flex justify-between items-center px-4 py-2 border-b border-slate-700 bg-slate-900/70"
-        >
-          <h3 class="text-sm font-semibold text-blue-200">💫 AI Vtuber Assistant</h3>
+        <div class="flex justify-between items-center px-4 py-2 border-b border-base-300 bg-base-300">
+          <h3 class="text-sm font-semibold">💫 AI Vtuber Assistant</h3>
           <button
-            class="text-slate-400 hover:text-red-400 transition text-xs"
+            class="text-base-content/70 hover:text-red-400 transition text-xs"
             @click="toggleAssistant"
+            aria-label="Close chat"
           >
             ✕
           </button>
         </div>
 
         <!-- Messages -->
-        <div
-          id="chat-scroll"
-          class="h-72 overflow-y-auto px-4 py-3 space-y-3 scroll-smooth text-sm"
-        >
+        <div id="chat-scroll" class="h-72 overflow-y-auto px-4 py-3 space-y-3 text-sm">
           <template v-for="(msg, i) in messages" :key="i">
-            <div
-              v-if="msg.sender === 'ai'"
-              class="flex items-start gap-2"
-            >
+            <div v-if="msg.sender === 'ai'" class="flex items-start gap-2">
               <img src="/vtuber-avatar.png" class="h-8 w-8 rounded-full" />
               <div
-                class="px-4 py-2 rounded-xl bg-slate-700/70 text-slate-100 max-w-[80%] border border-slate-600"
+                class="px-4 py-2 rounded-xl bg-base-300 text-base-content max-w-[80%] border border-base-300"
               >
                 {{ msg.text }}
               </div>
             </div>
 
-            <div
-              v-else
-              class="flex justify-end"
-            >
-              <div
-                class="px-4 py-2 rounded-xl bg-blue-600 text-white max-w-[80%]"
-              >
+            <div v-else class="flex justify-end">
+              <div class="px-4 py-2 rounded-xl bg-primary text-primary-content max-w-[80%]">
                 {{ msg.text }}
               </div>
             </div>
           </template>
 
-          <div v-if="loading" class="text-xs text-slate-400 italic mt-2">
+          <div v-if="loading" class="text-xs opacity-70 italic mt-2">
             Typing<span class="animate-pulse">...</span>
+          </div>
+          <div v-if="error" class="text-xs text-error text-center mt-2">
+            {{ error }}
           </div>
         </div>
 
         <!-- Input -->
-        <div
-          class="flex items-center border-t border-slate-700 bg-slate-900/80 px-3 py-2"
-        >
+        <div class="flex items-center border-t border-base-300 bg-base-300 px-3 py-2">
           <input
             v-model="question"
             type="text"
             placeholder="Ask me about your code..."
-            class="flex-1 bg-transparent text-sm focus:outline-none text-slate-200 placeholder-slate-500"
+            class="flex-1 bg-transparent text-sm focus:outline-none text-base-content placeholder-base-content/60"
             :disabled="loading"
             @keyup.enter="askQuestion"
           />
           <button
-            class="ml-2 px-3 py-1 text-sm rounded-md bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50"
+            class="ml-2 px-3 py-1 text-sm rounded-md bg-primary hover:bg-primary/80 text-primary-content disabled:opacity-50"
             @click="askQuestion"
             :disabled="loading || !question.trim()"
           >
@@ -157,18 +129,42 @@ async function askQuestion() {
         </div>
       </div>
     </transition>
+
+    <!-- Avatar（固定右下） -->
+    <div
+      class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
+      @click="toggleAssistant"
+    >
+      <img
+        src="/vtuber-avatar.png"
+        alt="AI Vtuber"
+        class="h-32 w-32 rounded-full shadow-2xl"
+      />
+      <div
+        v-if="!isOpen"
+        class="absolute -top-1 -right-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
+      ></div>
+      <p class="mt-1 text-center text-xs font-medium text-indigo-400">AI Vtuber</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s ease;
+/* ✅ 左滑動畫 */
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.slide-left-enter-from {
+  transform: translateX(20px);
   opacity: 0;
 }
+.slide-left-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+/* scrollbar 美化 */
 ::-webkit-scrollbar {
   width: 6px;
 }
