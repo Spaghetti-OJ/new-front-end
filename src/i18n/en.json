@@ -234,7 +234,7 @@
     "difficulty": {
       "easy": "Easy",
       "medium": "Medium",
-      "hard": "Hard", 
+      "hard": "Hard",
       "reset": "Reset"
     },
     "empty": "No problems found.",

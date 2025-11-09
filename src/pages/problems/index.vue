@@ -103,9 +103,14 @@ onMounted(() => {
       <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <label
-          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary">
-          <input v-model="q" type="text" class="grow bg-transparent outline-none"
-            :placeholder="$t('problems.search.placeholder')" />
+          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
+        >
+          <input
+            v-model="q"
+            type="text"
+            class="grow bg-transparent outline-none"
+            :placeholder="$t('problems.search.placeholder')"
+          />
           <i class="i-uil-search" />
         </label>
       </div>
@@ -123,19 +128,30 @@ onMounted(() => {
         </select>
 
         <div class="flex items-center gap-2">
-          <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'hard' ? 'btn-error' : 'btn-ghost'"
-            @click="selectedDifficulty = selectedDifficulty === 'hard' ? '' : 'hard'">
+          <button
+            class="btn btn-xs gap-2"
+            :class="selectedDifficulty === 'hard' ? 'btn-error' : 'btn-ghost'"
+            @click="selectedDifficulty = selectedDifficulty === 'hard' ? '' : 'hard'"
+          >
             <span class="h-2 w-2 rounded-full bg-red-500" /> {{ $t("problems.difficulty.hard") }}
           </button>
-          <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'medium' ? 'btn-warning' : 'btn-ghost'"
-            @click="selectedDifficulty = selectedDifficulty === 'medium' ? '' : 'medium'">
+          <button
+            class="btn btn-xs gap-2"
+            :class="selectedDifficulty === 'medium' ? 'btn-warning' : 'btn-ghost'"
+            @click="selectedDifficulty = selectedDifficulty === 'medium' ? '' : 'medium'"
+          >
             <span class="h-2 w-2 rounded-full bg-yellow-400" /> {{ $t("problems.difficulty.medium") }}
           </button>
-          <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'easy' ? 'btn-success' : 'btn-ghost'"
-            @click="selectedDifficulty = selectedDifficulty === 'easy' ? '' : 'easy'">
+          <button
+            class="btn btn-xs gap-2"
+            :class="selectedDifficulty === 'easy' ? 'btn-success' : 'btn-ghost'"
+            @click="selectedDifficulty = selectedDifficulty === 'easy' ? '' : 'easy'"
+          >
             <span class="h-2 w-2 rounded-full bg-green-500" /> {{ $t("problems.difficulty.easy") }}
           </button>
-          <button class="btn btn-ghost btn-xs" @click="resetFilters">{{ $t("problems.difficulty.reset") }}</button>
+          <button class="btn btn-ghost btn-xs" @click="resetFilters">
+            {{ $t("problems.difficulty.reset") }}
+          </button>
         </div>
       </div>
 
@@ -165,8 +181,10 @@ onMounted(() => {
           <tbody>
             <tr v-for="p in filteredProblems" :key="p.id" class="hover">
               <td class="flex items-center gap-2">
-                <span class="h-3 w-3 rounded-full"
-                  :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]" />
+                <span
+                  class="h-3 w-3 rounded-full"
+                  :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"
+                />
                 #{{ p.id }}
               </td>
               <td>
