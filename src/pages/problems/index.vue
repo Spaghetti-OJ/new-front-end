@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
-
 useTitle("Problems | Normal OJ");
 
 type Problem = {
