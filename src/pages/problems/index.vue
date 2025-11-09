@@ -3,8 +3,6 @@ import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
-import AIVtuberAssistant from "@/components/Shared/AIVtuberAssistant.vue";
-
 useTitle("Problems | Normal OJ");
 
 const problems = ref<any[]>([]);
