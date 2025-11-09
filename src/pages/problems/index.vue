@@ -17,11 +17,46 @@ type Problem = {
 
 // ---- 假資料 ----
 const baseProblems = ref<Problem[]>([
-  { id: 765, title: "Emergency Medical Dispatch", difficulty: "hard",   tags: ["linked list","dynamic programming"], course: "資料結構",   acceptance: 0.0 },
-  { id: 764, title: "Emergency Medical Dispatch", difficulty: "medium", tags: ["dynamic programming"],              course: "演算法導論", acceptance: 0.1 },
-  { id: 763, title: "Emergency Medical Dispatch", difficulty: "easy",   tags: ["math"],                             course: "程式設計入門", acceptance: 0.2 },
-  { id: 762, title: "Emergency Medical Dispatch", difficulty: "medium", tags: ["graph","dynamic programming"],     course: "演算法導論", acceptance: 0.8 },
-  { id: 761, title: "Emergency Medical Dispatch", difficulty: "easy",   tags: ["linked list"],                      course: "資料結構",   acceptance: 0.8 },
+  {
+    id: 765,
+    title: "Emergency Medical Dispatch",
+    difficulty: "hard",
+    tags: ["linked list", "dynamic programming"],
+    course: "資料結構",
+    acceptance: 0.0,
+  },
+  {
+    id: 764,
+    title: "Emergency Medical Dispatch",
+    difficulty: "medium",
+    tags: ["dynamic programming"],
+    course: "演算法導論",
+    acceptance: 0.1,
+  },
+  {
+    id: 763,
+    title: "Emergency Medical Dispatch",
+    difficulty: "easy",
+    tags: ["math"],
+    course: "程式設計入門",
+    acceptance: 0.2,
+  },
+  {
+    id: 762,
+    title: "Emergency Medical Dispatch",
+    difficulty: "medium",
+    tags: ["graph", "dynamic programming"],
+    course: "演算法導論",
+    acceptance: 0.8,
+  },
+  {
+    id: 761,
+    title: "Emergency Medical Dispatch",
+    difficulty: "easy",
+    tags: ["linked list"],
+    course: "資料結構",
+    acceptance: 0.8,
+  },
 ]);
 
 // ---- 篩選狀態 ----
@@ -65,17 +100,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-6xl mt-8">
+  <div class="mx-auto mt-8 max-w-6xl">
     <!-- Filter Bar -->
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <!-- Search -->
       <label class="input input-bordered input-sm flex w-80 items-center gap-2">
-        <input
-          v-model="q"
-          type="text"
-          class="grow"
-          placeholder="search problem"
-        />
+        <input v-model="q" type="text" class="grow" placeholder="search problem" />
         <i class="i-uil-search" />
       </label>
 
@@ -95,22 +125,22 @@ onMounted(() => {
       <div class="flex items-center gap-2">
         <button
           class="btn btn-xs gap-2"
-          :class="selectedDifficulty==='hard' ? 'btn-error' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty==='hard' ? '' : 'hard'"
+          :class="selectedDifficulty === 'hard' ? 'btn-error' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'hard' ? '' : 'hard'"
         >
           <span class="h-2 w-2 rounded-full bg-red-500"></span> hard
         </button>
         <button
           class="btn btn-xs gap-2"
-          :class="selectedDifficulty==='medium' ? 'btn-warning' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty==='medium' ? '' : 'medium'"
+          :class="selectedDifficulty === 'medium' ? 'btn-warning' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'medium' ? '' : 'medium'"
         >
           <span class="h-2 w-2 rounded-full bg-yellow-400"></span> medium
         </button>
         <button
           class="btn btn-xs gap-2"
-          :class="selectedDifficulty==='easy' ? 'btn-success' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty==='easy' ? '' : 'easy'"
+          :class="selectedDifficulty === 'easy' ? 'btn-success' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'easy' ? '' : 'easy'"
         >
           <span class="h-2 w-2 rounded-full bg-green-500"></span> easy
         </button>
@@ -134,10 +164,7 @@ onMounted(() => {
           <tbody>
             <tr v-for="p in problems" :key="p.id" class="hover">
               <td class="flex items-center gap-2">
-                <span
-                  class="h-3 w-3 rounded-full"
-                  :class="DIFFICULTY_COLOR_CLASS[p.difficulty]"
-                />
+                <span class="h-3 w-3 rounded-full" :class="DIFFICULTY_COLOR_CLASS[p.difficulty]" />
                 #{{ p.id }}
               </td>
               <td>
@@ -149,9 +176,7 @@ onMounted(() => {
               <td>
                 <TagList :tags="p.tags" size="sm" colorMode="outline" />
               </td>
-              <td class="text-right">
-                {{ (p.acceptance * 100).toFixed(0) }}%
-              </td>
+              <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
             </tr>
           </tbody>
         </table>
