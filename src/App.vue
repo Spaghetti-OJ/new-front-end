@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 import dayjs from "dayjs";
 import TopBar from "@/components/Shared/TopBar.vue";
 import SideBar from "@/components/Shared/SideBar.vue";
+import AIVtuberAssistant from "@/components/Shared/AIVtuberAssistant.vue";
 
 const global = useGlobal();
 
@@ -33,7 +34,7 @@ watchEffect(() => {
     <main class="flex-1 overflow-y-auto">
       <router-view />
     </main>
-
+    <AIVtuberAssistant />
     <!--
     <div class="drawer-content">
       <top-bar class="sticky top-0 z-50 lg:hidden" />
