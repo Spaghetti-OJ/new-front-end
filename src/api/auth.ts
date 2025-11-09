@@ -14,6 +14,8 @@ export const Auth = {
   batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>fetcher.post<string>("/auth/batch-signup/", body).then(r => r.data ?? r),
   getSession: () => fetcher.get<UserProperties>("/auth/me").then(r => r.data ?? r),
   refresh: (body: { refresh: string }) =>fetcher.post<{refresh:string; access: string }>("/auth/refresh/", body).then((r: any) => r.data ?? r),
+  verify:(body: {token: string }) =>fetcher.post("/auth/verify/", body).then((r: any) => r.data ?? r),
+  
 };
 
 export const Copycat = {
