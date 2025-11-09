@@ -90,7 +90,7 @@ onMounted(() => {
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
       <div class="mb-4 flex items-center justify-between">
-        <h1 class="text-lg font-bold">Problem List</h1>
+        <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <input type="text" placeholder="Search problem..." class="input input-bordered input-sm w-64" />
       </div>
 
