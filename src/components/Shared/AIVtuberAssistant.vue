@@ -134,6 +134,10 @@ async function askQuestion() {
     <div
       class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
       @click="toggleAssistant"
+      role="button"
+      tabindex="0"
+      aria-label="Open AI assistant chat"
+      @keyup.enter="toggleAssistant"
     >
       <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
       <div
