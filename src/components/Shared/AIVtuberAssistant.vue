@@ -67,13 +67,13 @@ async function askQuestion() {
     <transition name="slide-left">
       <div
         v-if="isOpen"
-        class="mr-4 w-96 rounded-2xl border border-base-300 bg-base-200 text-base-content backdrop-blur-md shadow-2xl overflow-hidden"
+        class="mr-4 w-96 overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md"
       >
         <!-- Header -->
-        <div class="flex justify-between items-center px-4 py-2 border-b border-base-300 bg-base-300">
+        <div class="flex items-center justify-between border-b border-base-300 bg-base-300 px-4 py-2">
           <h3 class="text-sm font-semibold">💫 AI Vtuber Assistant</h3>
           <button
-            class="text-base-content/70 hover:text-red-400 transition text-xs"
+            class="text-xs text-base-content/70 transition hover:text-red-400"
             @click="toggleAssistant"
             aria-label="Close chat"
           >
@@ -82,28 +82,28 @@ async function askQuestion() {
         </div>
 
         <!-- Messages -->
-        <div id="chat-scroll" class="h-72 overflow-y-auto px-4 py-3 space-y-3 text-sm">
+        <div id="chat-scroll" class="h-72 space-y-3 overflow-y-auto px-4 py-3 text-sm">
           <template v-for="(msg, i) in messages" :key="i">
             <div v-if="msg.sender === 'ai'" class="flex items-start gap-2">
               <img src="/vtuber-avatar.png" class="h-8 w-8 rounded-full" />
               <div
-                class="px-4 py-2 rounded-xl bg-base-300 text-base-content max-w-[80%] border border-base-300"
+                class="max-w-[80%] rounded-xl border border-base-300 bg-base-300 px-4 py-2 text-base-content"
               >
                 {{ msg.text }}
               </div>
             </div>
 
             <div v-else class="flex justify-end">
-              <div class="px-4 py-2 rounded-xl bg-primary text-primary-content max-w-[80%]">
+              <div class="max-w-[80%] rounded-xl bg-primary px-4 py-2 text-primary-content">
                 {{ msg.text }}
               </div>
             </div>
           </template>
 
-          <div v-if="loading" class="text-xs opacity-70 italic mt-2">
+          <div v-if="loading" class="mt-2 text-xs italic opacity-70">
             Typing<span class="animate-pulse">...</span>
           </div>
-          <div v-if="error" class="text-xs text-error text-center mt-2">
+          <div v-if="error" class="mt-2 text-center text-xs text-error">
             {{ error }}
           </div>
         </div>
@@ -114,16 +114,16 @@ async function askQuestion() {
             v-model="question"
             type="text"
             placeholder="Ask me about your code..."
-            class="flex-1 bg-transparent text-sm focus:outline-none text-base-content placeholder-base-content/60"
+            class="flex-1 bg-transparent text-sm text-base-content placeholder-base-content/60 focus:outline-none"
             :disabled="loading"
             @keyup.enter="askQuestion"
           />
           <button
-            class="ml-2 px-3 py-1 text-sm rounded-md bg-primary hover:bg-primary/80 text-primary-content disabled:opacity-50"
+            class="ml-2 rounded-md bg-primary px-3 py-1 text-sm text-primary-content hover:bg-primary/80 disabled:opacity-50"
             @click="askQuestion"
             :disabled="loading || !question.trim()"
           >
-            <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+            <span v-if="loading" class="loading-spinner loading-sm loading"></span>
             <span v-else>Send</span>
           </button>
         </div>
@@ -135,14 +135,10 @@ async function askQuestion() {
       class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
       @click="toggleAssistant"
     >
-      <img
-        src="/vtuber-avatar.png"
-        alt="AI Vtuber"
-        class="h-32 w-32 rounded-full shadow-2xl"
-      />
+      <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
       <div
         v-if="!isOpen"
-        class="absolute -top-1 -right-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
+        class="absolute -right-1 -top-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
       ></div>
       <p class="mt-1 text-center text-xs font-medium text-indigo-400">AI Vtuber</p>
     </div>

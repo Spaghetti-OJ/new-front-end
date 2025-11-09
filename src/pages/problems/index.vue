@@ -95,7 +95,7 @@ onMounted(() => {
       </div>
 
       <!-- ✅ 篩選列 -->
-      <div class="mb-4 flex flex-wrap gap-3 items-center">
+      <div class="mb-4 flex flex-wrap items-center gap-3">
         <select v-model="selectedDifficulty" class="select select-bordered select-sm w-40">
           <option value="">All Difficulties</option>
           <option value="easy">Easy</option>
@@ -138,8 +138,10 @@ onMounted(() => {
         <tbody>
           <tr v-for="p in problems" :key="p.id" class="hover">
             <td class="flex items-center gap-2">
-              <span class="h-3 w-3 rounded-full"
-                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"></span>
+              <span
+                class="h-3 w-3 rounded-full"
+                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"
+              ></span>
               #{{ p.id }}
             </td>
             <td>
