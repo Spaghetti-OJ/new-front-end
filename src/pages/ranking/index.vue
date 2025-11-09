@@ -76,7 +76,7 @@ onMounted(async () => {
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
       <div class="card-title justify-between">
-        <span class="text-lg font-bold">Problem List</span>
+        <span class="text-lg font-bold">{{ $t("ranking.title") }}</span>
       </div>
 
       <div class="my-2" />
@@ -84,14 +84,14 @@ onMounted(async () => {
       <!-- Loading -->
       <div v-if="isLoading" class="py-10 text-center">
         <span class="loading-spinner loading-lg loading"></span>
-        <p class="mt-2 text-sm opacity-70">Loading ranking data...</p>
+        <p class="mt-2 text-sm opacity-70">{{ $t("ranking.loading") }}</p>
       </div>
 
       <!-- Error -->
       <div v-else-if="error" class="alert alert-error shadow-lg">
         <div>
           <i-uil-times-circle />
-          <span>Failed to load ranking data. Showing mock data.</span>
+          <span>{{ $t("ranking.error") }}</span>
         </div>
       </div>
 
@@ -100,10 +100,10 @@ onMounted(async () => {
         <thead>
           <tr>
             <th class="w-16 text-center">#</th>
-            <th class="w-24 text-center">Avatar</th>
-            <th>UserID</th>
-            <th>Username</th>
-            <th class="text-right">AC counting</th>
+            <th class="w-24 text-center">{{ $t("ranking.table.avatar") }}</th>
+            <th>{{ $t("ranking.table.userId") }}</th>
+            <th>{{ $t("ranking.table.displayName") }}</th>
+            <th class="text-right">{{ $t("ranking.table.ac") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -123,7 +123,7 @@ onMounted(async () => {
         </tbody>
       </table>
 
-      <p class="mt-3 text-center text-xs opacity-50">(Showing mock data)</p>
+      <p class="mt-3 text-center text-xs opacity-50">{{ $t("ranking.mockHint") }}</p>
     </div>
   </div>
 </template>
@@ -134,6 +134,7 @@ onMounted(async () => {
   font-weight: 600;
   text-transform: uppercase;
 }
+
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
+import { DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
 import AIVtuberAssistant from "@/components/Shared/AIVtuberAssistant.vue";
 
@@ -125,17 +126,16 @@ onMounted(() => {
       <!-- ✅ 題目表格 -->
       <div v-if="isLoading" class="py-10 text-center">
         <span class="loading-spinner loading-lg loading"></span>
-        <p class="mt-2 text-sm opacity-70">Loading problems...</p>
+        <p class="mt-2 text-sm opacity-70">{{ $t("problems.loading") }}</p>
       </div>
 
       <table v-else class="table w-full">
         <thead>
           <tr>
-            <th>#ID</th>
-            <th>Problem Title</th>
-            <th>Tags</th>
-            <th>Course</th>
-            <th class="text-right">AC ratio (%)</th>
+            <th>{{ $t("problems.table.id") }}</th>
+            <th>{{ $t("problems.table.name") }}</th>
+            <th>{{ $t("problems.table.tags") }}</th>
+            <th class="text-right">{{ $t("problems.table.ac") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -143,11 +143,7 @@ onMounted(() => {
             <td class="flex items-center gap-2">
               <span
                 class="h-3 w-3 rounded-full"
-                :class="{
-                  'bg-red-500': p.difficulty === 'hard',
-                  'bg-yellow-400': p.difficulty === 'medium',
-                  'bg-green-500': p.difficulty === 'easy',
-                }"
+                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"
               ></span>
               #{{ p.id }}
             </td>
@@ -178,10 +174,12 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.05);
   font-weight: 600;
 }
+
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;
 }
+
 .badge {
   background-color: rgba(255, 255, 255, 0.08);
   color: #f3f3f3;
