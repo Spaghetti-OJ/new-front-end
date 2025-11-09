@@ -159,9 +159,6 @@ onMounted(() => {
       </table>
 
       <!-- ✅ AI Vtuber Assistant -->
-      <div class="mt-10">
-        <AIVtuberAssistant />
-      </div>
     </div>
   </div>
 </template>
