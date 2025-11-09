@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
+import TagList from "@/components/Shared/TagList.vue";
+import { DIFFICULTY_COLOR_CLASS } from "@/constants";
 
 useTitle("Problems | Normal OJ");
 
@@ -121,16 +123,25 @@ onMounted(() => {
 
       <!-- Difficulty chips -->
       <div class="flex items-center gap-2">
-        <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'hard' ? 'btn-error' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty === 'hard' ? '' : 'hard'">
+        <button
+          class="btn btn-xs gap-2"
+          :class="selectedDifficulty === 'hard' ? 'btn-error' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'hard' ? '' : 'hard'"
+        >
           <span class="h-2 w-2 rounded-full bg-red-500"></span> hard
         </button>
-        <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'medium' ? 'btn-warning' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty === 'medium' ? '' : 'medium'">
+        <button
+          class="btn btn-xs gap-2"
+          :class="selectedDifficulty === 'medium' ? 'btn-warning' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'medium' ? '' : 'medium'"
+        >
           <span class="h-2 w-2 rounded-full bg-yellow-400"></span> medium
         </button>
-        <button class="btn btn-xs gap-2" :class="selectedDifficulty === 'easy' ? 'btn-success' : 'btn-ghost'"
-          @click="selectedDifficulty = selectedDifficulty === 'easy' ? '' : 'easy'">
+        <button
+          class="btn btn-xs gap-2"
+          :class="selectedDifficulty === 'easy' ? 'btn-success' : 'btn-ghost'"
+          @click="selectedDifficulty = selectedDifficulty === 'easy' ? '' : 'easy'"
+        >
           <span class="h-2 w-2 rounded-full bg-green-500"></span> easy
         </button>
 
@@ -138,28 +149,34 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- List with ProblemInfo -->
+    <!-- Table -->
     <div class="card shadow-xl">
-      <div class="card-body">
-        <table class="table w-full">
+      <div class="card-body p-0">
+        <table class="table">
           <thead>
             <tr>
-              <th class="w-20">{{ $t("problems.table.id") }}</th>
-              <th>{{ $t("problems.table.name") }}</th>
-              <th class="w-1/3">{{ $t("problems.table.tags") }}</th>
-              <th class="w-24 text-right">{{ $t("problems.table.ac") }}</th>
+              <th>#ID</th>
+              <th>Problem Title</th>
+              <th>tags</th>
+              <th class="text-right">AC ratio (%)</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="p in problems" :key="p.id" class="hover">
-              <td>{{ p.id }}</td>
-              <td>{{ p.title }}</td>
-              <td>
-                <div class="flex flex-wrap gap-1">
-                  <span v-for="t in p.tags" :key="t" class="badge badge-ghost">{{ t }}</span>
-                </div>
+              <td class="flex items-center gap-2">
+                <span class="h-3 w-3 rounded-full" :class="DIFFICULTY_COLOR_CLASS[p.difficulty]" />
+                #{{ p.id }}
               </td>
-              <td class="text-right">{{ Math.round(p.acceptance * 100) }}%</td>
+              <td>
+                <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">
+                  {{ p.title }}
+                </router-link>
+                <div class="text-xs opacity-60">{{ p.course }}</div>
+              </td>
+              <td>
+                <TagList :tags="p.tags" size="sm" colorMode="outline" />
+              </td>
+              <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
             </tr>
           </tbody>
         </table>
@@ -173,7 +190,6 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.05);
   font-weight: 600;
 }
-
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;
