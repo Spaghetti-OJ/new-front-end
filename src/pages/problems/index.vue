@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
-import { DIFFICULTY_COLOR_CLASS } from "@/constants";
+import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
+
 useTitle("Problems | Normal OJ");
 
-const problems = ref<any[]>([]);
-const isLoading = ref(true);
-const error = ref<Error | null>(null);
+type Problem = {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  tags: string[];
+  course: string;
+  acceptance: number;
+};
 
-// ✅ 假資料
-const mockProblems = [
+const isLoading = ref(true);
+
+const baseProblems = ref<Problem[]>([
   {
     id: 765,
-    title: "Emergency Medical Dispatch 1",
+    title: "Emergency Dispatch 1",
     difficulty: "hard",
     tags: ["linked list", "dynamic programming"],
     course: "資料結構",
@@ -21,7 +28,7 @@ const mockProblems = [
   },
   {
     id: 764,
-    title: "Emergency Medical Dispatch 2",
+    title: "Emergency Dispatch 2",
     difficulty: "medium",
     tags: ["dynamic programming"],
     course: "演算法導論",
@@ -29,7 +36,7 @@ const mockProblems = [
   },
   {
     id: 763,
-    title: "Emergency Medical Dispatch 3",
+    title: "Emergency Dispatch 3",
     difficulty: "easy",
     tags: ["math"],
     course: "程式設計入門",
@@ -37,7 +44,7 @@ const mockProblems = [
   },
   {
     id: 762,
-    title: "Emergency Medical Dispatch 4",
+    title: "Emergency Dispatch 4",
     difficulty: "medium",
     tags: ["graph", "dynamic programming"],
     course: "演算法導論",
@@ -45,120 +52,202 @@ const mockProblems = [
   },
   {
     id: 761,
-    title: "Emergency Medical Dispatch 5",
+    title: "Emergency Dispatch 5",
     difficulty: "easy",
     tags: ["linked list"],
     course: "資料結構",
     acceptance: 0.8,
   },
+]);
+
+// Search and filters
+const q = ref("");
+const selectedCourses = ref<string[]>([]);
+// 改成純字串，不使用 ProblemTag
+const selectedTags = ref<string[]>([]);
+const selectedDifficulties = ref<string[]>([]);
+
+// 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
+const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
+
+const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
+const allDiffs = [
+  { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
+  { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
+  { value: DIFFICULTY.HARD, labelKey: "problems.difficulty.hard" },
 ];
 
-// ✅ 篩選條件
-const selectedDifficulty = ref("");
-const selectedTag = ref("");
-const selectedCourse = ref("");
-const allTags = ["dynamic programming", "linked list", "graph", "math"];
-const allCourses = ["程式設計入門", "資料結構", "演算法導論"];
+const filteredProblems = computed(() => {
+  const keyword = q.value.trim().toLowerCase();
+  return baseProblems.value.filter((p) => {
+    const matchKeyword =
+      !keyword ||
+      p.title.toLowerCase().includes(keyword) ||
+      `${p.id}`.includes(keyword) ||
+      p.tags.some((t) => t.toLowerCase().includes(keyword));
 
-function applyFilters() {
-  problems.value = mockProblems.filter((p) => {
-    const matchDifficulty = !selectedDifficulty.value || p.difficulty === selectedDifficulty.value;
-    const matchTag = !selectedTag.value || p.tags.includes(selectedTag.value);
-    const matchCourse = !selectedCourse.value || p.course === selectedCourse.value;
-    return matchDifficulty && matchTag && matchCourse;
+    const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.course);
+    const matchTag = !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
+    const matchDiff = !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
+
+    return matchKeyword && matchCourse && matchTag && matchDiff;
   });
+});
+
+// toggle 改成泛型，支援不同型別的 list
+function toggleItem<T>(list: T[], item: T) {
+  const idx = list.indexOf(item);
+  if (idx === -1) list.push(item);
+  else list.splice(idx, 1);
 }
 
 function resetFilters() {
-  selectedDifficulty.value = "";
-  selectedTag.value = "";
-  selectedCourse.value = "";
-  problems.value = mockProblems;
+  q.value = "";
+  selectedCourses.value = [];
+  selectedTags.value = [];
+  selectedDifficulties.value = [];
 }
 
-// ✅ 初始化
 onMounted(() => {
-  console.log("💡 Using mockProblems as default data");
-  problems.value = mockProblems;
-  isLoading.value = false;
+  setTimeout(() => (isLoading.value = false), 300);
 });
 </script>
 
 <template>
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
-      <div class="mb-4 flex items-center justify-between">
+      <!-- Title & Search -->
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
-        <input type="text" placeholder="Search problem..." class="input input-bordered input-sm w-64" />
+        <label
+          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
+        >
+          <input
+            v-model="q"
+            type="text"
+            class="grow bg-transparent outline-none"
+            :placeholder="$t('problems.search.placeholder')"
+          />
+          <i class="i-uil-search" />
+        </label>
       </div>
 
-      <!-- ✅ 篩選列 -->
-      <div class="mb-4 flex flex-wrap items-center gap-3">
-        <select v-model="selectedDifficulty" class="select select-bordered select-sm w-40">
-          <option value="">All Difficulties</option>
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select>
+      <!-- Filters -->
+      <div class="mb-4 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
+          <button
+            v-for="c in allCourses"
+            :key="c"
+            class="badge cursor-pointer transition-all duration-150"
+            :class="
+              selectedCourses.includes(c)
+                ? 'badge-primary text-white shadow-md'
+                : 'badge-outline hover:bg-primary hover:text-white'
+            "
+            @click="toggleItem(selectedCourses, c)"
+          >
+            {{ c }}
+          </button>
+        </div>
 
-        <select v-model="selectedTag" class="select select-bordered select-sm w-48">
-          <option value="">All Tags</option>
-          <option v-for="tag in allTags" :key="tag" :value="tag">{{ tag }}</option>
-        </select>
+        <!-- Tags filter：改用 allTags（純字串），不使用顏色 -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Tags") }}</span>
+          <button
+            v-for="t in allTags"
+            :key="t"
+            class="badge cursor-pointer transition-all duration-150"
+            :class="
+              selectedTags.includes(t)
+                ? 'badge-primary text-white'
+                : 'badge-outline hover:bg-primary hover:text-white'
+            "
+            @click="toggleItem(selectedTags, t)"
+          >
+            {{ t }}
+          </button>
+        </div>
 
-        <select v-model="selectedCourse" class="select select-bordered select-sm w-48">
-          <option value="">All Courses</option>
-          <option v-for="course in allCourses" :key="course" :value="course">
-            {{ course }}
-          </option>
-        </select>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.difficulty") }}</span>
+          <button
+            v-for="d in allDiffs"
+            :key="d.value"
+            :class="[
+              'btn btn-xs gap-2 capitalize',
+              selectedDifficulties.includes(d.value)
+                ? d.value === DIFFICULTY.EASY
+                  ? 'btn-success'
+                  : d.value === DIFFICULTY.MEDIUM
+                  ? 'btn-warning'
+                  : 'btn-error'
+                : 'btn-outline',
+            ]"
+            @click="toggleItem(selectedDifficulties, d.value)"
+          >
+            <span
+              class="h-2.5 w-2.5 rounded-full"
+              :class="
+                d.value === DIFFICULTY.EASY
+                  ? 'bg-green-500'
+                  : d.value === DIFFICULTY.MEDIUM
+                  ? 'bg-yellow-400'
+                  : 'bg-red-500'
+              "
+            ></span>
+            {{ $t(d.labelKey) }}
+          </button>
 
-        <button class="btn btn-primary btn-sm" @click="applyFilters">Apply Filters</button>
-        <button class="btn btn-ghost btn-sm" @click="resetFilters">Reset</button>
+          <button class="btn btn-ghost btn-xs" @click="resetFilters">
+            {{ $t("problems.difficulty.reset") }}
+          </button>
+        </div>
       </div>
 
-      <!-- ✅ 題目表格 -->
+      <!-- Loading -->
       <div v-if="isLoading" class="py-10 text-center">
-        <span class="loading-spinner loading-lg loading"></span>
+        <span class="loading-spinner loading-lg loading" />
         <p class="mt-2 text-sm opacity-70">{{ $t("problems.loading") }}</p>
       </div>
 
-      <table v-else class="table w-full">
-        <thead>
-          <tr>
-            <th>{{ $t("problems.table.id") }}</th>
-            <th>{{ $t("problems.table.name") }}</th>
-            <th>{{ $t("problems.table.tags") }}</th>
-            <th>{{ $t("problems.table.course") }}</th>
-            <th class="text-right">{{ $t("problems.table.ac") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="p in problems" :key="p.id" class="hover">
-            <td class="flex items-center gap-2">
-              <span
-                class="h-3 w-3 rounded-full"
-                :class="DIFFICULTY_COLOR_CLASS[p.difficulty as keyof typeof DIFFICULTY_COLOR_CLASS]"
-              ></span>
-              #{{ p.id }}
-            </td>
-            <td>
-              <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">
-                {{ p.title }}
-              </router-link>
-            </td>
-            <td>
-              <TagList :tags="p.tags" size="sm" colorMode="outline" />
-            </td>
-            <td>{{ p.course }}</td>
-            <td class="text-right">
-              {{ p.acceptance != null ? (p.acceptance * 100).toFixed(0) + "%" : "—" }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Empty -->
+      <div v-else-if="!filteredProblems.length" class="py-10 text-center text-sm opacity-70">
+        {{ $t("problems.empty") }}
+      </div>
 
-      <!-- ✅ AI Vtuber Assistant -->
+      <!-- Table -->
+      <div v-else class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>{{ $t("problems.table.id") }}</th>
+              <th>{{ $t("problems.table.name") }}</th>
+              <th>{{ $t("problems.table.tags") }}</th>
+              <th>{{ $t("problems.table.course") }}</th>
+              <th class="text-right">{{ $t("problems.table.ac") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in filteredProblems" :key="p.id" class="hover">
+              <td class="flex items-center gap-2">
+                <span class="h-3 w-3 rounded-full" :class="DIFFICULTY_COLOR_CLASS[p.difficulty]" />
+                #{{ p.id }}
+              </td>
+              <td>
+                <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">{{
+                  p.title
+                }}</router-link>
+              </td>
+              <td>
+                <TagList :tags="p.tags" size="md" colorMode="outline" />
+              </td>
+              <td>{{ p.course }}</td>
+              <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -172,11 +261,5 @@ onMounted(() => {
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;
-}
-
-.badge {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #f3f3f3;
-  border: none;
 }
 </style>

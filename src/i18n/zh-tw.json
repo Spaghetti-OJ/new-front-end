@@ -220,6 +220,11 @@
   "problems": {
     "title": "題目列表",
     "loading": "載入題目中...",
+    "filter": {
+      "Courses": "課程",
+      "Tags": "標籤",
+      "difficulty": "難度"
+    },
     "table": {
       "id": "題號",
       "name": "題名",
@@ -227,6 +232,13 @@
       "course": "課程",
       "ac": "AC 比率 (%)"
     },
+    "difficulty": {
+      "easy": "簡單",
+      "medium": "中等",
+      "hard": "困難",
+      "reset": "重置"
+    },
+    "empty": "找不到題目。",
     "search": {
       "placeholder": "搜尋題目..."
     }
