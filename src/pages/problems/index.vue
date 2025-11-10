@@ -136,8 +136,8 @@ onMounted(() => {
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
           <button v-for="c in allCourses" :key="c" class="badge cursor-pointer transition-all duration-150" :class="selectedCourses.includes(c)
-            ? 'border border-blue-300 bg-blue-500 text-white shadow-md'
-            : 'badge-outline text-blue-300 hover:bg-blue-800 hover:text-white'
+            ? 'badge-primary text-white shadow-md'
+            : 'badge-outline hover:bg-primary hover:text-white'
             " @click="toggleItem(selectedCourses, c)">
             {{ c }}
           </button>
@@ -146,8 +146,8 @@ onMounted(() => {
         <!-- Tags filter：改用 allTags（純字串），不使用顏色 -->
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Tags") }}</span>
-          <button v-for="t in allTags" :key="t" class="badge cursor-pointer transition-colors"
-            :class="selectedTags.includes(t) ? 'badge-primary text-white' : 'badge-outline'"
+          <button v-for="t in allTags" :key="t" class="badge cursor-pointer transition-all duration-150"
+            :class="selectedTags.includes(t) ? 'badge-primary text-white' : 'badge-outline hover:bg-primary hover:text-white'"
             @click="toggleItem(selectedTags, t)">
             {{ t }}
           </button>
