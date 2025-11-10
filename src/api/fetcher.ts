@@ -1,5 +1,4 @@
-import axios,{AxiosError,AxiosRequestConfig} from "axios";
-import { useSession } from "@/stores/session";  
+import axios,{AxiosError,AxiosRequestConfig} from "axios"; 
 
 
 type TokenProvider = () => string | undefined | null;
