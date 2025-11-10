@@ -63,11 +63,16 @@ const baseProblems = ref<Problem[]>([
 // Search and filters
 const q = ref("");
 const selectedCourses = ref<string[]>([]);
+// 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
 
+// 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
+const allTags = computed(() =>
+  Array.from(new Set(baseProblems.value.flatMap(p => p.tags))).sort()
+);
+
 const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
-const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))));
 const allDiffs = ["easy", "medium", "hard"];
 
 const filteredProblems = computed(() => {
@@ -76,16 +81,21 @@ const filteredProblems = computed(() => {
     const matchKeyword =
       !keyword ||
       p.title.toLowerCase().includes(keyword) ||
-      p.tags.some((t) => t.toLowerCase().includes(keyword)) ||
-      `${p.id}`.includes(keyword);
+      `${p.id}`.includes(keyword) ||
+      p.tags.some((t) => t.toLowerCase().includes(keyword));
+
     const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.course);
-    const matchTag = !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
-    const matchDiff = !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
+    const matchTag =
+      !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
+    const matchDiff =
+      !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
+
     return matchKeyword && matchCourse && matchTag && matchDiff;
   });
 });
 
-function toggleItem(list: string[], item: string) {
+// toggle 改成泛型，支援不同型別的 list
+function toggleItem<T>(list: T[], item: T) {
   const idx = list.indexOf(item);
   if (idx === -1) list.push(item);
   else list.splice(idx, 1);
@@ -129,10 +139,12 @@ onMounted(() => {
           </button>
         </div>
 
+        <!-- Tags filter：改用 allTags（純字串），不使用顏色 -->
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">Tags:</span>
-          <button v-for="t in allTags" :key="t" class="badge badge-outline cursor-pointer"
-            :class="selectedTags.includes(t) ? 'badge-secondary text-white' : ''" @click="toggleItem(selectedTags, t)">
+          <button v-for="t in allTags" :key="t" class="badge cursor-pointer transition-colors"
+            :class="selectedTags.includes(t) ? 'badge-primary text-white' : 'badge-outline'"
+            @click="toggleItem(selectedTags, t)">
             {{ t }}
           </button>
         </div>
@@ -140,7 +152,7 @@ onMounted(() => {
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">Difficulty:</span>
           <button v-for="d in allDiffs" :key="d" :class="[
-            'btn btn-xs capitalize',
+            'btn btn-xs capitalize gap-2',
             selectedDifficulties.includes(d)
               ? d === 'easy'
                 ? 'btn-success'
@@ -149,6 +161,11 @@ onMounted(() => {
                   : 'btn-error'
               : 'btn-outline',
           ]" @click="toggleItem(selectedDifficulties, d)">
+            <span class="h-2.5 w-2.5 rounded-full" :class="d === 'easy'
+              ? 'bg-green-500'
+              : d === 'medium'
+                ? 'bg-yellow-400'
+                : 'bg-red-500'"></span>
             {{ d }}
           </button>
 
@@ -191,7 +208,7 @@ onMounted(() => {
                   }}</router-link>
               </td>
               <td>
-                <TagList :tags="p.tags" size="sm" colorMode="outline" />
+                <TagList :tags="p.tags" size="md" colorMode="outline" />
               </td>
               <td>{{ p.course }}</td>
               <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
