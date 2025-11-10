@@ -68,9 +68,7 @@ const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
 
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
-const allTags = computed(() =>
-  Array.from(new Set(baseProblems.value.flatMap(p => p.tags))).sort()
-);
+const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
 
 const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
 const allDiffs = [
@@ -89,10 +87,8 @@ const filteredProblems = computed(() => {
       p.tags.some((t) => t.toLowerCase().includes(keyword));
 
     const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.course);
-    const matchTag =
-      !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
-    const matchDiff =
-      !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
+    const matchTag = !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
+    const matchDiff = !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
 
     return matchKeyword && matchCourse && matchTag && matchDiff;
   });
@@ -124,9 +120,14 @@ onMounted(() => {
       <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <label
-          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary">
-          <input v-model="q" type="text" class="grow bg-transparent outline-none"
-            :placeholder="$t('problems.search.placeholder')" />
+          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
+        >
+          <input
+            v-model="q"
+            type="text"
+            class="grow bg-transparent outline-none"
+            :placeholder="$t('problems.search.placeholder')"
+          />
           <i class="i-uil-search" />
         </label>
       </div>
@@ -135,10 +136,17 @@ onMounted(() => {
       <div class="mb-4 space-y-3">
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
-          <button v-for="c in allCourses" :key="c" class="badge cursor-pointer transition-all duration-150" :class="selectedCourses.includes(c)
-            ? 'badge-primary text-white shadow-md'
-            : 'badge-outline hover:bg-primary hover:text-white'
-            " @click="toggleItem(selectedCourses, c)">
+          <button
+            v-for="c in allCourses"
+            :key="c"
+            class="badge cursor-pointer transition-all duration-150"
+            :class="
+              selectedCourses.includes(c)
+                ? 'badge-primary text-white shadow-md'
+                : 'badge-outline hover:bg-primary hover:text-white'
+            "
+            @click="toggleItem(selectedCourses, c)"
+          >
             {{ c }}
           </button>
         </div>
@@ -146,34 +154,54 @@ onMounted(() => {
         <!-- Tags filter：改用 allTags（純字串），不使用顏色 -->
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Tags") }}</span>
-          <button v-for="t in allTags" :key="t" class="badge cursor-pointer transition-all duration-150"
-            :class="selectedTags.includes(t) ? 'badge-primary text-white' : 'badge-outline hover:bg-primary hover:text-white'"
-            @click="toggleItem(selectedTags, t)">
+          <button
+            v-for="t in allTags"
+            :key="t"
+            class="badge cursor-pointer transition-all duration-150"
+            :class="
+              selectedTags.includes(t)
+                ? 'badge-primary text-white'
+                : 'badge-outline hover:bg-primary hover:text-white'
+            "
+            @click="toggleItem(selectedTags, t)"
+          >
             {{ t }}
           </button>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.difficulty") }}</span>
-          <button v-for="d in allDiffs" :key="d.value" :class="[
-            'btn btn-xs capitalize gap-2',
-            selectedDifficulties.includes(d.value)
-              ? d.value === DIFFICULTY.EASY
-                ? 'btn-success'
-                : d.value === DIFFICULTY.MEDIUM
+          <button
+            v-for="d in allDiffs"
+            :key="d.value"
+            :class="[
+              'btn btn-xs gap-2 capitalize',
+              selectedDifficulties.includes(d.value)
+                ? d.value === DIFFICULTY.EASY
+                  ? 'btn-success'
+                  : d.value === DIFFICULTY.MEDIUM
                   ? 'btn-warning'
                   : 'btn-error'
-              : 'btn-outline',
-          ]" @click="toggleItem(selectedDifficulties, d.value)">
-            <span class="h-2.5 w-2.5 rounded-full" :class="d.value === DIFFICULTY.EASY
-              ? 'bg-green-500'
-              : d.value === DIFFICULTY.MEDIUM
-                ? 'bg-yellow-400'
-                : 'bg-red-500'"></span>
+                : 'btn-outline',
+            ]"
+            @click="toggleItem(selectedDifficulties, d.value)"
+          >
+            <span
+              class="h-2.5 w-2.5 rounded-full"
+              :class="
+                d.value === DIFFICULTY.EASY
+                  ? 'bg-green-500'
+                  : d.value === DIFFICULTY.MEDIUM
+                  ? 'bg-yellow-400'
+                  : 'bg-red-500'
+              "
+            ></span>
             {{ $t(d.labelKey) }}
           </button>
 
-          <button class="btn btn-ghost btn-xs" @click="resetFilters">{{ $t("problems.difficulty.reset") }}</button>
+          <button class="btn btn-ghost btn-xs" @click="resetFilters">
+            {{ $t("problems.difficulty.reset") }}
+          </button>
         </div>
       </div>
 
@@ -209,7 +237,7 @@ onMounted(() => {
               <td>
                 <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">{{
                   p.title
-                  }}</router-link>
+                }}</router-link>
               </td>
               <td>
                 <TagList :tags="p.tags" size="md" colorMode="outline" />
