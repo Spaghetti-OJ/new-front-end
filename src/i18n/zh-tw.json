@@ -221,8 +221,9 @@
     "title": "題目列表",
     "loading": "載入題目中...",
     "filter": {
-      "allCourses": "所有課程",
-      "allTags": "所有標籤"
+      "Courses": "課程",
+      "Tags": "標籤",
+      "difficulty": "難度"
     },
     "table": {
       "id": "題號",

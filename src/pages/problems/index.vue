@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
-import { DIFFICULTY_COLOR_CLASS } from "@/constants";
+import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
 
 useTitle("Problems | Normal OJ");
@@ -73,7 +73,11 @@ const allTags = computed(() =>
 );
 
 const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
-const allDiffs = ["easy", "medium", "hard"];
+const allDiffs = [
+  { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
+  { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
+  { value: DIFFICULTY.HARD, labelKey: "problems.difficulty.hard" },
+];
 
 const filteredProblems = computed(() => {
   const keyword = q.value.trim().toLowerCase();
@@ -130,7 +134,7 @@ onMounted(() => {
       <!-- Filters -->
       <div class="mb-4 space-y-3">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-semibold opacity-70">Courses:</span>
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
           <button v-for="c in allCourses" :key="c" class="badge cursor-pointer transition-all duration-150" :class="selectedCourses.includes(c)
             ? 'border border-blue-300 bg-blue-500 text-white shadow-md'
             : 'badge-outline text-blue-300 hover:bg-blue-800 hover:text-white'
@@ -141,7 +145,7 @@ onMounted(() => {
 
         <!-- Tags filter：改用 allTags（純字串），不使用顏色 -->
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-semibold opacity-70">Tags:</span>
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Tags") }}</span>
           <button v-for="t in allTags" :key="t" class="badge cursor-pointer transition-colors"
             :class="selectedTags.includes(t) ? 'badge-primary text-white' : 'badge-outline'"
             @click="toggleItem(selectedTags, t)">
@@ -150,23 +154,23 @@ onMounted(() => {
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-semibold opacity-70">Difficulty:</span>
-          <button v-for="d in allDiffs" :key="d" :class="[
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.difficulty") }}</span>
+          <button v-for="d in allDiffs" :key="d.value" :class="[
             'btn btn-xs capitalize gap-2',
-            selectedDifficulties.includes(d)
-              ? d === 'easy'
+            selectedDifficulties.includes(d.value)
+              ? d.value === DIFFICULTY.EASY
                 ? 'btn-success'
-                : d === 'medium'
+                : d.value === DIFFICULTY.MEDIUM
                   ? 'btn-warning'
                   : 'btn-error'
               : 'btn-outline',
-          ]" @click="toggleItem(selectedDifficulties, d)">
-            <span class="h-2.5 w-2.5 rounded-full" :class="d === 'easy'
+          ]" @click="toggleItem(selectedDifficulties, d.value)">
+            <span class="h-2.5 w-2.5 rounded-full" :class="d.value === DIFFICULTY.EASY
               ? 'bg-green-500'
-              : d === 'medium'
+              : d.value === DIFFICULTY.MEDIUM
                 ? 'bg-yellow-400'
                 : 'bg-red-500'"></span>
-            {{ d }}
+            {{ $t(d.labelKey) }}
           </button>
 
           <button class="btn btn-ghost btn-xs" @click="resetFilters">{{ $t("problems.difficulty.reset") }}</button>

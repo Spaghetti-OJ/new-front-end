@@ -221,8 +221,9 @@
     "title": "Problem List",
     "loading": "Loading problems...",
     "filter": {
-      "allCourses": "All Courses",
-      "allTags": "All Tags"
+      "Courses": "Courses",
+      "Tags": "Tags",
+      "Difficulty": "Difficulty"
     },
     "table": {
       "id": "ID",
