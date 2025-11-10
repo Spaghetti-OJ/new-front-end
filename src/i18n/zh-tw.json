@@ -217,6 +217,33 @@
       "back": "返回"
     }
   },
+  "problems": {
+    "title": "題目列表",
+    "loading": "載入題目中...",
+    "table": {
+      "id": "題號",
+      "name": "題名",
+      "tags": "標籤",
+      "course": "課程",
+      "ac": "AC 比率 (%)"
+    },
+    "search": {
+      "placeholder": "搜尋題目..."
+    }
+  },
+  "ranking": {
+    "title": "排行榜",
+    "table": {
+      "id": "#",
+      "avatar": "頭像",
+      "userId": "使用者ID",
+      "displayName": "使用者名稱",
+      "ac": "AC 數量統計"
+    },
+    "loading": "載入排行榜資料中...",
+    "error": "載入排行榜資料失敗，顯示模擬資料。",
+    "mockHint": "(顯示模擬資料)"
+  },
   "components": {
     "ann": {
       "form": {
@@ -365,12 +392,15 @@
       "forgot": "忘記密碼?",
       "button": "登入"
     },
-    "sideBar": {
+    "topBar": {
       "home": "首頁",
       "course": "課程",
       "about": "關於",
       "admin": "管理",
-      "profile": "個人"
+      "profile": "個人",
+      "ranking": "排名",
+      "problems": "題目",
+      "settings": "設定"
     },
     "dueCountdown": {
       "days": "日",

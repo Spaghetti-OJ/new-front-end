@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 import dayjs from "dayjs";
 import TopBar from "@/components/Shared/TopBar.vue";
 import SideBar from "@/components/Shared/SideBar.vue";
+import AIVtuberAssistant from "@/components/Shared/AIVtuberAssistant.vue";
 
 const global = useGlobal();
 
@@ -26,14 +27,14 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen w-screen bg-base-100">
+  <div class="flex h-screen w-screen flex-col bg-base-100">
     <!--input id="noj-drawer" type="checkbox" class="drawer-toggle" /-->
-    
+
     <top-bar class="sticky top-0 z-50" />
     <main class="flex-1 overflow-y-auto">
       <router-view />
     </main>
-
+    <AIVtuberAssistant />
     <!--
     <div class="drawer-content">
       <top-bar class="sticky top-0 z-50 lg:hidden" />
@@ -47,7 +48,6 @@ watchEffect(() => {
       <side-bar />
     </div>
     -->
-    
 
     <TransitionRoot
       :show="global.isServerError"

@@ -76,3 +76,58 @@ export const PROBLEM_STATUS = {
   HIDDEN: 1,
   VISIBLE: 0,
 };
+
+export const DIFFICULTY = {
+  EASY: "easy",
+  MEDIUM: "medium",
+  HARD: "hard",
+} as const;
+
+export const DIFFICULTY_COLOR_CLASS = {
+  [DIFFICULTY.EASY]: "bg-green-500",
+  [DIFFICULTY.MEDIUM]: "bg-yellow-500",
+  [DIFFICULTY.HARD]: "bg-red-500",
+} satisfies Record<(typeof DIFFICULTY)[keyof typeof DIFFICULTY], string>;
+
+export const TAGS_COLOR_REPR = {
+  tree: {
+    label: "Tree",
+    color: "#4CAF50",
+  },
+  graph: {
+    label: "Graph",
+    color: "#2196F3",
+  },
+  "dynamic programming": {
+    label: "Dynamic Programming",
+    color: "#FFB300",
+  },
+  "linked list": {
+    label: "Linked List",
+    color: "#F44336",
+  },
+  string: {
+    label: "String",
+    color: "#00ACC1",
+  },
+  greedy: {
+    label: "Greedy",
+    color: "#795548",
+  },
+  math: {
+    label: "Math",
+    color: "#9C27B0",
+  },
+  geometry: {
+    label: "Geometry",
+    color: "#8BC34A",
+  },
+} as const;
+
+export type ProblemTag = keyof typeof TAGS_COLOR_REPR;
+
+export const DEFAULT_TAG_COLOR = "#666666";
+
+export function getTagColor(tag: string): string {
+  return TAGS_COLOR_REPR[tag as ProblemTag]?.color ?? DEFAULT_TAG_COLOR;
+}

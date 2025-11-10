@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
     AnnouncementForm: typeof import('./../components/Announcement/AnnouncementForm.vue')['default']
     CodeEditor: typeof import('./../components/Shared/CodeEditor.vue')['default']
@@ -22,6 +23,14 @@ declare module '@vue/runtime-core' {
     IUilEdit: typeof import('~icons/uil/edit')['default']
     IUilFacebook: typeof import('~icons/uil/facebook')['default']
     IUilGithub: typeof import('~icons/uil/github')['default']
+    IUilHome: typeof import('~icons/uil/home')['default']
+    IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
+    IUilLanguage: typeof import('~icons/uil/language')['default']
+    IUilLeftArrowToLeft: typeof import('~icons/uil/left-arrow-to-left')['default']
+    IUilLink: typeof import('~icons/uil/link')['default']
+    IUilMapMarkerInfo: typeof import('~icons/uil/map-marker-info')['default']
+    IUilMinus: typeof import('~icons/uil/minus')['default']
+    IUilMonitor: typeof import('~icons/uil/monitor')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']
     IUilSun: typeof import('~icons/uil/sun')['default']
     IUilTimesCircle: typeof import('~icons/uil/times-circle')['default']
@@ -46,6 +55,7 @@ declare module '@vue/runtime-core' {
     SkeletonPost: typeof import('./../components/Shared/SkeletonPost.vue')['default']
     SkeletonTable: typeof import('./../components/Shared/SkeletonTable.vue')['default']
     SystemAnnouncements: typeof import('./../components/Home/SystemAnnouncements.vue')['default']
+    TagList: typeof import('./../components/Shared/TagList.vue')['default']
     TopBar: typeof import('./../components/Shared/TopBar.vue')['default']
     UiSpinner: typeof import('./../components/Shared/UiSpinner.vue')['default']
   }
