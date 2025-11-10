@@ -220,6 +220,11 @@
   "problems": {
     "title": "Problem List",
     "loading": "Loading problems...",
+    "filter": {
+      "Courses": "Courses",
+      "Tags": "Tags",
+      "Difficulty": "Difficulty"
+    },
     "table": {
       "id": "ID",
       "name": "Name",
@@ -227,6 +232,13 @@
       "course": "Course",
       "ac": "AC Ratio (%)"
     },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "reset": "Reset"
+    },
+    "empty": "No problems found.",
     "search": {
       "placeholder": "Search problem..."
     }
