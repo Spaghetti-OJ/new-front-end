@@ -108,16 +108,11 @@ onMounted(() => {
     <div class="card-body">
       <!-- Title & Search -->
       <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 class="text-lg font-bold">Problems</h1>
+        <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <label
-          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
-        >
-          <input
-            v-model="q"
-            type="text"
-            placeholder="Search problems..."
-            class="grow bg-transparent outline-none"
-          />
+          class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary">
+          <input v-model="q" type="text" class="grow bg-transparent outline-none"
+            :placeholder="$t('problems.search.placeholder')" />
           <i class="i-uil-search" />
         </label>
       </div>
@@ -126,67 +121,50 @@ onMounted(() => {
       <div class="mb-4 space-y-3">
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">Courses:</span>
-          <button
-            v-for="c in allCourses"
-            :key="c"
-            class="badge cursor-pointer transition-all duration-150"
-            :class="
-              selectedCourses.includes(c)
-                ? 'border border-blue-300 bg-blue-500 text-white shadow-md'
-                : 'badge-outline text-blue-300 hover:bg-blue-800 hover:text-white'
-            "
-            @click="toggleItem(selectedCourses, c)"
-          >
+          <button v-for="c in allCourses" :key="c" class="badge cursor-pointer transition-all duration-150" :class="selectedCourses.includes(c)
+            ? 'border border-blue-300 bg-blue-500 text-white shadow-md'
+            : 'badge-outline text-blue-300 hover:bg-blue-800 hover:text-white'
+            " @click="toggleItem(selectedCourses, c)">
             {{ c }}
           </button>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">Tags:</span>
-          <button
-            v-for="t in allTags"
-            :key="t"
-            class="badge badge-outline cursor-pointer"
-            :class="selectedTags.includes(t) ? 'badge-secondary text-white' : ''"
-            @click="toggleItem(selectedTags, t)"
-          >
+          <button v-for="t in allTags" :key="t" class="badge badge-outline cursor-pointer"
+            :class="selectedTags.includes(t) ? 'badge-secondary text-white' : ''" @click="toggleItem(selectedTags, t)">
             {{ t }}
           </button>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-semibold opacity-70">Difficulty:</span>
-          <button
-            v-for="d in allDiffs"
-            :key="d"
-            :class="[
-              'btn btn-xs capitalize',
-              selectedDifficulties.includes(d)
-                ? d === 'easy'
-                  ? 'btn-success'
-                  : d === 'medium'
+          <button v-for="d in allDiffs" :key="d" :class="[
+            'btn btn-xs capitalize',
+            selectedDifficulties.includes(d)
+              ? d === 'easy'
+                ? 'btn-success'
+                : d === 'medium'
                   ? 'btn-warning'
                   : 'btn-error'
-                : 'btn-outline',
-            ]"
-            @click="toggleItem(selectedDifficulties, d)"
-          >
+              : 'btn-outline',
+          ]" @click="toggleItem(selectedDifficulties, d)">
             {{ d }}
           </button>
 
-          <button class="btn btn-ghost btn-xs" @click="resetFilters">Reset</button>
+          <button class="btn btn-ghost btn-xs" @click="resetFilters">{{ $t("problems.difficulty.reset") }}</button>
         </div>
       </div>
 
       <!-- Loading -->
       <div v-if="isLoading" class="py-10 text-center">
         <span class="loading-spinner loading-lg loading" />
-        <p class="mt-2 text-sm opacity-70">Loading problems...</p>
+        <p class="mt-2 text-sm opacity-70">{{ $t("problems.loading") }}</p>
       </div>
 
       <!-- Empty -->
       <div v-else-if="!filteredProblems.length" class="py-10 text-center text-sm opacity-70">
-        No problems match your filters.
+        {{ $t("problems.empty") }}
       </div>
 
       <!-- Table -->
@@ -194,11 +172,11 @@ onMounted(() => {
         <table class="table w-full">
           <thead>
             <tr>
-              <th>#ID</th>
-              <th>Title</th>
-              <th>Tags</th>
-              <th>Course</th>
-              <th class="text-right">AC%</th>
+              <th>{{ $t("problems.table.id") }}</th>
+              <th>{{ $t("problems.table.name") }}</th>
+              <th>{{ $t("problems.table.tags") }}</th>
+              <th>{{ $t("problems.table.course") }}</th>
+              <th class="text-right">{{ $t("problems.table.ac") }}</th>
             </tr>
           </thead>
           <tbody>
@@ -210,9 +188,11 @@ onMounted(() => {
               <td>
                 <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">{{
                   p.title
-                }}</router-link>
+                  }}</router-link>
               </td>
-              <td><TagList :tags="p.tags" size="sm" colorMode="outline" /></td>
+              <td>
+                <TagList :tags="p.tags" size="sm" colorMode="outline" />
+              </td>
               <td>{{ p.course }}</td>
               <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
             </tr>
@@ -228,6 +208,7 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.05);
   font-weight: 600;
 }
+
 .table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transition: background-color 0.2s ease;
