@@ -2,7 +2,7 @@ interface User {
   user_name: string;
   real_name: string;
   introduction: string;
-  role: string;
+  role: number;
   email: string;
   md5: string;
   student_id:string;

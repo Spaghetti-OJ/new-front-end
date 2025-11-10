@@ -22,6 +22,7 @@ async function logout() {
   router.push("/");
   session.validateSession();
   session.token="";
+  session.refreshtoken="";
 }
 
 const changePasswordForm = reactive({

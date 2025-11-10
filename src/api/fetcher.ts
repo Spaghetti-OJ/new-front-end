@@ -72,7 +72,7 @@ fetcher.interceptors.response.use(
       if(isRefreshing){
         const newToken=await new Promise<string>((resolve) => waitingQueue.push(resolve));
         original.headers = original.headers ?? {};
-        (original.headers as any).Authorization = `Bearer ${newToken}`;
+        original.headers.Authorization = `Bearer ${newToken}`;
         return fetcher(original);
       }
       isRefreshing = true;
@@ -87,7 +87,7 @@ fetcher.interceptors.response.use(
       publishNewToken(newAccess);
 
       original.headers = original.headers ?? {};
-      (original.headers as any).Authorization = `Bearer ${newAccess}`;
+      original.headers.Authorization = `Bearer ${newAccess}`;
       return fetcher(original);
     }catch(e){
       isRefreshing = false;

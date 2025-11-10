@@ -53,7 +53,7 @@ export const useSession = defineStore("session", {
         this.username = user_name;
         this.displayedName = real_name;
         this.bio = introduction;
-        this.role = role as any;
+        this.role = role ;
         this.email = email;
         this.state = SessionState.IsLogin;
       } catch (error) {
