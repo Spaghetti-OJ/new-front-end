@@ -13,6 +13,6 @@ export interface RankingItem {
 }
 
 export interface RankingResponse {
-  message: string;          // "Success."
+  message: string; // "Success."
   data: RankingItem[];
 }

@@ -1,21 +1,37 @@
 import { fetcher } from "./fetcher";
 
 export const Auth = {
-  signup:(body: { username: string; password: string; email: string; real_name:string;identity:string;student_id?:string;bio?:string})=>fetcher.post<UserSignup>("/auth/signup/",body).then(r => r.data ?? r),
-  login: (body: { username: string; password: string }) => fetcher.post<AuthToken>("/auth/session/", body).then(r => r.data ?? r),
-  logout: (body:{ refresh:string}) => fetcher.post<string>("/auth/session/revoke/",body).then(r => r.data ?? r),
+  signup: (body: {
+    username: string;
+    password: string;
+    email: string;
+    real_name: string;
+    identity: string;
+    student_id?: string;
+    bio?: string;
+  }) => fetcher.post<UserSignup>("/auth/signup/", body).then((r) => r.data ?? r),
+  login: (body: { username: string; password: string }) =>
+    fetcher.post<AuthToken>("/auth/session/", body).then((r) => r.data ?? r),
+  logout: (body: { refresh: string }) =>
+    fetcher.post<string>("/auth/session/revoke/", body).then((r) => r.data ?? r),
   //activeredirect:(body:{token:string})=>,
-  active:(body:{profile:{displayedName:string;bio:string};agreement:boolean})=>fetcher.post<string>("/auth/active/",body).then(r => r.data ?? r),
-  changePassword: (body: { old_password: string; new_password: string}) =>fetcher.post<string>("/auth/change-password/", body).then(r => r.data ?? r),
-  checkEmail: (item:"username" | "email" ,  body: { email?: string;username?:string }) => fetcher.post<{ message: string; data: { valid: number } }>(`/auth/check/${item}/`, body),//<CheckEmail>
-  resendemail: (body:{email:string})=> fetcher.post<string>("/auth/resend-email/", body),
-  sendRecoveryEmail: (body: { email: string }) => fetcher.post<string>("/auth/password-recovery/", body).then(r => r.data ?? r),
-  adduser:(body:{ username:string;password:string;email:string})=>fetcher.post<string>("/auth/user/",body).then(r => r.data ?? r),
-  batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>fetcher.post<string>("/auth/batch-signup/", body).then(r => r.data ?? r),
-  getSession: () => fetcher.get<UserProperties>("/profile/").then(r => r.data ?? r),
-  refresh: (body: { refresh: string }) =>fetcher.post<{refresh:string; access: string }>("/auth/refresh/", body).then(r => r.data ?? r),
-  verify:(body: {token: string }) =>fetcher.post("/auth/verify/", body).then(r => r.data ?? r),
-  
+  active: (body: { profile: { displayedName: string; bio: string }; agreement: boolean }) =>
+    fetcher.post<string>("/auth/active/", body).then((r) => r.data ?? r),
+  changePassword: (body: { old_password: string; new_password: string }) =>
+    fetcher.post<string>("/auth/change-password/", body).then((r) => r.data ?? r),
+  checkEmail: (item: "username" | "email", body: { email?: string; username?: string }) =>
+    fetcher.post<{ message: string; data: { valid: number } }>(`/auth/check/${item}/`, body), //<CheckEmail>
+  resendemail: (body: { email: string }) => fetcher.post<string>("/auth/resend-email/", body),
+  sendRecoveryEmail: (body: { email: string }) =>
+    fetcher.post<string>("/auth/password-recovery/", body).then((r) => r.data ?? r),
+  adduser: (body: { username: string; password: string; email: string }) =>
+    fetcher.post<string>("/auth/user/", body).then((r) => r.data ?? r),
+  batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>
+    fetcher.post<string>("/auth/batch-signup/", body).then((r) => r.data ?? r),
+  getSession: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
+  refresh: (body: { refresh: string }) =>
+    fetcher.post<{ refresh: string; access: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
+  verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
 };
 
 export const Copycat = {

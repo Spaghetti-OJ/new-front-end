@@ -9,10 +9,9 @@ import "vue-prism-editor/dist/prismeditor.min.css";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.css";
 import * as Sentry from "@sentry/vue";
-import { useSession,initSessionTokenProvider } from "./stores/session";
+import { useSession, initSessionTokenProvider } from "./stores/session";
 const app = createApp(App);
 const i18n = createI18n(i18nConfig);
-
 
 Sentry.init({
   app,
@@ -24,9 +23,9 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
   tracePropagationTargets: ["localhost", /^https:\/\/noj\.tw/],
 });
-const pinia=createPinia()
+const pinia = createPinia();
 app.use(pinia).use(router).use(i18n);
 const session = useSession(pinia);
-initSessionTokenProvider(session); 
+initSessionTokenProvider(session);
 
 app.mount("#app");

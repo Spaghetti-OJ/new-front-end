@@ -5,18 +5,18 @@ interface User {
   role: number;
   email: string;
   md5: string;
-  student_id:string;
+  student_id: string;
   user_id: string;
 }
 
-interface UserSignup{
-  id:string,
-  username:string,
-  email: string, 
-  real_name: string,
-  identity: string,
-  date_joined: string,
-  last_login: string|null,
+interface UserSignup {
+  id: string;
+  username: string;
+  email: string;
+  real_name: string;
+  identity: string;
+  date_joined: string;
+  last_login: string | null;
 }
 type UserInfo = Pick<User, "user_name" | "real_name" | "role" | "md5">;
 
@@ -50,8 +50,8 @@ interface CheckEmail {
   valid: number; // 1 for valid/unused email
 }
 interface AuthToken {
-  access : string;
-  refresh : string;
+  access: string;
+  refresh: string;
 }
 /*interface AuthProfile {
   id: string;

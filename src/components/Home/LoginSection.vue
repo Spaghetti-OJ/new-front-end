@@ -40,20 +40,20 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
-    await session.setTokens(tokens.access,tokens.refresh);
+    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
+    await session.setTokens(tokens.access, tokens.refresh);
     const redirect = (route.query.redirect as string) ?? "/";
     router.replace(redirect);
-  } catch (error:any) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      const text=typeof error.response?.data==="string" ? error.response.data : "UNKNOWN";
+      const text = typeof error.response?.data === "string" ? error.response.data : "UNKNOWN";
       if (text.includes("Login Failed")) {
         loginForm.errorMsg = t("errorCode.ERR001");
       } else if (text.includes("Invalid User")) {
         loginForm.errorMsg = t("errorCode.ERR002");
-      } else if (text.includes("Incomplete Data")){
+      } else if (text.includes("Incomplete Data")) {
         loginForm.errorMsg = t("errorCode.ERR001");
-      } else  {
+      } else {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
       }
     } else {

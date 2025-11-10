@@ -1,5 +1,4 @@
-import axios,{AxiosError,AxiosRequestConfig} from "axios"; 
-
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 type TokenProvider = () => string | undefined | null;
 type RefreshProvider = () => Promise<string | null>;
@@ -21,14 +20,14 @@ export const setServerErrorHandler = (handler: ServerErrorHandler | null) => {
 };
 
 export const fetcher = axios.create({
-  baseURL: (import.meta.env.VITE_APP_API_BASE_URL) || "/api",
-  withCredentials: false, 
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL || "/api",
+  withCredentials: false,
   timeout: 20000,
 });
 
 fetcher.interceptors.request.use((config) => {
   const token = tokenProvider?.();
-  if (token){
+  if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -39,37 +38,37 @@ fetcher.interceptors.request.use((config) => {
   }
   return config;
 });
-let isRefreshing=false;
-let waitingQueue: Array<(token:string)=>void>=[];
+let isRefreshing = false;
+let waitingQueue: Array<(token: string) => void> = [];
 
-function publishNewToken(newToken:string){
-  waitingQueue.forEach((resolve)=>resolve(newToken));
-  waitingQueue=[];
+function publishNewToken(newToken: string) {
+  waitingQueue.forEach((resolve) => resolve(newToken));
+  waitingQueue = [];
 }
 
 fetcher.interceptors.response.use(
   (response) => ({
     ...response,
-    ...response.data, 
+    ...response.data,
   }),
   async (error: AxiosError) => {
-    const original = error.config as (AxiosRequestConfig & { _retry?: boolean });
+    const original = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    if (error?.response?.status&&error?.response?.status >= 500 && serverErrorHandler) {
+    if (error?.response?.status && error?.response?.status >= 500 && serverErrorHandler) {
       void serverErrorHandler(error);
     }
     if (error?.response?.status !== 401 || original?._retry) {
       return Promise.reject(error);
     }
-    if(!refreshProvider){
+    if (!refreshProvider) {
       return Promise.reject(error);
     }
-    
+
     original._retry = true;
-    
-    try{
-      if(isRefreshing){
-        const newToken=await new Promise<string>((resolve) => waitingQueue.push(resolve));
+
+    try {
+      if (isRefreshing) {
+        const newToken = await new Promise<string>((resolve) => waitingQueue.push(resolve));
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${newToken}`;
         return fetcher(original);
@@ -88,10 +87,10 @@ fetcher.interceptors.response.use(
       original.headers = original.headers ?? {};
       original.headers.Authorization = `Bearer ${newAccess}`;
       return fetcher(original);
-    }catch(e){
+    } catch (e) {
       isRefreshing = false;
       waitingQueue = [];
-    return Promise.reject(error);
+      return Promise.reject(error);
     }
   },
 );

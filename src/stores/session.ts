@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/api";
-import { setTokenProvider,setRefreshProvider } from "@/api/fetcher";
+import { setTokenProvider, setRefreshProvider } from "@/api/fetcher";
 
 export enum SessionState {
   NotValidated = -1,
@@ -17,15 +17,14 @@ export enum UserRole {
 
 export const useSession = defineStore("session", {
   state: () => ({
-      
-    state: SessionState.NotValidated,    
-    username: "",  
-    displayedName: "", 
+    state: SessionState.NotValidated,
+    username: "",
+    displayedName: "",
     role: UserRole.Guest,
     bio: "",
     email: "",
-    token:"",
-    refreshtoken:"",
+    token: "",
+    refreshtoken: "",
   }),
   getters: {
     isAdmin(state) {
@@ -45,22 +44,23 @@ export const useSession = defineStore("session", {
     async validateSession() {
       this.state = SessionState.NotValidated;
       if (!this.token) {
-    this.state = SessionState.IsNotLogin;
-    return;
-  }   try {
+        this.state = SessionState.IsNotLogin;
+        return;
+      }
+      try {
         const me = await api.Auth.getSession();
         const { user_name, real_name, introduction, role, email } = me;
         this.username = user_name;
         this.displayedName = real_name;
         this.bio = introduction;
-        this.role = role ;
+        this.role = role;
         this.email = email;
         this.state = SessionState.IsLogin;
       } catch (error) {
         this.logoutLocally();
       }
     },
-     async setTokens(access: string, refresh: string) {
+    async setTokens(access: string, refresh: string) {
       this.token = access;
       this.refreshtoken = refresh;
       await this.validateSession();
@@ -71,7 +71,6 @@ export const useSession = defineStore("session", {
     },
   },
 });
-
 
 // To avoid circular dependency, export a function to set the token provider after store initialization.
 export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSession>) {
