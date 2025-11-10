@@ -38,7 +38,6 @@ fetcher.interceptors.request.use((config) => {
     config.headers = config.headers ?? {};
     config.headers["Accept-Language"] = lang;
   }
-  console.log("[REQ]", config.baseURL, config.url, (config.headers as any)?.Authorization);
   return config;
 });
 let isRefreshing=false;

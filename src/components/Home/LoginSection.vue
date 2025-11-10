@@ -41,12 +41,10 @@ async function login() {
   };
   try {
     const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password }); 
-    console.log("[login] tokens =", tokens); 
     await session.setTokens(tokens.access,tokens.refresh);
     const redirect = (route.query.redirect as string) ?? "/";
     router.replace(redirect);
   } catch (error:any) {
-    console.log("[login error]", error?.response?.status, error?.response?.data); 
     if (axios.isAxiosError(error)) {
       const text=typeof error.response?.data==="string" ? error.response.data : "UNKNOWN";
       if (text.includes("Login Failed")) {

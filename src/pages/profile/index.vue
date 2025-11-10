@@ -14,11 +14,14 @@ const router = useRouter();
 const session = useSession();
 const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
-
+const refreshtype={
+  refresh:session.refreshtoken,
+}
 async function logout() {
-  await api.Auth.logout();
+  const errorrr=await api.Auth.logout(refreshtype);
   router.push("/");
   session.validateSession();
+  session.token="";
 }
 
 const changePasswordForm = reactive({
@@ -100,7 +103,7 @@ function clearForm() {
               <td>{{ session.username }}</td>
               <td>{{ session.displayedName }}</td>
               <td>{{ session.email }}</td>
-              <td>{{ ROLE[session.role] }}</td>
+              <td>{{ session.role }}</td>
             </tr>
           </tbody>
         </table>

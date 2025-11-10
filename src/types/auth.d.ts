@@ -1,11 +1,12 @@
 interface User {
-  username: string;
-  displayedName: string;
-  bio: string;
-  role: number;
+  user_name: string;
+  real_name: string;
+  introduction: string;
+  role: string;
   email: string;
   md5: string;
-  active: boolean;
+  student_id:string;
+  user_id: string;
 }
 
 interface UserSignup{
@@ -17,7 +18,7 @@ interface UserSignup{
   date_joined: string,
   last_login: string|null,
 }
-type UserInfo = Pick<User, "username" | "real_name" | "role" | "md5">;
+type UserInfo = Pick<User, "user_name" | "real_name" | "role" | "md5">;
 
 interface UserSummary {
   userCount: number;
