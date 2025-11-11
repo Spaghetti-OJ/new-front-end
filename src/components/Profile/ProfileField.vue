@@ -7,13 +7,13 @@
     </label>
 
     <!-- 顯示模式 -->
-    <div
+    <pre
       v-if="!editable"
       class="rounded-xl bg-base-200 text-base-content text-lg px-3 flex items-start py-3 min-h-[48px]"
       :class="boxWidth"
     >
       {{ modelValue || '—' }}
-    </div>
+    </pre>
 
     <!-- 單行輸入 -->
     <input
