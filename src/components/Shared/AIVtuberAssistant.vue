@@ -116,8 +116,7 @@ async function askQuestion() {
     messages.value.push({ sender: "ai", html: safeHtml });
 
     // 🔊 語音觸發條件
-    const shouldSpeak =
-      /你好|哈囉|這裡有一些|讓你參考|我來說明|總結一下|以下是|我幫你整理/.test(aiReply);
+    const shouldSpeak = /你好|哈囉|這裡有一些|讓你參考|我來說明|總結一下|以下是|我幫你整理/.test(aiReply);
 
     if (!isMuted.value && shouldSpeak) {
       const plainText = aiReply
@@ -148,14 +147,12 @@ async function askQuestion() {
         class="mr-4 w-[32rem] overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md"
       >
         <!-- Header -->
-        <div
-          class="flex items-center justify-between border-b border-base-300 bg-base-300 px-4 py-2"
-        >
+        <div class="flex items-center justify-between border-b border-base-300 bg-base-300 px-4 py-2">
           <h3 class="text-sm font-semibold">💫 AI Vtuber Assistant</h3>
           <div class="flex items-center gap-3">
             <!-- 🔇 靜音切換 -->
             <button
-              class="text-xs text-base-content/70 hover:text-primary transition"
+              class="text-xs text-base-content/70 transition hover:text-primary"
               @click="toggleMute"
               :title="isMuted ? '點擊開啟語音' : '點擊靜音'"
             >
@@ -178,7 +175,7 @@ async function askQuestion() {
             <div v-if="msg.sender === 'ai'" class="flex items-start gap-2">
               <img src="/vtuber-avatar.png" class="h-8 w-8 rounded-full" />
               <div
-                class="relative max-w-[90%] rounded-xl border border-base-300 bg-base-300 px-4 py-2 text-base-content prose prose-sm dark:prose-invert"
+                class="prose prose-sm relative max-w-[90%] rounded-xl border border-base-300 bg-base-300 px-4 py-2 text-base-content dark:prose-invert"
                 v-html="msg.html"
               ></div>
             </div>
@@ -186,7 +183,7 @@ async function askQuestion() {
             <!-- USER -->
             <div v-else class="flex justify-end">
               <div
-                class="max-w-[90%] rounded-xl bg-primary px-4 py-2 text-primary-content text-sm leading-relaxed"
+                class="max-w-[90%] rounded-xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-content"
                 v-html="msg.html"
               ></div>
             </div>
