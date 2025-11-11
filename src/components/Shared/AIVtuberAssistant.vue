@@ -224,6 +224,7 @@ async function askQuestion() {
       @click="toggleAssistant"
       tabindex="0"
       aria-label="Open AI assistant chat"
+      role="button"
       @keyup.enter="toggleAssistant"
     >
       <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
