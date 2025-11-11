@@ -45,6 +45,7 @@ const session = useSession();
       </router-link>
 
       <router-link
+        v-if="session.isLogin"
         :class="['hover:text-accent', matchRoute('/courses') && 'font-semibold underline']"
         to="/courses"
       >
@@ -52,6 +53,7 @@ const session = useSession();
       </router-link>
 
       <router-link
+        v-if="session.isLogin"
         :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']"
         to="/ranking"
       >
@@ -59,6 +61,7 @@ const session = useSession();
       </router-link>
 
       <router-link
+        v-if="session.isLogin"
         :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']"
         to="/problems"
       >
@@ -84,6 +87,7 @@ const session = useSession();
 
       <!-- Profile -->
       <router-link
+        v-if="session.isLogin"
         :class="[
           'flex items-center gap-1 hover:text-accent',
           matchRoute('/profile') && 'font-semibold underline',
