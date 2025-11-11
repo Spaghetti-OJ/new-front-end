@@ -48,7 +48,7 @@ importers:
         specifier: ^1.11.18
         version: 1.11.18
       dompurify:
-        specifier: ^2.3.6
+        specifier: ^2.5.8
         version: 2.5.8
       echarts:
         specifier: ^5.3.0
@@ -65,6 +65,9 @@ importers:
       markdown-it-texmath:
         specifier: ^0.9.7
         version: 0.9.7
+      marked:
+        specifier: ^17.0.0
+        version: 17.0.0
       pinia:
         specifier: ^2.0.11
         version: 2.3.1(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
@@ -97,7 +100,7 @@ importers:
         specifier: ^1.42.1
         version: 1.56.1
       '@types/dompurify':
-        specifier: ^2.3.3
+        specifier: ^2.4.0
         version: 2.4.0
       '@types/katex':
         specifier: ^0.11.1
@@ -105,6 +108,9 @@ importers:
       '@types/markdown-it':
         specifier: ^12.2.3
         version: 12.2.3
+      '@types/marked':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^18.11.18
         version: 18.19.130
@@ -516,6 +522,10 @@ packages:
 
   '@types/markdown-it@12.2.3':
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
+
+  '@types/marked@6.0.0':
+    resolution: {integrity: sha512-jmjpa4BwUsmhxcfsgUit/7A9KbrC48Q0q8KvnY107ogcjGgTFDlIL3RpihNpx2Mu1hM4mdFQjoVc4O6JoGKHsA==}
+    deprecated: This is a stub types definition. marked provides its own type definitions, so you do not need this installed.
 
   '@types/mdurl@2.0.0':
     resolution: {integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==}
@@ -1464,6 +1474,11 @@ packages:
 
   markdown-it@12.3.2:
     resolution: {integrity: sha512-TchMembfxfNVpHkbtriWltGWc+m3xszaRD0CZup7GFFhzIgQqxIfn3eGj1yZpfuflzPvfkt611B2Q/Bsk1YnGg==}
+    hasBin: true
+
+  marked@17.0.0:
+    resolution: {integrity: sha512-KkDYEWEEiYJw/KC+DVm1zzlpMQSMIu6YRltkcCvwheCp8HWPXCk9JwOmHJKBlGfzcpzcIt6x3sMnTsRm/51oDg==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -2461,6 +2476,10 @@ snapshots:
     dependencies:
       '@types/linkify-it': 5.0.0
       '@types/mdurl': 2.0.0
+
+  '@types/marked@6.0.0':
+    dependencies:
+      marked: 17.0.0
 
   '@types/mdurl@2.0.0': {}
 
@@ -3476,6 +3495,8 @@ snapshots:
       linkify-it: 3.0.3
       mdurl: 1.0.1
       uc.micro: 1.0.6
+
+  marked@17.0.0: {}
 
   math-intrinsics@1.1.0: {}
 
