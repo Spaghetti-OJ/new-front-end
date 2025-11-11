@@ -44,18 +44,27 @@ const session = useSession();
         {{ $t("components.topBar.home") || "Home" }}
       </router-link>
 
-      <router-link v-if="session.isLogin"
-        :class="['hover:text-accent', matchRoute('/courses') && 'font-semibold underline']" to="/courses">
+      <router-link
+        v-if="session.isLogin"
+        :class="['hover:text-accent', matchRoute('/courses') && 'font-semibold underline']"
+        to="/courses"
+      >
         {{ $t("components.topBar.course") || "Course" }}
       </router-link>
 
-      <router-link v-if="session.isLogin"
-        :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']" to="/ranking">
+      <router-link
+        v-if="session.isLogin"
+        :class="['hover:text-accent', matchRoute('/ranking') && 'font-semibold underline']"
+        to="/ranking"
+      >
         {{ $t("components.topBar.ranking") || "Ranking" }}
       </router-link>
 
-      <router-link v-if="session.isLogin"
-        :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']" to="/problems">
+      <router-link
+        v-if="session.isLogin"
+        :class="['hover:text-accent', matchRoute('/problems') && 'font-semibold underline']"
+        to="/problems"
+      >
         {{ $t("components.topBar.problems") || "Problems" }}
       </router-link>
     </div>
@@ -63,10 +72,13 @@ const session = useSession();
     <!-- 右側：功能按鈕 -->
     <div class="ml-auto flex items-center gap-6">
       <!-- 設定 -->
-      <router-link :class="[
-        'flex items-center gap-1 hover:text-accent',
-        matchRoute('/settings') && 'font-semibold underline',
-      ]" to="/settings">
+      <router-link
+        :class="[
+          'flex items-center gap-1 hover:text-accent',
+          matchRoute('/settings') && 'font-semibold underline',
+        ]"
+        to="/settings"
+      >
         <i-uil-setting class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
           {{ $t("components.topBar.settings") || "Settings" }}
@@ -74,10 +86,14 @@ const session = useSession();
       </router-link>
 
       <!-- Profile -->
-      <router-link v-if="session.isLogin" :class="[
-        'flex items-center gap-1 hover:text-accent',
-        matchRoute('/profile') && 'font-semibold underline',
-      ]" to="/profile">
+      <router-link
+        v-if="session.isLogin"
+        :class="[
+          'flex items-center gap-1 hover:text-accent',
+          matchRoute('/profile') && 'font-semibold underline',
+        ]"
+        to="/profile"
+      >
         <i-uil-user class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
           {{ $t("components.topBar.profile") || "Profile" }}
@@ -85,10 +101,13 @@ const session = useSession();
       </router-link>
 
       <!-- 關於 -->
-      <router-link :class="[
-        'flex items-center gap-1 hover:text-accent',
-        matchRoute('/about') && 'font-semibold underline',
-      ]" to="/about">
+      <router-link
+        :class="[
+          'flex items-center gap-1 hover:text-accent',
+          matchRoute('/about') && 'font-semibold underline',
+        ]"
+        to="/about"
+      >
         <i-uil-info-circle class="h-5 w-5" />
         <span class="hidden text-sm uppercase sm:inline">
           {{ $t("components.topBar.about") || "About" }}
