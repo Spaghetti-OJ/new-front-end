@@ -15,6 +15,9 @@ export enum UserRole {
   Student = 2,
 }
 
+const ACCESS_KEY = "access_token";
+const REFRESH_KEY = "refresh_token";
+
 export const useSession = defineStore("session", {
   state: () => ({
     state: SessionState.NotValidated,
@@ -23,8 +26,8 @@ export const useSession = defineStore("session", {
     role: UserRole.Guest,
     bio: "",
     email: "",
-    token: "",
-    refreshtoken: "",
+    token: sessionStorage.getItem(ACCESS_KEY) || "",
+    refreshtoken: sessionStorage.getItem(REFRESH_KEY) || "",
   }),
   getters: {
     isAdmin(state) {
@@ -63,11 +66,17 @@ export const useSession = defineStore("session", {
     async setTokens(access: string, refresh: string) {
       this.token = access;
       this.refreshtoken = refresh;
+      sessionStorage.setItem(ACCESS_KEY, access);
+      sessionStorage.setItem(REFRESH_KEY, refresh);
       await this.validateSession();
     },
     logoutLocally() {
       this.$reset();
       this.state = SessionState.IsNotLogin;
+      this.token = "";
+      this.refreshtoken = "";
+      sessionStorage.removeItem(ACCESS_KEY);          
+      sessionStorage.removeItem(REFRESH_KEY);
     },
   },
 });

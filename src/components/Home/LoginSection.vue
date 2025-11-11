@@ -41,17 +41,16 @@ async function login() {
   };
   try {
     const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
+    console.log(tokens);
     await session.setTokens(tokens.access, tokens.refresh);
     const redirect = (route.query.redirect as string) ?? "/";
     router.replace(redirect);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      const text = typeof error.response?.data === "string" ? error.response.data : "UNKNOWN";
-      if (text.includes("Login Failed")) {
-        loginForm.errorMsg = t("errorCode.ERR001");
-      } else if (text.includes("Invalid User")) {
-        loginForm.errorMsg = t("errorCode.ERR002");
-      } else if (text.includes("Incomplete Data")) {
+      console.log(error);
+      const status= error.response?.status;
+      
+      if (status===401) {
         loginForm.errorMsg = t("errorCode.ERR001");
       } else {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
