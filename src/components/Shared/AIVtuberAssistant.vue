@@ -67,7 +67,7 @@ function speak(text: string) {
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "zh-TW";
-  utter.rate = 1;
+  utter.rate = 1.3;
   utter.pitch = 1.1;
   utter.volume = 1;
   speechSynthesis.speak(utter);
@@ -123,7 +123,8 @@ async function askQuestion() {
         .replace(/```[\s\S]*?```/g, "")
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
         .replace(/[*#>`_~]/g, "")
-        .replace(/\n+/g, "。");
+        .replace(/\n+/g, "。")
+        .replace(/\p{Extended_Pictographic}/gu, "");
       speak(plainText);
     }
 
@@ -142,27 +143,19 @@ async function askQuestion() {
   <div class="fixed bottom-8 right-8 z-50 flex items-end">
     <!-- Chat Box -->
     <transition name="slide-left">
-      <div
-        v-if="isOpen"
-        class="mr-4 w-[32rem] overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md"
-      >
+      <div v-if="isOpen"
+        class="mr-4 w-[32rem] overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md">
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-base-300 bg-base-300 px-4 py-2">
           <h3 class="text-sm font-semibold">💫 AI Vtuber Assistant</h3>
           <div class="flex items-center gap-3">
             <!-- 🔇 靜音切換 -->
-            <button
-              class="text-xs text-base-content/70 transition hover:text-primary"
-              @click="toggleMute"
-              :title="isMuted ? '點擊開啟語音' : '點擊靜音'"
-            >
+            <button class="text-xs text-base-content/70 transition hover:text-primary" @click="toggleMute"
+              :title="isMuted ? '點擊開啟語音' : '點擊靜音'">
               <span v-if="isMuted">🔇</span>
               <span v-else>🔊</span>
             </button>
-            <button
-              class="text-xs text-base-content/70 transition hover:text-red-400"
-              @click="toggleAssistant"
-            >
+            <button class="text-xs text-base-content/70 transition hover:text-red-400" @click="toggleAssistant">
               ✕
             </button>
           </div>
@@ -176,16 +169,13 @@ async function askQuestion() {
               <img src="/vtuber-avatar.png" class="h-8 w-8 rounded-full" />
               <div
                 class="prose prose-sm relative max-w-[90%] rounded-xl border border-base-300 bg-base-300 px-4 py-2 text-base-content dark:prose-invert"
-                v-html="msg.html"
-              ></div>
+                v-html="msg.html"></div>
             </div>
 
             <!-- USER -->
             <div v-else class="flex justify-end">
-              <div
-                class="max-w-[90%] rounded-xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-content"
-                v-html="msg.html"
-              ></div>
+              <div class="max-w-[90%] rounded-xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-content"
+                v-html="msg.html"></div>
             </div>
           </template>
 
@@ -197,19 +187,12 @@ async function askQuestion() {
 
         <!-- Input -->
         <div class="flex items-center border-t border-base-300 bg-base-300 px-3 py-2">
-          <input
-            v-model="question"
-            type="text"
-            :placeholder="$t('components.ai-vtuber.inputPlaceholder')"
+          <input v-model="question" type="text" :placeholder="$t('components.ai-vtuber.inputPlaceholder')"
             class="flex-1 bg-transparent text-sm text-base-content placeholder-base-content/60 focus:outline-none"
-            :disabled="loading"
-            @keyup.enter="askQuestion"
-          />
+            :disabled="loading" @keyup.enter="askQuestion" />
           <button
             class="ml-2 rounded-md bg-primary px-3 py-1 text-sm text-primary-content hover:bg-primary/80 disabled:opacity-50"
-            @click="askQuestion"
-            :disabled="loading || !question.trim()"
-          >
+            @click="askQuestion" :disabled="loading || !question.trim()">
             <span v-if="loading" class="loading-spinner loading-sm loading"></span>
             <span v-else>{{ $t("components.ai-vtuber.sendButton") }}</span>
           </button>
@@ -218,18 +201,12 @@ async function askQuestion() {
     </transition>
 
     <!-- Avatar -->
-    <div
-      class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
-      @click="toggleAssistant"
-      tabindex="0"
-      aria-label="Open AI assistant chat"
-      @keyup.enter="toggleAssistant"
-    >
+    <div class="relative cursor-pointer transition-transform duration-300 hover:scale-110" @click="toggleAssistant"
+      tabindex="0" aria-label="Open AI assistant chat" @keyup.enter="toggleAssistant">
       <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
-      <div
-        v-if="!isOpen"
-        class="absolute -right-1 -top-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
-      ></div>
+      <div v-if="!isOpen"
+        class="absolute -right-1 -top-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white">
+      </div>
       <p class="mt-1 text-center text-xs font-medium text-indigo-400">AI Vtuber</p>
     </div>
   </div>
