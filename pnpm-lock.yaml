@@ -48,7 +48,7 @@ importers:
         specifier: ^1.11.18
         version: 1.11.18
       dompurify:
-        specifier: ^2.3.6
+        specifier: ^2.5.8
         version: 2.5.8
       echarts:
         specifier: ^5.3.0
@@ -65,6 +65,9 @@ importers:
       markdown-it-texmath:
         specifier: ^0.9.7
         version: 0.9.7
+      marked:
+        specifier: ^17.0.0
+        version: 17.0.0
       pinia:
         specifier: ^2.0.11
         version: 2.3.1(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
@@ -97,7 +100,7 @@ importers:
         specifier: ^1.42.1
         version: 1.56.1
       '@types/dompurify':
-        specifier: ^2.3.3
+        specifier: ^2.4.0
         version: 2.4.0
       '@types/katex':
         specifier: ^0.11.1
@@ -1464,6 +1467,11 @@ packages:
 
   markdown-it@12.3.2:
     resolution: {integrity: sha512-TchMembfxfNVpHkbtriWltGWc+m3xszaRD0CZup7GFFhzIgQqxIfn3eGj1yZpfuflzPvfkt611B2Q/Bsk1YnGg==}
+    hasBin: true
+
+  marked@17.0.0:
+    resolution: {integrity: sha512-KkDYEWEEiYJw/KC+DVm1zzlpMQSMIu6YRltkcCvwheCp8HWPXCk9JwOmHJKBlGfzcpzcIt6x3sMnTsRm/51oDg==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -3476,6 +3484,8 @@ snapshots:
       linkify-it: 3.0.3
       mdurl: 1.0.1
       uc.micro: 1.0.6
+
+  marked@17.0.0: {}
 
   math-intrinsics@1.1.0: {}
 
