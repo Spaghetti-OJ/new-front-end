@@ -75,7 +75,7 @@ export const useSession = defineStore("session", {
       this.state = SessionState.IsNotLogin;
       this.token = "";
       this.refreshtoken = "";
-      sessionStorage.removeItem(ACCESS_KEY);          
+      sessionStorage.removeItem(ACCESS_KEY);
       sessionStorage.removeItem(REFRESH_KEY);
     },
   },

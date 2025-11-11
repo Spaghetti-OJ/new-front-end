@@ -48,9 +48,9 @@ async function login() {
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       console.log(error);
-      const status= error.response?.status;
-      
-      if (status===401) {
+      const status = error.response?.status;
+
+      if (status === 401) {
         loginForm.errorMsg = t("errorCode.ERR001");
       } else {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
