@@ -424,6 +424,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! 系統發生了一些錯誤，請重新嘗試，若嘗試數次皆失敗請聯絡管理員。"
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "問我任何關於程式設計或 NOJ 的問題...",
+      "sendButton": "發送"
     }
   },
   "admin": {
