@@ -26,8 +26,8 @@ export const useSession = defineStore("session", {
     role: UserRole.Guest,
     bio: "",
     email: "",
-    token: sessionStorage.getItem(ACCESS_KEY) || "",
-    refreshtoken: sessionStorage.getItem(REFRESH_KEY) || "",
+    token: localStorage.getItem(ACCESS_KEY) || "",
+    refreshtoken: localStorage.getItem(REFRESH_KEY) || "",
   }),
   getters: {
     isAdmin(state) {
@@ -66,8 +66,8 @@ export const useSession = defineStore("session", {
     async setTokens(access: string, refresh: string) {
       this.token = access;
       this.refreshtoken = refresh;
-      sessionStorage.setItem(ACCESS_KEY, access);
-      sessionStorage.setItem(REFRESH_KEY, refresh);
+      localStorage.setItem(ACCESS_KEY, access);
+      localStorage.setItem(REFRESH_KEY, refresh);
       await this.validateSession();
     },
     logoutLocally() {
@@ -75,8 +75,8 @@ export const useSession = defineStore("session", {
       this.state = SessionState.IsNotLogin;
       this.token = "";
       this.refreshtoken = "";
-      sessionStorage.removeItem(ACCESS_KEY);
-      sessionStorage.removeItem(REFRESH_KEY);
+      localStorage.removeItem(ACCESS_KEY);
+      localStorage.removeItem(REFRESH_KEY);
     },
   },
 });
