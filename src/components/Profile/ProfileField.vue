@@ -1,26 +1,35 @@
 <!-- components/Profile/ProfileField.vue -->
 <template>
-  <div class="flex flex-col gap-1 w-full" :class="containerClass">
+  <div class="flex flex-col gap-1 w-full !text-left" :class="containerClass">
     <!-- 標籤 -->
     <label class="text-xs font-semibold tracking-wide text-base-content/80">
       {{ label }}
     </label>
 
-    <!-- 顯示模式 -->
-    <pre
-      v-if="!editable"
-      class="rounded-xl bg-base-200 text-base-content text-lg px-3 flex items-start py-3 min-h-[48px]"
+    <!-- 顯示模式：一般欄位（非 textarea） -->
+    <div
+      v-if="!editable && type !== 'textarea'"
+      class="rounded-xl bg-base-200 text-base-content text-lg px-3 py-3 h-[48px] !text-left"
       :class="boxWidth"
     >
       {{ modelValue || '—' }}
-    </pre>
+    </div>
+
+    <!-- 顯示模式：textarea（例如 INTRODUCTION） -->
+    <div
+      v-else-if="!editable && type === 'textarea'"
+      class="rounded-xl bg-base-200 text-base-content text-lg px-3 flex items-start py-3 h-[100px] whitespace-pre-wrap overflow-y-auto"
+      :class="boxWidth"
+    >
+      {{ modelValue || '—' }}
+    </div>
 
     <!-- 單行輸入 -->
     <input
       v-else-if="type !== 'textarea'"
       v-model="localValue"
       :type="type"
-      class="input input-bordered text-lg rounded-xl bg-base-200 min-h-[48px]"
+      class="input input-bordered text-lg rounded-xl bg-base-200 h-[48px]"
       :class="boxWidth"
       @keydown.enter.prevent="commit"
       @keydown.esc.prevent="cancel"
@@ -32,7 +41,7 @@
       v-else
       v-model="localValue"
       class="textarea textarea-bordered text-lg rounded-xl bg-base-200"
-      :class="[boxWidth, 'min-h-[160px]']"
+      :class="[boxWidth, 'min-h-[160px] overflow-y-auto']"
       @keydown.enter.exact.prevent="commit"
       @keydown.shift.enter.stop
       @keydown.esc.prevent="cancel"
