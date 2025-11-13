@@ -1,4 +1,3 @@
-<!-- components/Profile/ProfileField.vue -->
 <template>
   <div class="flex flex-col gap-1 w-full !text-left" :class="containerClass">
     <!-- 標籤 -->
