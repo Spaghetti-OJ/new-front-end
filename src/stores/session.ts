@@ -46,9 +46,15 @@ export const useSession = defineStore("session", {
   actions: {
     async validateSession() {
       this.state = SessionState.NotValidated;
-      if (!this.token) {
+      // Only skip validation if there is truly no token in both the store and localStorage
+      const storedToken = this.token || localStorage.getItem(ACCESS_KEY);
+      if (!storedToken) {
         this.state = SessionState.IsNotLogin;
         return;
+      }
+      // Ensure this.token is set from localStorage if needed
+      if (!this.token && storedToken) {
+        this.token = storedToken;
       }
       try {
         const me = await api.Auth.getSession();
