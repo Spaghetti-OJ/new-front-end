@@ -1,14 +1,24 @@
 interface User {
-  username: string;
-  displayedName: string;
-  bio: string;
+  user_name: string;
+  real_name: string;
+  introduction: string;
   role: number;
   email: string;
   md5: string;
-  active: boolean;
+  student_id: string;
+  user_id: string;
 }
 
-type UserInfo = Pick<User, "username" | "displayedName" | "role" | "md5">;
+interface UserSignup {
+  id: string;
+  username: string;
+  email: string;
+  real_name: string;
+  identity: string;
+  date_joined: string;
+  last_login: string | null;
+}
+type UserInfo = Pick<User, "user_name" | "real_name" | "role" | "md5">;
 
 interface UserSummary {
   userCount: number;
@@ -39,3 +49,23 @@ interface UserEditionForm {
 interface CheckEmail {
   valid: number; // 1 for valid/unused email
 }
+interface AuthToken {
+  access: string;
+  refresh: string;
+}
+/*interface AuthProfile {
+  id: string;
+  username: string;
+  email: string;
+  real_name: string;
+  identity: "teacher" | "admin" | "student";
+  date_joined: string;
+  last_login: string | null;
+  profile: {
+    student_id: string;
+    bio: string;
+    avatar: string | null;
+    email_verified: boolean;
+    updated_at: string;
+  };
+}*/

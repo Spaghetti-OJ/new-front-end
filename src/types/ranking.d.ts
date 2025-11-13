@@ -1,9 +1,18 @@
-// src/types/ranking.d.ts
-
-// src/types/ranking.d.ts
 export interface RankingUser {
-  id: number;
   username: string;
-  score: number;
-  rank?: number;
+  email: string;
+
+  [k: string]: unknown;
+}
+
+export interface RankingItem {
+  user: RankingUser;
+  ACProblem: number;
+  ACSubmission: number;
+  Submission: number;
+}
+
+export interface RankingResponse {
+  message: string; // "Success."
+  data: RankingItem[];
 }
