@@ -75,7 +75,6 @@ fetcher.interceptors.response.use(
       }
       isRefreshing = true;
       const newAccess = await refreshProvider();
-      isRefreshing = false;
 
       if (!newAccess) {
         waitingQueue = [];
@@ -88,9 +87,10 @@ fetcher.interceptors.response.use(
       original.headers.Authorization = `Bearer ${newAccess}`;
       return fetcher(original);
     } catch (e) {
-      isRefreshing = false;
       waitingQueue = [];
       return Promise.reject(error);
+    } finally {
+      isRefreshing = false;
     }
   },
 );
