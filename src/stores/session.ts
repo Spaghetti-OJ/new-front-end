@@ -23,7 +23,7 @@ export const useSession = defineStore("session", {
     state: SessionState.NotValidated,
     username: "",
     displayedName: "",
-    role: "",
+    role: UserRole.Guest,
     bio: "",
     email: "",
     token: localStorage.getItem(ACCESS_KEY) || "",

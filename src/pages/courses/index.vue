@@ -15,7 +15,7 @@ const { data: courses, error, isLoading } = useAxios<CourseList>("/course", fetc
 const displayedCourses = computed(() => [...(courses.value ?? [])].reverse());
 
 const session = useSession();
-const rolesCanCreateCourse = computed(() => [UserRole.Admin || UserRole.Teacher]);
+const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
 </script>
 
 <template>
@@ -23,7 +23,11 @@ const rolesCanCreateCourse = computed(() => [UserRole.Admin || UserRole.Teacher]
     <div class="card-body">
       <div class="card-title justify-between">
         {{ $t("courses.index.list") }}
-        <router-link v-if="rolesCanCreateCourse" class="btn btn-success" to="/courses/new">
+        <router-link
+          v-if="rolesCanCreateCourse.includes(session.role)"
+          class="btn btn-success"
+          to="/courses/new"
+        >
           <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("courses.index.new") }}
         </router-link>
       </div>
@@ -44,9 +48,11 @@ const rolesCanCreateCourse = computed(() => [UserRole.Admin || UserRole.Teacher]
             </thead>
             <tbody>
               <tr v-for="{ course, teacher } in displayedCourses" :key="course" class="hover">
-                <td :class="{
-                  'min-w-[10rem] max-w-[12rem] whitespace-pre-wrap': !isDesktop,
-                }">
+                <td
+                  :class="{
+                    'min-w-[10rem] max-w-[12rem] whitespace-pre-wrap': !isDesktop,
+                  }"
+                >
                   <router-link :to="`/courses/${course}`" class="link link-hover">{{ course }}</router-link>
                 </td>
                 <td>{{ teacher.user_name }}</td>
