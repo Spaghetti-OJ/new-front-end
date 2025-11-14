@@ -4,9 +4,15 @@
     <div class="relative">
       <div class="avatar">
         <div
-          class="h-64 w-64 overflow-hidden rounded-full bg-base-200 ring ring-base-300 ring-offset-2 ring-offset-base-100">
+          class="h-64 w-64 overflow-hidden rounded-full bg-base-200 ring ring-base-300 ring-offset-2 ring-offset-base-100"
+        >
           <!-- 有上傳頭貼則顯示圖片，否則用預設灰色底 -->
-          <img v-if="currentAvatarUrl" :src="currentAvatarUrl" alt="altText" class="h-full w-full object-cover" />
+          <img
+            v-if="currentAvatarUrl"
+            :src="currentAvatarUrl"
+            alt="altText"
+            class="h-full w-full object-cover"
+          />
           <div v-else class="flex h-full w-full items-center justify-center bg-base-300 text-base-content/30">
             <span class="text-sm">No Image</span>
           </div>
@@ -16,7 +22,13 @@
       <!-- 可編輯頭貼時的 + 按鈕（右下角） -->
       <div v-if="editableAvatar" class="absolute bottom-5 right-5">
         <div class="dropdown dropdown-end">
-          <label tabindex="0" class="btn btn-circle btn-primary btn-sm shadow-md" aria-label="Upload avatar options"> + </label>
+          <label
+            tabindex="0"
+            class="btn btn-circle btn-primary btn-sm shadow-md"
+            aria-label="Upload avatar options"
+          >
+            +
+          </label>
 
           <ul tabindex="0" class="dropdown-content menu rounded-box mt-2 w-40 bg-base-100 p-2 shadow">
             <li>
@@ -30,24 +42,26 @@
 
         <!-- 隱藏 input -->
         <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileSelected" />
-        <input ref="cameraInput" type="file" accept="image/*" capture="environment" class="hidden"
-          @change="onFileSelected" />
+        <input
+          ref="cameraInput"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          class="hidden"
+          @change="onFileSelected"
+        />
       </div>
     </div>
 
     <!-- 下方按鈕 -->
     <div v-if="buttons?.length" class="mt-3 flex w-full flex-col gap-4">
-      <button v-for="(btn, idx) in buttons" :key="idx" class="btn btn-outline w-full text-lg font-bold" :class="[
-        btn.variant === 'primary'
-          ? 'btn-primary'
-          : btn.variant === 'error'
-            ? 'btn-error'
-            : btn.variant === 'secondary'
-              ? 'btn-secondary'
-              : btn.variant
-                ? `btn-${btn.variant}`
-                : 'btn-primary',
-      ]" @click="() => emit('click', btn.action)">
+      <button
+        v-for="(btn, idx) in buttons"
+        :key="idx"
+        class="btn btn-outline w-full text-lg font-bold"
+        :class="btn.variant ? `btn-${btn.variant}` : 'btn-primary'"
+        @click="() => emit('click', btn.action)"
+      >
         {{ btn.label }}
       </button>
     </div>
