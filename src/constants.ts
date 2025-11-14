@@ -76,3 +76,15 @@ export const PROBLEM_STATUS = {
   HIDDEN: 1,
   VISIBLE: 0,
 };
+
+export const DIFFICULTY = {
+  EASY: "easy",
+  MEDIUM: "medium",
+  HARD: "hard",
+} as const;
+
+export const DIFFICULTY_COLOR_CLASS = {
+  [DIFFICULTY.EASY]: "bg-green-500",
+  [DIFFICULTY.MEDIUM]: "bg-yellow-500",
+  [DIFFICULTY.HARD]: "bg-red-500",
+} satisfies Record<(typeof DIFFICULTY)[keyof typeof DIFFICULTY], string>;

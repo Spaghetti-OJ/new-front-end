@@ -217,6 +217,45 @@
       "back": "Back"
     }
   },
+  "problems": {
+    "title": "Problem List",
+    "loading": "Loading problems...",
+    "filter": {
+      "Courses": "Courses",
+      "Tags": "Tags",
+      "Difficulty": "Difficulty"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "tags": "Tags",
+      "course": "Course",
+      "ac": "AC Ratio (%)"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "reset": "Reset"
+    },
+    "empty": "No problems found.",
+    "search": {
+      "placeholder": "Search problem..."
+    }
+  },
+  "ranking": {
+    "title": "Ranking",
+    "table": {
+      "id": "#",
+      "avatar": "Avatar",
+      "userId": "UserID",
+      "displayName": "Username",
+      "ac": "AC counting"
+    },
+    "loading": "Loading ranking data...",
+    "error": "Failed to load ranking data. Showing mock data.",
+    "mockHint": "(Showing mock data)"
+  },
   "components": {
     "ann": {
       "form": {
@@ -387,6 +426,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! Something went wrong, please refresh the page to try again."
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "Ask me anything about programming or NOJ...",
+      "sendButton": "Send"
     }
   },
   "admin": {

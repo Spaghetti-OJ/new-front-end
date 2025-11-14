@@ -55,7 +55,7 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
                 >
                   <router-link :to="`/courses/${course}`" class="link link-hover">{{ course }}</router-link>
                 </td>
-                <td>{{ teacher.username }}</td>
+                <td>{{ teacher.user_name }}</td>
               </tr>
             </tbody>
           </table>

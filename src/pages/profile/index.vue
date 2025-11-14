@@ -14,11 +14,15 @@ const router = useRouter();
 const session = useSession();
 const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
-
+const refreshtype = {
+  refresh: session.refreshtoken,
+};
 async function logout() {
-  await api.Auth.logout();
+  const errorrr = await api.Auth.logout(refreshtype);
   router.push("/");
   session.validateSession();
+  session.token = "";
+  session.refreshtoken = "";
 }
 
 const changePasswordForm = reactive({
@@ -51,8 +55,8 @@ async function changePassword() {
   changePasswordForm.isLoading = true;
   try {
     await api.Auth.changePassword({
-      oldPassword: changePasswordForm.oldPassword,
-      newPassword: changePasswordForm.newPassword,
+      old_password: changePasswordForm.oldPassword,
+      new_password: changePasswordForm.newPassword,
     });
     clearForm();
   } catch (error) {
@@ -100,7 +104,7 @@ function clearForm() {
               <td>{{ session.username }}</td>
               <td>{{ session.displayedName }}</td>
               <td>{{ session.email }}</td>
-              <td>{{ ROLE[session.role] }}</td>
+              <td>{{ session.role }}</td>
             </tr>
           </tbody>
         </table>
