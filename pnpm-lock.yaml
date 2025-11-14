@@ -92,6 +92,9 @@ importers:
       vue-router:
         specifier: ^4.0.12
         version: 4.6.3(vue@3.5.22(typescript@5.9.3))
+      vue3-calendar-heatmap:
+        specifier: ^2.0.5
+        version: 2.0.5(tippy.js@6.3.7)(vue@3.5.22(typescript@5.9.3))
     devDependencies:
       '@iconify-json/uil':
         specifier: ^1.1.0
@@ -431,6 +434,9 @@ packages:
     resolution: {integrity: sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@popperjs/core@2.11.8':
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
@@ -1941,6 +1947,9 @@ packages:
   tinyexec@1.0.1:
     resolution: {integrity: sha512-5uC6DDlmeqiOwCPmK9jMSdOuZTh8bU39Ys6yidB+UTt5hfZUPGAypSgFRiEp+jbi9qH40BLDvy85jIU88wKSqw==}
 
+  tippy.js@6.3.7:
+    resolution: {integrity: sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==}
+
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -2119,6 +2128,13 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
+
+  vue3-calendar-heatmap@2.0.5:
+    resolution: {integrity: sha512-qvveNQlTS5Aw7AvRLs0zOyu3uP5iGJlXJAnkrkG2ElDdyQ8H1TJhQ8rL702CROjAg16ezIveUY10nCO7lqZ25w==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      tippy.js: ^6.3.7
+      vue: ^3.2.29
 
   vue@3.5.22:
     resolution: {integrity: sha512-toaZjQ3a/G/mYaLSbV+QsQhIdMo9x5rrqIpYRObsJ6T/J+RyCSFwN2LHNVH9v8uIcljDNa3QzPVdv3Y6b9hAJQ==}
@@ -2386,6 +2402,8 @@ snapshots:
   '@playwright/test@1.56.1':
     dependencies:
       playwright: 1.56.1
+
+  '@popperjs/core@2.11.8': {}
 
   '@rollup/pluginutils@5.3.0(rollup@3.29.5)':
     dependencies:
@@ -3949,6 +3967,10 @@ snapshots:
 
   tinyexec@1.0.1: {}
 
+  tippy.js@6.3.7:
+    dependencies:
+      '@popperjs/core': 2.11.8
+
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
@@ -4091,6 +4113,11 @@ snapshots:
       '@volar/typescript': 2.4.15
       '@vue/language-core': 2.2.12(typescript@5.9.3)
       typescript: 5.9.3
+
+  vue3-calendar-heatmap@2.0.5(tippy.js@6.3.7)(vue@3.5.22(typescript@5.9.3)):
+    dependencies:
+      tippy.js: 6.3.7
+      vue: 3.5.22(typescript@5.9.3)
 
   vue@3.5.22(typescript@5.9.3):
     dependencies:
