@@ -1,3 +1,16 @@
+<script setup>
+import { CalendarHeatmap } from "vue3-calendar-heatmap";
+import "vue3-calendar-heatmap/dist/style.css";
+const props = defineProps({
+  contributions: { type: Array, default: () => [] },
+  submission: { type: Number, default: 0 },
+  acceptance: { type: Number, default: 0 },
+  totalsolved: { type: Number, default: 0 },
+  data: { type: Object, default: () => ({ easy: 0, med: 0, hard: 0 }) },
+  beatrate: { type: Number, default: 0 },
+});
+</script>
+
 <template>
   <div class="flex w-full flex-col gap-1">
     <!-- Label -->
@@ -73,16 +86,3 @@
     </section>
   </div>
 </template>
-
-<script setup>
-import { CalendarHeatmap } from "vue3-calendar-heatmap";
-import "vue3-calendar-heatmap/dist/style.css";
-const props = defineProps({
-  contributions: { type: Array, default: () => [] },
-  submission: { type: Number, default: 0 },
-  acceptance: { type: Number, default: 0 },
-  totalsolved: { type: Number, default: 0 },
-  data: { type: Object, default: () => ({ easy: 0, med: 0, hard: 0 }) },
-  beatrate: { type: Number, default: 0 },
-});
-</script>

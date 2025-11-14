@@ -1,3 +1,54 @@
+<script setup>
+import { ref, watch, computed } from "vue";
+
+const props = defineProps({
+  avatarUrl: {
+    type: String,
+    default: "",
+  },
+  editableAvatar: {
+    type: Boolean,
+    default: false,
+  },
+  buttons: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+const emit = defineEmits(["click", "upload"]);
+
+/* 頭貼預覽用 URL */
+const currentAvatarUrl = ref(props.avatarUrl);
+watch(
+  () => props.avatarUrl,
+  (val) => {
+    currentAvatarUrl.value = val || "";
+  },
+);
+
+/* 上傳相關 */
+const fileInput = ref(null);
+const cameraInput = ref(null);
+
+function openFilePicker(type) {
+  if (type === "file") fileInput.value?.click();
+  else if (type === "camera") cameraInput.value?.click();
+}
+
+function onFileSelected(e) {
+  const input = e.target;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  currentAvatarUrl.value = url;
+  emit("upload", file); // 之後給外面串 API 用
+
+  input.value = "";
+}
+</script>
+
 <template>
   <div class="flex flex-col items-center gap-8">
     <!-- 頭貼區 -->
@@ -67,54 +118,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, watch, computed } from "vue";
-
-const props = defineProps({
-  avatarUrl: {
-    type: String,
-    default: "",
-  },
-  editableAvatar: {
-    type: Boolean,
-    default: false,
-  },
-  buttons: {
-    type: Array,
-    default: () => [],
-  },
-});
-
-const emit = defineEmits(["click", "upload"]);
-
-/* 頭貼預覽用 URL */
-const currentAvatarUrl = ref(props.avatarUrl);
-watch(
-  () => props.avatarUrl,
-  (val) => {
-    currentAvatarUrl.value = val || "";
-  },
-);
-
-/* 上傳相關 */
-const fileInput = ref(null);
-const cameraInput = ref(null);
-
-function openFilePicker(type) {
-  if (type === "file") fileInput.value?.click();
-  else if (type === "camera") cameraInput.value?.click();
-}
-
-function onFileSelected(e) {
-  const input = e.target;
-  const file = input.files?.[0];
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-  currentAvatarUrl.value = url;
-  emit("upload", file); // 之後給外面串 API 用
-
-  input.value = "";
-}
-</script>

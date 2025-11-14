@@ -1,3 +1,36 @@
+<script setup>
+import { ref, watch } from "vue";
+
+const props = defineProps({
+  label: { type: String, required: true },
+  modelValue: { type: [String, Number], default: "" },
+  editable: { type: Boolean, default: false },
+  type: { type: String, default: "text" }, // 'text' | 'email' | 'textarea'
+  boxWidth: { type: String, default: "w-full" }, // Tailwind 寬度 class
+  containerClass: { type: String, default: "" }, // 外層額外 class（例如 col-span-2）
+});
+
+const emit = defineEmits(["update:modelValue", "commit"]);
+
+const localValue = ref(props.modelValue ?? "");
+
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (v !== localValue.value) localValue.value = v ?? "";
+  },
+);
+
+function commit() {
+  emit("update:modelValue", localValue.value);
+  emit("commit", localValue.value);
+}
+
+function cancel() {
+  localValue.value = props.modelValue ?? "";
+}
+</script>
+
 <template>
   <div class="flex w-full flex-col gap-1 !text-left" :class="containerClass">
     <!-- 標籤 -->
@@ -48,36 +81,3 @@
     ></textarea>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from "vue";
-
-const props = defineProps({
-  label: { type: String, required: true },
-  modelValue: { type: [String, Number], default: "" },
-  editable: { type: Boolean, default: false },
-  type: { type: String, default: "text" }, // 'text' | 'email' | 'textarea'
-  boxWidth: { type: String, default: "w-full" }, // Tailwind 寬度 class
-  containerClass: { type: String, default: "" }, // 外層額外 class（例如 col-span-2）
-});
-
-const emit = defineEmits(["update:modelValue", "commit"]);
-
-const localValue = ref(props.modelValue ?? "");
-
-watch(
-  () => props.modelValue,
-  (v) => {
-    if (v !== localValue.value) localValue.value = v ?? "";
-  },
-);
-
-function commit() {
-  emit("update:modelValue", localValue.value);
-  emit("commit", localValue.value);
-}
-
-function cancel() {
-  localValue.value = props.modelValue ?? "";
-}
-</script>
