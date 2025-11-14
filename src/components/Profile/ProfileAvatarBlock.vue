@@ -16,7 +16,7 @@
       <!-- 可編輯頭貼時的 + 按鈕（右下角） -->
       <div v-if="editableAvatar" class="absolute bottom-5 right-5">
         <div class="dropdown dropdown-end">
-          <label tabindex="0" class="btn btn-circle btn-primary btn-sm shadow-md"> + </label>
+          <label tabindex="0" class="btn btn-circle btn-primary btn-sm shadow-md" aria-label="Upload avatar options"> + </label>
 
           <ul tabindex="0" class="dropdown-content menu rounded-box mt-2 w-40 bg-base-100 p-2 shadow">
             <li>
