@@ -19,6 +19,7 @@ const refreshtype = {
 };
 async function logout() {
   const errorrr = await api.Auth.logout(refreshtype);
+  await session.logoutLocally();
   router.push("/");
   session.validateSession();
   session.token = "";
