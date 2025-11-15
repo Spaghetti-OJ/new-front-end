@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
 import { fetcher } from "@/api";
+import api from "@/api";
 
 useTitle("Ranking | Normal OJ");
 
@@ -55,9 +56,9 @@ const mockRanking = [
 
 onMounted(async () => {
   try {
-    const { data } = await fetcher.get("/ranking");
-    if (data && Array.isArray(data.data)) {
-      ranking.value = data.data;
+    const { data } = await api.Ranking.getRankingStats();
+    if (data && Array.isArray(data.ranking)) {
+      ranking.value = data.ranking;
     } else {
       console.warn("Using mock ranking data...");
       ranking.value = mockRanking;

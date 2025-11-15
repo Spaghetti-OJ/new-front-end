@@ -5,6 +5,7 @@ import { Homework } from "./homework";
 import { Announcement, Course } from "./course";
 import { User } from "./user";
 import { AIVTuber } from "./aivtuber";
+import { Ranking } from "./ranking";
 
 export { fetcher } from "./fetcher";
 export { Auth, Copycat } from "./auth";
@@ -14,7 +15,7 @@ export { Homework } from "./homework";
 export { Announcement, Course } from "./course";
 export { User } from "./user";
 export { AIVTuber } from "./aivtuber";
-
+export { Ranking } from "./ranking";
 const api = {
   Auth,
   Problem,
@@ -25,6 +26,7 @@ const api = {
   User,
   Copycat,
   AIVTuber,
+  Ranking
 };
 
 export default api;
