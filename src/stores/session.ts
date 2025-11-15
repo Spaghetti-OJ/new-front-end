@@ -98,6 +98,7 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
     try {
       const { access } = await api.Auth.refresh({ refresh: sessionStore.refreshtoken });
       sessionStore.token = access; // 更新新 access
+      localStorage.setItem(ACCESS_KEY, access);
       return access;
     } catch {
       sessionStore.logoutLocally();
