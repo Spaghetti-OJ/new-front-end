@@ -16,7 +16,10 @@ const { t } = useI18n();
 
 useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
 const router = useRouter();
-const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+const { data: problem, error, isLoading } = useAxios<Problem>(
+  `/problem/view/${route.params.id}`,
+  fetcher,
+);
 
 const lang = useStorage(LOCAL_STORAGE_KEY.LAST_USED_LANG, -1);
 const form = reactive({
@@ -25,6 +28,13 @@ const form = reactive({
   isLoading: false,
   isSubmitError: false,
 });
+const testForm = reactive({
+  input: "",       // 使用者輸入的 testcase
+  output: "",      // 顯示出來的輸出
+  isLoading: false,
+  isError: false,
+});
+
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
   lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 3)) },
@@ -47,13 +57,36 @@ const langOptions = computed<LangOption[]>(() => {
   return availables;
 });
 
+// detect python only
 watchEffect(() => {
   const detectedLang = hljs.highlightAuto(form.code, ["c", "cpp", "python"]).language;
-  // Since c and cpp are difficult to distinguish, we only detect python.
-  if (detectedLang === "python" && langOptions.value.some((option) => option.value === 2)) {
+  if (detectedLang === "python" && langOptions.value.some((op) => op.value === 2)) {
     form.lang = 2;
   }
 });
+
+async function runTest() {
+  testForm.isError = false;
+  testForm.output = "";
+
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
+
+  if (!testForm.input) {
+  }
+
+  try {
+    testForm.isLoading = true;
+    testForm.output =
+      " 這裡顯示測試結果（接上後端 API 後，請把這段改成真正的結果）";
+  } catch (e) {
+    testForm.isError = true;
+    testForm.output = "Test failed. Please try again.";
+    throw e;
+  } finally {
+    testForm.isLoading = false;
+  }
+}
 
 async function submit() {
   const isFormCorrect = await v$.value.$validate();
@@ -68,19 +101,21 @@ async function submit() {
     const blob = await blobWriter.getData();
     const formData = new FormData();
     formData.append("code", blob);
+
     const { submissionId } = (
       await api.Submission.create({
         problemId: Number(route.params.id),
         languageType: Number(form.lang),
       })
     ).data;
+
     await api.Submission.modify(submissionId, formData);
     router.push(`/courses/${route.params.name}/submissions/${submissionId}`);
   } catch (error) {
     form.isSubmitError = true;
     throw error;
   } finally {
-    isLoading.value = false;
+    form.isLoading = false;
   }
 }
 </script>
@@ -89,44 +124,149 @@ async function submit() {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
+        <!-- 標題 -->
         <div class="card-title md:text-2xl lg:text-3xl">
           {{ t("course.problem.submit.card.title") }}{{ $route.params.id }}
         </div>
 
-        <div class="card-title mt-10 md:text-lg lg:text-xl">
-          {{ t("course.problem.submit.card.placeholder") }}
-        </div>
-        <code-editor v-model="form.code" class="mt-4" />
-        <span v-show="v$.code.$error" class="text-error" v-text="v$.code.$errors[0]?.$message" />
+        <!-- 左右兩欄 -->
+        <div class="mt-6 grid lg:grid-cols-2">
+          <!-- 左欄: Description -->
+          <div class="space-y-4 lg:-mt-2">
+            <template v-if="isLoading">
+              <div class="flex justify-center py-10">
+                <ui-spinner class="h-10 w-10" />
+              </div>
+            </template>
 
-        <div v-if="error" class="alert alert-error shadow-lg">
-          <div>
-            <i-uil-times-circle />
-            <span>{{ t("course.problem.submit.err.msg") }}</span>
+            <template v-else-if="problem">
+              <div>
+                <div class="card-title md:text-lg lg:text-xl">
+                  {{ t("components.problem.card.desc") }}
+                </div>
+                <markdown-renderer
+                  class="mb-4"
+                  :md="problem.description.description"
+                />
+              </div>
+            </template>
           </div>
-        </div>
 
-        <div class="mt-10 flex items-center justify-between">
-          <div class="form-control w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">{{ t("course.problem.submit.lang.text") }}</span>
-              <ui-spinner v-if="isLoading" class="h-6 w-6" />
-            </label>
-            <select
-              v-model="v$.lang.$model"
-              :class="['select select-bordered', v$.lang.$error && 'input-error']"
+          <!-- 右欄 -->
+          <div class="flex flex-col lg:-mt-2">
+            <!-- 程式編輯區 -->
+            <div class="card-title md:text-lg lg:text-xl mt-2">
+              {{ t("course.problem.submit.card.placeholder") }}
+            </div>
+
+            <code-editor v-model="form.code" class="mt-2" />
+            <span
+              v-show="v$.code.$error"
+              class="text-error mt-2"
+              v-text="v$.code.$errors[0]?.$message"
+            />
+
+            <div v-if="error" class="alert alert-error mt-4 shadow-lg">
+              <div>
+                <i-uil-times-circle />
+                <span>{{ t("course.problem.submit.err.msg") }}</span>
+              </div>
+            </div>
+
+            <!-- 語言選擇 -->
+            <div class="form-control w-full max-w-xs mt-2">
+              <label class="label">
+                <span class="label-text font-semibold">
+                  {{ t("course.problem.submit.lang.text") }}
+                </span>
+                <ui-spinner v-if="isLoading" class="h-6 w-6" />
+              </label>
+
+              <select
+                v-model="v$.lang.$model"
+                :class="[
+                  'select select-bordered',
+                  v$.lang.$error && 'input-error',
+                ]"
+                >
+                <option disabled :value="-1">
+                  {{ t("course.problem.submit.lang.select") }}
+                </option>
+
+                <option
+                  v-for="{ text, value } in langOptions"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ text }}
+                </option>
+              </select>
+
+              <label class="label" v-show="v$.lang.$error">
+                <span
+                  class="label-text-alt text-error"
+                  v-text="v$.lang.$errors[0]?.$message"
+                />
+              </label>
+            </div>
+
+            <!-- 測試區 -->
+            <div class="mt-3 space-y-2">
+                <!-- Input testcase -->
+                <div>
+                <label class="label">
+                    <span class="label-text font-semibold">Input testcase</span>
+                </label>
+                <textarea
+                    v-model="testForm.input"
+                    class="textarea textarea-bordered w-full"
+                    rows="3"
+                    placeholder="輸入要測試的資料"
+                />
+                </div>
+
+                <!-- Test output -->
+                <div>
+                <label class="label">
+                    <span class="label-text font-semibold">Test output</span>
+                </label>
+                <textarea
+                    v-model="testForm.output"
+                    class="textarea textarea-bordered w-full"
+                    rows="4"
+                    readonly
+                    placeholder="按下TEST，顯示程式輸出"
+                />
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-3">
+              <!-- Test 按鈕 -->
+              <button
+                class="btn"
+                :class="testForm.isLoading && 'loading'"
+                @click="runTest"
+              >
+                Test
+              </button>
+
+              <!-- Submit 按鈕 -->
+              <button
+                :class="['btn', form.isLoading && 'loading']"
+                @click="submit"
+              >
+                <i-uil-file-upload-alt class="mr-1 h-5 w-5" />
+                {{ t("course.problem.submit.text") }}
+              </button>
+            </div>
+            
+            <span
+              v-if="form.isSubmitError"
+              class="mt-4 text-sm text-error"
             >
-              <option disabled :value="-1">{{ t("course.problem.submit.lang.select") }}</option>
-              <option v-for="{ text, value } in langOptions" :key="value" :value="value">{{ text }}</option>
-            </select>
-            <label class="label" v-show="v$.lang.$error">
-              <span class="label-text-alt text-error" v-text="v$.lang.$errors[0]?.$message" />
-            </label>
+              {{ t("course.problem.submit.err.msg") }}
+            </span>
           </div>
-
-          <button :class="['btn', form.isLoading && 'loading']" @click="submit">
-            <i-uil-file-upload-alt class="mr-1 h-5 w-5" /> {{ t("course.problem.submit.text") }}
-          </button>
         </div>
       </div>
     </div>
