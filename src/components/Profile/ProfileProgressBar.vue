@@ -59,15 +59,18 @@ const props = defineProps({
             <!-- 左側：三個標籤 -->
             <div class="flex flex-col gap-3">
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#60A047]">
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#60A047]"
+              >
                 Easy <span>{{ data.easy }}</span>
               </span>
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E9A11C]">
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E9A11C]"
+              >
                 Med. <span>{{ data.med }}</span>
               </span>
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E46319]">
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E46319]"
+              >
                 Hard <span>{{ data.hard }}</span>
               </span>
             </div>
