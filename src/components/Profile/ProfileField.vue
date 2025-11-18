@@ -50,7 +50,7 @@ function cancel() {
     <!-- 顯示模式：textarea（例如 INTRODUCTION） -->
     <div
       v-else-if="!editable && type === 'textarea'"
-      class="flex h-[100px] items-start overflow-y-auto whitespace-pre-wrap rounded-xl bg-base-200 px-3 py-3 text-lg text-base-content"
+      class="flex min-h-[100px] items-start whitespace-pre-wrap rounded-xl bg-base-200 px-3 py-3 text-lg text-base-content"
       :class="boxWidth"
     >
       {{ modelValue || "—" }}
