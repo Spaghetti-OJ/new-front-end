@@ -8,10 +8,10 @@ import { required, sameAs, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-import ProfileLayout from '@/components/Profile/ProfileLayout.vue'
-import ProfileAvatarBlock from '@/components/Profile/ProfileAvatarBlock.vue'
-import ProfileField from '@/components/Profile/ProfileField.vue'
-import ProfileProgressBar from '@/components/Profile/ProfileProgressBar.vue'
+import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
+import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
+import ProfileField from "@/components/Profile/ProfileField.vue";
+import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 
 useTitle("Profile | Normal OJ");
 const router = useRouter();
@@ -21,13 +21,6 @@ const { t } = useI18n();
 const refreshtype = {
   refresh: session.refreshtoken,
 };
-async function logout() {
-  const errorrr = await api.Auth.logout(refreshtype);
-  router.push("/");
-  session.validateSession();
-  session.token = "";
-  session.refreshtoken = "";
-}
 
 const changePasswordForm = reactive({
   oldPassword: "",
@@ -87,59 +80,59 @@ function clearForm() {
 }
 
 const user = {
-  realName: '陳育濬',
-  username: 'doggggg',
-  role: 'Student',
-  email: '41247057S@gapps.ntnu.edu.tw',
-  id: '41247057S',
-  studentId: '41247057S',
-  intro: '哈囉我是資工116',
-  avatar: ''
-}
+  realName: "陳育渝",
+  username: "doggggg",
+  role: "Student",
+  email: "41247057S@gapps.ntnu.edu.tw",
+  id: "41247057S",
+  studentId: "41247057S",
+  intro: "哈囉我是資工116",
+  avatar: "",
+};
 const heatmapData = [
-  { date: '2025-01-01', count: 5 },
-  { date: '2025-01-02', count: 1 },
-  { date: '2025-01-03', count: 0 },
-  { date: '2025-01-04', count: 8 },
-  { date: '2025-01-05', count: 3 },
-  { date: '2025-01-06', count: 2 },
-  { date: '2025-01-07', count: 6 },
-  { date: '2025-01-08', count: 0 },
-  { date: '2025-01-09', count: 10 },
-  { date: '2025-01-10', count: 4 },
-  { date: '2025-01-11', count: 7 },
-  { date: '2025-01-12', count: 2 },
-  { date: '2025-01-13', count: 1 },
-  { date: '2025-01-14', count: 9 },
-  { date: '2025-01-15', count: 3 },
-  { date: '2025-01-16', count: 0 },
-  { date: '2025-01-17', count: 6 },
-  { date: '2025-01-18', count: 4 },
-  { date: '2025-01-19', count: 1 },
-  { date: '2025-01-20', count: 5 },
-  { date: '2025-01-21', count: 3 },
-  { date: '2025-01-22', count: 2 },
-  { date: '2025-01-23', count: 8 },
-  { date: '2025-01-24', count: 10 },
-  { date: '2025-01-25', count: 0 }
-]
+  { date: "2025-01-01", count: 5 },
+  { date: "2025-01-02", count: 1 },
+  { date: "2025-01-03", count: 0 },
+  { date: "2025-01-04", count: 8 },
+  { date: "2025-01-05", count: 3 },
+  { date: "2025-01-06", count: 2 },
+  { date: "2025-01-07", count: 6 },
+  { date: "2025-01-08", count: 0 },
+  { date: "2025-01-09", count: 10 },
+  { date: "2025-01-10", count: 4 },
+  { date: "2025-01-11", count: 7 },
+  { date: "2025-01-12", count: 2 },
+  { date: "2025-01-13", count: 1 },
+  { date: "2025-01-14", count: 9 },
+  { date: "2025-01-15", count: 3 },
+  { date: "2025-01-16", count: 0 },
+  { date: "2025-01-17", count: 6 },
+  { date: "2025-01-18", count: 4 },
+  { date: "2025-01-19", count: 1 },
+  { date: "2025-01-20", count: 5 },
+  { date: "2025-01-21", count: 3 },
+  { date: "2025-01-22", count: 2 },
+  { date: "2025-01-23", count: 8 },
+  { date: "2025-01-24", count: 10 },
+  { date: "2025-01-25", count: 0 },
+];
 
-const form = reactive({ ...user })
+const form = reactive({ ...user });
 
-function onAvatarAction(action: 'Edit' | 'Sign Out') {
-  if (action === 'Edit') {
+function onAvatarAction(action: "Edit" | "Sign Out") {
+  if (action === "Edit") {
     // 這裡之後接 API，把 form 丟出去
-    console.log('Save profile', { ...form })
+    console.log("Save profile", { ...form });
   }
-  if (action === 'Sign Out') {
+  if (action === "Sign Out") {
     // 還原成原本 user
-    Object.assign(form, user)
-    console.log('Cancel edit, reset form')
+    Object.assign(form, user);
+    console.log("Cancel edit, reset form");
   }
 }
 
 function onAvatarUpload(file: File) {
-  console.log('avatar file for upload:', file)
+  console.log("avatar file for upload:", file);
   // 之後接 API，上傳成功後更新 form.avatar
 }
 </script>
@@ -149,22 +142,22 @@ function onAvatarUpload(file: File) {
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
       <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" :buttons="[
-        { label: 'Edit', variant: 'primary', action: 'save' },
-        { label: 'Sign Out', variant: 'error', action: 'cancel' }
+        { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
+        { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
       ]" @click="onAvatarAction" @upload="onAvatarUpload" />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
     <template #right>
       <section class="w-full">
-        <div class="grid grid-cols-1 md:grid-cols-[275px_342px] gap-x-[33px] gap-y-4">
-          <ProfileField label="REAL NAME" v-model="form.realName" :editable="false" />
-          <ProfileField label="USER NAME" v-model="form.username" :editable="false" />
-          <ProfileField label="ROLE" v-model="form.role" :editable="false" />
-          <ProfileField label="EMAIL" v-model="form.email" :editable="false" type="email" />
-          <ProfileField label="USER ID" v-model="form.id" :editable="false" />
-          <ProfileField label="STUDENT ID" :model-value="user.studentId" />
-          <ProfileField label="INTRODUCTION" v-model="form.intro" :editable="false" type="textarea"
+        <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
+          <ProfileField :label="t('profile.realName')" :model-value="form.realName" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
+          <ProfileField :label="t('profile.role')" :model-value="form.role" :editable="false" />
+          <ProfileField :label="t('profile.email')" :model-value="form.email" :editable="false" type="email" />
+          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
+          <ProfileField :label="t('profile.studentId')" :model-value="user.studentId" />
+          <ProfileField :label="t('profile.introduction')" :model-value="form.intro" :editable="false" type="textarea"
             container-class="md:col-span-2" />
         </div>
         <div class="mt-4">
@@ -174,58 +167,4 @@ function onAvatarUpload(file: File) {
       </section>
     </template>
   </ProfileLayout>
-  </div>
-
-  <!-- 下：統計區 -->
-  <section class="stats">
-    <label>PROGRESS BAR</label>
-    <div class="heatmap-card">
-      <div class="stats-grid">
-        <!-- 左：上熱力圖、下兩格 -->
-        <div class="left-col">
-          <!-- 熱力圖（資料驅動） -->
-          <div class="heatmap" :style="{ '--cols': weeks.length }" role="grid" aria-label="Contribution heatmap">
-            <div class="hm-col" v-for="(week, wi) in weeks" :key="wi" role="row">
-              <div v-for="(cell, di) in week" :key="di" class="hm-cell"
-                :title="cell.date ? `${cell.date} • ${cell.value} time(s)` : ''"
-                :style="{ backgroundColor: color(cell.value) }" role="gridcell" />
-            </div>
-          </div>
-
-          <div class="kpi-row">
-            <div class="kpi">
-              <p class="kpi-title">Submission</p>
-              <p class="kpi-num sub">{{ user.submission }}</p>
-            </div>
-            <div class="kpi">
-              <p class="kpi-title">Acceptance</p>
-              <p class="kpi-num acc">{{ user.acceptance }}<span class="pct">%</span></p>
-            </div>
-          </div>
-        </div>
-
-        <aside class="totals">
-          <p class="totals-title">Total Solved</p>
-          <div class="totals-line">
-            <p class="totals-num">{{ user.totalsolved }}</p>
-            <p class="totals-sub">Problems</p>
-          </div>
-          <div class="levels">
-            <span class="tag easy">Easy&nbsp;{{ data.easy }}</span>
-            <span class="tag med">Med.&nbsp;{{ data.med }}</span>
-            <span class="tag hard">Hard&nbsp;{{ data.hard }}</span>
-          </div>
-
-          <span class="tag beats">
-            <span class="beats-title">Beats</span>
-            <span class="beats-num">
-              {{ beatrate }}<span class="beats-pct">%</span>
-            </span>
-          </span>
-        </aside>
-      </div>
-    </div>
-  </section>
-  </main>
-  </section>
 </template>

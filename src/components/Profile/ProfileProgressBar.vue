@@ -17,12 +17,12 @@ const props = defineProps({
     <label class="ml-1 text-xs font-semibold tracking-wide text-base-content/80"> PROGRESS BAR </label>
 
     <!-- 外框-->
-    <section class="flex w-full flex-col gap-4 rounded-[32px] bg-base-200 px-5 py-5">
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[370px_220px]">
+    <section class="flex w-full flex-col gap-4 rounded-xl border-base-300 bg-base-200 px-4 py-4">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)]">
         <!-- 左欄 -->
         <div class="flex flex-col gap-4">
           <!-- Heatmap -->
-          <div class="rounded-[18px] border border-base-300 bg-base-100 p-3">
+          <div class="rounded-xl border-base-300 bg-base-100 p-3">
             <div class="mb-2 text-base font-semibold text-base-content">Heatmap</div>
             <CalendarHeatmap :values="contributions" :end-date="new Date()" :max="10" :tooltip="true" />
           </div>
@@ -59,18 +59,15 @@ const props = defineProps({
             <!-- 左側：三個標籤 -->
             <div class="flex flex-col gap-3">
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#60A047]"
-              >
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#60A047]">
                 Easy <span>{{ data.easy }}</span>
               </span>
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E9A11C]"
-              >
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E9A11C]">
                 Med. <span>{{ data.med }}</span>
               </span>
               <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E46319]"
-              >
+                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E46319]">
                 Hard <span>{{ data.hard }}</span>
               </span>
             </div>
