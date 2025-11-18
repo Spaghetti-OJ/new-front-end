@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch, computed } from "vue";
-
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const props = defineProps({
   avatarUrl: {
     type: String,
@@ -65,7 +66,7 @@ function onFileSelected(e) {
             class="h-full w-full object-cover"
           />
           <div v-else class="flex h-full w-full items-center justify-center bg-base-300 text-base-content/30">
-            <span class="text-sm">No Image</span>
+            <span class="text-sm">{{ t("profile.noImage") }}</span>
           </div>
         </div>
       </div>

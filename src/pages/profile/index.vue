@@ -152,8 +152,8 @@ function onAvatarUpload(file: File) {
         :avatar-url="form.avatar"
         :editable-avatar="false"
         :buttons="[
-          { label: 'Edit', variant: 'primary', action: 'save' },
-          { label: 'Sign Out', variant: 'error', action: 'cancel' },
+          { label: t('profile.edit'), variant: 'primary', action: 'save' },
+          { label: t('profile.signOut'), variant: 'error', action: 'cancel' },
         ]"
         @click="onAvatarAction"
         @upload="onAvatarUpload"
@@ -164,15 +164,20 @@ function onAvatarUpload(file: File) {
     <template #right>
       <section class="w-full">
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-          <ProfileField label="REAL NAME" v-model="form.realName" :editable="false" />
-          <ProfileField label="USER NAME" v-model="form.username" :editable="false" />
-          <ProfileField label="ROLE" v-model="form.role" :editable="false" />
-          <ProfileField label="EMAIL" v-model="form.email" :editable="false" type="email" />
-          <ProfileField label="USER ID" v-model="form.id" :editable="false" />
-          <ProfileField label="STUDENT ID" :model-value="user.studentId" />
+          <ProfileField :label="t('profile.realName')" :model-value="form.realName" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
+          <ProfileField :label="t('profile.role')" :model-value="form.role" :editable="false" />
           <ProfileField
-            label="INTRODUCTION"
-            v-model="form.intro"
+            :label="t('profile.email')"
+            :model-value="form.email"
+            :editable="false"
+            type="email"
+          />
+          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
+          <ProfileField :label="t('profile.studentId')" :model-value="user.studentId" />
+          <ProfileField
+            :label="t('profile.introduction')"
+            :model-value="form.intro"
             :editable="false"
             type="textarea"
             container-class="md:col-span-2"
