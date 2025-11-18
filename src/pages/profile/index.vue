@@ -8,10 +8,10 @@ import { required, sameAs, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-import ProfileLayout from '@/components/Profile/ProfileLayout.vue'
-import ProfileAvatarBlock from '@/components/Profile/ProfileAvatarBlock.vue'
-import ProfileField from '@/components/Profile/ProfileField.vue'
-import ProfileProgressBar from '@/components/Profile/ProfileProgressBar.vue'
+import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
+import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
+import ProfileField from "@/components/Profile/ProfileField.vue";
+import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 
 useTitle("Profile | Normal OJ");
 const router = useRouter();
@@ -87,59 +87,59 @@ function clearForm() {
 }
 
 const user = {
-  realName: '陳育濬',
-  username: 'doggggg',
-  role: 'Student',
-  email: '41247057S@gapps.ntnu.edu.tw',
-  id: '41247057S',
-  studentId: '41247057S',
-  intro: '哈囉我是資工116',
-  avatar: ''
-}
+  realName: "陳育渝",
+  username: "doggggg",
+  role: "Student",
+  email: "41247057S@gapps.ntnu.edu.tw",
+  id: "41247057S",
+  studentId: "41247057S",
+  intro: "哈囉我是資工116",
+  avatar: "",
+};
 const heatmapData = [
-  { date: '2025-01-01', count: 5 },
-  { date: '2025-01-02', count: 1 },
-  { date: '2025-01-03', count: 0 },
-  { date: '2025-01-04', count: 8 },
-  { date: '2025-01-05', count: 3 },
-  { date: '2025-01-06', count: 2 },
-  { date: '2025-01-07', count: 6 },
-  { date: '2025-01-08', count: 0 },
-  { date: '2025-01-09', count: 10 },
-  { date: '2025-01-10', count: 4 },
-  { date: '2025-01-11', count: 7 },
-  { date: '2025-01-12', count: 2 },
-  { date: '2025-01-13', count: 1 },
-  { date: '2025-01-14', count: 9 },
-  { date: '2025-01-15', count: 3 },
-  { date: '2025-01-16', count: 0 },
-  { date: '2025-01-17', count: 6 },
-  { date: '2025-01-18', count: 4 },
-  { date: '2025-01-19', count: 1 },
-  { date: '2025-01-20', count: 5 },
-  { date: '2025-01-21', count: 3 },
-  { date: '2025-01-22', count: 2 },
-  { date: '2025-01-23', count: 8 },
-  { date: '2025-01-24', count: 10 },
-  { date: '2025-01-25', count: 0 }
-]
+  { date: "2025-01-01", count: 5 },
+  { date: "2025-01-02", count: 1 },
+  { date: "2025-01-03", count: 0 },
+  { date: "2025-01-04", count: 8 },
+  { date: "2025-01-05", count: 3 },
+  { date: "2025-01-06", count: 2 },
+  { date: "2025-01-07", count: 6 },
+  { date: "2025-01-08", count: 0 },
+  { date: "2025-01-09", count: 10 },
+  { date: "2025-01-10", count: 4 },
+  { date: "2025-01-11", count: 7 },
+  { date: "2025-01-12", count: 2 },
+  { date: "2025-01-13", count: 1 },
+  { date: "2025-01-14", count: 9 },
+  { date: "2025-01-15", count: 3 },
+  { date: "2025-01-16", count: 0 },
+  { date: "2025-01-17", count: 6 },
+  { date: "2025-01-18", count: 4 },
+  { date: "2025-01-19", count: 1 },
+  { date: "2025-01-20", count: 5 },
+  { date: "2025-01-21", count: 3 },
+  { date: "2025-01-22", count: 2 },
+  { date: "2025-01-23", count: 8 },
+  { date: "2025-01-24", count: 10 },
+  { date: "2025-01-25", count: 0 },
+];
 
-const form = reactive({ ...user })
+const form = reactive({ ...user });
 
-function onAvatarAction(action: 'Edit' | 'Sign Out') {
-  if (action === 'Edit') {
+function onAvatarAction(action: "Edit" | "Sign Out") {
+  if (action === "Edit") {
     // 這裡之後接 API，把 form 丟出去
-    console.log('Save profile', { ...form })
+    console.log("Save profile", { ...form });
   }
-  if (action === 'Sign Out') {
+  if (action === "Sign Out") {
     // 還原成原本 user
-    Object.assign(form, user)
-    console.log('Cancel edit, reset form')
+    Object.assign(form, user);
+    console.log("Cancel edit, reset form");
   }
 }
 
 function onAvatarUpload(file: File) {
-  console.log('avatar file for upload:', file)
+  console.log("avatar file for upload:", file);
   // 之後接 API，上傳成功後更新 form.avatar
 }
 </script>
@@ -148,48 +148,30 @@ function onAvatarUpload(file: File) {
   <ProfileLayout>
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock
-        :avatar-url="form.avatar"
-        :editable-avatar="false"
-        :buttons="[
-          { label: 'Edit', variant: 'primary', action: 'save' },
-          { label: 'Sign Out', variant: 'error', action: 'cancel' }
-        ]"
-        @click="onAvatarAction"
-        @upload="onAvatarUpload"
-      />
+      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" :buttons="[
+        { label: 'Edit', variant: 'primary', action: 'save' },
+        { label: 'Sign Out', variant: 'error', action: 'cancel' },
+      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
     <template #right>
       <section class="w-full">
-        <div class="grid grid-cols-1 md:grid-cols-[275px_342px] gap-x-[33px] gap-y-4">
+        <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
           <ProfileField label="REAL NAME" v-model="form.realName" :editable="false" />
           <ProfileField label="USER NAME" v-model="form.username" :editable="false" />
           <ProfileField label="ROLE" v-model="form.role" :editable="false" />
           <ProfileField label="EMAIL" v-model="form.email" :editable="false" type="email" />
           <ProfileField label="USER ID" v-model="form.id" :editable="false" />
           <ProfileField label="STUDENT ID" :model-value="user.studentId" />
-          <ProfileField
-            label="INTRODUCTION"
-            v-model="form.intro"
-            :editable="false"
-            type="textarea"
-            container-class="md:col-span-2"
-          />
+          <ProfileField label="INTRODUCTION" v-model="form.intro" :editable="false" type="textarea"
+            container-class="md:col-span-2" />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar
-            :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
-          />
+          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
         </div>
       </section>
     </template>
   </ProfileLayout>
 </template>
-
