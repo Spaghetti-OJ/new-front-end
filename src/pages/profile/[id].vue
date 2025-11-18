@@ -1,19 +1,23 @@
 <script setup>
 import { reactive } from "vue";
+import { useRoute } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
 import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
-// 這裡先假裝有 user，可以之後接 API
+// 根據 route 參數 id 取得 user，可以之後接 API
+const route = useRoute();
+const userId = route.params.id;
+// TODO: Replace with API call to fetch user by userId
 const user = {
   realName: "陳育濬",
   username: "doggggg",
   role: "Student",
-  email: "41247057S@gapps.ntnu.edu.tw",
-  id: "41247057S",
-  studentId: "41247057S",
+  email: `${userId}@gapps.ntnu.edu.tw`,
+  id: userId,
+  studentId: userId,
   intro: "哈囉我是資工116\n這是我的自我介紹\n哈哈哈\n隨便\n再打一點\n然後",
   avatar: "",
 };
