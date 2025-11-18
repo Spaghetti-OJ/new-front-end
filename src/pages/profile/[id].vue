@@ -4,7 +4,8 @@ import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
 import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
-
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 // 這裡先假裝有 user，可以之後接 API
 const user = {
   realName: "陳育濬",
@@ -71,11 +72,11 @@ const form = reactive({ ...user });
         </div>
 
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-          <ProfileField label="USER NAME" v-model="form.username" :editable="false" />
-          <ProfileField label="USER ID" v-model="form.id" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
+          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
           <ProfileField
-            label="INTRODUCTION"
-            v-model="form.intro"
+            :label="t('profile.introduction')"
+            :model-value="form.intro"
             :editable="false"
             type="textarea"
             container-class="md:col-span-2"
