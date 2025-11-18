@@ -148,10 +148,16 @@ function onAvatarUpload(file: File) {
   <ProfileLayout>
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" :buttons="[
-        { label: 'Edit', variant: 'primary', action: 'save' },
-        { label: 'Sign Out', variant: 'error', action: 'cancel' },
-      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
+      <ProfileAvatarBlock
+        :avatar-url="form.avatar"
+        :editable-avatar="false"
+        :buttons="[
+          { label: 'Edit', variant: 'primary', action: 'save' },
+          { label: 'Sign Out', variant: 'error', action: 'cancel' },
+        ]"
+        @click="onAvatarAction"
+        @upload="onAvatarUpload"
+      />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
@@ -164,12 +170,23 @@ function onAvatarUpload(file: File) {
           <ProfileField label="EMAIL" v-model="form.email" :editable="false" type="email" />
           <ProfileField label="USER ID" v-model="form.id" :editable="false" />
           <ProfileField label="STUDENT ID" :model-value="user.studentId" />
-          <ProfileField label="INTRODUCTION" v-model="form.intro" :editable="false" type="textarea"
-            container-class="md:col-span-2" />
+          <ProfileField
+            label="INTRODUCTION"
+            v-model="form.intro"
+            :editable="false"
+            type="textarea"
+            container-class="md:col-span-2"
+          />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
+          <ProfileProgressBar
+            :contributions="heatmapData"
+            :submission="204"
+            :acceptance="100"
+            :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }"
+            :beatrate="15.27"
+          />
         </div>
       </section>
     </template>
