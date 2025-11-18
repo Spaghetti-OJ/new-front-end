@@ -21,13 +21,6 @@ const { t } = useI18n();
 const refreshtype = {
   refresh: session.refreshtoken,
 };
-async function logout() {
-  const errorrr = await api.Auth.logout(refreshtype);
-  router.push("/");
-  session.validateSession();
-  session.token = "";
-  session.refreshtoken = "";
-}
 
 const changePasswordForm = reactive({
   oldPassword: "",
@@ -148,16 +141,10 @@ function onAvatarUpload(file: File) {
   <ProfileLayout>
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock
-        :avatar-url="form.avatar"
-        :editable-avatar="false"
-        :buttons="[
-          { label: t('profile.edit'), variant: 'primary', action: 'save' },
-          { label: t('profile.signOut'), variant: 'error', action: 'cancel' },
-        ]"
-        @click="onAvatarAction"
-        @upload="onAvatarUpload"
-      />
+      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" :buttons="[
+        { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
+        { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
+      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
@@ -167,31 +154,15 @@ function onAvatarUpload(file: File) {
           <ProfileField :label="t('profile.realName')" :model-value="form.realName" :editable="false" />
           <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" :model-value="form.role" :editable="false" />
-          <ProfileField
-            :label="t('profile.email')"
-            :model-value="form.email"
-            :editable="false"
-            type="email"
-          />
+          <ProfileField :label="t('profile.email')" :model-value="form.email" :editable="false" type="email" />
           <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
           <ProfileField :label="t('profile.studentId')" :model-value="user.studentId" />
-          <ProfileField
-            :label="t('profile.introduction')"
-            :model-value="form.intro"
-            :editable="false"
-            type="textarea"
-            container-class="md:col-span-2"
-          />
+          <ProfileField :label="t('profile.introduction')" :model-value="form.intro" :editable="false" type="textarea"
+            container-class="md:col-span-2" />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar
-            :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
-          />
+          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
         </div>
       </section>
     </template>
