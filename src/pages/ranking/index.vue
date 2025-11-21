@@ -57,7 +57,7 @@ const mockRanking = [
 onMounted(async () => {
   try {
     const { data } = await api.Ranking.getRankingStats();
-    if (data && Array.isArray(data.ranking)) {
+        if (data && Array.isArray(data.ranking)) {
       ranking.value = data.ranking;
     } else {
       console.warn("Using mock ranking data...");
@@ -118,7 +118,7 @@ onMounted(async () => {
               </div>
             </td>
             <td>{{ item.user?.username || "Unknown" }}</td>
-            <td>{{ item.user?.display_name || "-" }}</td>
+            <td>{{ item.user?.real_name || "-" }}</td>
             <td class="text-right">{{ item.ACProblem ?? 0 }}</td>
           </tr>
         </tbody>
