@@ -1,20 +1,20 @@
 interface User {
-  user_name: string;
+  username: string;
   role: string;
   email: string;
-  user_id: string;
+  userid: string;
 }
 
 interface UserSignup {
   id: string;
   username: string;
   email: string;
-  real_name: string;
+  userid: string;
   identity: string;
   date_joined: string;
   last_login: string | null;
 }
-type UserInfo = Pick<User, "user_name" | "real_name" | "role" | "md5">;
+type UserInfo = Pick<User, "username" | "role">;
 
 interface UserSummary {
   userCount: number;
