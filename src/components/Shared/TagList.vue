@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import { getTagColor } from "@/constants";
 interface Props {
   tags: string[];
-  size?: string;
-  colorMode?: string;
+  size?: string; // 若之後想做 large / small，可以留著
+  colorMode?: string; // 若之後想做 dark/light，可保留
 }
 const props = defineProps<Props>();
 </script>
 
 <template>
   <div class="flex flex-wrap gap-2">
-    <span
-      v-for="tag in props.tags"
-      :key="tag"
-      class="badge"
-      :style="{ backgroundColor: getTagColor(tag), color: '#fff', border: 'none' }"
-    >
+    <span v-for="tag in props.tags" :key="tag" class="badge badge-outline cursor-default px-3 py-1 text-xs">
       {{ tag }}
     </span>
   </div>
@@ -24,10 +18,10 @@ const props = defineProps<Props>();
 <style scoped>
 .badge {
   border-radius: 0.375rem;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .badge:hover {
-  filter: brightness(1.1);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 </style>
