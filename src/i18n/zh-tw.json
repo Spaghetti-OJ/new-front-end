@@ -194,7 +194,15 @@
     "username": "帳號",
     "dispname": "顯示名稱",
     "email": "電子郵件",
-    "role": "角色",
+    "role": "身份",
+    "userId": "使用者名稱",
+    "studentId": "學號",
+    "introduction": "自我介紹",
+    "realName": "真實姓名",
+    "progressBar": "進度展示",
+    "heatmap": "貢獻度",
+    "edit": "編輯",
+    "noImage": "無頭像",
     "signOut": "登出",
     "pw": {
       "change": "變更密碼",
@@ -221,8 +229,9 @@
     "title": "題目列表",
     "loading": "載入題目中...",
     "filter": {
-      "allCourses": "所有課程",
-      "allTags": "所有標籤"
+      "Courses": "課程",
+      "Tags": "標籤",
+      "difficulty": "難度"
     },
     "table": {
       "id": "題號",
@@ -424,6 +433,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! 系統發生了一些錯誤，請重新嘗試，若嘗試數次皆失敗請聯絡管理員。"
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "問我任何關於程式設計或 NOJ 的問題...",
+      "sendButton": "發送"
     }
   },
   "admin": {

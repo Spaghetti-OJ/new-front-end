@@ -218,7 +218,7 @@ function speak(text: string) {
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "zh-TW";
-  utter.rate = 1;
+  utter.rate = 1.3;
   utter.pitch = 1.1;
   utter.volume = 1;
   speechSynthesis.speak(utter);
@@ -274,7 +274,8 @@ async function askQuestion() {
         .replace(/```[\s\S]*?```/g, "")
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
         .replace(/[*#>`_~]/g, "")
-        .replace(/\n+/g, "。");
+        .replace(/\n+/g, "。")
+        .replace(/\p{Extended_Pictographic}/gu, "");
       speak(plainText);
     }
 
@@ -351,7 +352,7 @@ async function askQuestion() {
           <input
             v-model="question"
             type="text"
-            placeholder="輸入問題或請教程式相關內容..."
+            :placeholder="$t('components.ai-vtuber.inputPlaceholder')"
             class="flex-1 bg-transparent text-sm text-base-content placeholder-base-content/60 focus:outline-none"
             :disabled="loading"
             @keyup.enter="askQuestion"
@@ -362,7 +363,7 @@ async function askQuestion() {
             :disabled="loading || !question.trim()"
           >
             <span v-if="loading" class="loading-spinner loading-sm loading"></span>
-            <span v-else>發送</span>
+            <span v-else>{{ $t("components.ai-vtuber.sendButton") }}</span>
           </button>
         </div>
       </div>
@@ -374,6 +375,7 @@ async function askQuestion() {
       @click="toggleAssistant"
       tabindex="0"
       aria-label="Open AI assistant chat"
+      role="button"
       @keyup.enter="toggleAssistant"
     >
       <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
@@ -399,13 +401,16 @@ async function askQuestion() {
   transform: translateX(20px);
   opacity: 0;
 }
+
 .slide-left-leave-to {
   transform: translateX(20px);
   opacity: 0;
 }
+
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: rgba(120, 120, 120, 0.3);
   border-radius: 10px;
