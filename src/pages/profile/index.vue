@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRef } from "vue";
+import { reactive, ref, toRef, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/api";
 import { useSession } from "@/stores/session";
@@ -14,6 +14,22 @@ const router = useRouter();
 const session = useSession();
 const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
+
+const profile = ref<UserProperties | null>(null);
+const isLoadingProfile = ref(false);
+
+async function loadProfile() {
+  isLoadingProfile.value = true;
+  const data = await api.Auth.getProfile();
+  profile.value = data;
+  isLoadingProfile.value = false;
+}
+
+// 組件掛載時載入資料
+onMounted(() => {
+  loadProfile();
+});
+
 const refreshtype = {
   refresh: session.refreshtoken,
 };
@@ -36,7 +52,7 @@ const changePasswordForm = reactive({
   errorMsg: "",
   isFinished: false,
 });
-// TODO: integrate vue-i18n & Vuelidate error message
+
 const rules = {
   newPassword: { required },
   oldPassword: { required },
@@ -93,7 +109,14 @@ function clearForm() {
         <div class="card-title justify-between">{{ t("profile.title") }}</div>
 
         <div class="my-2" />
-        <table class="table w-full">
+        
+        <!-- 載入中狀態 -->
+        <div v-if="isLoadingProfile" class="flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        
+        <!-- 顯示個人資料 -->
+        <table v-else-if="profile" class="table w-full">
           <thead>
             <tr>
               <th>{{ t("profile.username") }}</th>
@@ -104,10 +127,10 @@ function clearForm() {
           </thead>
           <tbody>
             <tr>
-              <td>{{ session.username }}</td>
-              <td>{{ session.displayedName }}</td>
-              <td>{{ session.email }}</td>
-              <td>{{ session.role }}</td>
+              <td>{{ profile.user_name }}</td>
+              <td>{{ profile.real_name }}</td>
+              <td>{{ profile.email }}</td>
+              <td>{{ profile.role }}</td>
             </tr>
           </tbody>
         </table>

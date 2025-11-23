@@ -58,8 +58,8 @@ export const useSession = defineStore("session", {
       }
       try {
         const me = await api.Auth.getSession();
-        const { user_name, real_name, introduction, role, email } = me;
-        this.username = user_name;
+        const { username, real_name, introduction, role, email } = me;
+        this.username = username;
         this.displayedName = real_name;
         this.bio = introduction;
         this.role = role as UserRole;

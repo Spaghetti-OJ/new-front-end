@@ -28,12 +28,13 @@ export const Auth = {
     fetcher.post<string>("/auth/user/", body).then((r) => r.data ?? r),
   batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>
     fetcher.post<string>("/auth/batch-signup/", body).then((r) => r.data ?? r),
-  getSession: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
+  getSession: () => fetcher.get("/auth/me/").then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>
     fetcher.post<{ access: string; refresh?: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
   verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
   generatetoken: (body:{ name: string ; permissions?:string[];expires_at?:string}) => fetcher.post("/api-tokens/", body).then((r) => r.data ?? r),
   listtokens: () => fetcher.get("/api-tokens/").then((r) => r.data ?? r),
+  getProfile: () => fetcher.get("/profile/").then((r) => r.data ?? r),
 };
 
 export const Copycat = {
