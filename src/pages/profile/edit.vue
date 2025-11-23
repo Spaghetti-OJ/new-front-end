@@ -106,7 +106,6 @@ function onAvatarUpload(file: File) {
         ]"
         @action="
           (a) => {
-            console.log('raw @action:', a);
             onAvatarAction(a);
           }
         "
