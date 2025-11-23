@@ -68,14 +68,13 @@ export const useSession = defineStore("session", {
       } catch (error) {
         this.logoutLocally();
       }
-      
     },
     async verifyAccessToken(): Promise<boolean> {
       if (!this.token) return false;
       try {
         console.log("[Verify Access Token] 開始驗證 access token...");
         await api.Auth.verify({ token: this.token });
-        return true; 
+        return true;
       } catch {
         return false;
       }
@@ -113,11 +112,11 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
       console.log("[Refresh Token] 開始刷新 access token...");
       const response = await api.Auth.refresh({ refresh: sessionStore.refreshtoken });
       const { access, refresh: newRefresh } = response;
-      
+
       // 更新 access token
       sessionStore.token = access;
       localStorage.setItem(ACCESS_KEY, access);
-      
+
       // 如果後端回傳新的 refresh token（啟用 ROTATE_REFRESH_TOKENS），也要更新
       if (newRefresh) {
         console.log("[Refresh Token] ✅ 刷新成功！已更新 access token 和新的 refresh token");
@@ -126,7 +125,7 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
       } else {
         console.log("[Refresh Token] ✅ 刷新成功！已更新 access token（未啟用 ROTATE_REFRESH_TOKENS）");
       }
-      
+
       return access;
     } catch (error) {
       console.error("[Refresh Token] ❌ 刷新失敗：", error);

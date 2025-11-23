@@ -109,12 +109,12 @@ function clearForm() {
         <div class="card-title justify-between">{{ t("profile.title") }}</div>
 
         <div class="my-2" />
-        
+
         <!-- 載入中狀態 -->
         <div v-if="isLoadingProfile" class="flex justify-center py-8">
-          <span class="loading loading-spinner loading-lg"></span>
+          <span class="loading-spinner loading-lg loading"></span>
         </div>
-        
+
         <!-- 顯示個人資料 -->
         <table v-else-if="profile" class="table w-full">
           <thead>
