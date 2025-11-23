@@ -122,7 +122,7 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
         sessionStore.refreshtoken = newRefresh;
         localStorage.setItem(REFRESH_KEY, newRefresh);
       } else {
-        console.log("[Refresh Token] ✅ 刷新成功！已更新 access token（未啟用 ROTATE_REFRESH_TOKENS）");
+        
       }
 
       return access;
