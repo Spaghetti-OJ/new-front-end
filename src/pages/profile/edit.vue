@@ -63,7 +63,6 @@ async function saveProfile() {
   try {
     // TODO: 換成真正的更新 API
     await api.Auth.updateProfile?.({
-      real_name: form.real_name,
       email: form.email,
       intro: form.intro,
       avatar: form.avatar,
@@ -97,20 +96,14 @@ function onAvatarUpload(file: File) {
   <ProfileLayout leftWidth="420px">
     <!-- 左邊：頭貼 -->
     <template #left>
-      <ProfileAvatarBlock
-        :avatar-url="form.avatar"
-        :editable-avatar="true"
-        :buttons="[
-          { label: t('profile.save'), variant: 'primary', action: 'save' },
-          { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
-        ]"
-        @action="
+      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="true" :buttons="[
+        { label: t('profile.save'), variant: 'primary', action: 'save' },
+        { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
+      ]" @action="
           (a) => {
             onAvatarAction(a);
           }
-        "
-        @upload="onAvatarUpload"
-      />
+        " @upload="onAvatarUpload" />
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
       </div>
@@ -124,12 +117,7 @@ function onAvatarUpload(file: File) {
           <ProfileField :label="t('profile.username')" v-model="form.user_name" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
-          <ProfileField
-            :label="t('profile.introduction')"
-            v-model="form.intro"
-            :editable="true"
-            type="textarea"
-          />
+          <ProfileField :label="t('profile.introduction')" v-model="form.intro" :editable="true" type="textarea" />
         </div>
       </section>
     </template>
