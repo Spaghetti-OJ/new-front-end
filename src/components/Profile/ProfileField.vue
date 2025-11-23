@@ -1,5 +1,5 @@
-<script setup>
-import { ref, watch } from "vue";
+<script setup lang="ts">
+import { nextTick, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
   label: { type: String, required: true },
@@ -12,13 +12,34 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "commit"]);
 
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const textareaHeight = ref<string>("auto");
 const localValue = ref(props.modelValue ?? "");
 
 watch(
   () => props.modelValue,
   (v) => {
     if (v !== localValue.value) localValue.value = v ?? "";
+    nextTick(autoResize);
   },
+);
+
+watch(
+  localValue,
+  () => {
+    nextTick(autoResize);
+  },
+  { flush: "post" },
+);
+
+watch(
+  () => props.editable,
+  (isEditable) => {
+    if (isEditable && props.type === "textarea") {
+      nextTick(autoResize);
+    }
+  },
+  { immediate: true },
 );
 
 function commit() {
@@ -28,6 +49,19 @@ function commit() {
 
 function cancel() {
   localValue.value = props.modelValue ?? "";
+}
+
+onMounted(() => {
+  nextTick(autoResize);
+});
+
+function autoResize() {
+  if (!textareaRef.value || props.type !== "textarea" || !props.editable) return;
+  const el = textareaRef.value;
+  el.style.height = "auto";
+  const newHeight = `${el.scrollHeight}px`;
+  el.style.height = newHeight;
+  textareaHeight.value = newHeight;
 }
 </script>
 
@@ -50,7 +84,7 @@ function cancel() {
     <!-- 顯示模式：textarea（例如 INTRODUCTION） -->
     <div
       v-else-if="!editable && type === 'textarea'"
-      class="flex h-[100px] items-start overflow-y-auto whitespace-pre-wrap rounded-xl bg-base-200 px-3 py-3 text-lg text-base-content"
+      class="flex min-h-[100px] items-start whitespace-pre-wrap rounded-xl bg-base-200 px-3 py-3 text-lg text-base-content"
       :class="boxWidth"
     >
       {{ modelValue || "—" }}
@@ -71,9 +105,13 @@ function cancel() {
     <!-- 多行輸入 -->
     <textarea
       v-else
+      ref="textareaRef"
       v-model="localValue"
       class="textarea textarea-bordered rounded-xl bg-base-200 text-lg"
-      :class="[boxWidth, 'min-h-[160px] overflow-y-auto']"
+      :class="[boxWidth, 'min-h-[48px] resize-none overflow-hidden']"
+      :style="{ height: textareaHeight }"
+      rows="1"
+      @input="autoResize"
       @keydown.enter.exact.prevent="commit"
       @keydown.shift.enter.stop
       @keydown.esc.prevent="cancel"

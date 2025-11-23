@@ -1,6 +1,8 @@
 <script setup>
 import { CalendarHeatmap } from "vue3-calendar-heatmap";
 import "vue3-calendar-heatmap/dist/style.css";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const props = defineProps({
   contributions: { type: Array, default: () => [] },
   submission: { type: Number, default: 0 },
@@ -14,16 +16,18 @@ const props = defineProps({
 <template>
   <div class="flex w-full flex-col gap-1">
     <!-- Label -->
-    <label class="ml-1 text-xs font-semibold tracking-wide text-base-content/80"> PROGRESS BAR </label>
+    <label class="ml-1 text-xs font-semibold tracking-wide text-base-content/80">
+      {{ t("profile.progressBar") }}
+    </label>
 
     <!-- 外框-->
-    <section class="flex w-full flex-col gap-4 rounded-[32px] bg-base-200 px-5 py-5">
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[370px_220px]">
+    <section class="flex w-full flex-col gap-4 rounded-xl border-base-300 bg-base-200 px-4 py-4">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)]">
         <!-- 左欄 -->
         <div class="flex flex-col gap-4">
           <!-- Heatmap -->
-          <div class="rounded-[18px] border border-base-300 bg-base-100 p-3">
-            <div class="mb-2 text-base font-semibold text-base-content">Heatmap</div>
+          <div class="rounded-xl border-base-300 bg-base-100 p-3">
+            <div class="mb-2 text-base font-semibold text-base-content">{{ t("profile.heatmap") }}</div>
             <CalendarHeatmap :values="contributions" :end-date="new Date()" :max="10" :tooltip="true" />
           </div>
 
