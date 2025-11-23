@@ -24,9 +24,14 @@ const isLoadingProfile = ref(false);
 
 async function loadProfile() {
   isLoadingProfile.value = true;
-  const data = await api.Auth.getProfile();
-  profile.value = data;
-  isLoadingProfile.value = false;
+  try {
+    const data = await api.Auth.getProfile();
+    profile.value = data;
+  } catch (error) {
+    console.error("Failed to load profile:", error);
+  } finally {
+    isLoadingProfile.value = false;
+  }
 }
 
 // 組件掛載時載入資料
@@ -105,16 +110,6 @@ function clearForm() {
   v$.value.$reset();
 }
 
-const user = {
-  realName: "陳育渝",
-  username: "doggggg",
-  role: "Student",
-  email: "41247057S@gapps.ntnu.edu.tw",
-  id: "41247057S",
-  studentId: "41247057S",
-  intro: "哈囉我是資工116",
-  avatar: "",
-};
 const heatmapData = [
   { date: "2025-01-01", count: 5 },
   { date: "2025-01-02", count: 1 },
@@ -143,95 +138,46 @@ const heatmapData = [
   { date: "2025-01-25", count: 0 },
 ];
 
-        <div class="my-2" />
-
-        <!-- 載入中狀態 -->
-        <div v-if="isLoadingProfile" class="flex justify-center py-8">
-          <span class="loading-spinner loading-lg loading"></span>
-        </div>
-
-        <!-- 顯示個人資料 -->
-        <table v-else-if="profile" class="table w-full">
-          <thead>
-            <tr>
-              <th>{{ t("profile.username") }}</th>
-              <th>{{ t("profile.dispname") }}</th>
-              <th>{{ t("profile.email") }}</th>
-              <th>{{ t("profile.role") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ profile.user_name }}</td>
-              <td>{{ profile.real_name }}</td>
-              <td>{{ profile.email }}</td>
-              <td>{{ profile.role }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card-actions">
-        <div class="mx-auto flex max-w-7xl gap-8 p-4">
-          <button class="btn btn-outline btn-error" @click="logout">{{ t("profile.signOut") }}</button>
-        </div>
-      </div>
-
-function onAvatarUpload(file: File) {
-  console.log("avatar file for upload:", file);
-  // 之後接 API，上傳成功後更新 form.avatar
+function onAvatarAction(action: "Edit" | "Sign Out") {
+  if (action === "Edit") {
+    router.push("/profile/edit");
+  }
+  if (action === "Sign Out") {
+    logout();
+  }
 }
 </script>
 
 <template>
-  <ProfileLayout>
+  <ProfileLayout v-if="profile">
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock
-        :avatar-url="form.avatar"
-        :editable-avatar="false"
-        :buttons="[
-          { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
-          { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
-        ]"
-        @click="onAvatarAction"
-        @upload="onAvatarUpload"
-      />
+      <ProfileAvatarBlock :avatar-url="profile.md5 || ''" :editable-avatar="false" :buttons="[
+        { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
+        { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
+      ]" @click="onAvatarAction" />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
     <template #right>
       <section class="w-full">
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-          <ProfileField :label="t('profile.realName')" :model-value="form.realName" :editable="false" />
-          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
-          <ProfileField :label="t('profile.role')" :model-value="form.role" :editable="false" />
-          <ProfileField
-            :label="t('profile.email')"
-            :model-value="form.email"
-            :editable="false"
-            type="email"
-          />
-          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
-          <ProfileField :label="t('profile.studentId')" :model-value="user.studentId" />
-          <ProfileField
-            :label="t('profile.introduction')"
-            :model-value="form.intro"
-            :editable="false"
-            type="textarea"
-            container-class="md:col-span-2"
-          />
+          <ProfileField :label="t('profile.realName')" :model-value="profile.real_name" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="profile.user_name" :editable="false" />
+          <ProfileField :label="t('profile.role')" :model-value="profile.role" :editable="false" />
+          <ProfileField :label="t('profile.email')" :model-value="profile.email" :editable="false" type="email" />
+          <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
+          <ProfileField :label="t('profile.introduction')" :model-value="profile.introduction" :editable="false"
+            type="textarea" container-class="md:col-span-2" />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar
-            :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
-          />
+          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
         </div>
       </section>
     </template>
   </ProfileLayout>
+  <div v-else-if="isLoadingProfile" class="flex items-center justify-center min-h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
 </template>
