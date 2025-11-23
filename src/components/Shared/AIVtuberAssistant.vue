@@ -85,7 +85,7 @@ function onDrag(e: MouseEvent) {
 
   // 不超出邊界
   const margin = 20;
-  const width = 140;   // avatar 寬度 + chatbox 預估寬
+  const width = 140; // avatar 寬度 + chatbox 預估寬
   const height = isOpen.value ? 520 : 180; // chat 打開更高，避免掉出底部
 
   const maxX = window.innerWidth - width - margin;
@@ -290,11 +290,7 @@ async function askQuestion() {
 </script>
 
 <template>
-  <div
-  class="fixed z-50"
-  :style="{ top: position.y + 'px', left: position.x + 'px' }"
-  @mousedown="startDrag"
->
+  <div class="fixed z-50" :style="{ top: position.y + 'px', left: position.x + 'px' }" @mousedown="startDrag">
     <!-- Chat Box -->
     <transition name="slide-left">
       <div
