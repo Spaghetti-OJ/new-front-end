@@ -10,12 +10,13 @@ const { t, locale } = useI18n();
 
 const localeInStorate = useStorage(LOCAL_STORAGE_KEY.LOCALE, "english");
 
-const tokenform={
+const tokenform = {
   name: "",
   permissions: [],
   expires_at: "",
 };
-const tokens= await api.Auth.generatetoken(tokenform);
+// This api will be sent when user want to generate a new token
+// const tokens= await api.Auth.generatetoken(tokenform);
 // initialize with the one in storage
 locale.value = localeInStorate.value;
 
