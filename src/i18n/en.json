@@ -195,6 +195,14 @@
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
+    "userId": "User ID",
+    "studentId": "Student ID",
+    "introduction": "Introduction",
+    "realName": "Real Name",
+    "progressBar": "Progress Bar",
+    "heatmap": "Heatmap",
+    "edit": "Edit",
+    "noImage": "No Image",
     "signOut": "Sign out",
     "pw": {
       "change": "Change Password",
@@ -221,8 +229,9 @@
     "title": "Problem List",
     "loading": "Loading problems...",
     "filter": {
-      "allCourses": "All Courses",
-      "allTags": "All Tags"
+      "Courses": "Courses",
+      "Tags": "Tags",
+      "Difficulty": "Difficulty"
     },
     "table": {
       "id": "ID",
@@ -425,6 +434,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! Something went wrong, please refresh the page to try again."
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "Ask me anything about programming or NOJ...",
+      "sendButton": "Send"
     }
   },
   "admin": {

@@ -40,19 +40,18 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    await api.Auth.login(body);
-    await session.validateSession();
-    if (route.query.redirect) {
-      router.push(route.query.redirect as string);
-    } else {
-      router.go(0);
-    }
-  } catch (error) {
+    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
+    console.log(tokens);
+    await session.setTokens(tokens.access, tokens.refresh);
+    const redirect = (route.query.redirect as string) ?? "/";
+    router.replace(redirect);
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.data?.message === "Login Failed") {
+      console.log(error);
+      const status = error.response?.status;
+
+      if (status === 401) {
         loginForm.errorMsg = t("errorCode.ERR001");
-      } else if (error.response?.data?.message === "Invalid User") {
-        loginForm.errorMsg = t("errorCode.ERR002");
       } else {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
       }
@@ -76,7 +75,7 @@ async function login() {
         <div v-else class="card-title mb-2">
           {{
             session.isLogin
-              ? $t("components.loginSection.welcome", { user: session.displayedName })
+              ? $t("components.loginSection.welcome", { user: session.username })
               : $t("components.loginSection.signin")
           }}
         </div>
