@@ -77,7 +77,6 @@ async function saveProfile() {
 
 function cancelEdit() {
   if (profile.value) Object.assign(form, profile.value);
-  console.log("cancel edit");
   router.push("/profile"); // 返回
 }
 
