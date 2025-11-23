@@ -26,7 +26,7 @@ const api = {
   User,
   Copycat,
   AIVTuber,
-  Ranking
+  Ranking,
 };
 
 export default api;
