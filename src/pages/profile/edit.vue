@@ -97,10 +97,21 @@ function onAvatarUpload(file: File) {
   <ProfileLayout leftWidth="420px">
     <!-- 左邊：頭貼 -->
     <template #left>
-      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="true" :buttons="[
-        { label: t('profile.save'), variant: 'primary', action: 'save' },
-        { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
-      ]" @action="(a) => { console.log('raw @action:', a); onAvatarAction(a); }" @upload="onAvatarUpload" />
+      <ProfileAvatarBlock
+        :avatar-url="form.avatar"
+        :editable-avatar="true"
+        :buttons="[
+          { label: t('profile.save'), variant: 'primary', action: 'save' },
+          { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
+        ]"
+        @action="
+          (a) => {
+            console.log('raw @action:', a);
+            onAvatarAction(a);
+          }
+        "
+        @upload="onAvatarUpload"
+      />
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
       </div>
@@ -109,12 +120,17 @@ function onAvatarUpload(file: File) {
     <!-- 右邊：可編輯資訊 -->
     <template #right>
       <section class="w-full max-w-4xl">
-        <div class="grid grid-cols-1 gap-4" :class="{ 'opacity-50 pointer-events-none': isLoadingProfile }">
+        <div class="grid grid-cols-1 gap-4" :class="{ 'pointer-events-none opacity-50': isLoadingProfile }">
           <ProfileField :label="t('profile.realName')" v-model="form.real_name" :editable="false" />
           <ProfileField :label="t('profile.username')" v-model="form.user_name" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
-          <ProfileField :label="t('profile.introduction')" v-model="form.intro" :editable="true" type="textarea" />
+          <ProfileField
+            :label="t('profile.introduction')"
+            v-model="form.intro"
+            :editable="true"
+            type="textarea"
+          />
         </div>
       </section>
     </template>

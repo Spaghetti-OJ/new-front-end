@@ -152,10 +152,15 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
   <ProfileLayout v-if="profile">
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
-      <ProfileAvatarBlock :avatar-url="profile.md5 || ''" :editable-avatar="false" :buttons="[
-        { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
-        { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
-      ]" @click="onAvatarAction" />
+      <ProfileAvatarBlock
+        :avatar-url="profile.md5 || ''"
+        :editable-avatar="false"
+        :buttons="[
+          { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
+          { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
+        ]"
+        @click="onAvatarAction"
+      />
     </template>
 
     <!-- 右邊：可編輯資訊欄 -->
@@ -165,19 +170,35 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
           <ProfileField :label="t('profile.realName')" :model-value="profile.real_name" :editable="false" />
           <ProfileField :label="t('profile.username')" :model-value="profile.user_name" :editable="false" />
           <ProfileField :label="t('profile.role')" :model-value="profile.role" :editable="false" />
-          <ProfileField :label="t('profile.email')" :model-value="profile.email" :editable="false" type="email" />
+          <ProfileField
+            :label="t('profile.email')"
+            :model-value="profile.email"
+            :editable="false"
+            type="email"
+          />
           <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
-          <ProfileField :label="t('profile.introduction')" :model-value="profile.introduction" :editable="false"
-            type="textarea" container-class="md:col-span-2" />
+          <ProfileField
+            :label="t('profile.introduction')"
+            :model-value="profile.introduction"
+            :editable="false"
+            type="textarea"
+            container-class="md:col-span-2"
+          />
         </div>
         <div class="mt-4">
-          <ProfileProgressBar :contributions="heatmapData" :submission="204" :acceptance="100" :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }" :beatrate="15.27" />
+          <ProfileProgressBar
+            :contributions="heatmapData"
+            :submission="204"
+            :acceptance="100"
+            :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }"
+            :beatrate="15.27"
+          />
         </div>
       </section>
     </template>
   </ProfileLayout>
-  <div v-else-if="isLoadingProfile" class="flex items-center justify-center min-h-screen">
-    <span class="loading loading-spinner loading-lg"></span>
+  <div v-else-if="isLoadingProfile" class="flex min-h-screen items-center justify-center">
+    <span class="loading-spinner loading-lg loading"></span>
   </div>
 </template>
