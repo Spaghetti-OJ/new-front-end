@@ -25,6 +25,157 @@ marked.use({
     },
   },
 });
+// ===== Draggable + Snap + Inertia AI Vtuber =====
+import { onMounted, onBeforeUnmount } from "vue";
+
+const position = ref({
+  x: window.innerWidth - 220,
+  y: window.innerHeight - 200,
+});
+
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+let lastX = 0;
+let lastY = 0;
+let lastTime = 0;
+
+let velocityX = 0;
+let velocityY = 0;
+
+// 拖曳開始
+function startDrag(e: MouseEvent) {
+  if ((e.target as HTMLElement).closest("input, button, textarea, a")) return;
+
+  isDragging = true;
+
+  // 拖曳透明度變化
+  document.body.classList.add("dragging-vtuber");
+
+  offsetX = e.clientX - position.value.x;
+  offsetY = e.clientY - position.value.y;
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+  lastTime = performance.now();
+
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", stopDrag);
+
+  e.preventDefault();
+}
+
+// 拖曳中
+function onDrag(e: MouseEvent) {
+  if (!isDragging) return;
+
+  const now = performance.now();
+  const dt = now - lastTime;
+
+  velocityX = (e.clientX - lastX) / dt;
+  velocityY = (e.clientY - lastY) / dt;
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+  lastTime = now;
+
+  position.value.x = e.clientX - offsetX;
+  position.value.y = e.clientY - offsetY;
+
+  // 不超出邊界
+  const margin = 20;
+  const width = 140;   // avatar 寬度 + chatbox 預估寬
+  const height = isOpen.value ? 520 : 180; // chat 打開更高，避免掉出底部
+
+  const maxX = window.innerWidth - width - margin;
+  const maxY = window.innerHeight - height - margin;
+
+  position.value.x = Math.max(margin, Math.min(maxX, position.value.x));
+  position.value.y = Math.max(margin, Math.min(maxY, position.value.y));
+}
+
+// 拖曳停止 + 慣性 + 吸附邊界
+function stopDrag() {
+  isDragging = false;
+
+  document.body.classList.remove("dragging-vtuber");
+
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("mouseup", stopDrag);
+
+  applyInertiaAndSnap();
+}
+
+// 慣性移動 + 吸附邊界
+function applyInertiaAndSnap() {
+  let friction = 0.95;
+  let threshold = 0.05;
+
+  function animate() {
+    velocityX *= friction;
+    velocityY *= friction;
+
+    position.value.x += velocityX * 20;
+    position.value.y += velocityY * 20;
+
+    const margin = 20;
+    position.value.x = Math.max(margin, Math.min(window.innerWidth - margin - 100, position.value.x));
+    position.value.y = Math.max(margin, Math.min(window.innerHeight - margin - 100, position.value.y));
+
+    if (Math.abs(velocityX) > threshold || Math.abs(velocityY) > threshold) {
+      requestAnimationFrame(animate);
+    } else {
+      snapToEdge();
+    }
+  }
+
+  animate();
+}
+
+// 🔥 自動吸附邊界
+function snapToEdge() {
+  const margin = 20;
+
+  const width = 140;
+  const height = isOpen.value ? 520 : 180;
+
+  const maxX = window.innerWidth - width - margin;
+  const maxY = window.innerHeight - height - margin;
+
+  // 邊距計算
+  const x = position.value.x;
+  const y = position.value.y;
+
+  const left = x;
+  const right = window.innerWidth - x - width;
+  const top = y;
+  const bottom = window.innerHeight - y - height;
+
+  const minDist = Math.min(left, right, top, bottom);
+
+  if (minDist === left) {
+    position.value.x = margin;
+  } else if (minDist === right) {
+    position.value.x = maxX;
+  } else if (minDist === top) {
+    position.value.y = margin;
+  } else {
+    position.value.y = maxY;
+  }
+}
+
+onMounted(() => {
+  position.value = {
+    x: window.innerWidth - 220,
+    y: window.innerHeight - 200,
+  };
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("mouseup", stopDrag);
+});
 
 function renderMarkdownSafe(text: string): string {
   const html = marked.parse(text) as string;
@@ -139,7 +290,11 @@ async function askQuestion() {
 </script>
 
 <template>
-  <div class="fixed bottom-8 right-8 z-50 flex items-end">
+  <div
+  class="fixed z-50"
+  :style="{ top: position.y + 'px', left: position.x + 'px' }"
+  @mousedown="startDrag"
+>
     <!-- Chat Box -->
     <transition name="slide-left">
       <div
@@ -239,6 +394,10 @@ async function askQuestion() {
 .slide-left-enter-active,
 .slide-left-leave-active {
   transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.dragging-vtuber * {
+  opacity: 0.85;
+  cursor: grabbing !important;
 }
 .slide-left-enter-from {
   transform: translateX(20px);
