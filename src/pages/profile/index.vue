@@ -18,12 +18,14 @@ const refreshtype = {
   refresh: session.refreshtoken,
 };
 async function logout() {
-  const errorrr = await api.Auth.logout(refreshtype);
-  await session.logoutLocally();
-  router.push("/");
-  session.validateSession();
-  session.token = "";
-  session.refreshtoken = "";
+  try {
+    await api.Auth.logout(refreshtype);
+    session.logoutLocally();
+    router.replace("/");
+  } catch (error) {
+    session.logoutLocally();
+    router.replace("/");
+  }
 }
 
 const changePasswordForm = reactive({
