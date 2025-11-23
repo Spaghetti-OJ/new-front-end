@@ -21,10 +21,9 @@ const REFRESH_KEY = "refresh_token";
 export const useSession = defineStore("session", {
   state: () => ({
     state: SessionState.NotValidated,
+    userid: "",
     username: "",
-    displayedName: "",
     role: UserRole.Guest,
-    bio: "",
     email: "",
     token: localStorage.getItem(ACCESS_KEY) || "",
     refreshtoken: localStorage.getItem(REFRESH_KEY) || "",
@@ -58,10 +57,9 @@ export const useSession = defineStore("session", {
       }
       try {
         const me = await api.Auth.getSession();
-        const { username, real_name, introduction, role, email } = me;
+        const { userid, username, role, email } = me;
+        this.userid = userid;
         this.username = username;
-        this.displayedName = real_name;
-        this.bio = introduction;
         this.role = role as UserRole;
         this.email = email;
         this.state = SessionState.IsLogin;

@@ -1,11 +1,7 @@
 interface User {
   user_name: string;
-  real_name: string;
-  introduction: string;
   role: string;
   email: string;
-  md5: string;
-  student_id: string;
   user_id: string;
 }
 
@@ -53,19 +49,3 @@ interface AuthToken {
   access: string;
   refresh: string;
 }
-/*interface AuthProfile {
-  id: string;
-  username: string;
-  email: string;
-  real_name: string;
-  identity: "teacher" | "admin" | "student";
-  date_joined: string;
-  last_login: string | null;
-  profile: {
-    student_id: string;
-    bio: string;
-    avatar: string | null;
-    email_verified: boolean;
-    updated_at: string;
-  };
-}*/
