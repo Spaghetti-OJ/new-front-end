@@ -72,7 +72,6 @@ export const useSession = defineStore("session", {
     async verifyAccessToken(): Promise<boolean> {
       if (!this.token) return false;
       try {
-        console.log("[Verify Access Token] 開始驗證 access token...");
         await api.Auth.verify({ token: this.token });
         return true;
       } catch {
