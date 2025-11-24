@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { fetcher } from "@/api";
 import api from "@/api";
 
 useTitle("Ranking | Normal OJ");
@@ -10,63 +9,17 @@ const ranking = ref<any[]>([]);
 const isLoading = ref(true);
 const error = ref<Error | null>(null);
 
-// ✅ 五筆假資料
-const mockRanking = [
-  {
-    user: {
-      username: "dog123",
-      display_name: "熱氣ㄚ狗",
-      avatar: "https://i.pravatar.cc/100?img=12",
-    },
-    ACProblem: 66,
-  },
-  {
-    user: {
-      username: "cat666",
-      display_name: "笨貓",
-      avatar: "https://i.pravatar.cc/100?img=32",
-    },
-    ACProblem: 64,
-  },
-  {
-    user: {
-      username: "lion77",
-      display_name: "師大大師",
-      avatar: "https://i.pravatar.cc/100?img=25",
-    },
-    ACProblem: 60,
-  },
-  {
-    user: {
-      username: "omuba",
-      display_name: "歐姆嘎抓",
-      avatar: "https://i.pravatar.cc/100?img=47",
-    },
-    ACProblem: 58,
-  },
-  {
-    user: {
-      username: "black87",
-      display_name: "小黑",
-      avatar: "https://i.pravatar.cc/100?img=65",
-    },
-    ACProblem: 43,
-  },
-];
-
 onMounted(async () => {
   try {
-    const { data } = await api.Ranking.getRankingStats();
-    if (data && Array.isArray(data.ranking)) {
-      ranking.value = data.ranking;
+    const data = await api.Ranking.getRankingStats();
+    if (data && Array.isArray(data)) {
+      ranking.value = data;
     } else {
       console.warn("Using mock ranking data...");
-      ranking.value = mockRanking;
     }
   } catch (err: any) {
     console.warn("Failed to fetch /ranking, showing mock data.");
     error.value = err;
-    ranking.value = mockRanking;
   } finally {
     isLoading.value = false;
   }
@@ -123,8 +76,6 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
-
-      <p class="mt-3 text-center text-xs opacity-50">{{ $t("ranking.mockHint") }}</p>
     </div>
   </div>
 </template>
