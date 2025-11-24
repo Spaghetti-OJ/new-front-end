@@ -10,25 +10,14 @@ import api from "@/api";
 const { t } = useI18n();
 const router = useRouter();
 
-interface UserProperties {
-  id: string;
-  avatar: string;
-  real_name: string;
-  user_name: string;
-  role: string | number;
-  email: string;
-  intro: string;
-}
-
 const isLoadingProfile = ref(false);
 const loadError = ref<string | null>(null);
 const profile = ref<UserProperties | null>(null);
 
 const form = reactive<UserProperties>({
-  id: "",
   avatar: "",
-  real_name: "",
-  user_name: "",
+  realname: "",
+  username: "",
   role: "",
   email: "",
   intro: "",
@@ -39,17 +28,8 @@ async function loadProfile() {
   loadError.value = null;
   try {
     const data = await api.Auth.getProfile();
-    const mapped: UserProperties = {
-      id: data.id ?? "",
-      avatar: data.avatar ?? "",
-      real_name: data.real_name ?? data.displayedName ?? "",
-      user_name: data.user_name ?? data.username ?? "",
-      role: data.role ?? "",
-      email: data.email ?? "",
-      intro: data.introduction ?? data.intro ?? "",
-    };
-    profile.value = mapped;
-    Object.assign(form, mapped);
+    profile.value = data;
+    Object.assign(form, data);
   } catch (error: any) {
     loadError.value = error?.message || "Failed to load profile";
   } finally {
@@ -98,11 +78,7 @@ function onAvatarUpload(file: File) {
       <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="true" :buttons="[
         { label: t('profile.save'), variant: 'primary', action: 'save' },
         { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
-      ]" @action="
-          (a) => {
-            onAvatarAction(a);
-          }
-        " @upload="onAvatarUpload" />
+      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
       </div>
@@ -112,8 +88,8 @@ function onAvatarUpload(file: File) {
     <template #right>
       <section class="w-full max-w-4xl">
         <div class="grid grid-cols-1 gap-4" :class="{ 'pointer-events-none opacity-50': isLoadingProfile }">
-          <ProfileField :label="t('profile.realName')" v-model="form.real_name" :editable="false" />
-          <ProfileField :label="t('profile.username')" v-model="form.user_name" :editable="false" />
+          <ProfileField :label="t('profile.realName')" v-model="form.realname" :editable="false" />
+          <ProfileField :label="t('profile.username')" v-model="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
           <ProfileField :label="t('profile.introduction')" v-model="form.intro" :editable="true" type="textarea" />

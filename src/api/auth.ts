@@ -35,7 +35,7 @@ export const Auth = {
   generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>
     fetcher.post("/api-tokens/", body).then((r) => r.data ?? r),
   listtokens: () => fetcher.get("/api-tokens/").then((r) => r.data ?? r),
-  getProfile: () => fetcher.get("/profile/").then((r) => r.data ?? r),
+  getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
 };
 
 export const Copycat = {
