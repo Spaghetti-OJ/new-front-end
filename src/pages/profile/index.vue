@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRef } from "vue";
+import { reactive, ref, toRef, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/api";
 import { useSession } from "@/stores/session";
@@ -18,9 +18,40 @@ const router = useRouter();
 const session = useSession();
 const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
+
+const profile = ref<UserProperties | null>(null);
+const isLoadingProfile = ref(false);
+
+async function loadProfile() {
+  isLoadingProfile.value = true;
+  try {
+    const data = await api.Auth.getProfile();
+    profile.value = data;
+  } catch (error) {
+    console.error("Failed to load profile:", error);
+  } finally {
+    isLoadingProfile.value = false;
+  }
+}
+
+// 組件掛載時載入資料
+onMounted(() => {
+  loadProfile();
+});
+
 const refreshtype = {
   refresh: session.refreshtoken,
 };
+async function logout() {
+  try {
+    await api.Auth.logout(refreshtype);
+    session.logoutLocally();
+    router.replace("/");
+  } catch (error) {
+    session.logoutLocally();
+    router.replace("/");
+  }
+}
 
 const changePasswordForm = reactive({
   oldPassword: "",
@@ -30,7 +61,7 @@ const changePasswordForm = reactive({
   errorMsg: "",
   isFinished: false,
 });
-// TODO: integrate vue-i18n & Vuelidate error message
+
 const rules = {
   newPassword: { required },
   oldPassword: { required },
@@ -79,16 +110,6 @@ function clearForm() {
   v$.value.$reset();
 }
 
-const user = {
-  realName: "陳育渝",
-  username: "doggggg",
-  role: "Student",
-  email: "41247057S@gapps.ntnu.edu.tw",
-  id: "41247057S",
-  studentId: "41247057S",
-  intro: "哈囉我是資工116",
-  avatar: "",
-};
 const heatmapData = [
   { date: "2025-01-01", count: 5 },
   { date: "2025-01-02", count: 1 },
@@ -117,39 +138,28 @@ const heatmapData = [
   { date: "2025-01-25", count: 0 },
 ];
 
-const form = reactive({ ...user });
-
 function onAvatarAction(action: "Edit" | "Sign Out") {
   if (action === "Edit") {
-    // 這裡之後接 API，把 form 丟出去
-    console.log("Save profile", { ...form });
+    router.push("/profile/edit");
   }
   if (action === "Sign Out") {
-    // 還原成原本 user
-    Object.assign(form, user);
-    console.log("Cancel edit, reset form");
+    logout();
   }
-}
-
-function onAvatarUpload(file: File) {
-  console.log("avatar file for upload:", file);
-  // 之後接 API，上傳成功後更新 form.avatar
 }
 </script>
 
 <template>
-  <ProfileLayout>
+  <ProfileLayout v-if="profile">
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
       <ProfileAvatarBlock
-        :avatar-url="form.avatar"
+        :avatar-url="profile.md5 || ''"
         :editable-avatar="false"
         :buttons="[
           { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
           { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
         ]"
         @click="onAvatarAction"
-        @upload="onAvatarUpload"
       />
     </template>
 
@@ -157,20 +167,19 @@ function onAvatarUpload(file: File) {
     <template #right>
       <section class="w-full">
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-          <ProfileField :label="t('profile.realName')" :model-value="form.realName" :editable="false" />
-          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
-          <ProfileField :label="t('profile.role')" :model-value="form.role" :editable="false" />
+          <ProfileField :label="t('profile.realName')" :model-value="profile.real_name" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="profile.user_name" :editable="false" />
+          <ProfileField :label="t('profile.role')" :model-value="profile.role" :editable="false" />
           <ProfileField
             :label="t('profile.email')"
-            :model-value="form.email"
+            :model-value="profile.email"
             :editable="false"
             type="email"
           />
-          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
-          <ProfileField :label="t('profile.studentId')" :model-value="user.studentId" />
+          <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
           <ProfileField
             :label="t('profile.introduction')"
-            :model-value="form.intro"
+            :model-value="profile.introduction"
             :editable="false"
             type="textarea"
             container-class="md:col-span-2"
@@ -189,4 +198,7 @@ function onAvatarUpload(file: File) {
       </section>
     </template>
   </ProfileLayout>
+  <div v-else-if="isLoadingProfile" class="flex min-h-screen items-center justify-center">
+    <span class="loading-spinner loading-lg loading"></span>
+  </div>
 </template>
