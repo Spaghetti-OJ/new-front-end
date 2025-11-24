@@ -11,9 +11,9 @@ const error = ref<Error | null>(null);
 
 onMounted(async () => {
   try {
-    const data = await api.Ranking.getRankingStats();
-    if (data && Array.isArray(data)) {
-      ranking.value = data;
+    const res = await api.Ranking.getRankingStats();
+    if (res?.data?.ranking && Array.isArray(res.data.ranking)) {
+      ranking.value = res.data.ranking;
     } else {
       console.warn("Using mock ranking data...");
     }
