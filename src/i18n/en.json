@@ -262,8 +262,7 @@
       "ac": "AC counting"
     },
     "loading": "Loading ranking data...",
-    "error": "Failed to load ranking data. Showing mock data.",
-    "mockHint": "(Showing mock data)"
+    "error": "Failed to load ranking data."
   },
   "components": {
     "ann": {

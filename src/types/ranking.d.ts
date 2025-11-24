@@ -14,5 +14,5 @@ export interface RankingItem {
 
 export interface RankingResponse {
   message: string; // "Success."
-  data: RankingItem[];
+  ranking: RankingItem[];
 }
