@@ -75,10 +75,16 @@ function onAvatarUpload(file: File) {
   <ProfileLayout leftWidth="420px">
     <!-- 左邊：頭貼 -->
     <template #left>
-      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="true" :buttons="[
-        { label: t('profile.save'), variant: 'primary', action: 'save' },
-        { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
-      ]" @click="onAvatarAction" @upload="onAvatarUpload" />
+      <ProfileAvatarBlock
+        :avatar-url="form.avatar"
+        :editable-avatar="true"
+        :buttons="[
+          { label: t('profile.save'), variant: 'primary', action: 'save' },
+          { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
+        ]"
+        @click="onAvatarAction"
+        @upload="onAvatarUpload"
+      />
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
       </div>
@@ -92,7 +98,12 @@ function onAvatarUpload(file: File) {
           <ProfileField :label="t('profile.username')" v-model="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
-          <ProfileField :label="t('profile.introduction')" v-model="form.intro" :editable="true" type="textarea" />
+          <ProfileField
+            :label="t('profile.introduction')"
+            v-model="form.intro"
+            :editable="true"
+            type="textarea"
+          />
         </div>
       </section>
     </template>

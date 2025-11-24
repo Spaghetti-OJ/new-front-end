@@ -119,8 +119,6 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
         console.log("[Refresh Token] ✅ 刷新成功！已更新 access token 和新的 refresh token");
         sessionStore.refreshtoken = newRefresh;
         localStorage.setItem(REFRESH_KEY, newRefresh);
-      } else {
-        
       }
 
       return access;
