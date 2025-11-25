@@ -9,10 +9,10 @@ export enum SessionState {
 }
 
 export enum UserRole {
-  Guest = "Guest",
-  Admin = "Admin",
-  Teacher = "Teacher",
-  Student = "Student",
+  Guest = "guest",
+  Admin = "admin",
+  Teacher = "teacher",
+  Student = "student",
 }
 
 const ACCESS_KEY = "access_token";
