@@ -11,10 +11,7 @@ const { t } = useI18n();
 
 useTitle(`Solution - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
-const { data: problem, error, isLoading } = useAxios<Problem>(
-  `/problem/view/${route.params.id}`,
-  fetcher,
-);
+const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
 
 // 愛心數量（之後改成後端回傳的值）
 const likes = ref(666);
@@ -23,13 +20,11 @@ const isLiked = ref(false);
 const toggleLike = () => {
   isLiked.value = !isLiked.value;
   likes.value += isLiked.value ? 1 : -1;
-  
 };
 
-const solutionContent = computed(() =>
-  (problem.value as any)?.solution || "There isn't any solution for this problem."
+const solutionContent = computed(
+  () => (problem.value as any)?.solution || "There isn't any solution for this problem.",
 );
-
 </script>
 
 <template>
@@ -38,17 +33,11 @@ const solutionContent = computed(() =>
       <div class="card-body">
         <!-- 上方：標題 + 愛心 -->
         <div class="flex items-center justify-between">
-          <div class="card-title md:text-2xl lg:text-3xl">
-            Solution for Problem #{{ $route.params.id }}
-          </div>
+          <div class="card-title md:text-2xl lg:text-3xl">Solution for Problem #{{ $route.params.id }}</div>
 
-          <button
-            type="button"
-            class="btn btn-ghost gap-2"
-            @click="toggleLike"
-          >
+          <button type="button" class="btn btn-ghost gap-2" @click="toggleLike">
             <span class="text-2xl leading-none">
-                {{ isLiked ? "♥" : "♡" }}
+              {{ isLiked ? "♥" : "♡" }}
             </span>
             <span class="text-lg">{{ likes }}</span>
           </button>
@@ -72,10 +61,7 @@ const solutionContent = computed(() =>
           </template>
 
           <template v-else-if="problem">
-            <markdown-renderer
-              class="prose max-w-none"
-              :md="solutionContent"
-            />
+            <markdown-renderer class="prose max-w-none" :md="solutionContent" />
           </template>
         </div>
       </div>
