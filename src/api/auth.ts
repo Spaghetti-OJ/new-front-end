@@ -6,7 +6,7 @@ export const Auth = {
     password: string;
     email: string;
     real_name: string;
-    identity: string;
+    role: string;
     student_id?: string;
     bio?: string;
   }) => fetcher.post<UserSignup>("/auth/signup/", body).then((r) => r.data ?? r),
