@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { computed, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/api";
-import { ROLE } from "@/constants";
+import api from "@/api";
 import { useTitle } from "@vueuse/core";
 import { useSession, UserRole } from "@/stores/session";
 import axios from "axios";
@@ -14,7 +12,7 @@ const session = useSession();
 useTitle(`Members - ${route.params.name} | Normal OJ`);
 enum MemberTableColumn {
   USERNAME = "username",
-  DISPLAYED_NAME = "displayedName",
+  REAL_NAME = "real_name",
   ROLE = "role",
 }
 const sortBy = ref<MemberTableColumn>(
@@ -25,18 +23,32 @@ const sortBy = ref<MemberTableColumn>(
 watch(sortBy, () => {
   router.replace({ query: { sort: sortBy.value || MemberTableColumn.USERNAME } });
 });
-const { data, error, isLoading } = useAxios<Course>(`/course/${route.params.name}`, fetcher);
-const members = computed(() => {
-  if (!data.value) return [];
-  return [data.value.teacher, ...data.value.students, ...data.value.TAs].sort((a, b) => {
-    if (sortBy.value === "username") {
-      return a.username.localeCompare(b.username);
-    } else if (sortBy.value === "displayedName") {
-      return a.displayedName.localeCompare(b.displayedName);
-    } else {
-      return a.role - b.role;
+
+const members = ref<UserInfo[]>([]);
+const error = ref<any>(undefined);
+const isLoading = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await api.Course.info(route.params.name as string);
+    if (res?.data.TAs && res?.data.students && res?.data.teacher) {
+      members.value = [res.data.teacher, ...res.data.students, ...res.data.TAs].sort((a, b) => {
+        console.log(a, b, sortBy.value);
+        if (sortBy.value === "username") {
+          return a.username.localeCompare(b.username);
+        } else if (sortBy.value === "real_name") {
+          return a.real_name.localeCompare(b.real_name);
+        } else {
+          return a.role.localeCompare(b.role);
+        }
+      });
+      console.log(members.value);
     }
-  });
+  } catch (err: any) {
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
 });
 
 const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
@@ -114,7 +126,7 @@ async function submit() {
       <div class="card-body">
         <div class="card-title">
           {{ $t("course.members.title") }}
-          <span v-if="data" class="text-sm opacity-70">({{ members.length }})</span>
+          <span v-if="members" class="text-sm opacity-70">({{ members.length }})</span>
 
           <div class="flex-1" />
 
@@ -130,7 +142,7 @@ async function submit() {
             </label>
             <select v-model="sortBy" class="select select-bordered w-full max-w-xs">
               <option :value="MemberTableColumn.USERNAME">Username</option>
-              <option :value="MemberTableColumn.DISPLAYED_NAME">Display Name</option>
+              <option :value="MemberTableColumn.REAL_NAME">Real Name</option>
               <option :value="MemberTableColumn.ROLE">Role</option>
             </select>
           </div>
@@ -144,15 +156,15 @@ async function submit() {
               <thead>
                 <tr>
                   <th>username</th>
-                  <th>display name</th>
+                  <th>real name</th>
                   <th>role</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="{ username, displayedName, role } in members" :key="username" class="hover">
+                <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
                   <td>{{ username }}</td>
-                  <td>{{ displayedName }}</td>
-                  <td>{{ ROLE[role] }}</td>
+                  <td>{{ real_name }}</td>
+                  <td>{{ role }}</td>
                 </tr>
               </tbody>
             </table>
@@ -170,7 +182,7 @@ async function submit() {
             <li v-for="h in ['username', 'email', 'password']">
               <code>{{ h }}</code>
             </li>
-            <li v-for="h in ['displayedName', 'role']">
+            <li v-for="h in ['real_name', 'role']">
               <code>{{ h }}</code> (optional)
             </li>
           </ul>
@@ -207,12 +219,8 @@ async function submit() {
         </div>
 
         <template v-if="!newMembers">
-          <input
-            type="file"
-            id="file-uploader"
-            accept=".csv"
-            @change="newMembers = ($event.target as HTMLInputElement).files?.[0]"
-          />
+          <input type="file" id="file-uploader" accept=".csv"
+            @change="newMembers = ($event.target as HTMLInputElement).files?.[0]" />
         </template>
         <template v-else>
           <table class="table-auto">
