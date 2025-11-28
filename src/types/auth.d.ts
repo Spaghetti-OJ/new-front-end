@@ -10,7 +10,7 @@ interface UserSignup {
   username: string;
   email: string;
   userid: string;
-  identity: string;
+  role: string;
   date_joined: string;
   last_login: string | null;
 }
