@@ -1,4 +1,5 @@
 interface CourseListItem {
+  id: number;
   course: string;
   teacher: UserInfo;
 }
