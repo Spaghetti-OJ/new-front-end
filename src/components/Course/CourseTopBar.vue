@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ComputedRef } from "vue";
+import { computed, ComputedRef, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import api from "@/api";
 
 // FIXME: this sucks
 const route = useRoute();
@@ -47,6 +48,12 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-name-members": [{ path: null, text: "Members" }],
   }),
 );
+
+const course_name = ref<string>("");
+onMounted(async () => {
+  const res = await api.Course.info(route.params.name as string);
+  course_name.value = res.data.course.course;
+});
 </script>
 
 <template>
@@ -54,7 +61,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     <div class="breadcrumbs flex-1 text-sm">
       <ul>
         <li>
-          <router-link :to="`/courses/${route.params.name}`">{{ route.params.name }}</router-link>
+          <router-link :to="`/courses/${route.params.name}`">{{ course_name }}</router-link>
         </li>
         <template v-if="route.name">
           <li v-for="{ path, text } in items[route.name]" :key="text">
