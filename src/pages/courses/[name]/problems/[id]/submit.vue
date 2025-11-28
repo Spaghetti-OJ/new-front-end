@@ -70,6 +70,9 @@ async function runTest() {
   if (!isFormCorrect) return;
 
   if (!testForm.input) {
+    testForm.isError = true;
+    testForm.output = t("course.problem.submit.err.input") || "Input is required to run the test.";
+    return;
   }
 
   try {
