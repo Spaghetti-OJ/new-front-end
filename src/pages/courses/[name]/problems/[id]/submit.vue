@@ -16,10 +16,7 @@ const { t } = useI18n();
 
 useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
 const router = useRouter();
-const { data: problem, error, isLoading } = useAxios<Problem>(
-  `/problem/view/${route.params.id}`,
-  fetcher,
-);
+const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
 
 const lang = useStorage(LOCAL_STORAGE_KEY.LAST_USED_LANG, -1);
 const form = reactive({
@@ -29,8 +26,8 @@ const form = reactive({
   isSubmitError: false,
 });
 const testForm = reactive({
-  input: "",       // 使用者輸入的 testcase
-  output: "",      // 顯示出來的輸出
+  input: "", // 使用者輸入的 testcase
+  output: "", // 顯示出來的輸出
   isLoading: false,
   isError: false,
 });
@@ -77,8 +74,7 @@ async function runTest() {
 
   try {
     testForm.isLoading = true;
-    testForm.output =
-      " 這裡顯示測試結果（接上後端 API 後，請把這段改成真正的結果）";
+    testForm.output = " 這裡顯示測試結果（接上後端 API 後，請把這段改成真正的結果）";
   } catch (e) {
     testForm.isError = true;
     testForm.output = "Test failed. Please try again.";
@@ -144,10 +140,7 @@ async function submit() {
                 <div class="card-title md:text-lg lg:text-xl">
                   {{ t("components.problem.card.desc") }}
                 </div>
-                <markdown-renderer
-                  class="mb-4"
-                  :md="problem.description.description"
-                />
+                <markdown-renderer class="mb-4" :md="problem.description.description" />
               </div>
             </template>
           </div>
@@ -155,16 +148,12 @@ async function submit() {
           <!-- 右欄 -->
           <div class="flex flex-col lg:-mt-2">
             <!-- 程式編輯區 -->
-            <div class="card-title md:text-lg lg:text-xl mt-2">
+            <div class="card-title mt-2 md:text-lg lg:text-xl">
               {{ t("course.problem.submit.card.placeholder") }}
             </div>
 
             <code-editor v-model="form.code" class="mt-2" />
-            <span
-              v-show="v$.code.$error"
-              class="text-error mt-2"
-              v-text="v$.code.$errors[0]?.$message"
-            />
+            <span v-show="v$.code.$error" class="mt-2 text-error" v-text="v$.code.$errors[0]?.$message" />
 
             <div v-if="error" class="alert alert-error mt-4 shadow-lg">
               <div>
@@ -174,7 +163,7 @@ async function submit() {
             </div>
 
             <!-- 語言選擇 -->
-            <div class="form-control w-full max-w-xs mt-2">
+            <div class="form-control mt-2 w-full max-w-xs">
               <label class="label">
                 <span class="label-text font-semibold">
                   {{ t("course.problem.submit.lang.text") }}
@@ -184,86 +173,64 @@ async function submit() {
 
               <select
                 v-model="v$.lang.$model"
-                :class="[
-                  'select select-bordered',
-                  v$.lang.$error && 'input-error',
-                ]"
-                >
+                :class="['select select-bordered', v$.lang.$error && 'input-error']"
+              >
                 <option disabled :value="-1">
                   {{ t("course.problem.submit.lang.select") }}
                 </option>
 
-                <option
-                  v-for="{ text, value } in langOptions"
-                  :key="value"
-                  :value="value"
-                >
+                <option v-for="{ text, value } in langOptions" :key="value" :value="value">
                   {{ text }}
                 </option>
               </select>
 
               <label class="label" v-show="v$.lang.$error">
-                <span
-                  class="label-text-alt text-error"
-                  v-text="v$.lang.$errors[0]?.$message"
-                />
+                <span class="label-text-alt text-error" v-text="v$.lang.$errors[0]?.$message" />
               </label>
             </div>
 
             <!-- 測試區 -->
             <div class="mt-3 space-y-2">
-                <!-- Input testcase -->
-                <div>
+              <!-- Input testcase -->
+              <div>
                 <label class="label">
-                    <span class="label-text font-semibold">Input testcase</span>
+                  <span class="label-text font-semibold">Input testcase</span>
                 </label>
                 <textarea
-                    v-model="testForm.input"
-                    class="textarea textarea-bordered w-full"
-                    rows="3"
-                    placeholder="輸入要測試的資料"
+                  v-model="testForm.input"
+                  class="textarea textarea-bordered w-full"
+                  rows="3"
+                  placeholder="輸入要測試的資料"
                 />
-                </div>
+              </div>
 
-                <!-- Test output -->
-                <div>
+              <!-- Test output -->
+              <div>
                 <label class="label">
-                    <span class="label-text font-semibold">Test output</span>
+                  <span class="label-text font-semibold">Test output</span>
                 </label>
                 <textarea
-                    v-model="testForm.output"
-                    class="textarea textarea-bordered w-full"
-                    rows="4"
-                    readonly
-                    placeholder="按下TEST，顯示程式輸出"
+                  v-model="testForm.output"
+                  class="textarea textarea-bordered w-full"
+                  rows="4"
+                  readonly
+                  placeholder="按下TEST，顯示程式輸出"
                 />
-                </div>
+              </div>
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-3">
               <!-- Test 按鈕 -->
-              <button
-                class="btn"
-                :class="testForm.isLoading && 'loading'"
-                @click="runTest"
-              >
-                Test
-              </button>
+              <button class="btn" :class="testForm.isLoading && 'loading'" @click="runTest">Test</button>
 
               <!-- Submit 按鈕 -->
-              <button
-                :class="['btn', form.isLoading && 'loading']"
-                @click="submit"
-              >
+              <button :class="['btn', form.isLoading && 'loading']" @click="submit">
                 <i-uil-file-upload-alt class="mr-1 h-5 w-5" />
                 {{ t("course.problem.submit.text") }}
               </button>
             </div>
-            
-            <span
-              v-if="form.isSubmitError"
-              class="mt-4 text-sm text-error"
-            >
+
+            <span v-if="form.isSubmitError" class="mt-4 text-sm text-error">
               {{ t("course.problem.submit.err.msg") }}
             </span>
           </div>
