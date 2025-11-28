@@ -49,10 +49,14 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
   }),
 );
 
-const course_name = ref<string>("");
+const courseName = ref<string>("");
 onMounted(async () => {
-  const res = await api.Course.info(route.params.name as string);
-  course_name.value = res.data.course.course;
+  try {
+    const res = await api.Course.info(route.params.name as string);
+    courseName.value = res.data.course.course;
+  } catch (error) {
+    console.error("Failed to fetch course info:", error);
+  }
 });
 </script>
 
@@ -61,7 +65,7 @@ onMounted(async () => {
     <div class="breadcrumbs flex-1 text-sm">
       <ul>
         <li>
-          <router-link :to="`/courses/${route.params.name}`">{{ course_name }}</router-link>
+          <router-link :to="`/courses/${route.params.name}`">{{ courseName }}</router-link>
         </li>
         <template v-if="route.name">
           <li v-for="{ path, text } in items[route.name]" :key="text">
