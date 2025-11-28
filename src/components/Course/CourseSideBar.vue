@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSession } from "@/stores/session";
+import { UserRole, useSession } from "@/stores/session";
 import { useI18n } from "vue-i18n";
 
 defineProps<{
@@ -26,7 +26,7 @@ const navs = [
     name: t("components.courseSideBar.submissions"),
     path: "/submissions",
   },
-  ...(session.isAdmin
+  ...(session.isAdmin || session.role === UserRole.Teacher
     ? [
         {
           name: t("components.courseSideBar.members"),

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/api";
+import api from "@/api";
 import { useSession, UserRole } from "@/stores/session";
 
 import useInteractions from "@/composables/useInteractions";
@@ -10,7 +9,22 @@ import useInteractions from "@/composables/useInteractions";
 const { isDesktop } = useInteractions();
 
 useTitle("Courses | Normal OJ");
-const { data: courses, error, isLoading } = useAxios<CourseList>("/course", fetcher);
+const courses = ref<CourseList | null>(null);
+const isLoading = ref(true);
+const error = ref<any>(undefined);
+
+onMounted(async () => {
+  try {
+    const res = await api.Course.list();
+    if (res?.data.courses && Array.isArray(res.data.courses)) {
+      courses.value = res.data.courses;
+    }
+  } catch (err: any) {
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+});
 
 const displayedCourses = computed(() => [...(courses.value ?? [])].reverse());
 
@@ -47,15 +61,15 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
               </tr>
             </thead>
             <tbody>
-              <tr v-for="{ course, teacher } in displayedCourses" :key="course" class="hover">
+              <tr v-for="{ id, course, teacher } in displayedCourses" :key="id" class="hover">
                 <td
                   :class="{
                     'min-w-[10rem] max-w-[12rem] whitespace-pre-wrap': !isDesktop,
                   }"
                 >
-                  <router-link :to="`/courses/${course}`" class="link link-hover">{{ course }}</router-link>
+                  <router-link :to="`/courses/${id}`" class="link link-hover">{{ course }}</router-link>
                 </td>
-                <td>{{ teacher.user_name }}</td>
+                <td>{{ teacher.username }}</td>
               </tr>
             </tbody>
           </table>
