@@ -194,7 +194,16 @@
     "username": "帳號",
     "dispname": "顯示名稱",
     "email": "電子郵件",
-    "role": "角色",
+    "role": "身份",
+    "studentId": "學號",
+    "introduction": "自我介紹",
+    "realName": "真實姓名",
+    "progressBar": "進度展示",
+    "heatmap": "貢獻度",
+    "edit": "編輯",
+    "noImage": "無頭像",
+    "save": "儲存",
+    "cancel": "取消",
     "signOut": "登出",
     "pw": {
       "change": "變更密碼",
@@ -253,8 +262,7 @@
       "ac": "AC 數量統計"
     },
     "loading": "載入排行榜資料中...",
-    "error": "載入排行榜資料失敗，顯示模擬資料。",
-    "mockHint": "(顯示模擬資料)"
+    "error": "載入排行榜資料失敗。"
   },
   "components": {
     "ann": {

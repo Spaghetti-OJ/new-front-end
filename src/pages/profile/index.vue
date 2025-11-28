@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRef } from "vue";
+import { reactive, ref, toRef, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/api";
 import { useSession } from "@/stores/session";
@@ -8,21 +8,49 @@ import { required, sameAs, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
+import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
+import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
+import ProfileField from "@/components/Profile/ProfileField.vue";
+import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 
 useTitle("Profile | Normal OJ");
 const router = useRouter();
 const session = useSession();
 const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
+
+const profile = ref<UserProperties | null>(null);
+const isLoadingProfile = ref(false);
+
+async function loadProfile() {
+  isLoadingProfile.value = true;
+  try {
+    const data = await api.Auth.getProfile();
+    profile.value = data;
+  } catch (error) {
+    console.error("Failed to load profile:", error);
+  } finally {
+    isLoadingProfile.value = false;
+  }
+}
+
+// 組件掛載時載入資料
+onMounted(() => {
+  loadProfile();
+});
+
 const refreshtype = {
   refresh: session.refreshtoken,
 };
 async function logout() {
-  const errorrr = await api.Auth.logout(refreshtype);
-  router.push("/");
-  session.validateSession();
-  session.token = "";
-  session.refreshtoken = "";
+  try {
+    await api.Auth.logout(refreshtype);
+    session.logoutLocally();
+    router.replace("/");
+  } catch (error) {
+    session.logoutLocally();
+    router.replace("/");
+  }
 }
 
 const changePasswordForm = reactive({
@@ -33,7 +61,7 @@ const changePasswordForm = reactive({
   errorMsg: "",
   isFinished: false,
 });
-// TODO: integrate vue-i18n & Vuelidate error message
+
 const rules = {
   newPassword: { required },
   oldPassword: { required },
@@ -81,112 +109,96 @@ function clearForm() {
   changePasswordForm.isFinished = true;
   v$.value.$reset();
 }
+
+const heatmapData = [
+  { date: "2025-01-01", count: 5 },
+  { date: "2025-01-02", count: 1 },
+  { date: "2025-01-03", count: 0 },
+  { date: "2025-01-04", count: 8 },
+  { date: "2025-01-05", count: 3 },
+  { date: "2025-01-06", count: 2 },
+  { date: "2025-01-07", count: 6 },
+  { date: "2025-01-08", count: 0 },
+  { date: "2025-01-09", count: 10 },
+  { date: "2025-01-10", count: 4 },
+  { date: "2025-01-11", count: 7 },
+  { date: "2025-01-12", count: 2 },
+  { date: "2025-01-13", count: 1 },
+  { date: "2025-01-14", count: 9 },
+  { date: "2025-01-15", count: 3 },
+  { date: "2025-01-16", count: 0 },
+  { date: "2025-01-17", count: 6 },
+  { date: "2025-01-18", count: 4 },
+  { date: "2025-01-19", count: 1 },
+  { date: "2025-01-20", count: 5 },
+  { date: "2025-01-21", count: 3 },
+  { date: "2025-01-22", count: 2 },
+  { date: "2025-01-23", count: 8 },
+  { date: "2025-01-24", count: 10 },
+  { date: "2025-01-25", count: 0 },
+];
+
+function onAvatarAction(action: "Edit" | "Sign Out") {
+  if (action === "Edit") {
+    router.push("/profile/edit");
+  }
+  if (action === "Sign Out") {
+    logout();
+  }
+}
 </script>
 
 <template>
-  <div class="card-container">
-    <div class="card">
-      <div class="card-body">
-        <div class="card-title justify-between">{{ t("profile.title") }}</div>
+  <ProfileLayout v-if="profile">
+    <!-- 左邊：頭貼，可編輯 -->
+    <template #left>
+      <ProfileAvatarBlock
+        :avatar-url="profile.md5 || ''"
+        :editable-avatar="false"
+        :buttons="[
+          { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
+          { label: t('profile.signOut'), variant: 'error', action: 'Sign Out' },
+        ]"
+        @click="onAvatarAction"
+      />
+    </template>
 
-        <div class="my-2" />
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>{{ t("profile.username") }}</th>
-              <th>{{ t("profile.dispname") }}</th>
-              <th>{{ t("profile.email") }}</th>
-              <th>{{ t("profile.role") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ session.username }}</td>
-              <td>{{ session.displayedName }}</td>
-              <td>{{ session.email }}</td>
-              <td>{{ session.role }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card-actions">
-        <div class="mx-auto flex max-w-7xl gap-8 p-4">
-          <button class="btn btn-outline btn-error" @click="logout">{{ t("profile.signOut") }}</button>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <div class="card-title justify-between">{{ t("profile.pw.change") }}</div>
-
-        <div class="my-2" />
-
-        <div class="alert alert-error shadow-lg" v-if="changePasswordForm.errorMsg">
-          <div>
-            <i-uil-times-circle />
-            <span>{{ changePasswordForm.errorMsg }}</span>
-          </div>
-        </div>
-        <div class="alert alert-success shadow-lg" v-else-if="changePasswordForm.isFinished">
-          <div>
-            <i-uil-check-circle />
-            <span>{{ t("profile.pw.success") }}</span>
-          </div>
-        </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">{{ t("profile.pw.new") }}</span>
-          </label>
-          <input
-            v-model="v$.newPassword.$model"
-            type="password"
-            name="password"
-            :placeholder="t('profile.pw.placeholder.new')"
-            :class="['input input-bordered', v$.newPassword.$error && 'input-error']"
+    <!-- 右邊：可編輯資訊欄 -->
+    <template #right>
+      <section class="w-full">
+        <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
+          <ProfileField :label="t('profile.realName')" :model-value="profile.real_name" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="profile.user_name" :editable="false" />
+          <ProfileField :label="t('profile.role')" :model-value="profile.role" :editable="false" />
+          <ProfileField
+            :label="t('profile.email')"
+            :model-value="profile.email"
+            :editable="false"
+            type="email"
           />
-          <label class="label" v-show="v$.newPassword.$error">
-            <span class="label-text-alt text-error" v-text="v$.newPassword.$errors[0]?.$message" />
-          </label>
-        </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">{{ t("profile.pw.confirm") }}</span>
-          </label>
-          <input
-            v-model="v$.confirmPassword.$model"
-            type="password"
-            name="password"
-            :placeholder="t('profile.pw.placeholder.again')"
-            :class="['input input-bordered', v$.confirmPassword.$error && 'input-error']"
+          <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
+          <ProfileField
+            :label="t('profile.introduction')"
+            :model-value="profile.introduction"
+            :editable="false"
+            type="textarea"
+            container-class="md:col-span-2"
           />
-          <label class="label" v-show="v$.confirmPassword.$error">
-            <span class="label-text-alt text-error" v-text="v$.confirmPassword.$errors[0]?.$message" />
-          </label>
         </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">{{ t("profile.pw.current") }}</span>
-          </label>
-          <input
-            v-model="v$.oldPassword.$model"
-            type="password"
-            name="password"
-            :placeholder="t('profile.pw.placeholder.current')"
-            :class="['input input-bordered', v$.oldPassword.$error && 'input-error']"
-            @keydown.enter="changePassword"
+        <div class="mt-4">
+          <ProfileProgressBar
+            :contributions="heatmapData"
+            :submission="204"
+            :acceptance="100"
+            :totalsolved="135"
+            :data="{ easy: 75, med: 40, hard: 20 }"
+            :beatrate="15.27"
           />
-          <label class="label" v-show="v$.oldPassword.$error">
-            <span class="label-text-alt text-error" v-text="v$.oldPassword.$errors[0]?.$message" />
-          </label>
         </div>
-        <div class="form-control mt-6">
-          <div
-            :class="['btn btn-primary', changePasswordForm.isLoading && 'loading']"
-            @click="changePassword"
-          >
-            {{ t("profile.pw.submit") }}
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </template>
+  </ProfileLayout>
+  <div v-else-if="isLoadingProfile" class="flex min-h-screen items-center justify-center">
+    <span class="loading-spinner loading-lg loading"></span>
   </div>
 </template>

@@ -195,6 +195,15 @@
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
+    "studentId": "Student ID",
+    "introduction": "Introduction",
+    "realName": "Real Name",
+    "progressBar": "Progress Bar",
+    "heatmap": "Heatmap",
+    "edit": "Edit",
+    "noImage": "No Image",
+    "save": "Save",
+    "cancel": "Cancel",
     "signOut": "Sign out",
     "pw": {
       "change": "Change Password",
@@ -253,8 +262,7 @@
       "ac": "AC counting"
     },
     "loading": "Loading ranking data...",
-    "error": "Failed to load ranking data. Showing mock data.",
-    "mockHint": "(Showing mock data)"
+    "error": "Failed to load ranking data."
   },
   "components": {
     "ann": {
