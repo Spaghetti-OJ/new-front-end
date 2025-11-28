@@ -7,9 +7,24 @@ interface CourseListItem {
 type CourseList = CourseListItem[];
 
 interface Course {
+  course: CourseInfo;
   teacher: UserInfo;
   TAs: UserInfo[];
   students: UserInfo[];
+}
+
+interface CourseInfo {
+  id: number;
+  course: string;
+  description: string;
+  joinCode: string;
+  studentLimit: number;
+  semester: "Spring" | "Fall" | "Summer";
+  academicYear: string;
+  studentCount: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface CourseForm {
