@@ -55,7 +55,7 @@ const solutionContent = computed(
             <div class="alert alert-error mt-4 shadow-lg">
               <div>
                 <i-uil-times-circle />
-                <span>{{ t("course.problem.submit.err.msg") }}</span>
+                <span>{{ t("course.problem.solution.err.load") }}</span>
               </div>
             </div>
           </template>
