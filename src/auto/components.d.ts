@@ -10,6 +10,8 @@ declare module '@vue/runtime-core' {
     AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
     AnnouncementForm: typeof import('./../components/Announcement/AnnouncementForm.vue')['default']
+    ApiKeyEditModal: typeof import('./../components/ApiKeys/ApiKeyEditModal.vue')['default']
+    ApiKeyTable: typeof import('./../components/ApiKeys/ApiKeyTable.vue')['default']
     CodeEditor: typeof import('./../components/Shared/CodeEditor.vue')['default']
     CourseSideBar: typeof import('./../components/Course/CourseSideBar.vue')['default']
     CourseTopBar: typeof import('./../components/Course/CourseTopBar.vue')['default']
