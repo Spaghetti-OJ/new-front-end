@@ -11,7 +11,7 @@ const signupForm = reactive({
   password: "",
   confirmPassword: "",
 });
-  
+
 const rules = {
   username: { required },
   email: { required, email },
@@ -42,7 +42,7 @@ function signup() {
         <!-- Username -->
         <div class="form-control">
           <label class="label"><span class="label-text">Username</span></label>
-          <input 
+          <input
             v-model="v$.username.$model"
             type="text"
             placeholder="username"
@@ -57,7 +57,7 @@ function signup() {
         <!-- Email -->
         <div class="form-control">
           <label class="label"><span class="label-text">Email</span></label>
-          <input 
+          <input
             v-model="v$.email.$model"
             type="email"
             placeholder="email"
@@ -74,7 +74,7 @@ function signup() {
         <!-- Real Name -->
         <div class="form-control">
           <label class="label"><span class="label-text">Real name</span></label>
-          <input 
+          <input
             v-model="v$.realname.$model"
             type="text"
             placeholder="your full name"
@@ -89,7 +89,7 @@ function signup() {
         <!-- Student ID -->
         <div class="form-control">
           <label class="label"><span class="label-text">Student ID</span></label>
-          <input 
+          <input
             v-model="v$.studentID.$model"
             type="text"
             placeholder="student ID"
@@ -104,7 +104,7 @@ function signup() {
         <!-- Password -->
         <div class="form-control">
           <label class="label"><span class="label-text">Password</span></label>
-          <input 
+          <input
             v-model="v$.password.$model"
             type="password"
             placeholder="password"
@@ -119,7 +119,7 @@ function signup() {
         <!-- Confirm Password -->
         <div class="form-control">
           <label class="label"><span class="label-text">Confirm Password</span></label>
-          <input 
+          <input
             v-model="v$.confirmPassword.$model"
             type="password"
             placeholder="confirm password"
@@ -132,11 +132,8 @@ function signup() {
         </div>
 
         <div class="form-control mt-4">
-          <button class="btn btn-primary w-full" @click="signup">
-            SIGN UP
-          </button>
+          <button class="btn btn-primary w-full" @click="signup">SIGN UP</button>
         </div>
-
       </div>
     </div>
   </div>
