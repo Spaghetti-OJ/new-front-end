@@ -24,26 +24,16 @@ function openCreateModal() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-5xl w-full p-6 space-y-8">
-
+  <div class="mx-auto w-full max-w-5xl space-y-8 p-6">
     <h1 class="text-3xl font-bold">API Keys</h1>
 
     <!-- Create New Key Button -->
-    <button
-    class="btn btn-success mb-4"
-    @click="openCreateModal"
-    >
-    CREATE NEW SECRET KEY
-    </button>
+    <button class="btn btn-success mb-4" @click="openCreateModal">CREATE NEW SECRET KEY</button>
 
     <!-- API Key Table -->
     <ApiKeyTable @edit="openEditModal" />
 
     <!-- Edit Modal -->
-    <ApiKeyEditModal
-      v-if="showModal"
-      :key-data="selectedKey"
-      @close="showModal = false"
-    />
+    <ApiKeyEditModal v-if="showModal" :key-data="selectedKey" @close="showModal = false" />
   </div>
 </template>

@@ -84,7 +84,7 @@ const session = useSession();
           {{ $t("components.topBar.settings") || "Settings" }}
         </span>
       </router-link>
-      
+
       <!-- Profile -->
       <router-link
         v-if="session.isLogin"

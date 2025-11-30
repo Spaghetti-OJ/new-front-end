@@ -29,8 +29,7 @@ const actions = ["Read", "Create", "Edit"];
 
 // toggle function
 function togglePermission(type: string, action: string) {
-  permissionState.value[type] =
-    permissionState.value[type] === action ? null : action;
+  permissionState.value[type] = permissionState.value[type] === action ? null : action;
 }
 
 // ----------------------
@@ -64,14 +63,14 @@ function onDelete() {
 <template>
   <div class="modal modal-open">
     <div class="modal-box max-w-2xl bg-base-200">
-      <h2 class="text-xl font-semibold mb-4">
+      <h2 class="mb-4 text-xl font-semibold">
         {{ props.keyData ? "Edit API Key" : "Create API Key" }}
       </h2>
 
       <!-- Permissions -->
-      <h3 class="font-semibold mb-2">Permissions</h3>
+      <h3 class="mb-2 font-semibold">Permissions</h3>
 
-      <div class="overflow-x-auto mb-6">
+      <div class="mb-6 overflow-x-auto">
         <table class="table">
           <thead>
             <tr>
@@ -84,12 +83,8 @@ function onDelete() {
             <tr v-for="type in permissions" :key="type">
               <td>{{ type }}</td>
 
-              <td class="flex gap-6 justify-center">
-                <label
-                  v-for="action in actions"
-                  :key="action"
-                  class="flex items-center gap-1 cursor-pointer"
-                >
+              <td class="flex justify-center gap-6">
+                <label v-for="action in actions" :key="action" class="flex cursor-pointer items-center gap-1">
                   <input
                     type="checkbox"
                     class="checkbox"
@@ -105,43 +100,25 @@ function onDelete() {
       </div>
 
       <!-- Expired Date -->
-      <h3 class="font-semibold mb-2">Expired Date</h3>
+      <h3 class="mb-2 font-semibold">Expired Date</h3>
 
-      <div class="flex items-center gap-4 mb-6">
+      <div class="mb-6 flex items-center gap-4">
         <input v-model="date" type="date" class="input input-bordered" />
         <input v-model="time" type="time" class="input input-bordered" />
       </div>
 
       <!-- BUTTONS -->
-      <div class="flex justify-between items-center mt-6">
+      <div class="mt-6 flex items-center justify-between">
         <!-- Delete only in edit mode -->
-        <button
-          v-if="props.keyData"
-          class="btn btn-error"
-          @click="onDelete"
-        >
-          Delete API Key
-        </button>
+        <button v-if="props.keyData" class="btn btn-error" @click="onDelete">Delete API Key</button>
 
-        <div class="flex gap-3 ml-auto">
+        <div class="ml-auto flex gap-3">
           <button class="btn" @click="emit('close')">Close</button>
 
           <!-- Save / Create -->
-          <button
-            v-if="props.keyData"
-            class="btn btn-primary"
-            @click="onSave"
-          >
-            Save
-          </button>
+          <button v-if="props.keyData" class="btn btn-primary" @click="onSave">Save</button>
 
-          <button
-            v-else
-            class="btn btn-success"
-            @click="onCreate"
-          >
-            Create
-          </button>
+          <button v-else class="btn btn-success" @click="onCreate">Create</button>
         </div>
       </div>
     </div>
