@@ -17,6 +17,6 @@ useTitle("Home | Normal OJ");
   >
     <system-announcements />
 
-    <login-section />
+    <HomeAuthTabs />
   </div>
 </template>
