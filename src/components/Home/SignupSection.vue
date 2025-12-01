@@ -4,7 +4,12 @@ import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import axios from "axios";
 import api from "@/api";
+import { useSession } from "@/stores/session";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import LoginSection from "./LoginSection.vue";
+
+const router = useRouter();
 
 const signupForm = reactive({
   username: "",
@@ -16,7 +21,7 @@ const signupForm = reactive({
   errorMsg: "",
 });
 const isLoading = ref(false);
-
+const session = useSession();
 const { t } = useI18n();
 const rules = {
   username: { required },
@@ -53,6 +58,8 @@ async function signup() {
 
   try {
     await api.Auth.signup(body);
+    const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
+    await session.setTokens(tokens.access, tokens.refresh);
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
       console.log(error);
@@ -84,8 +91,9 @@ async function signup() {
 
 <template>
   <div class="card-container">
-    <div class="card min-w-full">
-      <div class="card-body pt-0">
+    <LoginSection v-if="session.isLogin" />
+    <div v-else class="card min-w-full">
+      <div class="card-body pt-0 space-y-3">
         <div class="card-title mb-2">Sign up</div>
         <div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
           <div>
