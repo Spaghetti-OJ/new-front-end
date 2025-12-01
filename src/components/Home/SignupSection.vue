@@ -35,8 +35,8 @@ function signup() {
 
 <template>
   <div class="card-container">
-    <div class="card min-w-full bg-base-100 shadow">
-      <div class="card-body">
+    <div class="card min-w-full">
+      <div class="card-body pt-0">
         <div class="card-title mb-2">Sign up</div>
 
         <!-- Username -->
@@ -66,7 +66,7 @@ function signup() {
           />
           <label class="label" v-if="v$.email.$error">
             <span class="label-text-alt text-error">
-              {{ v$.email.email ? "Invalid email" : "Required" }}
+              {{ v$.email.required.$invalid ? "Required" : v$.email.email.$invalid ? "Invalid email" : "" }}
             </span>
           </label>
         </div>
