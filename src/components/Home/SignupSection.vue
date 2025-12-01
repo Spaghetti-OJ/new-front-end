@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import api from "@/api";
-import axios from "axios";
 import { useI18n } from "vue-i18n";
 
 const signupForm = reactive({
@@ -13,9 +12,10 @@ const signupForm = reactive({
   studentID: "",
   password: "",
   confirmPassword: "",
-  isLoading: false,
   errorMsg: "",
 });
+const isLoading = ref(false);
+
 const { t } = useI18n();
 const rules = {
   username: { required },
@@ -34,9 +34,9 @@ const rules = {
 const v$ = useVuelidate(rules, signupForm);
 
 async function signup() {
-  const ok = await v$.value.$validate();
-  if (!ok) return;
-  signupForm.isLoading = true;
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
+  isLoading.value = true;
   signupForm.errorMsg = "";
 
   const body = {
@@ -51,8 +51,8 @@ async function signup() {
 
   try {
     await api.Auth.signup(body);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+  } catch (error: any) {
+    if (error.response) {
       console.log(error);
       const status = error.response?.status;
       const data = error.response?.data;
@@ -75,7 +75,7 @@ async function signup() {
       throw error;
     }
   } finally {
-    signupForm.isLoading = false;
+    isLoading.value = false;
   }
 }
 </script>
