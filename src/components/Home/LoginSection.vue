@@ -65,7 +65,7 @@ async function login() {
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
+      <div class="card-body pt-0">
         <div v-if="session.isNotValidated" class="flex justify-center">
           <ui-spinner />
         </div>
