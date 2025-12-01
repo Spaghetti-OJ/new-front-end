@@ -37,12 +37,7 @@ function onTabKeydown(event, currentTab) {
   <div class="card w-full min-w-[24rem] bg-base-100">
     <div class="card-body">
       <!-- Tabs -->
-      <div
-        v-if="!session.isLogin"
-        class="mb-4 flex border-b"
-        role="tablist"
-        aria-label="Authentication Tabs"
-      >
+      <div v-if="!session.isLogin" class="mb-4 flex border-b" role="tablist" aria-label="Authentication Tabs">
         <button
           ref="tabRefs.signin"
           class="flex-1 py-2 text-center font-semibold"
