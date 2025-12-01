@@ -75,7 +75,6 @@ async function signup() {
       }
     } else {
       signupForm.errorMsg = t("errorCode.UNKNOWN");
-      throw error;
     }
   } finally {
     isLoading.value = false;
