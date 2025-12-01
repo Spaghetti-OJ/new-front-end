@@ -68,7 +68,6 @@ async function signup() {
         const firstMsg = Array.isArray((data as any)[firstKey])
           ? (data as any)[firstKey][0]
           : String((data as any)[firstKey]);
-        console.log(firstMsg);
         if (status === 400 && firstMsg === "A user with that username already exists.") {
           signupForm.errorMsg = t("errorCode.ERR003");
         } else if (status === 400 && firstMsg === "user with this email already exists.") {
