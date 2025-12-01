@@ -42,8 +42,13 @@ function signup() {
         <!-- Username -->
         <div class="form-control">
           <label class="label"><span class="label-text">Username</span></label>
-          <input v-model="v$.username.$model" type="text" placeholder="username" class="input input-bordered"
-            :class="v$.username.$error && 'input-error'" />
+          <input
+            v-model="v$.username.$model"
+            type="text"
+            placeholder="username"
+            class="input input-bordered"
+            :class="v$.username.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.username.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -52,8 +57,13 @@ function signup() {
         <!-- Email -->
         <div class="form-control">
           <label class="label"><span class="label-text">Email</span></label>
-          <input v-model="v$.email.$model" type="email" placeholder="email" class="input input-bordered"
-            :class="v$.email.$error && 'input-error'" />
+          <input
+            v-model="v$.email.$model"
+            type="email"
+            placeholder="email"
+            class="input input-bordered"
+            :class="v$.email.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.email.$error">
             <span class="label-text-alt text-error">
               {{ v$.email.email ? "Invalid email" : "Required" }}
@@ -64,8 +74,13 @@ function signup() {
         <!-- Real Name -->
         <div class="form-control">
           <label class="label"><span class="label-text">Real name</span></label>
-          <input v-model="v$.realname.$model" type="text" placeholder="your full name" class="input input-bordered"
-            :class="v$.realname.$error && 'input-error'" />
+          <input
+            v-model="v$.realname.$model"
+            type="text"
+            placeholder="your full name"
+            class="input input-bordered"
+            :class="v$.realname.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.realname.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -74,8 +89,13 @@ function signup() {
         <!-- Student ID -->
         <div class="form-control">
           <label class="label"><span class="label-text">Student ID</span></label>
-          <input v-model="v$.studentID.$model" type="text" placeholder="student ID" class="input input-bordered"
-            :class="v$.studentID.$error && 'input-error'" />
+          <input
+            v-model="v$.studentID.$model"
+            type="text"
+            placeholder="student ID"
+            class="input input-bordered"
+            :class="v$.studentID.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.studentID.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -84,8 +104,13 @@ function signup() {
         <!-- Password -->
         <div class="form-control">
           <label class="label"><span class="label-text">Password</span></label>
-          <input v-model="v$.password.$model" type="password" placeholder="password" class="input input-bordered"
-            :class="v$.password.$error && 'input-error'" />
+          <input
+            v-model="v$.password.$model"
+            type="password"
+            placeholder="password"
+            class="input input-bordered"
+            :class="v$.password.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.password.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -94,8 +119,13 @@ function signup() {
         <!-- Confirm Password -->
         <div class="form-control">
           <label class="label"><span class="label-text">Confirm Password</span></label>
-          <input v-model="v$.confirmPassword.$model" type="password" placeholder="confirm password"
-            class="input input-bordered" :class="v$.confirmPassword.$error && 'input-error'" />
+          <input
+            v-model="v$.confirmPassword.$model"
+            type="password"
+            placeholder="confirm password"
+            class="input input-bordered"
+            :class="v$.confirmPassword.$error && 'input-error'"
+          />
           <label class="label" v-if="v$.confirmPassword.$error">
             <span class="label-text-alt text-error">Password does not match</span>
           </label>

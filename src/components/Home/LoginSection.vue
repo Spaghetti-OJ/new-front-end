@@ -7,8 +7,6 @@ import { required } from "@vuelidate/validators";
 import api from "@/api";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-// @ts-ignore
-import cowsay from "cowsay2";
 
 const envMode = import.meta.env.MODE;
 const envApiBaseUrl = import.meta.env.VITE_APP_API_BASE_URL;
@@ -129,7 +127,6 @@ async function login() {
             </button>
           </div>
         </template>
-        <pre class="text-base-100" v-text="cowsay.say(`MODE=${envMode}; API_BASE_URL=${envApiBaseUrl}`)" />
       </div>
     </div>
   </div>
