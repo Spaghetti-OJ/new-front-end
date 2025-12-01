@@ -21,7 +21,7 @@ const rules = {
   username: { required },
   email: { required, email },
   realname: { required },
-  studentID:{},
+  studentID: {},
   password: { required },
   confirmPassword: {
     required,
@@ -44,7 +44,7 @@ async function signup() {
     email: signupForm.email,
     password: signupForm.password,
     real_name: signupForm.realname,
-    role: "student" as const,       
+    role: "student" as const,
     student_id: signupForm.studentID || undefined,
     bio: "",
   };
@@ -56,19 +56,20 @@ async function signup() {
       console.log(error);
       const status = error.response?.status;
       const data = error.response?.data;
-       if (data && typeof data === "object" && !Array.isArray(data)) {
+      if (data && typeof data === "object" && !Array.isArray(data)) {
         const firstKey = Object.keys(data)[0];
         const firstMsg = Array.isArray((data as any)[firstKey])
           ? (data as any)[firstKey][0]
           : String((data as any)[firstKey]);
-          console.log(firstMsg);
-      if (status === 400&&firstMsg==='A user with that username already exists.') {
-        signupForm.errorMsg = t("errorCode.ERR003");
-      } else if(status === 400&&firstMsg==='user with this email already exists.'){
-        signupForm.errorMsg = t("errorCode.ERR004");
-      }else{
-        signupForm.errorMsg = t("errorCode.UNKNOWN");
-      }}
+        console.log(firstMsg);
+        if (status === 400 && firstMsg === "A user with that username already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR003");
+        } else if (status === 400 && firstMsg === "user with this email already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR004");
+        } else {
+          signupForm.errorMsg = t("errorCode.UNKNOWN");
+        }
+      }
     } else {
       signupForm.errorMsg = t("errorCode.UNKNOWN");
       throw error;
@@ -84,12 +85,12 @@ async function signup() {
     <div class="card min-w-full">
       <div class="card-body pt-0">
         <div class="card-title mb-2">Sign up</div>
-<div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
-            <div>
-              <i-uil-times-circle />
-              <span>{{ signupForm.errorMsg }}</span>
-            </div>
+        <div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
+          <div>
+            <i-uil-times-circle />
+            <span>{{ signupForm.errorMsg }}</span>
           </div>
+        </div>
         <!-- Username -->
         <div class="form-control">
           <label class="label"><span class="label-text">Username</span></label>
