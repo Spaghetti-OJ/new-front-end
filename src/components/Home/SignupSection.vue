@@ -66,7 +66,7 @@ function signup() {
           />
           <label class="label" v-if="v$.email.$error">
             <span class="label-text-alt text-error">
-              {{ v$.email.email ? "Invalid email" : "Required" }}
+              {{ v$.email.required.$invalid ? "Required" : v$.email.email.$invalid ? "Invalid email" : "" }}
             </span>
           </label>
         </div>
