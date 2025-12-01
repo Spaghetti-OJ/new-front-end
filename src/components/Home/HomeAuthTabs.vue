@@ -17,7 +17,7 @@ const session = useSession();
           class="flex-1 py-2 text-center font-semibold"
           :class="
             activeTab === 'signin'
-              ? 'border-b-2 border-blue-600 text-blue-600'
+              ? 'border-b-2 border-primary text-primary'
               : 'text-gray-500 dark:text-gray-400'
           "
           @click="activeTab = 'signin'"
@@ -29,7 +29,7 @@ const session = useSession();
           class="flex-1 py-2 text-center font-semibold"
           :class="
             activeTab === 'signup'
-              ? 'border-b-2 border-blue-600 text-blue-600'
+              ? 'border-b-2 border-primary text-primary'
               : 'text-gray-500 dark:text-gray-400'
           "
           @click="activeTab = 'signup'"
