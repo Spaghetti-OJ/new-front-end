@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useSession } from "@/stores/session";
 import LoginSection from "./LoginSection.vue";
