@@ -29,7 +29,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: process.env.NODE_ENV === "test" ? "http://localhost:8000" : "https://noj-preview1.little7.pp.ua",
+        target: process.env.NODE_ENV === "test" ? "http://localhost:8000" : "https://noj-backend-dev.little7.pp.ua",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
