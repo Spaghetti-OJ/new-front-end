@@ -38,8 +38,6 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, signupForm);
-const baseURL = import.meta.env.VITE_APP_API_BASE_URL || "/api";
-
 async function signup() {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
