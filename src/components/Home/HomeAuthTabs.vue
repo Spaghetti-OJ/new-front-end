@@ -38,19 +38,37 @@ function onTabKeydown(event, currentTab) {
     <div class="card-body">
       <!-- Tabs -->
       <div v-if="!session.isLogin" class="mb-4 flex border-b" role="tablist" aria-label="Authentication Tabs">
-        <button ref="tabRefs.signin" class="flex-1 py-2 text-center font-semibold" :class="activeTab === 'signin'
-            ? 'border-b-2 border-blue-600 text-blue-600'
-            : 'text-gray-500 dark:text-gray-400'
-          " role="tab" :aria-selected="activeTab === 'signin'" :tabindex="activeTab === 'signin' ? 0 : -1"
-          @click="activeTab = 'signin'" @keydown="onTabKeydown($event, 'signin')">
+        <button
+          ref="tabRefs.signin"
+          class="flex-1 py-2 text-center font-semibold"
+          :class="
+            activeTab === 'signin'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 dark:text-gray-400'
+          "
+          role="tab"
+          :aria-selected="activeTab === 'signin'"
+          :tabindex="activeTab === 'signin' ? 0 : -1"
+          @click="activeTab = 'signin'"
+          @keydown="onTabKeydown($event, 'signin')"
+        >
           Sign In
         </button>
 
-        <button ref="tabRefs.signup" class="flex-1 py-2 text-center font-semibold" :class="activeTab === 'signup'
-            ? 'border-b-2 border-blue-600 text-blue-600'
-            : 'text-gray-500 dark:text-gray-400'
-          " role="tab" :aria-selected="activeTab === 'signup'" :tabindex="activeTab === 'signup' ? 0 : -1"
-          @click="activeTab = 'signup'" @keydown="onTabKeydown($event, 'signup')">
+        <button
+          ref="tabRefs.signup"
+          class="flex-1 py-2 text-center font-semibold"
+          :class="
+            activeTab === 'signup'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 dark:text-gray-400'
+          "
+          role="tab"
+          :aria-selected="activeTab === 'signup'"
+          :tabindex="activeTab === 'signup' ? 0 : -1"
+          @click="activeTab = 'signup'"
+          @keydown="onTabKeydown($event, 'signup')"
+        >
           Sign Up
         </button>
       </div>

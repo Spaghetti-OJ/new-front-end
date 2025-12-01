@@ -31,6 +31,22 @@ function submit() {
 <template>
   <div class="max-w-xl space-y-6">
     <h2 class="text-2xl font-semibold">Change Password</h2>
+    <!-- Current Password -->
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text">Current Password</span>
+      </label>
+      <input
+        type="password"
+        v-model="v$.currentPassword.$model"
+        class="input input-bordered"
+        placeholder="current password"
+        :class="v$.currentPassword.$error && 'input-error'"
+      />
+      <label class="label" v-if="v$.currentPassword.$error">
+        <span class="label-text-alt text-error">Required</span>
+      </label>
+    </div>
 
     <!-- New Password -->
     <div class="form-control">
@@ -63,23 +79,6 @@ function submit() {
       />
       <label class="label" v-if="v$.confirmPassword.$error">
         <span class="label-text-alt text-error">Passwords do not match</span>
-      </label>
-    </div>
-
-    <!-- Current Password -->
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Current Password</span>
-      </label>
-      <input
-        type="password"
-        v-model="v$.currentPassword.$model"
-        class="input input-bordered"
-        placeholder="current password"
-        :class="v$.currentPassword.$error && 'input-error'"
-      />
-      <label class="label" v-if="v$.currentPassword.$error">
-        <span class="label-text-alt text-error">Required</span>
       </label>
     </div>
 
