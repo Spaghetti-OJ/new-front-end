@@ -53,11 +53,20 @@ async function signup() {
 
   try {
     await api.Auth.signup(body);
-    const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
-    await session.setTokens(tokens.access, tokens.refresh);
+    try {
+      const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
+      await session.setTokens(tokens.access, tokens.refresh);
+    } catch (loginError) {
+      // Login failed after successful signup
+      if (axios.isAxiosError(loginError)) {
+        signupForm.errorMsg = t("errorCode.ERR001");
+      } else {
+        signupForm.errorMsg = t("errorCode.UNKNOWN");
+      }
+      return;
+    }
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
-      console.log(error);
       const status = error.response?.status;
       const data = error.response?.data;
       if (data && typeof data === "object" && !Array.isArray(data)) {
