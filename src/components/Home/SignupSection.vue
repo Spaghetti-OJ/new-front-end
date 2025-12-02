@@ -160,9 +160,6 @@ async function signup() {
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
-          <label class="label" v-if="v$.studentID.$error">
-            <span class="label-text-alt text-error">Required</span>
-          </label>
         </div>
 
         <!-- Password -->
