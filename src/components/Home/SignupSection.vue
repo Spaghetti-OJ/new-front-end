@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
+import axios from "axios";
+import api from "@/api";
+import { useSession } from "@/stores/session";
+import { useI18n } from "vue-i18n";
+import LoginSection from "./LoginSection.vue";
 
 const signupForm = reactive({
   username: "",
@@ -10,13 +15,16 @@ const signupForm = reactive({
   studentID: "",
   password: "",
   confirmPassword: "",
+  errorMsg: "",
 });
-
+const isLoading = ref(false);
+const session = useSession();
+const { t } = useI18n();
 const rules = {
   username: { required },
   email: { required, email },
   realname: { required },
-  studentID: { required },
+  studentID: {},
   password: { required },
   confirmPassword: {
     required,
@@ -27,18 +35,70 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, signupForm);
+async function signup() {
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
+  isLoading.value = true;
+  signupForm.errorMsg = "";
 
-function signup() {
-  v$.value.$validate();
+  const body = {
+    username: signupForm.username,
+    email: signupForm.email,
+    password: signupForm.password,
+    real_name: signupForm.realname,
+    role: "student" as const,
+    student_id: signupForm.studentID || undefined,
+    bio: "",
+  };
+
+  try {
+    await api.Auth.signup(body);
+    try {
+      const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
+      await session.setTokens(tokens.access, tokens.refresh);
+    } catch (loginError) {
+      signupForm.errorMsg = axios.isAxiosError(loginError) ? t("errorCode.ERR001") : t("errorCode.UNKNOWN");
+    }
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        const firstKey = Object.keys(data)[0];
+        const firstMsg = Array.isArray((data as any)[firstKey])
+          ? (data as any)[firstKey][0]
+          : String((data as any)[firstKey]);
+        if (status === 400 && firstMsg === "A user with that username already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR003");
+        } else if (status === 400 && firstMsg === "user with this email already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR004");
+        } else {
+          signupForm.errorMsg = t("errorCode.UNKNOWN");
+        }
+      } else {
+        signupForm.errorMsg = t("errorCode.UNKNOWN");
+      }
+    } else {
+      signupForm.errorMsg = t("errorCode.UNKNOWN");
+    }
+  } finally {
+    isLoading.value = false;
+  }
 }
 </script>
 
 <template>
   <div class="card-container">
-    <div class="card min-w-full">
-      <div class="card-body pt-0">
+    <LoginSection v-if="session.isLogin" />
+    <div v-else class="card min-w-full">
+      <div class="card-body space-y-3 pt-0">
         <div class="card-title mb-2">Sign up</div>
-
+        <div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
+          <div>
+            <i-uil-times-circle />
+            <span>{{ signupForm.errorMsg }}</span>
+          </div>
+        </div>
         <!-- Username -->
         <div class="form-control">
           <label class="label"><span class="label-text">Username</span></label>
@@ -96,9 +156,6 @@ function signup() {
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
-          <label class="label" v-if="v$.studentID.$error">
-            <span class="label-text-alt text-error">Required</span>
-          </label>
         </div>
 
         <!-- Password -->
