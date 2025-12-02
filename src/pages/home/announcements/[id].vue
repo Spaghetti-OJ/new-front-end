@@ -12,7 +12,7 @@ const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
 const annid = route.params.id;
-const public_course = "1";
+const public_course = 1;
 //記得public course
 onMounted(async () => {
   isLoading.value = true;
