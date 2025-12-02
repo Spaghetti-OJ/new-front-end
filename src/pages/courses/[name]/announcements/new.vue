@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { ref, reactive } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
-import api from "@/api";
+import api, { Course } from "@/api";
 import axios from "axios";
 import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
 
@@ -25,7 +25,7 @@ function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementFor
 
 const openPreview = ref<boolean>(false);
 const mockAnnouncementMeta = {
-  creator: { displayedName: "Ijichi Nijika" },
+  creator: { username: "Ijichi Nijika" },
   createTime: dayjs().unix(),
   updateTime: dayjs().unix(),
 };
@@ -35,12 +35,15 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const { annId } = (
-      await api.Announcement.create({
-        ...newAnnouncement,
-        courseName: route.params.name as string,
-      })
-    ).data;
+    const body = {
+      title: newAnnouncement.title,
+      content: newAnnouncement.markdown,
+      is_pinned: newAnnouncement.pinned,
+      course_id: Number(route.params.name),
+    };
+    console.log(body);
+    const { annId } = (await api.Announcement.create(body)).data;
+
     router.push(`/courses/${route.params.name}/announcements/${annId}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {

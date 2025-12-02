@@ -3,14 +3,31 @@ import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
 import { fetcher } from "@/api";
+import { ref, onMounted } from "vue";
+import api from "@/api";
 
 const route = useRoute();
 useTitle(`Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);
-const {
-  data: announcements,
-  error,
-  isLoading,
-} = useAxios<AnnouncementList>(`/ann/${route.params.name}/${route.params.id}`, fetcher);
+const announcements = ref<AnnouncementList>([]);
+const isLoading = ref(true);
+const error = ref<any>(null);
+onMounted(async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    const courseId = route.params.name as string;
+
+    const res = await api.Announcement.getAnnouncement(courseId);
+
+    announcements.value = res.data ?? (res as any);
+  } catch (e) {
+    console.error(e);
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>

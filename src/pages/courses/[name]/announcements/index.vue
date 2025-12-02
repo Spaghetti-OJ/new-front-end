@@ -1,20 +1,38 @@
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
 import { fetcher } from "@/api";
 import { formatTime } from "@/utils/formatTime";
-import { useSession } from "@/stores/session";
+import { useSession, UserRole } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
+import api from "@/api";
 
 const session = useSession();
 const route = useRoute();
 
 useTitle(`Announcements - ${route.params.name} | Normal OJ`);
-const {
-  data: announcements,
-  error,
-  isLoading,
-} = useAxios<AnnouncementList>(`/course/${route.params.name}/ann`, fetcher);
+const announcements = ref<AnnouncementList>([]);
+const isLoading = ref(true);
+const error = ref<any>(null);
+onMounted(async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    const courseId = route.params.name as string;
+
+    const res = await api.Announcement.getAnnouncement(courseId);
+
+    announcements.value = res.data ?? (res as any);
+  } catch (e) {
+    console.error(e);
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
+});
+const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
 </script>
 
 <template>
@@ -24,7 +42,7 @@ const {
         <div class="card-title justify-between">
           {{ $t("course.ann.index.title") }}
           <router-link
-            v-if="session.isAdmin"
+            v-if="rolesCanCreateAnnouncement.includes(session.role)"
             class="btn btn-success"
             :to="`/courses/${$route.params.name}/announcements/new`"
           >
@@ -58,9 +76,9 @@ const {
                       {{ title }}
                     </router-link>
                   </td>
-                  <td>{{ creator.displayedName }}</td>
+                  <td>{{ creator.username }}</td>
                   <td>{{ formatTime(createTime) }}</td>
-                  <td v-if="session.isAdmin">
+                  <td v-if="rolesCanCreateAnnouncement.includes(session.role)">
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { fetcher } from "@/api";
+import api from "@/api";
 
 import useInteractions from "@/composables/useInteractions";
 
@@ -10,7 +12,25 @@ const { isDesktop } = useInteractions();
 
 const session = useSession();
 
-const { data: announcements, error, isLoading } = useAxios<AnnouncementList>("/ann", fetcher);
+const public_course = "1"; //之後家public course
+const rawAnnouncements = ref<AnnouncementList>([]);
+const isLoading = ref(true);
+const error = ref<any>(null);
+
+const announcements = computed(() => rawAnnouncements.value);
+onMounted(async () => {
+  isLoading.value = true;
+  error.value = null;
+  try {
+    const res = await api.Announcement.getAnnouncement(public_course);
+    rawAnnouncements.value = (res as any).data ?? (res as any);
+  } catch (e) {
+    console.error(e);
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
