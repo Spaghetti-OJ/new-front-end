@@ -481,6 +481,8 @@
   "errorCode": {
     "ERR001": "Login Failed: Your username/email or password is incorrect.",
     "ERR002": "Login Failed: Your account is not activated yet, please go to https://v1.noj.tw to verify your email.",
+    "ERR003": "Signup Failed: Your username is already in use.",
+    "ERR004": "Signup Failed: Your email is already in use.",
     "UNKNOWN": "Unknown Error, please contact teaching assistants or NOJ maintainers, or try again later."
   },
   "password_reset": {
