@@ -41,7 +41,6 @@ async function submit() {
       is_pinned: newAnnouncement.pinned,
       course_id: Number(route.params.name),
     };
-    console.log(body);
     const { annId } = (await api.Announcement.create(body)).data;
 
     router.push(`/courses/${route.params.name}/announcements/${annId}`);
