@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/api";
 import { ref, onMounted } from "vue";
 import api from "@/api";
 
