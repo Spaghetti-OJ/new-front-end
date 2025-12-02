@@ -57,31 +57,23 @@ async function signup() {
       const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
       await session.setTokens(tokens.access, tokens.refresh);
     } catch (loginError) {
-      // Login failed after successful signup
-      if (axios.isAxiosError(loginError)) {
-        signupForm.errorMsg = t("errorCode.ERR001");
-      } else {
-        signupForm.errorMsg = t("errorCode.UNKNOWN");
-      }
-      return;
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-      if (error.response) {
-        const status = error.response?.status;
-        const data = error.response?.data;
-        if (data && typeof data === "object" && !Array.isArray(data)) {
-          const firstKey = Object.keys(data)[0];
-          const firstMsg = Array.isArray((data as any)[firstKey])
-            ? (data as any)[firstKey][0]
-            : String((data as any)[firstKey]);
-          console.log(firstMsg);
-          if (status === 400 && firstMsg === "A user with that username already exists.") {
-            signupForm.errorMsg = t("errorCode.ERR003");
-          } else if (status === 400 && firstMsg === "user with this email already exists.") {
-            signupForm.errorMsg = t("errorCode.ERR004");
-          } else {
-            signupForm.errorMsg = t("errorCode.UNKNOWN");
-          }
+      signupForm.errorMsg = axios.isAxiosError(loginError) ? t("errorCode.ERR001") : t("errorCode.UNKNOWN");
+    }
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        const firstKey = Object.keys(data)[0];
+        const firstMsg = Array.isArray((data as any)[firstKey])
+          ? (data as any)[firstKey][0]
+          : String((data as any)[firstKey]);
+        if (status === 400 && firstMsg === "A user with that username already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR003");
+        } else if (status === 400 && firstMsg === "user with this email already exists.") {
+          signupForm.errorMsg = t("errorCode.ERR004");
+        } else {
+          signupForm.errorMsg = t("errorCode.UNKNOWN");
         }
       } else {
         signupForm.errorMsg = t("errorCode.UNKNOWN");
