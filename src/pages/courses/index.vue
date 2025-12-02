@@ -13,6 +13,10 @@ const courses = ref<CourseList | null>(null);
 const isLoading = ref(true);
 const error = ref<any>(undefined);
 
+const joinCode = ref("");
+const joinLoading = ref(false);
+const joinError = ref<string | null>(null);
+
 onMounted(async () => {
   try {
     const res = await api.Course.list();
@@ -25,6 +29,24 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
+
+const onJoinCourse = async () => {
+  const code = joinCode.value.trim();
+  if (!code) return;
+
+  joinLoading.value = true;
+  joinError.value = null;
+
+  try {
+    joinCode.value = "";
+  } catch (err: any) {
+    // 錯誤
+    joinError.value =
+      err?.response?.data?.msg ?? "Failed to join course. Please check the code.";
+  } finally {
+    joinLoading.value = false;
+  }
+};
 
 const displayedCourses = computed(() => [...(courses.value ?? [])].reverse());
 
@@ -44,6 +66,30 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
         >
           <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("courses.index.new") }}
         </router-link>
+
+        <!-- join 區塊 -->
+        <form
+          class="flex items-center gap-2"
+          @submit.prevent="onJoinCourse"
+        >
+          <input
+            v-model="joinCode"
+            type="text"
+            class="input input-sm input-bordered w-52 md:w-64"
+            placeholder="Join with course code"
+          />
+          <button
+            type="submit"
+            class="btn btn-sm btn-success min-w-[4rem]"
+            :disabled="joinLoading"
+          >
+            <span v-if="!joinLoading">join</span>
+            <span
+              v-else
+              class="loading loading-spinner loading-xs"
+            />
+          </button>
+        </form>
       </div>
 
       <div class="my-2" />
