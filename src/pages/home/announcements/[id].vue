@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/api";
 import api from "@/api";
 const route = useRoute();
 
@@ -12,8 +10,7 @@ const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
 const annid = route.params.id;
-const public_course = 1;
-//記得public course
+const public_course = "1";
 onMounted(async () => {
   isLoading.value = true;
   error.value = null;
