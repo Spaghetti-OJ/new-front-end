@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/api";
 import { formatTime } from "@/utils/formatTime";
 import { useSession, UserRole } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
