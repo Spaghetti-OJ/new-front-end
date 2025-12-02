@@ -31,7 +31,6 @@ onMounted(async () => {
     const annId = route.params.id as string;
 
     const first = await api.Announcement.getOne(courseId, annId);
-    console.log(first);
     //const first = (res.data ?? (res as any))[0] as Announcement | undefined;
 
     if (first) {
