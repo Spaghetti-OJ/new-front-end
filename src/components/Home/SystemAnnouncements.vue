@@ -2,8 +2,6 @@
 import { ref, onMounted, computed } from "vue";
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/api";
 import api from "@/api";
 
 import useInteractions from "@/composables/useInteractions";
@@ -12,7 +10,7 @@ const { isDesktop } = useInteractions();
 
 const session = useSession();
 
-const public_course = "1"; //之後家public course
+const public_course = "1"; //add public course
 const rawAnnouncements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
@@ -65,7 +63,7 @@ onMounted(async () => {
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/Public/announcements/${annId}/edit`"
+                        :to="`/courses/${public_course}/announcements/${annId}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -106,7 +104,7 @@ onMounted(async () => {
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/Public/announcements/${annId}/edit`"
+                        :to="`/courses/${public_course}/announcements/${annId}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
