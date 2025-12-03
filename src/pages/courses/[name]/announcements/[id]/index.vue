@@ -15,8 +15,9 @@ onMounted(async () => {
 
   try {
     const courseId = route.params.name as string;
+    const annId = route.params.id as string;
 
-    const res = await api.Announcement.getAnnouncement(courseId);
+    const res = await api.Announcement.getOne(courseId, annId);
 
     announcements.value = res.data ?? (res as any);
   } catch (e) {
