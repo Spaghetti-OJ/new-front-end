@@ -14,7 +14,7 @@ interface AnnouncementCreationForm {
 interface AnnouncementEditionForm {
   annId: number;
   title: string;
-  context: string;
+  content: string;
   is_pinned?: boolean;
 }
 
