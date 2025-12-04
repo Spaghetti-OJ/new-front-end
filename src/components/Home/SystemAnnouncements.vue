@@ -11,17 +11,16 @@ const { isDesktop } = useInteractions();
 const session = useSession();
 
 const public_course = "1"; //add public course
-const rawAnnouncements = ref<AnnouncementList>([]);
+const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
 
-const announcements = computed(() => rawAnnouncements.value);
 onMounted(async () => {
   isLoading.value = true;
   error.value = null;
   try {
     const res = await api.Announcement.getAnnouncement(public_course);
-    rawAnnouncements.value = (res as any).data ?? (res as any);
+    announcements.value = (res as any).data ?? (res as any);
   } catch (e) {
     console.error(e);
     error.value = e;
