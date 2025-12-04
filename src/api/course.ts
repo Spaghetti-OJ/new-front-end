@@ -28,7 +28,10 @@ export const Course = {
 };
 
 export const Announcement = {
-  create: (body: AnnouncementCreationForm) => fetcher.post<{ annId: string }>("/ann", body),
-  modify: (body: AnnouncementEditionForm) => fetcher.put("/ann", body),
-  delete: (body: { annId: string }) => fetcher.delete("/ann", { data: body }),
+  getAnnouncement: (course_id: number | string) => fetcher.get<AnnouncementList>(`/ann/${course_id}/ann`),
+  create: (body: AnnouncementCreationForm) =>
+    fetcher.post<{ annId: string; created_at: number }>("/ann/", body),
+  modify: (body: AnnouncementEditionForm) => fetcher.put<{ message: string }>("/ann/", body),
+  delete: (body: { annId: number }) => fetcher.delete("/ann/", { data: body }),
+  getOne: (courseId: string, annId: string) => fetcher.get<AnnouncementList>(`/ann/${courseId}/${annId}`),
 };
