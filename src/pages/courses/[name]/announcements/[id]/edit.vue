@@ -34,13 +34,13 @@ onMounted(async () => {
     //const first = (res.data ?? (res as any))[0] as Announcement | undefined;
 
     if (first) {
-      announcement.value = first.data[0];
-      // 編輯表單內容一開始用現有公告資料填入
+      const ann = first.data[0];
+      announcement.value = ann;
       edittingAnnouncement.value = {
-        annId: first.data[0].annId,
-        title: first.data[0].title,
-        markdown: first.data[0].markdown,
-        pinned: first.data[0].pinned,
+        annId: ann.annId,
+        title: ann.title,
+        markdown: ann.markdown,
+        pinned: ann.pinned,
       } as AnnouncementForm;
     }
   } catch (e) {
