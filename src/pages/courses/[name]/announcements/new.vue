@@ -74,8 +74,11 @@ async function submit() {
           <input v-model="openPreview" type="checkbox" class="toggle" />
         </div>
 
-        <announcement-card v-show="openPreview" :announcement="{ ...mockAnnouncementMeta, ...newAnnouncement }"
-          class="rounded border-2 border-slate-300" />
+        <announcement-card
+          v-show="openPreview"
+          :announcement="{ ...mockAnnouncementMeta, ...newAnnouncement }"
+          class="rounded border-2 border-slate-300"
+        />
       </div>
     </div>
   </div>

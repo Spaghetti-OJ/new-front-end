@@ -134,11 +134,16 @@ function discard() {
         <div class="card-title mb-3 flex-wrap justify-between lg:flex-nowrap">
           Edit Announcement
           <div class="flex gap-x-3">
-            <button :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
-              @click="delete_">
+            <button
+              :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="delete_"
+            >
               <i-uil-trash-alt class="mr-1 lg:h-5 lg:w-5" /> Delete
             </button>
-            <button :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']" @click="discard">
+            <button
+              :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="discard"
+            >
               <i-uil-times-circle class="mr-1 lg:h-5 lg:w-5" /> Discard Changes
             </button>
           </div>
@@ -150,7 +155,12 @@ function discard() {
           </template>
           <template #data>
             <template v-if="edittingAnnouncement">
-              <announcement-form :value="edittingAnnouncement" ref="formElement" @update="update" @submit="submit" />
+              <announcement-form
+                :value="edittingAnnouncement"
+                ref="formElement"
+                @update="update"
+                @submit="submit"
+              />
 
               <div class="divider" />
 
@@ -159,9 +169,11 @@ function discard() {
                 <input v-model="openPreview" type="checkbox" class="toggle" />
               </div>
 
-              <announcement-card v-show="openPreview"
+              <announcement-card
+                v-show="openPreview"
                 :announcement="{ ...previewPostMockMeta, ...edittingAnnouncement }"
-                class="rounded border-2 border-slate-300" />
+                class="rounded border-2 border-slate-300"
+              />
             </template>
           </template>
         </data-status-wrapper>

@@ -9,7 +9,7 @@ useTitle(`Announcement - ${route.params.id} | Normal OJ`);
 const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
-const annid = route.params.id;
+const annid = route.params.id as string;
 const public_course = "1";
 onMounted(async () => {
   isLoading.value = true;
