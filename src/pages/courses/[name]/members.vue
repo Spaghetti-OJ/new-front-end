@@ -99,11 +99,8 @@ async function submit() {
     : newMembersCSVString.value;
 
   try {
-    await api.Auth.batchSignup({
-      newUsers: csv,
-      force: forceUpdate.value,
-      course: route.params.name as string,
-    });
+    const file = new File([csv], newMembers.value?.name ?? "students.csv", { type: "text/csv" });
+    await api.Course.importCSV(route.params.name as string, file);
     router.go(0);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -177,10 +174,10 @@ async function submit() {
         <div>
           {{ $t("course.members.csvUploadHint.header") }}
           <ul class="ml-4 list-disc">
-            <li v-for="h in ['username', 'email', 'password']">
+            <li v-for="h in ['username', 'email', 'real_name']">
               <code>{{ h }}</code>
             </li>
-            <li v-for="h in ['real_name', 'role']">
+            <li v-for="h in ['student_id', 'password']">
               <code>{{ h }}</code> (optional)
             </li>
           </ul>
@@ -195,12 +192,12 @@ async function submit() {
 
         <div class="my-4" />
 
-        <div class="form-control">
+        <!-- <div class="form-control">
           <label class="label cursor-pointer">
             <span class="label-text">{{ $t("course.members.standardizeUsername") }}</span>
             <input v-model="shouldStandardizeUsername" type="checkbox" class="checkbox checkbox-primary" />
           </label>
-        </div>
+        </div> -->
 
         <div class="alert alert-error shadow-lg" v-if="errorMsg">
           <div>

@@ -25,6 +25,11 @@ export const Course = {
         },
       };
     }),
+  importCSV: (courseId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return fetcher.post<CourseImportCSVResponse>(`/course/${courseId}/import-csv/`, formData);
+  },
 };
 
 export const Announcement = {
