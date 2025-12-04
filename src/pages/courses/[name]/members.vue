@@ -33,7 +33,6 @@ onMounted(async () => {
     const res = await api.Course.info(route.params.name as string);
     if (res?.data.TAs && res?.data.students && res?.data.teacher) {
       members.value = [res.data.teacher, ...res.data.students, ...res.data.TAs].sort((a, b) => {
-        console.log(a, b, sortBy.value);
         if (sortBy.value === "username") {
           return a.username.localeCompare(b.username);
         } else if (sortBy.value === "real_name") {
@@ -42,7 +41,6 @@ onMounted(async () => {
           return a.role.localeCompare(b.role);
         }
       });
-      console.log(members.value);
     }
   } catch (err: any) {
     error.value = err;
