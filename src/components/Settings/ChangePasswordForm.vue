@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, toRef } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import { required, sameAs, helpers } from "@vuelidate/validators";
 
 const form = reactive({
   newPassword: "",
@@ -13,9 +13,7 @@ const rules = {
   newPassword: { required },
   confirmPassword: {
     required,
-    sameAsNew(value: string) {
-      return value === form.newPassword;
-    },
+    sameAsNew: helpers.withMessage("Passwords do not match", sameAs(toRef(form, "newPassword"))),
   },
   currentPassword: { required },
 };
