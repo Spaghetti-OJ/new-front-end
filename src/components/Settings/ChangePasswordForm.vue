@@ -76,7 +76,9 @@ function submit() {
         :class="v$.confirmPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.confirmPassword.$error">
-        <span class="label-text-alt text-error">Passwords do not match</span>
+        <span class="label-text-alt text-error">
+          {{ v$.confirmPassword.required.$invalid ? "Required" : "Passwords do not match" }}
+        </span>
       </label>
     </div>
 
