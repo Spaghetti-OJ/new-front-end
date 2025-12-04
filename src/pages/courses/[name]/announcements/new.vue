@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
 import axios from "axios";
 import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
+import { useSession } from "@/stores/session";
 
 const route = useRoute();
 const router = useRouter();
 useTitle(`New Announcement - ${route.params.name} | Normal OJ`);
 
+const session = useSession();
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
 const newAnnouncement = reactive<AnnouncementForm>({
@@ -24,11 +26,11 @@ function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementFor
 }
 
 const openPreview = ref<boolean>(false);
-const mockAnnouncementMeta = {
-  creator: { username: "Ijichi Nijika" },
+const mockAnnouncementMeta = computed(() => ({
+  creator: { username: session.username || "Ijichi Nijika" },
   createTime: dayjs().unix(),
   updateTime: dayjs().unix(),
-};
+}));
 
 async function submit() {
   if (!formElement.value) return;
@@ -72,11 +74,8 @@ async function submit() {
           <input v-model="openPreview" type="checkbox" class="toggle" />
         </div>
 
-        <announcement-card
-          v-show="openPreview"
-          :announcement="{ ...mockAnnouncementMeta, ...newAnnouncement }"
-          class="rounded border-2 border-slate-300"
-        />
+        <announcement-card v-show="openPreview" :announcement="{ ...mockAnnouncementMeta, ...newAnnouncement }"
+          class="rounded border-2 border-slate-300" />
       </div>
     </div>
   </div>
