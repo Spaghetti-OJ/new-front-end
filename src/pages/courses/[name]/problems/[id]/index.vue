@@ -6,7 +6,7 @@ import { useTitle } from "@vueuse/core";
 
 const route = useRoute();
 useTitle(`Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
-const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/${route.params.id}`, fetcher);
 </script>
 
 <template>

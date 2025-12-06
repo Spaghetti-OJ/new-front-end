@@ -7,7 +7,7 @@ import { ZipReader, BlobReader } from "@zip.js/zip.js";
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
 const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
-
+console.log("form");
 const props = defineProps<{
   testdata: File | null;
 }>();

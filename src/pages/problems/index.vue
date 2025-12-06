@@ -3,7 +3,8 @@ import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
-
+import api, { Course } from "@/api";
+import { feedbackSyncIntegration } from "@sentry/vue";
 useTitle("Problems | Normal OJ");
 
 type Problem = {
@@ -11,13 +12,13 @@ type Problem = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  course: string;
+  course:  number;
   acceptance: number;
 };
 
 const isLoading = ref(true);
 
-const baseProblems = ref<Problem[]>([
+const baseProblems = ref<Problem[]>([/*
   {
     id: 765,
     title: "Emergency Dispatch 1",
@@ -57,12 +58,47 @@ const baseProblems = ref<Problem[]>([
     tags: ["linked list"],
     course: "資料結構",
     acceptance: 0.8,
-  },
+  },*/
 ]);
 
+async function getProblem() {
+  isLoading.value = true;
+  try {
+    const res = await api.Problem.getProblemList();
+    console.log("res.data===",res.data);
+  
+
+    // 從 results 拿陣列
+    const list = Array.isArray(res.data.results) ? res.data.results : [];
+
+    baseProblems.value = list.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+       // 後端就是 'easy' | 'medium' | 'hard' 的字串，直接塞進去
+      difficulty: p.difficulty as Problem["difficulty"],
+
+      // 後端目前沒有 tags，就先給空陣列，之後再改
+      tags: Array.isArray(p.tags)
+        ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name))
+        : [],
+
+      course: p.course_id ?? "-",
+
+      // acceptance 後端沒給就先 0
+      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,                                  // 後端目前沒給，先 0
+    }));
+
+    console.log("baseProblems =", baseProblems.value);
+  } catch (err) {
+    console.error("getProblem error:", err);
+    baseProblems.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+}
 // Search and filters
 const q = ref("");
-const selectedCourses = ref<string[]>([]);
+const selectedCourses = ref<number[]>([]);
 // 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
@@ -109,7 +145,7 @@ function resetFilters() {
 }
 
 onMounted(() => {
-  setTimeout(() => (isLoading.value = false), 300);
+  getProblem();
 });
 </script>
 
@@ -235,7 +271,7 @@ onMounted(() => {
                 #{{ p.id }}
               </td>
               <td>
-                <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">{{
+                <router-link :to="`/courses/${p.course}/problems/${p.id}`" class="link link-hover font-medium">{{
                   p.title
                 }}</router-link>
               </td>

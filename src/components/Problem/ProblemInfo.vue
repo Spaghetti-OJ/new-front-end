@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import { PROBLEM_STATUS } from "@/constants";
-
+console.log("info");
 interface Props {
   id: number;
   problemName: string;
   unlimitedQuota: boolean;
   quotaRemaining: number;
   quotaLimit: number;
-  tags: string[];
-  visible: ProblemStatus;
+  tags: ApiTag[];
+  visible: "hidden"|"public"|"course";
   isAdmin: boolean;
 }
 defineProps<Props>();
@@ -27,7 +27,7 @@ defineProps<Props>();
     <div class="collapse-content flex flex-col gap-2 bg-base-300">
       <div class="mt-3 flex flex-col">
         <div class="flex gap-1">
-          <div v-for="tag in tags" :key="tag" class="badge badge-info">
+          <div v-for="tag in tags" :key="tag.id" class="badge badge-info">
             {{ tag }}
           </div>
         </div>

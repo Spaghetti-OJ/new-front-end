@@ -5,8 +5,8 @@ declare enum ProblemType {
 }
 
 declare enum ProblemStatus {
-  Hidden = 1,
-  Visible = 0,
+  "hidden" = 1,
+  "public" = 0,
 }
 
 interface ProblemTestCase {
@@ -99,3 +99,34 @@ interface MossReport {
 
 type LangOption = { value: number; text: string; mask: number };
 type ProblemUpdater = <K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) => void;
+
+interface ApiTag{ id: number; name: string; usage_count: number };
+
+interface ApiProblemItem  {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  is_public: "public" | "course" | "hidden";
+  course_id: string;            // uuid
+  tags: ApiTag[];
+  created_at: string;
+  total_quota:number;
+  total_submissions:number;
+};
+
+interface ApiProblemList {
+  results: ApiProblemItem[];
+};
+interface problemresponse {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  is_public: "public" | "course" | "hidden";
+   course_id: number;
+   tags: ApiTag[];
+   submit_count:number;
+   high_score: number;
+   create_at:string;
+   
+   
+}

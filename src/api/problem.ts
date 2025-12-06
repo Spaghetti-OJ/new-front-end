@@ -1,7 +1,13 @@
 import { fetcher } from "./fetcher";
 
 export const Problem = {
+  getProblemList: (query?: {
+    difficulty?: string;
+    is_public?: string;
+    course_id?: number;
+  }) => fetcher.get<ApiProblemList>("/problem/", {params:query}),
   create: (body: ProblemForm) => fetcher.post("/problem/manage", body),
+  getProblemInfo: (problemId: number)  => fetcher.get<problemresponse>(`/problem/${problemId}/`),
   getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
   modify: (id: string | number, body: ProblemForm) => fetcher.put(`/problem/manage/${id}`, body),
   modifyTestdata: (id: string | number, body: FormData) =>
