@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useTheme } from "@/stores/theme";
 import { useSession } from "@/stores/session";
 import { useDark, useToggle, useStorage } from "@vueuse/core";
@@ -26,6 +26,12 @@ const route = useRoute();
 const matchRoute = (path: string) => route.matched.some((r) => r.path === path);
 
 const session = useSession();
+
+const router = useRouter();
+const handleLogout = () => {
+  session.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -117,6 +123,10 @@ const session = useSession();
       <button class="btn btn-ghost btn-sm text-white" @click="() => toggleDark()">
         <i-uil-sun v-if="isDark" class="h-6 w-6" />
         <i-uil-moon v-else class="h-6 w-6" />
+      </button>
+
+      <button v-if="session.isLogin" class="btn btn-error btn-sm text-white" @click="handleLogout">
+        Logout
       </button>
     </div>
   </nav>

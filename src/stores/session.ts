@@ -91,6 +91,9 @@ export const useSession = defineStore("session", {
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
     },
+    logout() {
+      this.logoutLocally();
+    },
   },
 });
 
