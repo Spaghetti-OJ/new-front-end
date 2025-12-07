@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed,ref,onMounted } from "vue";
 import { use } from "echarts/core";
 import VChart from "vue-echarts";
 import { TooltipComponent, LegendComponent, GridComponent } from "echarts/components";
@@ -14,24 +14,38 @@ import { useRoute } from "vue-router";
 import { fetcher } from "@/api";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
-
+import api from "@/api";
+import Stats from "../../homeworks/[id]/stats.vue";
 const { t } = useI18n();
 const route = useRoute();
 const theme = useTheme();
 useTitle(`Problem Stats - ${route.params.id} - ${route.params.name} | Normal OJ`);
 use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer, LabelLayout, GridComponent, BarChart]);
+const stats = ref<ProblemStats | null>(null);
+const error = ref<any>(null);
+const isLoading = ref<boolean>(false);
+async function getstat() {
+    isLoading.value = true;
+  error.value = null;
 
-const {
-  data: stats,
-  error,
-  isLoading,
-} = useAxios<ProblemStats>(`/problem/${route.params.id}/stats`, fetcher);
+  try {
+    // ❗ 這裡替換掉舊的 useAxios 呼叫
+    const res = await api.Problem.getProblemStat(Number(route.params.id));
+
+    stats.value = res.data; // fetcher 會把 data spread
+  } catch (err) {
+    console.error(err);
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+}
 const resultCounts = computed(() => {
   if (!stats.value) return [];
   const _stats = stats.value;
   return Object.entries(SUBMISSION_STATUS_REPR).map(([statusCode, { label, color }]) => ({
     name: label,
-    value: _stats.statusCount[statusCode],
+    value: _stats.statusCount.accepted,
     itemStyle: { color: color },
   }));
 });
@@ -138,7 +152,7 @@ const barOption = computed(() => ({
                 <div class="stat-value">
                   <span v-if="!submissionCount || !stats">-</span>
                   <template v-else>
-                    <span>{{ stats.statusCount[0] }}</span>
+                    <span>{{ stats.statusCount }}</span>
                     <span class="text-sm font-normal">{{ ` / ${submissionCount}` }}</span>
                   </template>
                 </div>

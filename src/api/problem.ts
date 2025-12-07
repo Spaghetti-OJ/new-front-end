@@ -7,6 +7,7 @@ export const Problem = {
     course_id?: number;
   }) => fetcher.get<ApiProblemList>("/problem/", {params:query}),
   create: (body: ProblemForm) => fetcher.post("/problem/manage", body),
+  getProblemStat:(problemId: number)=>fetcher.get<ProblemStats>(`/problem/${problemId}/stat`),
   getProblemInfo: (problemId: number)  => fetcher.get<problemresponse>(`/problem/${problemId}`),
   getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
   modify: (id: string | number, body: ProblemForm) => fetcher.put(`/problem/manage/${id}`, body),

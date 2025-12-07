@@ -17,7 +17,7 @@ const {
   data: problem,
   error: fetchError,
   isLoading: isFetching,
-} = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+} = useAxios<Problem>(`/problem/${route.params.id}`, fetcher);
 
 const edittingProblem = ref<ProblemForm>();
 watchEffect(() => {

@@ -80,16 +80,31 @@ interface ProblemListItem {
 }
 
 type ProblemList = ProblemListItem[];
-
+interface top10item{
+  id:string;
+  user:string;
+  execution_time:number;
+  score:number;
+  status:string;
+}
+type top10list=top10item[];
+interface scorestat{
+  score:number;
+  count:number;
+}
 interface ProblemStats {
-  statusCount: { [key in SubmissionStatusCode]: number };
+  statusCount: { 
+    accepted: number;
+  wrong_answer: number;
+runtime_error:number;
+ };
   triedUserCount: number;
   average: number;
   std: number;
-  scoreDistribution: number[];
+  scoreDistribution: scorestat[];
   acUserRatio: number[];
-  top10RunTime: SubmissionList;
-  top10MemoryUsage: SubmissionList;
+  top10RunTime: top10list;
+  top10MemoryUsage: top10list;
 }
 
 interface MossReport {
