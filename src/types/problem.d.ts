@@ -119,14 +119,26 @@ interface ApiProblemList {
 };
 interface problemresponse {
   id: number;
-  title: string;
+  
+problemName
+: string;
   difficulty: "easy" | "medium" | "hard";
-  is_public: "public" | "course" | "hidden";
-   course_id: number;
-   tags: ApiTag[];
-   submit_count:number;
-   high_score: number;
-   create_at:string;
+  status: "public" | "course" | "hidden";
+  course_id: number;
+  tags: ApiTag[];
+  submit_count:number;
+  high_score: number;
+  create_at:string;
+  quota:number;
+  description: {
+    description: string;
+    input: string;
+    output: string;
+    hint: string;
+    sampleInput: string[];
+    sampleOutput: string[];
+  };
+
    
    
 }
