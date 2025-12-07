@@ -1,23 +1,41 @@
 <script setup lang="ts">
-import { watchEffect } from "vue";
+import { watchEffect,onMounted } from "vue";
 import { useStorage } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { useTitle } from "@vueuse/core";
 import { LOCAL_STORAGE_KEY } from "@/constants";
 import { useSession } from "@/stores/session";
-
+import api from "@/api";
 import ChangePasswordForm from "@/components/Settings/ChangePasswordForm.vue";
 
 useTitle("Settings | Normal OJ");
-
+const apikeyform={
+  name:"firstapikey",
+}
 const { t, locale } = useI18n();
 const localeInStorage = useStorage(LOCAL_STORAGE_KEY.LOCALE, "english");
 const session = useSession();
+async function tryapi() {
+  try{const apikey=await api.Auth.generatetoken(apikeyform);
+console.log("apikey=",apikey);
+const logg=await api.Auth.listtokens();
+console.log("logg=",logg);
+const deletee=await api.Auth.deletetokens(apikey.id);
+console.log("delete=",deletee);}catch (e) {
+   {
+    console.log(e.response?.status, e.response?.data);
+  }
+}finally{}
+
+}
 
 // sync locale with localStorage
 locale.value = localeInStorage.value;
 watchEffect(() => {
   localeInStorage.value = locale.value;
+});
+onMounted(() => {
+  tryapi();
 });
 </script>
 
