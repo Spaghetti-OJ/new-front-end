@@ -107,6 +107,7 @@ export function initSessionTokenProvider(sessionStore: ReturnType<typeof useSess
     }
     try {
       console.log("[Refresh Token] 開始刷新 access token...");
+      localStorage.removeItem(ACCESS_KEY);
       const response = await api.Auth.refresh({ refresh: sessionStore.refreshtoken });
       const { access, refresh: newRefresh } = response;
 
