@@ -73,8 +73,7 @@ onMounted(() => {
 
 // ===== Utils ===== //
 function generateKey() {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < 32; i++) {
     result += chars[Math.floor(Math.random() * chars.length)];
@@ -116,9 +115,7 @@ function handleCreateKey() {
 
   const expires =
     createFormExpiresDate.value && createFormExpiresTime.value
-      ? new Date(
-          `${createFormExpiresDate.value}T${createFormExpiresTime.value}`
-        ).toISOString()
+      ? new Date(`${createFormExpiresDate.value}T${createFormExpiresTime.value}`).toISOString()
       : undefined;
 
   const newKey: ApiKeyRow = {
@@ -154,9 +151,7 @@ function closeDetailModal() {
 function confirmDeleteSelected() {
   if (!selectedKey.value) return;
   if (confirm(`Delete "${selectedKey.value.name}"?`)) {
-    apiKeys.value = apiKeys.value.filter(
-      (k) => k.id !== selectedKey.value!.id
-    );
+    apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
     closeDetailModal();
   }
 }
@@ -179,17 +174,14 @@ function closeGeneratedModal() {
 </script>
 
 <template>
-  <div class="px-8 py-10 max-w-5xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">API Keys</h1>
+  <div class="mx-auto max-w-5xl px-8 py-10">
+    <h1 class="mb-6 text-3xl font-bold">API Keys</h1>
 
-    <button
-      class="btn btn-success mb-6 font-semibold uppercase tracking-wide"
-      @click="openCreateModal"
-    >
+    <button class="btn btn-success mb-6 font-semibold uppercase tracking-wide" @click="openCreateModal">
       Create New Secret Key
     </button>
 
-    <div class="overflow-x-auto rounded-2xl shadow-sm border bg-base-100">
+    <div class="overflow-x-auto rounded-2xl border bg-base-100 shadow-sm">
       <table class="table">
         <thead class="bg-base-200">
           <tr>
@@ -200,37 +192,20 @@ function closeGeneratedModal() {
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="key in apiKeys"
-            :key="key.id"
-            class="hover:bg-base-200/60"
-          >
+          <tr v-for="key in apiKeys" :key="key.id" class="hover:bg-base-200/60">
             <td class="font-medium">{{ key.name }}</td>
             <td>
-              <span
-                v-if="key.status === 'active'"
-                class="badge badge-success badge-outline"
-              >
-                Active
-              </span>
+              <span v-if="key.status === 'active'" class="badge badge-success badge-outline"> Active </span>
               <span v-else class="badge badge-ghost">Disabled</span>
             </td>
             <td>{{ key.usage }}</td>
             <td class="text-right">
-              <button
-                class="btn btn-ghost btn-sm"
-                @click="openDetailModal(key)"
-              >
-                🔍
-              </button>
+              <button class="btn btn-ghost btn-sm" @click="openDetailModal(key)">🔍</button>
             </td>
           </tr>
 
           <tr v-if="apiKeys.length === 0">
-            <td
-              colspan="4"
-              class="text-center text-sm text-neutral py-8"
-            >
+            <td colspan="4" class="py-8 text-center text-sm text-neutral">
               No API keys yet. Click
               <span class="font-semibold">Create New Secret Key</span>
               to get started.
@@ -245,157 +220,140 @@ function closeGeneratedModal() {
   <!-- CREATE MODAL -->
   <!-- ============================= -->
   <!-- CREATE MODAL -->
-    <div class="modal" :class="{ 'modal-open': showCreateModal }">
+  <div class="modal" :class="{ 'modal-open': showCreateModal }">
     <div class="modal-box max-w-xl">
-        <h3 class="font-bold text-xl mb-4">Create API Key</h3>
+      <h3 class="mb-4 text-xl font-bold">Create API Key</h3>
 
-        <div class="mb-4">
+      <div class="mb-4">
         <label class="label">
-            <span class="label-text font-semibold">Name</span>
+          <span class="label-text font-semibold">Name</span>
         </label>
         <input
-            v-model="createFormName"
-            type="text"
-            placeholder="e.g. Normal OJ integration key"
-            class="input input-bordered w-full"
+          v-model="createFormName"
+          type="text"
+          placeholder="e.g. Normal OJ integration key"
+          class="input input-bordered w-full"
         />
-        </div>
+      </div>
 
-        <div class="mb-4">
-        <p class="font-semibold mb-2">Permissions</p>
+      <div class="mb-4">
+        <p class="mb-2 font-semibold">Permissions</p>
         <div class="overflow-x-auto rounded-2xl border bg-base-100">
-            <table class="table">
+          <table class="table">
             <thead>
-                <tr>
+              <tr>
                 <th>Types</th>
                 <th class="text-center">Read</th>
                 <th class="text-center">Create</th>
-                </tr>
+              </tr>
             </thead>
             <tbody>
-                <tr v-for="perm in createFormPermissions" :key="perm.type">
+              <tr v-for="perm in createFormPermissions" :key="perm.type">
                 <td class="font-medium">{{ permissionLabel[perm.type] }}</td>
                 <td class="text-center">
-                    <input type="checkbox" v-model="perm.read" class="checkbox checkbox-sm" />
+                  <input type="checkbox" v-model="perm.read" class="checkbox checkbox-sm" />
                 </td>
                 <td class="text-center">
-                    <input type="checkbox" v-model="perm.create" class="checkbox checkbox-sm" />
+                  <input type="checkbox" v-model="perm.create" class="checkbox checkbox-sm" />
                 </td>
-                </tr>
+              </tr>
             </tbody>
-            </table>
+          </table>
         </div>
-        </div>
+      </div>
 
-        <div class="mb-6">
-        <p class="font-semibold mb-2">Expired Date</p>
+      <div class="mb-6">
+        <p class="mb-2 font-semibold">Expired Date</p>
         <div class="flex gap-3">
-            <input v-model="createFormExpiresDate" type="date" class="input input-bordered w-full" />
-            <input v-model="createFormExpiresTime" type="time" class="input input-bordered w-full" />
+          <input v-model="createFormExpiresDate" type="date" class="input input-bordered w-full" />
+          <input v-model="createFormExpiresTime" type="time" class="input input-bordered w-full" />
         </div>
-        </div>
+      </div>
 
-        <div class="modal-action justify-between">
+      <div class="modal-action justify-between">
         <button class="btn btn-ghost" @click="showCreateModal = false">Close</button>
         <button class="btn btn-success" @click="handleCreateKey">Create</button>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-    <!-- Proper DaisyUI Backdrop -->
-    <div
-    v-if="showCreateModal"
-    class="modal-backdrop"
-    @click="showCreateModal = false"
-    />
+  <!-- Proper DaisyUI Backdrop -->
+  <div v-if="showCreateModal" class="modal-backdrop" @click="showCreateModal = false" />
 
   <!-- ============================= -->
   <!-- GENERATED KEY MODAL -->
   <!-- ============================= -->
   <div class="modal" :class="{ 'modal-open': showGeneratedModal }">
     <div class="modal-box max-w-lg">
-        <h3 class="font-bold text-xl mb-3">New API Key</h3>
-        <p class="text-sm text-warning mb-3">
-        This key will only be shown once. Please store it safely.
-        </p>
+      <h3 class="mb-3 text-xl font-bold">New API Key</h3>
+      <p class="mb-3 text-sm text-warning">This key will only be shown once. Please store it safely.</p>
 
-        <div class="bg-base-200 rounded-xl px-4 py-3 flex items-center justify-between mb-4">
-        <code class="text-sm break-all mr-3">{{ generatedKey }}</code>
+      <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-4 py-3">
+        <code class="mr-3 break-all text-sm">{{ generatedKey }}</code>
         <button class="btn btn-outline btn-sm" @click="copyGeneratedKey">Copy</button>
-        </div>
+      </div>
 
-        <div class="modal-action justify-end">
+      <div class="modal-action justify-end">
         <button class="btn" @click="closeGeneratedModal">I have stored it</button>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-    <div
-    v-if="showGeneratedModal"
-    class="modal-backdrop"
-    @click="closeGeneratedModal"
-    />
+  <div v-if="showGeneratedModal" class="modal-backdrop" @click="closeGeneratedModal" />
 
   <!-- ============================= -->
   <!-- DETAIL MODAL -->
   <!-- ============================= -->
   <div class="modal" :class="{ 'modal-open': showDetailModal }">
     <div class="modal-box max-w-xl">
-        <h3 class="font-bold text-xl mb-4">API Key Details</h3>
+      <h3 class="mb-4 text-xl font-bold">API Key Details</h3>
 
-        <div v-if="selectedKey">
+      <div v-if="selectedKey">
         <div class="mb-3">
-            <p class="text-xs text-neutral">Name</p>
-            <p class="font-semibold">{{ selectedKey.name }}</p>
+          <p class="text-xs text-neutral">Name</p>
+          <p class="font-semibold">{{ selectedKey.name }}</p>
         </div>
 
         <div class="mb-3 flex gap-8">
-            <div>
+          <div>
             <p class="text-xs text-neutral">Status</p>
             <p class="font-semibold">{{ selectedKey.status }}</p>
-            </div>
-            <div>
+          </div>
+          <div>
             <p class="text-xs text-neutral">Usage</p>
             <p class="font-semibold">{{ selectedKey.usage }}</p>
-            </div>
+          </div>
         </div>
 
-        <p class="font-semibold mb-2">Permissions</p>
-        <div class="overflow-x-auto rounded-2xl border bg-base-100 mb-6">
-            <table class="table">
+        <p class="mb-2 font-semibold">Permissions</p>
+        <div class="mb-6 overflow-x-auto rounded-2xl border bg-base-100">
+          <table class="table">
             <thead>
-                <tr>
+              <tr>
                 <th>Types</th>
                 <th class="text-center">Read</th>
                 <th class="text-center">Create</th>
-                </tr>
+              </tr>
             </thead>
             <tbody>
-                <tr v-for="perm in selectedKey.permissions" :key="perm.type">
+              <tr v-for="perm in selectedKey.permissions" :key="perm.type">
                 <td>{{ permissionLabel[perm.type] }}</td>
                 <td class="text-center" v-if="perm.read">✔</td>
                 <td class="text-center" v-else></td>
                 <td class="text-center" v-if="perm.create">✔</td>
                 <td class="text-center" v-else></td>
-                </tr>
+              </tr>
             </tbody>
-            </table>
+          </table>
         </div>
-        </div>
+      </div>
 
-        <div class="modal-action justify-between">
-        <button class="btn btn-error btn-outline" @click="confirmDeleteSelected">
-            Delete
-        </button>
+      <div class="modal-action justify-between">
+        <button class="btn btn-outline btn-error" @click="confirmDeleteSelected">Delete</button>
         <button class="btn" @click="closeDetailModal">Close</button>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-    <div
-    v-if="showDetailModal"
-    class="modal-backdrop"
-    @click="closeDetailModal"
-    />
-  
+  <div v-if="showDetailModal" class="modal-backdrop" @click="closeDetailModal" />
 </template>
