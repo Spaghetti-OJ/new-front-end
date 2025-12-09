@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import dayjs from "dayjs";
+import "dayjs/locale/en";
+import "dayjs/locale/zh-tw";
+import LocalizedFormat from "dayjs/plugin/localizedFormat";
+import { useI18n } from "vue-i18n";
+
+dayjs.extend(LocalizedFormat);
 
 // ===== Type definitions ===== //
 type PermissionType = "submissions" | "courses" | "homeworks" | "announcements";
@@ -171,48 +178,69 @@ function closeGeneratedModal() {
   generatedKey.value = null;
   showGeneratedModal.value = false;
 }
+
+function formatDate(value?: string) {
+  if (!value) return "—";
+  const date = dayjs(value);
+  return date.isValid() ? date.format("L") : value;
+}
+
+function formatDateTime(value?: string) {
+  if (!value) return "—";
+  const date = dayjs(value);
+  return date.isValid() ? date.format("LLL") : value;
+}
 </script>
 
 <template>
-  <div class="mx-auto max-w-5xl px-8 py-10">
-    <h1 class="mb-6 text-3xl font-bold">API Keys</h1>
+  <div class="card mx-auto max-w-6xl shadow-xl">
+    <div class="card-body">
+      <div class="card-title justify-between">
+        <span class="text-lg font-bold">API Keys</span>
+        <button class="btn btn-success btn-sm font-semibold uppercase tracking-wide" @click="openCreateModal">
+          Create New Secret Key
+        </button>
+      </div>
 
-    <button class="btn btn-success mb-6 font-semibold uppercase tracking-wide" @click="openCreateModal">
-      Create New Secret Key
-    </button>
+      <div class="my-2" />
 
-    <div class="overflow-x-auto rounded-2xl border bg-base-100 shadow-sm">
-      <table class="table">
-        <thead class="bg-base-200">
-          <tr>
-            <th class="text-xs font-semibold text-neutral">NAME</th>
-            <th class="text-xs font-semibold text-neutral">STATUS</th>
-            <th class="text-xs font-semibold text-neutral">USAGE</th>
-            <th class="w-20"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="key in apiKeys" :key="key.id" class="hover:bg-base-200/60">
-            <td class="font-medium">{{ key.name }}</td>
-            <td>
-              <span v-if="key.status === 'active'" class="badge badge-success badge-outline"> Active </span>
-              <span v-else class="badge badge-ghost">Disabled</span>
-            </td>
-            <td>{{ key.usage }}</td>
-            <td class="text-right">
-              <button class="btn btn-ghost btn-sm" @click="openDetailModal(key)">🔍</button>
-            </td>
-          </tr>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th class="text-xs font-semibold text-neutral">NAME</th>
+              <th class="text-xs font-semibold text-neutral">STATUS</th>
+              <th class="text-xs font-semibold text-neutral">USAGE</th>
+              <th class="text-xs font-semibold text-neutral">CREATED AT</th>
+              <th class="text-xs font-semibold text-neutral">EXPIRES AT</th>
+              <th class="w-20"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="key in apiKeys" :key="key.id" class="hover">
+              <td class="font-medium">{{ key.name }}</td>
+              <td>
+                <span v-if="key.status === 'active'" class="badge badge-success badge-outline"> Active </span>
+                <span v-else class="badge badge-ghost">Disabled</span>
+              </td>
+              <td>{{ key.usage }}</td>
+              <td>{{ formatDate(key.createdAt) }}</td>
+              <td>{{ formatDateTime(key.expiresAt) }}</td>
+              <td class="text-right">
+                <button class="btn btn-ghost btn-sm" @click="openDetailModal(key)">🔍</button>
+              </td>
+            </tr>
 
-          <tr v-if="apiKeys.length === 0">
-            <td colspan="4" class="py-8 text-center text-sm text-neutral">
-              No API keys yet. Click
-              <span class="font-semibold">Create New Secret Key</span>
-              to get started.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <tr v-if="apiKeys.length === 0">
+              <td colspan="6" class="py-8 text-center text-sm text-neutral">
+                No API keys yet. Click
+                <span class="font-semibold">Create New Secret Key</span>
+                to get started.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -228,18 +256,14 @@ function closeGeneratedModal() {
         <label class="label">
           <span class="label-text font-semibold">Name</span>
         </label>
-        <input
-          v-model="createFormName"
-          type="text"
-          placeholder="e.g. Normal OJ integration key"
-          class="input input-bordered w-full"
-        />
+        <input v-model="createFormName" type="text" placeholder="e.g. Normal OJ integration key"
+          class="input input-bordered w-full" />
       </div>
 
       <div class="mb-4">
         <p class="mb-2 font-semibold">Permissions</p>
         <div class="overflow-x-auto rounded-2xl border bg-base-100">
-          <table class="table">
+          <table class="table w-full">
             <thead>
               <tr>
                 <th>Types</th>
@@ -327,7 +351,7 @@ function closeGeneratedModal() {
 
         <p class="mb-2 font-semibold">Permissions</p>
         <div class="mb-6 overflow-x-auto rounded-2xl border bg-base-100">
-          <table class="table">
+          <table class="table w-full">
             <thead>
               <tr>
                 <th>Types</th>
@@ -357,3 +381,15 @@ function closeGeneratedModal() {
 
   <div v-if="showDetailModal" class="modal-backdrop" @click="closeDetailModal" />
 </template>
+
+<style scoped>
+.table thead tr {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+</style>
