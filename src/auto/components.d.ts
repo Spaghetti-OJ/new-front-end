@@ -24,6 +24,7 @@ declare module '@vue/runtime-core' {
     IUilBolt: typeof import('~icons/uil/bolt')['default']
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
+    IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
     IUilEye: typeof import('~icons/uil/eye')['default']
     IUilFacebook: typeof import('~icons/uil/facebook')['default']
     IUilFileDownload: typeof import('~icons/uil/file-download')['default']

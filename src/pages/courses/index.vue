@@ -78,6 +78,14 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
           class="flex items-center gap-2"
           @submit.prevent="onJoinCourse"
         >
+          <data-status-wrapper :error="joinError" :is-loading="joinLoading">
+            <template #error>
+              <div class="flex items-center gap-2 rounded-lg bg-error px-3 py-2 text-xs text-black shadow-sm">
+                <i-uil-exclamation-circle class="h-4 w-4 shrink-0" />
+                <span class="font-medium">{{ joinError }}</span>
+              </div>
+            </template>
+          </data-status-wrapper>
           <input
             v-model="joinCode"
             type="text"
