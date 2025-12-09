@@ -28,9 +28,15 @@ const matchRoute = (path: string) => route.matched.some((r) => r.path === path);
 const session = useSession();
 
 const router = useRouter();
-const handleLogout = () => {
-  session.logoutLocally();
-  router.push("/login");
+const handleLogout = async () => {
+  try {
+    await api.Auth.logout({ refresh: session.refreshtoken });
+    session.logoutLocally();
+    router.push("/login");
+  } catch (error) {
+    session.logoutLocally();
+    router.push("/login");
+  }
 };
 </script>
 
