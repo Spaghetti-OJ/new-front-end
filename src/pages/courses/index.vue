@@ -38,7 +38,13 @@ const onJoinCourse = async () => {
   joinError.value = null;
 
   try {
+    await api.Course.join({ code });
     joinCode.value = "";
+    // Refresh course list after successful join
+    const res = await api.Course.list();
+    if (res?.data.courses && Array.isArray(res.data.courses)) {
+      courses.value = res.data.courses;
+    }
   } catch (err: any) {
     // 錯誤
     joinError.value = err?.response?.data?.msg ?? "Failed to join course. Please check the code.";
