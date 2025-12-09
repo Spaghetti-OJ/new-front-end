@@ -157,7 +157,11 @@ async function submit() {
               </thead>
               <tbody>
                 <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
-                  <td>{{ username }}</td>
+                  <td>
+                    <router-link :to="`/profile/${username}`" class="link link-hover">
+                      {{ username }}
+                    </router-link>
+                  </td>
                   <td>{{ real_name }}</td>
                   <td>{{ role }}</td>
                 </tr>
