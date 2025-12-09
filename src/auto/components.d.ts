@@ -22,6 +22,7 @@ declare module '@vue/runtime-core' {
     IUilAngleDoubleDown: typeof import('~icons/uil/angle-double-down')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
     IUilFacebook: typeof import('~icons/uil/facebook')['default']
+    IUilFileUploadAlt: typeof import('~icons/uil/file-upload-alt')['default']
     IUilGithub: typeof import('~icons/uil/github')['default']
     IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']

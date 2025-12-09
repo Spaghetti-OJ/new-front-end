@@ -41,8 +41,7 @@ const onJoinCourse = async () => {
     joinCode.value = "";
   } catch (err: any) {
     // 錯誤
-    joinError.value =
-      err?.response?.data?.msg ?? "Failed to join course. Please check the code.";
+    joinError.value = err?.response?.data?.msg ?? "Failed to join course. Please check the code.";
   } finally {
     joinLoading.value = false;
   }
@@ -69,25 +68,19 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
 
         <!-- join 區塊 -->
         <form
+          v-if="!rolesCanCreateCourse.includes(session.role)"
           class="flex items-center gap-2"
           @submit.prevent="onJoinCourse"
         >
           <input
             v-model="joinCode"
             type="text"
-            class="input input-sm input-bordered w-52 md:w-64"
+            class="input input-bordered input-sm w-52 md:w-64"
             placeholder="Join with course code"
           />
-          <button
-            type="submit"
-            class="btn btn-sm btn-success min-w-[4rem]"
-            :disabled="joinLoading"
-          >
+          <button type="submit" class="btn btn-success btn-sm min-w-[4rem]" :disabled="joinLoading">
             <span v-if="!joinLoading">join</span>
-            <span
-              v-else
-              class="loading loading-spinner loading-xs"
-            />
+            <span v-else class="loading-spinner loading-xs loading" />
           </button>
         </form>
       </div>
