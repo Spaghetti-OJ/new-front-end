@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
 import axios from "axios";
 import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
+import { useSession } from "@/stores/session";
 
 const route = useRoute();
 const router = useRouter();
 useTitle(`New Announcement - ${route.params.name} | Normal OJ`);
 
+const session = useSession();
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
 const newAnnouncement = reactive<AnnouncementForm>({
@@ -24,23 +26,25 @@ function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementFor
 }
 
 const openPreview = ref<boolean>(false);
-const mockAnnouncementMeta = {
-  creator: { displayedName: "Ijichi Nijika" },
+const mockAnnouncementMeta = computed(() => ({
+  creator: { username: session.username || "Ijichi Nijika" },
   createTime: dayjs().unix(),
   updateTime: dayjs().unix(),
-};
+}));
 
 async function submit() {
   if (!formElement.value) return;
 
   formElement.value.isLoading = true;
   try {
-    const { annId } = (
-      await api.Announcement.create({
-        ...newAnnouncement,
-        courseName: route.params.name as string,
-      })
-    ).data;
+    const body = {
+      title: newAnnouncement.title,
+      content: newAnnouncement.markdown,
+      is_pinned: newAnnouncement.pinned,
+      course_id: Number(route.params.name),
+    };
+    const { annId } = (await api.Announcement.create(body)).data;
+
     router.push(`/courses/${route.params.name}/announcements/${annId}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
