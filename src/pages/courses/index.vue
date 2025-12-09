@@ -79,7 +79,7 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
             placeholder="Join with course code"
           />
           <button type="submit" class="btn btn-success btn-sm min-w-[4rem]" :disabled="joinLoading">
-            <span v-if="!joinLoading">join</span>
+            <span v-if="!joinLoading">Join</span>
             <span v-else class="loading-spinner loading-xs loading" />
           </button>
         </form>
