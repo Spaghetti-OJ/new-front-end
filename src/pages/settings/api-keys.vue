@@ -256,8 +256,12 @@ function formatDateTime(value?: string) {
         <label class="label">
           <span class="label-text font-semibold">Name</span>
         </label>
-        <input v-model="createFormName" type="text" placeholder="e.g. Normal OJ integration key"
-          class="input input-bordered w-full" />
+        <input
+          v-model="createFormName"
+          type="text"
+          placeholder="e.g. Normal OJ integration key"
+          class="input input-bordered w-full"
+        />
       </div>
 
       <div class="mb-4">
