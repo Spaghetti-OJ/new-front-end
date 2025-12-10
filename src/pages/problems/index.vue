@@ -3,8 +3,7 @@ import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
-import api, { Course } from "@/api";
-import { feedbackSyncIntegration } from "@sentry/vue";
+import api from "@/api";
 useTitle("Problems | Normal OJ");
 
 type Problem = {
@@ -17,50 +16,7 @@ type Problem = {
 };
 
 const isLoading = ref(true);
-
-const baseProblems = ref<Problem[]>([
-  /*
-  {
-    id: 765,
-    title: "Emergency Dispatch 1",
-    difficulty: "hard",
-    tags: ["linked list", "dynamic programming"],
-    course: "資料結構",
-    acceptance: 0.0,
-  },
-  {
-    id: 764,
-    title: "Emergency Dispatch 2",
-    difficulty: "medium",
-    tags: ["dynamic programming"],
-    course: "演算法導論",
-    acceptance: 0.1,
-  },
-  {
-    id: 763,
-    title: "Emergency Dispatch 3",
-    difficulty: "easy",
-    tags: ["math"],
-    course: "程式設計入門",
-    acceptance: 0.2,
-  },
-  {
-    id: 762,
-    title: "Emergency Dispatch 4",
-    difficulty: "medium",
-    tags: ["graph", "dynamic programming"],
-    course: "演算法導論",
-    acceptance: 0.8,
-  },
-  {
-    id: 761,
-    title: "Emergency Dispatch 5",
-    difficulty: "easy",
-    tags: ["linked list"],
-    course: "資料結構",
-    acceptance: 0.8,
-  },*/
-]);
+const baseProblems = ref<Problem[]>([]);
 
 async function getProblem() {
   isLoading.value = true;
@@ -80,7 +36,7 @@ async function getProblem() {
       // 後端目前沒有 tags，就先給空陣列，之後再改
       tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
 
-      course: p.course_id ?? "-",
+      course: p.course_name ?? "-",
 
       // acceptance 後端沒給就先 0
       acceptance: typeof p.acceptance === "number" ? p.acceptance : 0, // 後端目前沒給，先 0
