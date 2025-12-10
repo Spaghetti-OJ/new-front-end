@@ -49,6 +49,7 @@ const createFormExpiresTime = ref("");
 const selectedKey = ref<ApiKeyRow | null>(null);
 const generatedKey = ref<string | null>(null);
 const copyState = ref<"idle" | "copied" | "error">("idle");
+const createError = ref<string | null>(null);
 
 // Sync dayjs locale with i18n locale
 const { locale } = useI18n();
@@ -113,6 +114,7 @@ function resetCreateForm() {
   ];
   createFormExpiresDate.value = "";
   createFormExpiresTime.value = "";
+  createError.value = null;
 }
 
 function openCreateModal() {
@@ -123,9 +125,10 @@ function openCreateModal() {
 // ===== Create API Key ===== //
 function handleCreateKey() {
   if (!createFormName.value.trim()) {
-    alert("Please enter a name.");
+    createError.value = "Please enter a name.";
     return;
   }
+  createError.value = null;
 
   const fullKey = generateKey();
   const now = new Date();
@@ -275,6 +278,7 @@ function formatDateTime(value?: string) {
           placeholder="e.g. Normal OJ integration key"
           class="input input-bordered w-full"
         />
+        <p v-if="createError" class="mt-1 text-sm text-error">{{ createError }}</p>
       </div>
 
       <div class="mb-4">
