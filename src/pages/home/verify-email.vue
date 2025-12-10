@@ -43,10 +43,6 @@ function goHome() {
 
 <template>
   <div class="mx-auto flex min-h-[70vh] max-w-4xl flex-col px-4 py-10">
-    <router-link class="btn btn-sm mb-6 w-fit" to="/">
-      <i-uil-left-arrow-to-left class="mr-1" /> {{ $t("ann.id.back") }}
-    </router-link>
-
     <div class="card w-full shadow-xl">
       <div class="card-body space-y-6">
         <div class="flex items-center gap-3">

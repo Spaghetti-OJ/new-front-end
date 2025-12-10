@@ -56,6 +56,8 @@ async function signup() {
     try {
       const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
       await session.setTokens(tokens.access, tokens.refresh);
+      // Trigger verification email after login so the access token is sent
+      void api.Auth.sendVerifyEmail();
     } catch (loginError) {
       signupForm.errorMsg = axios.isAxiosError(loginError) ? t("errorCode.ERR001") : t("errorCode.UNKNOWN");
     }
