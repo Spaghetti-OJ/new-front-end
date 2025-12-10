@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import "dayjs/locale/zh-tw";
@@ -49,6 +49,16 @@ const createFormExpiresTime = ref("");
 const selectedKey = ref<ApiKeyRow | null>(null);
 const generatedKey = ref<string | null>(null);
 const copyState = ref<"idle" | "copied" | "error">("idle");
+
+// Sync dayjs locale with i18n locale
+const { locale } = useI18n();
+watch(
+  locale,
+  (val) => {
+    dayjs.locale(val || "en");
+  },
+  { immediate: true },
+);
 
 // 標籤翻譯
 const permissionLabel: Record<PermissionType, string> = {
@@ -186,7 +196,7 @@ function closeGeneratedModal() {
 function formatDate(value?: string) {
   if (!value) return "—";
   const date = dayjs(value);
-  return date.isValid() ? date.format("L") : value;
+  return date.isValid() ? date.format("LL") : value;
 }
 
 function formatDateTime(value?: string) {
