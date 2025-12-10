@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
-import { computed, ref, watch, watchEffect,onMounted } from "vue";
+import { computed, ref, watch, watchEffect, onMounted } from "vue";
 import { fetcher } from "@/api";
 import { UserRole, useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
@@ -26,10 +26,10 @@ async function loadProblems() {
 
   try {
     const res = await api.Problem.getProblemList({
-      course_id: Number(route.params.name), 
+      course_id: Number(route.params.name),
     });
 
-    problems.value = res.data; 
+    problems.value = res.data;
   } catch (err) {
     console.error(err);
     error.value = err;
@@ -118,7 +118,7 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                     <template v-if="isQuotaUnlimited(total_quota)">
                       <span class="text-sm">{{ $t("components.problem.card.unlimited") }}</span>
                     </template>
-                    <template v-else> {{ total_quota-total_submissions }} / {{ total_quota }} </template>
+                    <template v-else> {{ total_quota - total_submissions }} / {{ total_quota }} </template>
                   </td>
                   <td>
                     <div class="tooltip" data-tip="Stats">
@@ -153,10 +153,9 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
             </table>
             <template
               v-else
-              v-for="{ id, title, tags, total_quota, total_submissions, is_public } in (problems?.results || []).slice(
-                (page - 1) * 10,
-                page * 10,
-              )"
+              v-for="{ id, title, tags, total_quota, total_submissions, is_public } in (
+                problems?.results || []
+              ).slice((page - 1) * 10, page * 10)"
             >
               <problem-info
                 :id="id"
