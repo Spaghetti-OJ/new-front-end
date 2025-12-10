@@ -16,6 +16,7 @@ const signupForm = reactive({
   password: "",
   confirmPassword: "",
   errorMsg: "",
+  successMsg: "",
 });
 const isLoading = ref(false);
 const session = useSession();
@@ -40,6 +41,7 @@ async function signup() {
   if (!isFormCorrect) return;
   isLoading.value = true;
   signupForm.errorMsg = "";
+  signupForm.successMsg = "";
 
   const body = {
     username: signupForm.username,
@@ -53,13 +55,11 @@ async function signup() {
 
   try {
     await api.Auth.signup(body);
+    signupForm.successMsg = "Please check your email to verify your email.";
     try {
-      const tokens = await api.Auth.login({ username: signupForm.username, password: signupForm.password });
-      await session.setTokens(tokens.access, tokens.refresh);
-      // Trigger verification email after login so the access token is sent
-      void api.Auth.sendVerifyEmail();
-    } catch (loginError) {
-      signupForm.errorMsg = axios.isAxiosError(loginError) ? t("errorCode.ERR001") : t("errorCode.UNKNOWN");
+      await api.Auth.sendVerifyEmail();
+    } catch (sendErr) {
+      console.error(sendErr);
     }
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
