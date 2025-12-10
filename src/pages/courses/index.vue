@@ -13,6 +13,10 @@ const courses = ref<CourseList | null>(null);
 const isLoading = ref(true);
 const error = ref<any>(undefined);
 
+const joinCode = ref("");
+const joinLoading = ref(false);
+const joinError = ref<string | null>(null);
+
 onMounted(async () => {
   try {
     const res = await api.Course.list();
@@ -25,6 +29,29 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
+
+const onJoinCourse = async () => {
+  const code = joinCode.value.trim();
+  if (!code) return;
+
+  joinLoading.value = true;
+  joinError.value = null;
+
+  try {
+    await api.Course.join({ code });
+    joinCode.value = "";
+    // Refresh course list after successful join
+    const res = await api.Course.list();
+    if (res?.data.courses && Array.isArray(res.data.courses)) {
+      courses.value = res.data.courses;
+    }
+  } catch (err: any) {
+    // 錯誤
+    joinError.value = err?.response?.data?.msg ?? "Failed to join course. Please check the code.";
+  } finally {
+    joinLoading.value = false;
+  }
+};
 
 const displayedCourses = computed(() => [...(courses.value ?? [])].reverse());
 
@@ -44,6 +71,32 @@ const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
         >
           <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("courses.index.new") }}
         </router-link>
+
+        <!-- join 區塊 -->
+        <form
+          v-if="!rolesCanCreateCourse.includes(session.role)"
+          class="flex items-center gap-2"
+          @submit.prevent="onJoinCourse"
+        >
+          <data-status-wrapper :error="joinError" :is-loading="joinLoading">
+            <template #error>
+              <div class="flex items-center gap-2 rounded-lg bg-error px-3 py-2 text-xs text-black shadow-sm">
+                <i-uil-exclamation-circle class="h-4 w-4 shrink-0" />
+                <span class="font-medium">{{ joinError }}</span>
+              </div>
+            </template>
+          </data-status-wrapper>
+          <input
+            v-model="joinCode"
+            type="text"
+            class="input input-bordered input-sm w-52 md:w-64"
+            placeholder="Join with course code"
+          />
+          <button type="submit" class="btn btn-success btn-sm min-w-[4rem]" :disabled="joinLoading">
+            <span v-if="!joinLoading">Join</span>
+            <span v-else class="loading-spinner loading-xs loading" />
+          </button>
+        </form>
       </div>
 
       <div class="my-2" />
