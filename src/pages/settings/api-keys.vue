@@ -135,10 +135,15 @@ function handleCreateKey() {
   const now = new Date();
   const id = now.getTime();
 
-  const expires =
-    createFormExpiresDate.value && createFormExpiresTime.value
-      ? new Date(`${createFormExpiresDate.value}T${createFormExpiresTime.value}`).toISOString()
-      : undefined;
+  let expires: string | undefined = undefined;
+  if (createFormExpiresDate.value && createFormExpiresTime.value) {
+    const expiresDate = new Date(`${createFormExpiresDate.value}T${createFormExpiresTime.value}`);
+    if (expiresDate.getTime() <= now.getTime()) {
+      alert("Expiration date/time must be in the future.");
+      return;
+    }
+    expires = expiresDate.toISOString();
+  }
 
   const newKey: ApiKeyRow = {
     id,
