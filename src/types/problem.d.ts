@@ -134,9 +134,8 @@ interface ApiProblemList {
 };
 interface problemresponse {
   id: number;
-  
-problemName
-: string;
+problemName: string;
+allowedLanguage:numb
   difficulty: "easy" | "medium" | "hard";
   status: "public" | "course" | "hidden";
   course_id: number;
@@ -157,3 +156,19 @@ problemName
    
    
 }
+interface ProblemCreatePayload  {
+  title: string;
+  description: string;
+  course_id: string;
+  difficulty?: "easy" | "medium" | "hard";
+  is_public?: "public" | "course" | "hidden";
+  max_score?: number;
+  total_quota?: number;
+  input_description?: string | null;
+  output_description?: string | null;
+  sample_input?: string | null;
+  sample_output?: string | null;
+  hint?: string | null;
+  subtask_description?: string | null;
+  supported_languages?: string[];
+};

@@ -25,14 +25,11 @@ async function loadProblems() {
   error.value = null;
 
   try {
-    // ❗ 這裡替換掉舊的 useAxios 呼叫
     const res = await api.Problem.getProblemList({
-      course_id: Number(route.params.name), // 若後端是 UUID 請調整
-      // difficulty: undefined,
-      // is_public: undefined,
+      course_id: Number(route.params.name), 
     });
 
-    problems.value = res.data; // fetcher 會把 data spread
+    problems.value = res.data; 
   } catch (err) {
     console.error(err);
     error.value = err;
@@ -54,6 +51,7 @@ watch(page, () => {
 const maxPage = computed(() => {
   return problems.value ? Math.ceil(problems.value.results.length / 10) : 1;
 });
+const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
 </script>
 
 <template>
@@ -64,7 +62,7 @@ const maxPage = computed(() => {
           {{ $t("course.problems.text") }}
 
           <router-link
-            v-if="session.isAdmin"
+            v-if="rolesCanCreateProblem.includes(session.role)"
             class="btn btn-success"
             :to="`/courses/${$route.params.name}/problems/new`"
           >
@@ -111,7 +109,7 @@ const maxPage = computed(() => {
                     {{ title }}
                   </td>
                   <td v-if="rolesCanReadProblemStatus.includes(session.role)">
-                    <span class="badge ml-1">{{ is_public === "public" || "hidden" }}</span>
+                    <span class="badge ml-1">{{ is_public }}</span>
                   </td>
                   <td>
                     <span class="badge badge-info mr-1" v-for="tag in tags" :key="tag.id">{{ tag }}</span>
@@ -133,7 +131,7 @@ const maxPage = computed(() => {
                     </div>
                     <div class="tooltip" data-tip="Copycat">
                       <router-link
-                        v-if="session.isAdmin"
+                        v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm mr-1"
                         :to="`/courses/${$route.params.name}/problems/${id}}/copycat`"
                       >
@@ -142,7 +140,7 @@ const maxPage = computed(() => {
                     </div>
                     <div class="tooltip" data-tip="Edit">
                       <router-link
-                        v-if="session.isAdmin"
+                        v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm"
                         :to="`/courses/${$route.params.name}/problems/${id}/edit`"
                       >
@@ -169,6 +167,7 @@ const maxPage = computed(() => {
                 :tags="tags"
                 :visible="is_public"
                 :is-admin="session.isAdmin"
+                :is-teacher="session.isTeacher"
               />
             </template>
           </template>

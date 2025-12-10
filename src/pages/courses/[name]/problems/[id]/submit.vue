@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watchEffect, computed } from "vue";
+import { reactive, watchEffect, computed,ref,onMounted } from "vue";
 import hljs from "highlight.js";
 import { BlobWriter, ZipWriter, TextReader } from "@zip.js/zip.js";
 import { useAxios } from "@vueuse/integrations/useAxios";
@@ -16,8 +16,24 @@ const { t } = useI18n();
 
 useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
 const router = useRouter();
-const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+const problem = ref< problemresponse| null>(null);
+const error = ref<any>(null);
+const isLoading = ref<boolean>(false);
+async function loadProblem() {
+  isLoading.value = true;
+  error.value = null;
 
+  try {
+    const res = await api.Problem.getProblemInfo(Number(route.params.id));
+    console.log(res);
+    problem.value = res.data ?? res;
+  } catch (err) {
+    console.error(err);
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+}
 const lang = useStorage(LOCAL_STORAGE_KEY.LAST_USED_LANG, -1);
 const form = reactive({
   code: "",
@@ -88,6 +104,7 @@ async function runTest() {
 }
 
 async function submit() {
+  console.log("submitting");
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
   form.isLoading = true;
@@ -117,6 +134,7 @@ async function submit() {
     form.isLoading = false;
   }
 }
+onMounted(loadProblem);
 </script>
 
 <template>

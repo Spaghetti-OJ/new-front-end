@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { PROBLEM_STATUS } from "@/constants";
 console.log("info");
 interface Props {
@@ -11,8 +10,9 @@ interface Props {
   tags: ApiTag[];
   visible: "hidden"|"public"|"course";
   isAdmin: boolean;
+  isTeacher:boolean;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>
@@ -45,7 +45,7 @@ defineProps<Props>();
             <template v-else> {{ quotaRemaining }} / {{ quotaLimit }} </template>
           </div>
         </div>
-        <div v-if="isAdmin" class="stat">
+        <div v-if="isAdmin || isTeacher" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-eye class="h-6 w-6" />
           </div>
@@ -54,7 +54,7 @@ defineProps<Props>();
             {{ visible === PROBLEM_STATUS.VISIBLE ? "Public" : "Hidden" }}
           </div>
         </div>
-        <div v-if="isAdmin" class="stat">
+        <div v-if="isAdmin || isTeacher" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-monitor class="h-6 w-6" />
           </div>
