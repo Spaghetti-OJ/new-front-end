@@ -50,6 +50,7 @@ const selectedKey = ref<ApiKeyRow | null>(null);
 const generatedKey = ref<string | null>(null);
 const copyState = ref<"idle" | "copied" | "error">("idle");
 const createError = ref<string | null>(null);
+const expiresError = ref<string | null>(null);
 const showDeleteConfirm = ref(false);
 
 // Sync dayjs locale with i18n locale
@@ -116,6 +117,7 @@ function resetCreateForm() {
   createFormExpiresDate.value = "";
   createFormExpiresTime.value = "";
   createError.value = null;
+  expiresError.value = null;
 }
 
 function openCreateModal() {
@@ -130,6 +132,7 @@ function handleCreateKey() {
     return;
   }
   createError.value = null;
+  expiresError.value = null;
 
   const fullKey = generateKey();
   const now = new Date();
@@ -139,7 +142,7 @@ function handleCreateKey() {
   if (createFormExpiresDate.value && createFormExpiresTime.value) {
     const expiresDate = new Date(`${createFormExpiresDate.value}T${createFormExpiresTime.value}`);
     if (expiresDate.getTime() <= now.getTime()) {
-      alert("Expiration date/time must be in the future.");
+      expiresError.value = "Expiration time must be in the future.";
       return;
     }
     expires = expiresDate.toISOString();
@@ -318,6 +321,7 @@ function formatDateTime(value?: string) {
           <input v-model="createFormExpiresDate" type="date" class="input input-bordered w-full" />
           <input v-model="createFormExpiresTime" type="time" class="input input-bordered w-full" />
         </div>
+        <p v-if="expiresError" class="mt-1 text-sm text-error">{{ expiresError }}</p>
       </div>
 
       <div class="modal-action justify-between">
