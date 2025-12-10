@@ -49,9 +49,8 @@ function update<K extends keyof ProblemForm>(
 provide<Ref<ProblemForm>>("problem", newProblem);
 const testdata = ref<File | null>(null);
 
-  function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
-  const emptyToNull = (s: string | undefined) =>
-    s && s.trim() !== "" ? s : null;
+function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
+  const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
 
   return {
     title: p.problemName,
@@ -59,7 +58,7 @@ const testdata = ref<File | null>(null);
     course_id: courseId, // 後端要 UUID
 
     difficulty: "medium", // TODO: 如果你有 UI，再改成 p.difficulty
-    is_public: p.status === 0 ? "public" : "hidden",  // 舊 status → 新 is_public
+    is_public: p.status === 0 ? "public" : "hidden", // 舊 status → 新 is_public
 
     max_score: 100,
     total_quota: p.quota ?? -1,
@@ -89,10 +88,8 @@ async function submit() {
   try {
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
     console.log(payload);
-    const { problemId } = (
-      await api.Problem.create(payload)
-    ).data;
-      console.log(problemId);
+    const { problemId } = (await api.Problem.create(payload)).data;
+    console.log(problemId);
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {

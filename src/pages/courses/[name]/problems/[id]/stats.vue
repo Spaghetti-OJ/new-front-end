@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed,ref,onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { use } from "echarts/core";
 import VChart from "vue-echarts";
 import { TooltipComponent, LegendComponent, GridComponent } from "echarts/components";
@@ -25,7 +25,7 @@ const stats = ref<ProblemStats | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
 async function getstat() {
-    isLoading.value = true;
+  isLoading.value = true;
   error.value = null;
 
   try {

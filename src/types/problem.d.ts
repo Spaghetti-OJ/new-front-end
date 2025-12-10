@@ -80,24 +80,24 @@ interface ProblemListItem {
 }
 
 type ProblemList = ProblemListItem[];
-interface top10item{
-  id:string;
-  user:string;
-  execution_time:number;
-  score:number;
-  status:string;
+interface top10item {
+  id: string;
+  user: string;
+  execution_time: number;
+  score: number;
+  status: string;
 }
-type top10list=top10item[];
-interface scorestat{
-  score:number;
-  count:number;
+type top10list = top10item[];
+interface scorestat {
+  score: number;
+  count: number;
 }
 interface ProblemStats {
-  statusCount: { 
+  statusCount: {
     accepted: number;
-  wrong_answer: number;
-runtime_error:number;
- };
+    wrong_answer: number;
+    runtime_error: number;
+  };
   triedUserCount: number;
   average: number;
   std: number;
@@ -115,35 +115,39 @@ interface MossReport {
 type LangOption = { value: number; text: string; mask: number };
 type ProblemUpdater = <K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) => void;
 
-interface ApiTag{ id: number; name: string; usage_count: number };
+interface ApiTag {
+  id: number;
+  name: string;
+  usage_count: number;
+}
 
-interface ApiProblemItem  {
+interface ApiProblemItem {
   id: number;
   title: string;
   difficulty: "easy" | "medium" | "hard";
   is_public: "public" | "course" | "hidden";
-  course_id: string;            // uuid
+  course_id: string; // uuid
   tags: ApiTag[];
   created_at: string;
-  total_quota:number;
-  total_submissions:number;
-};
+  total_quota: number;
+  total_submissions: number;
+}
 
 interface ApiProblemList {
   results: ApiProblemItem[];
-};
+}
 interface problemresponse {
   id: number;
-problemName: string;
-allowedLanguage:numb
+  problemName: string;
+  allowedLanguage: numb;
   difficulty: "easy" | "medium" | "hard";
   status: "public" | "course" | "hidden";
   course_id: number;
   tags: ApiTag[];
-  submit_count:number;
+  submit_count: number;
   high_score: number;
-  create_at:string;
-  quota:number;
+  create_at: string;
+  quota: number;
   description: {
     description: string;
     input: string;
@@ -152,11 +156,8 @@ allowedLanguage:numb
     sampleInput: string[];
     sampleOutput: string[];
   };
-
-   
-   
 }
-interface ProblemCreatePayload  {
+interface ProblemCreatePayload {
   title: string;
   description: string;
   course_id: string;
@@ -171,4 +172,4 @@ interface ProblemCreatePayload  {
   hint?: string | null;
   subtask_description?: string | null;
   supported_languages?: string[];
-};
+}

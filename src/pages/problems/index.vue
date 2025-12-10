@@ -12,13 +12,14 @@ type Problem = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  course:  number;
+  course: number;
   acceptance: number;
 };
 
 const isLoading = ref(true);
 
-const baseProblems = ref<Problem[]>([/*
+const baseProblems = ref<Problem[]>([
+  /*
   {
     id: 765,
     title: "Emergency Dispatch 1",
@@ -65,8 +66,7 @@ async function getProblem() {
   isLoading.value = true;
   try {
     const res = await api.Problem.getProblemList();
-    console.log("res.data===",res.data);
-  
+    console.log("res.data===", res.data);
 
     // 從 results 拿陣列
     const list = Array.isArray(res.data.results) ? res.data.results : [];
@@ -74,18 +74,16 @@ async function getProblem() {
     baseProblems.value = list.map((p: any) => ({
       id: p.id,
       title: p.title,
-       // 後端就是 'easy' | 'medium' | 'hard' 的字串，直接塞進去
+      // 後端就是 'easy' | 'medium' | 'hard' 的字串，直接塞進去
       difficulty: p.difficulty as Problem["difficulty"],
 
       // 後端目前沒有 tags，就先給空陣列，之後再改
-      tags: Array.isArray(p.tags)
-        ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name))
-        : [],
+      tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
 
       course: p.course_id ?? "-",
 
       // acceptance 後端沒給就先 0
-      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,                                  // 後端目前沒給，先 0
+      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0, // 後端目前沒給，先 0
     }));
 
     console.log("baseProblems =", baseProblems.value);
@@ -271,9 +269,11 @@ onMounted(() => {
                 #{{ p.id }}
               </td>
               <td>
-                <router-link :to="`/courses/${p.course}/problems/${p.id}`" class="link link-hover font-medium">{{
-                  p.title
-                }}</router-link>
+                <router-link
+                  :to="`/courses/${p.course}/problems/${p.id}`"
+                  class="link link-hover font-medium"
+                  >{{ p.title }}</router-link
+                >
               </td>
               <td>
                 <TagList :tags="p.tags" size="md" colorMode="outline" />

@@ -3,7 +3,7 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
 import { fetcher } from "@/api";
 import { useTitle } from "@vueuse/core";
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import api from "@/api";
 const route = useRoute();
 useTitle(`Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watchEffect, computed,ref,onMounted } from "vue";
+import { reactive, watchEffect, computed, ref, onMounted } from "vue";
 import hljs from "highlight.js";
 import { BlobWriter, ZipWriter, TextReader } from "@zip.js/zip.js";
 import { useAxios } from "@vueuse/integrations/useAxios";
@@ -16,7 +16,7 @@ const { t } = useI18n();
 
 useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
 const router = useRouter();
-const problem = ref< problemresponse| null>(null);
+const problem = ref<problemresponse | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
 async function loadProblem() {

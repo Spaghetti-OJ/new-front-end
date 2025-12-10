@@ -8,9 +8,9 @@ interface Props {
   quotaRemaining: number;
   quotaLimit: number;
   tags: ApiTag[];
-  visible: "hidden"|"public"|"course";
+  visible: "hidden" | "public" | "course";
   isAdmin: boolean;
-  isTeacher:boolean;
+  isTeacher: boolean;
 }
 const props = defineProps<Props>();
 </script>
