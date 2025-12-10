@@ -1,3 +1,4 @@
+import VerifyEmail from "@/pages/home/verify-email.vue";
 import { fetcher } from "./fetcher";
 
 export const Auth = {
@@ -31,7 +32,9 @@ export const Auth = {
   getSession: () => fetcher.get<UserProperties>("/auth/me/").then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>
     fetcher.post<{ access: string; refresh?: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
-  verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
+  sendVerifyEmail: (body: { email: string }) => fetcher.post<string>("/auth/send-email/", body),
+  VerifyEmail: (body: { token: string }) =>
+    fetcher.post("/auth/verify-email/", body).then((r) => r.data ?? r),
   generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>
     fetcher.post("/api-tokens/", body).then((r) => r.data ?? r),
   listtokens: () => fetcher.get("/api-tokens/").then((r) => r.data ?? r),
