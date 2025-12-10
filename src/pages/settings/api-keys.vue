@@ -50,6 +50,7 @@ const selectedKey = ref<ApiKeyRow | null>(null);
 const generatedKey = ref<string | null>(null);
 const copyState = ref<"idle" | "copied" | "error">("idle");
 const createError = ref<string | null>(null);
+const showDeleteConfirm = ref(false);
 
 // Sync dayjs locale with i18n locale
 const { locale } = useI18n();
@@ -166,15 +167,14 @@ function openDetailModal(key: ApiKeyRow) {
 function closeDetailModal() {
   selectedKey.value = null;
   showDetailModal.value = false;
+  showDeleteConfirm.value = false;
 }
 
 // ===== Delete ===== //
 function confirmDeleteSelected() {
   if (!selectedKey.value) return;
-  if (confirm(`Delete "${selectedKey.value.name}"?`)) {
-    apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
-    closeDetailModal();
-  }
+  apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
+  closeDetailModal();
 }
 
 // ===== Copy ===== //
@@ -405,13 +405,30 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="modal-action justify-between">
-        <button class="btn btn-outline btn-error" @click="confirmDeleteSelected">Delete</button>
+        <button class="btn btn-outline btn-error" @click="showDeleteConfirm = true">Delete</button>
         <button class="btn" @click="closeDetailModal">Close</button>
       </div>
     </div>
   </div>
 
   <div v-if="showDetailModal" class="modal-backdrop" @click="closeDetailModal" />
+
+  <!-- Delete confirmation modal -->
+  <div class="modal" :class="{ 'modal-open': showDeleteConfirm }">
+    <div class="modal-box max-w-sm">
+      <h3 class="text-lg font-bold">Delete API Key</h3>
+      <p class="mt-3 text-sm">
+        Are you sure you want to delete
+        <span class="font-semibold">"{{ selectedKey?.name }}"</span>?
+      </p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" @click="showDeleteConfirm = false">Cancel</button>
+        <button class="btn btn-error" @click="confirmDeleteSelected">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showDeleteConfirm" class="modal-backdrop" @click="showDeleteConfirm = false" />
 </template>
 
 <style scoped>
