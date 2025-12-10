@@ -23,6 +23,8 @@ declare module '@vue/runtime-core' {
     IUilAngleDoubleDown: typeof import('~icons/uil/angle-double-down')['default']
     IUilBolt: typeof import('~icons/uil/bolt')['default']
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
+    IUilCheck: typeof import('~icons/uil/check')['default']
+    IUilCopy: typeof import('~icons/uil/copy')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
     IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
     IUilEye: typeof import('~icons/uil/eye')['default']

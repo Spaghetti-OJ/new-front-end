@@ -48,6 +48,7 @@ const createFormExpiresTime = ref("");
 
 const selectedKey = ref<ApiKeyRow | null>(null);
 const generatedKey = ref<string | null>(null);
+const copyState = ref<"idle" | "copied" | "error">("idle");
 
 // 標籤翻譯
 const permissionLabel: Record<PermissionType, string> = {
@@ -168,10 +169,13 @@ async function copyGeneratedKey() {
   if (!generatedKey.value) return;
   try {
     await navigator.clipboard.writeText(generatedKey.value);
-    alert("Key copied!");
+    copyState.value = "copied";
   } catch {
-    alert("Copy failed.");
+    copyState.value = "error";
   }
+  setTimeout(() => {
+    copyState.value = "idle";
+  }, 1500);
 }
 
 function closeGeneratedModal() {
@@ -318,7 +322,20 @@ function formatDateTime(value?: string) {
 
       <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-4 py-3">
         <code class="mr-3 break-all text-sm">{{ generatedKey }}</code>
-        <button class="btn btn-outline btn-sm" @click="copyGeneratedKey">Copy</button>
+        <button class="btn btn-outline btn-sm gap-2" @click="copyGeneratedKey">
+          <template v-if="copyState === 'copied'">
+            <i-uil-check class="h-4 w-4" />
+            <span>Copied</span>
+          </template>
+          <template v-else-if="copyState === 'error'">
+            <i-uil-exclamation-circle class="h-4 w-4" />
+            <span>Retry</span>
+          </template>
+          <template v-else>
+            <i-uil-copy class="h-4 w-4" />
+            <span>Copy</span>
+          </template>
+        </button>
       </div>
 
       <div class="modal-action justify-end">
