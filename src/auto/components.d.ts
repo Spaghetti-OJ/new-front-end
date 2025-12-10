@@ -40,6 +40,7 @@ declare module '@vue/runtime-core' {
     IUilMonitor: typeof import('~icons/uil/monitor')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']
     IUilPlusCircle: typeof import('~icons/uil/plus-circle')['default']
+    IUilSearch: typeof import('~icons/uil/search')['default']
     IUilSetting: typeof import('~icons/uil/setting')['default']
     IUilSun: typeof import('~icons/uil/sun')['default']
     IUilTimes: typeof import('~icons/uil/times')['default']

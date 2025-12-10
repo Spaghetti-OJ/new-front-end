@@ -231,7 +231,9 @@ function formatDateTime(value?: string) {
               <td>{{ formatDate(key.createdAt) }}</td>
               <td>{{ formatDateTime(key.expiresAt) }}</td>
               <td class="text-right">
-                <button class="btn btn-ghost btn-sm" @click="openDetailModal(key)">🔍</button>
+                <button class="btn btn-ghost btn-sm" @click="openDetailModal(key)">
+                  <i-uil-search class="h-5 w-5" />
+                </button>
               </td>
             </tr>
 
@@ -248,9 +250,6 @@ function formatDateTime(value?: string) {
     </div>
   </div>
 
-  <!-- ============================= -->
-  <!-- CREATE MODAL -->
-  <!-- ============================= -->
   <!-- CREATE MODAL -->
   <div class="modal" :class="{ 'modal-open': showCreateModal }">
     <div class="modal-box max-w-xl">
@@ -312,9 +311,7 @@ function formatDateTime(value?: string) {
   <!-- Proper DaisyUI Backdrop -->
   <div v-if="showCreateModal" class="modal-backdrop" @click="showCreateModal = false" />
 
-  <!-- ============================= -->
   <!-- GENERATED KEY MODAL -->
-  <!-- ============================= -->
   <div class="modal" :class="{ 'modal-open': showGeneratedModal }">
     <div class="modal-box max-w-lg">
       <h3 class="mb-3 text-xl font-bold">New API Key</h3>
@@ -346,9 +343,7 @@ function formatDateTime(value?: string) {
 
   <div v-if="showGeneratedModal" class="modal-backdrop" @click="closeGeneratedModal" />
 
-  <!-- ============================= -->
   <!-- DETAIL MODAL -->
-  <!-- ============================= -->
   <div class="modal" :class="{ 'modal-open': showDetailModal }">
     <div class="modal-box max-w-xl">
       <h3 class="mb-4 text-xl font-bold">API Key Details</h3>
