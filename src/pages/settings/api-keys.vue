@@ -291,7 +291,7 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="mb-6">
-        <p class="mb-2 font-semibold">Expired Date</p>
+        <p class="mb-2 font-semibold">Expiration Date</p>
         <div class="flex gap-3">
           <input v-model="createFormExpiresDate" type="date" class="input input-bordered w-full" />
           <input v-model="createFormExpiresTime" type="time" class="input input-bordered w-full" />
