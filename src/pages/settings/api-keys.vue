@@ -383,10 +383,12 @@ function formatDateTime(value?: string) {
             <tbody>
               <tr v-for="perm in selectedKey.permissions" :key="perm.type">
                 <td>{{ permissionLabel[perm.type] }}</td>
-                <td class="text-center" v-if="perm.read">✔</td>
-                <td class="text-center" v-else></td>
-                <td class="text-center" v-if="perm.create">✔</td>
-                <td class="text-center" v-else></td>
+                <td class="text-center">
+                  <i-uil-check v-if="perm.read" class="mx-auto h-7 w-7 text-black" />
+                </td>
+                <td class="text-center">
+                  <i-uil-check v-if="perm.create" class="mx-auto h-7 w-7 text-black" />
+                </td>
               </tr>
             </tbody>
           </table>
