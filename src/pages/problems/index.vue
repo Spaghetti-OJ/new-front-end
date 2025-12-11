@@ -41,7 +41,6 @@ async function getProblem() {
       acceptance: typeof p.acceptance === "number" ? p.acceptance : 0, // 後端目前沒給，先 0
     }));
 
-    console.log("baseProblems =", baseProblems.value);
   } catch (err) {
     console.error("getProblem error:", err);
     baseProblems.value = [];
