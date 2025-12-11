@@ -50,6 +50,18 @@ const mockProblemMeta = {
 
 const openJSON = ref<boolean>(false);
 
+const contentSection = ref<HTMLElement | null>(null);
+const testdataSection = ref<HTMLElement | null>(null);
+const checkerSection = ref<HTMLElement | null>(null);
+
+const scrollToSection = (el: HTMLElement | null) => {
+  if (!el) return;
+  el.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
 async function submit() {
   if (!edittingProblem.value || !formElement.value) return;
 
@@ -136,8 +148,35 @@ async function delete_() {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title mb-3 justify-between">
-          Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }}
+        <div class="card-title mb-3 flex justify-between items-center sticky top-0 bg-white z-50">
+          <div class="flex items-center gap-x-4">
+            <span>
+              Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }}
+            </span>
+
+            <!-- 三顆 tab 按鈕 -->
+            <div class="flex items-center gap-x-4">
+              <button
+                class="btn rounded-lg bg-[#02305f] text-white"
+                @click="scrollToSection(contentSection)"
+              >
+                Content
+              </button>
+              <button
+                class="btn rounded-lg bg-[#02305f] text-white"
+                @click="scrollToSection(testdataSection)"
+              >
+                Testdata
+              </button>
+              <button
+                class="btn rounded-lg bg-[#02305f] text-white"
+                @click="scrollToSection(checkerSection)"
+              >
+                Checker
+              </button>
+            </div>
+          </div>
+
           <div class="flex gap-x-3">
             <button
               :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
