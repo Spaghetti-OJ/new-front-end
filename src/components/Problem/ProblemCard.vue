@@ -2,7 +2,6 @@
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
-console.log("card");
 interface Props {
   problem: Problem;
   preview?: boolean;
