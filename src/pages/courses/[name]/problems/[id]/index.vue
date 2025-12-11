@@ -17,7 +17,6 @@ async function loadProblem() {
   try {
     // 🔥 使用你新的 API wrapper
     const res = await api.Problem.getProblemInfo(Number(route.params.id));
-    console.log(res);
     // fetcher 會把 response.data merge 進 res
     // 所以「題目物件本身」就是 res.data（或 res）
     problem.value = res.data ?? res;
