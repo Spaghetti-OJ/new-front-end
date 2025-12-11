@@ -25,7 +25,6 @@ async function loadProblem() {
 
   try {
     const res = await api.Problem.getProblemInfo(Number(route.params.id));
-    console.log(res);
     problem.value = res.data ?? res;
   } catch (err) {
     console.error(err);
