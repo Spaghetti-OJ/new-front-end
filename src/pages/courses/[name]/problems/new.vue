@@ -87,7 +87,6 @@ async function submit() {
   formElement.value.isLoading = true;
   try {
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
-    console.log(payload);
     const { problemId } = (await api.Problem.create(payload)).data;
     console.log(problemId);
     const testdataForm = new FormData();
