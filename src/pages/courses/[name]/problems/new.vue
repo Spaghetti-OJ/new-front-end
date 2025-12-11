@@ -88,7 +88,6 @@ async function submit() {
   try {
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
     const { problemId } = (await api.Problem.create(payload)).data;
-    console.log(problemId);
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
