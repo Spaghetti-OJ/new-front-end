@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PROBLEM_STATUS } from "@/constants";
-console.log("info");
 interface Props {
   id: number;
   problemName: string;
