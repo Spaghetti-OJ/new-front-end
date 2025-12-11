@@ -22,7 +22,6 @@ async function getProblem() {
   isLoading.value = true;
   try {
     const res = await api.Problem.getProblemList();
-    console.log("res.data===", res.data);
 
     // 從 results 拿陣列
     const list = Array.isArray(res.data.results) ? res.data.results : [];
