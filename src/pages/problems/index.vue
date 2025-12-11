@@ -40,7 +40,6 @@ async function getProblem() {
       // acceptance 後端沒給就先 0
       acceptance: typeof p.acceptance === "number" ? p.acceptance : 0, // 後端目前沒給，先 0
     }));
-
   } catch (err) {
     console.error("getProblem error:", err);
     baseProblems.value = [];
