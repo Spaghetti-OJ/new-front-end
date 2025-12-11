@@ -104,7 +104,6 @@ async function runTest() {
 }
 
 async function submit() {
-  console.log("submitting");
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
   form.isLoading = true;
