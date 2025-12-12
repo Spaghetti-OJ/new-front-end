@@ -11,7 +11,11 @@ const { t } = useI18n();
 
 useTitle(`Solution - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
-const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+const {
+  data: problem,
+  error,
+  isLoading,
+} = useAxios<ProblemInfo>(`/problem/view/${route.params.id}`, fetcher);
 
 // 愛心數量（之後改成後端回傳的值）
 const likes = ref(666);
