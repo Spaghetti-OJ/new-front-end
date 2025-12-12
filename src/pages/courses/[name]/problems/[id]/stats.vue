@@ -46,14 +46,20 @@ const resultCounts = computed(() => {
   if (!stats.value) return [];
   const _stats = stats.value;
   const mapping: Record<string, number> = {
+    pending: -1,
     accepted: 0,
     wrong_answer: 1,
+    compile_error: 2,
+    time_limit_exceed: 3,
+    memory_limit_exceed: 4,
     runtime_error: 5,
+    judge_error: 6,
+    output_limit_exceed: 7,
   };
 
   return Object.entries(_stats.statusCount)
     .map(([key, count]) => {
-      const code = mapping[key];
+      const code = mapping[key] ?? (Number.isFinite(Number(key)) ? Number(key) : undefined);
       if (code !== undefined && SUBMISSION_STATUS_REPR[code as keyof typeof SUBMISSION_STATUS_REPR]) {
         const { label, color } = SUBMISSION_STATUS_REPR[code as keyof typeof SUBMISSION_STATUS_REPR];
         return {
