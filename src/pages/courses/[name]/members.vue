@@ -30,8 +30,12 @@ const isLoading = ref(true);
 const selectedIds = ref<string[]>([]);
 const removeLoading = ref(false);
 const removeError = ref<string | null>(null);
+const addUsername = ref("");
+const addLoading = ref(false);
+const addError = ref<string | null>(null);
+const isAddModalOpen = ref(false);
 
-onMounted(async () => {
+const loadMembers = async () => {
   try {
     const res = await api.Course.info(route.params.name as string);
     if (res?.data.TAs && res?.data.students && res?.data.teacher) {
@@ -50,6 +54,10 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+onMounted(() => {
+  void loadMembers();
 });
 
 const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
@@ -133,14 +141,28 @@ async function removeSelected() {
   try {
     await api.Course.editMember(route.params.name as string, { remove: selectedIds.value, new: [] });
     selectedIds.value = [];
-    const res = await api.Course.info(route.params.name as string);
-    if (res?.data.TAs && res?.data.students && res?.data.teacher) {
-      members.value = [res.data.teacher, ...res.data.students, ...res.data.TAs];
-    }
+    await loadMembers();
   } catch (err: any) {
     removeError.value = err?.response?.data?.message || err?.message || "Failed to remove members.";
   } finally {
     removeLoading.value = false;
+  }
+}
+
+async function addByUsername() {
+  const username = addUsername.value.trim();
+  if (!username) return;
+  addLoading.value = true;
+  addError.value = null;
+  try {
+    await api.Course.editMember(route.params.name as string, { new: [username], remove: [] });
+    addUsername.value = "";
+    isAddModalOpen.value = false;
+    await loadMembers();
+  } catch (err: any) {
+    addError.value = err?.response?.data?.message || err?.message || "Failed to add member.";
+  } finally {
+    addLoading.value = false;
   }
 }
 </script>
@@ -156,15 +178,6 @@ async function removeSelected() {
           <div class="flex-1" />
 
           <div class="flex items-center gap-2">
-            <button
-              v-if="canRemove"
-              class="btn btn-error btn-sm"
-              :class="removeLoading && 'loading'"
-              :disabled="!selectedIds.length"
-              @click="removeSelected"
-            >
-              Remove Selected
-            </button>
             <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
               <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
             </label>
@@ -178,7 +191,7 @@ async function removeSelected() {
           </div>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4 flex flex-wrap items-end gap-3">
           <div class="form-control w-full max-w-xs">
             <label class="label">
               <span class="label-text">{{ $t("course.members.sortBy") }}</span>
@@ -188,6 +201,40 @@ async function removeSelected() {
               <option :value="MemberTableColumn.REAL_NAME">Real Name</option>
               <option :value="MemberTableColumn.ROLE">Role</option>
             </select>
+          </div>
+          <div v-if="rolesCanCreateCourse.includes(session.role)" class="form-control w-full max-w-xs">
+            <label class="label">
+              <span class="label-text">Add by username</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="addUsername"
+                type="text"
+                class="input input-bordered w-full max-w-xs"
+                placeholder="username"
+              />
+              <button
+                class="btn btn-primary btn-sm"
+                :class="addLoading && 'loading'"
+                :disabled="!addUsername.trim()"
+                @click="addByUsername"
+                style="height: 2.5rem; min-width: 3.5rem"
+              >
+                Add
+              </button>
+              <button
+                v-if="canRemove"
+                class="flex h-10 w-10 items-center justify-center self-center border-none bg-transparent p-0 pl-2 shadow-none"
+                :class="removeLoading && 'loading'"
+                :disabled="!selectedIds.length"
+                @click="removeSelected"
+                aria-label="Remove selected"
+                title="Remove selected"
+              >
+                <i-uil-trash-alt class="h-6 w-6 text-error" />
+              </button>
+            </div>
+            <p v-if="addError" class="mt-1 text-xs text-error">{{ addError }}</p>
           </div>
         </div>
         <data-status-wrapper :error="error" :is-loading="isLoading">
