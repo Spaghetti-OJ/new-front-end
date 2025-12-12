@@ -112,7 +112,9 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                     <span class="badge ml-1">{{ is_public }}</span>
                   </td>
                   <td>
-                    <span class="badge badge-info mr-1" v-for="tag in tags" :key="tag.id">{{ tag }}</span>
+                    <span class="badge badge-info mr-1" v-for="tag in tags" :key="tag.id">{{
+                      tag.name
+                    }}</span>
                   </td>
                   <td>
                     <template v-if="isQuotaUnlimited(total_quota)">
