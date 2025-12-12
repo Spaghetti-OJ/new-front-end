@@ -11,7 +11,8 @@ type Problem = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  course: number;
+  courseId: number;
+  courseName: string;
   acceptance: number;
 };
 
@@ -29,16 +30,11 @@ async function getProblem() {
     baseProblems.value = list.map((p: any) => ({
       id: p.id,
       title: p.title,
-      // 後端就是 'easy' | 'medium' | 'hard' 的字串，直接塞進去
       difficulty: p.difficulty as Problem["difficulty"],
-
-      // 後端目前沒有 tags，就先給空陣列，之後再改
       tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
-
-      course: p.course_name ?? "-",
-
-      // acceptance 後端沒給就先 0
-      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0, // 後端目前沒給，先 0
+      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseName: typeof p.course_name === "string" ? p.course_name : "-",
+      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,
     }));
   } catch (err) {
     console.error("getProblem error:", err);
@@ -57,7 +53,13 @@ const selectedDifficulties = ref<string[]>([]);
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
 const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
 
-const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
+const allCourses = computed(() => {
+  const map = new Map<number, string>();
+  baseProblems.value.forEach((p) => {
+    map.set(p.courseId, p.courseName);
+  });
+  return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+});
 const allDiffs = [
   { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
   { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
@@ -73,7 +75,7 @@ const filteredProblems = computed(() => {
       `${p.id}`.includes(keyword) ||
       p.tags.some((t) => t.toLowerCase().includes(keyword));
 
-    const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.course);
+    const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.courseId);
     const matchTag = !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
     const matchDiff = !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
 
@@ -125,16 +127,16 @@ onMounted(() => {
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
           <button
             v-for="c in allCourses"
-            :key="c"
+            :key="c.id"
             class="badge cursor-pointer transition-all duration-150"
             :class="
-              selectedCourses.includes(c)
+              selectedCourses.includes(c.id)
                 ? 'badge-primary text-white shadow-md'
                 : 'badge-outline hover:bg-primary hover:text-white'
             "
-            @click="toggleItem(selectedCourses, c)"
+            @click="toggleItem(selectedCourses, c.id)"
           >
-            {{ c }}
+            {{ c.name }}
           </button>
         </div>
 
@@ -223,7 +225,7 @@ onMounted(() => {
               </td>
               <td>
                 <router-link
-                  :to="`/courses/${p.course}/problems/${p.id}`"
+                  :to="`/courses/${p.courseId}/problems/${p.id}`"
                   class="link link-hover font-medium"
                   >{{ p.title }}</router-link
                 >
@@ -231,7 +233,7 @@ onMounted(() => {
               <td>
                 <TagList :tags="p.tags" size="md" colorMode="outline" />
               </td>
-              <td>{{ p.course }}</td>
+              <td>{{ p.courseName }}</td>
               <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
             </tr>
           </tbody>
