@@ -30,6 +30,8 @@ export const Course = {
     formData.append("file", file);
     return fetcher.post<CourseImportCSVResponse>(`/course/${courseId}/import-csv/`, formData);
   },
+  editMember: (courseId: string, body: { remove: string[]; new: string[] }) =>
+    fetcher.put<{ message: string }>(`/course/${courseId}/`, body),
 };
 
 export const Announcement = {

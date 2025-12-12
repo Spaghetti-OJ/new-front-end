@@ -15,7 +15,7 @@ interface UserSignup {
   date_joined: string;
   last_login: string | null;
 }
-type UserInfo = Pick<User, "username" | "role" | "real_name">;
+type UserInfo = Pick<User, "username" | "role" | "real_name" | "userid">;
 
 interface UserSummary {
   userCount: number;

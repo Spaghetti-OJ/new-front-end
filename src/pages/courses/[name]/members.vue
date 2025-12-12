@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
 import { useTitle } from "@vueuse/core";
@@ -27,6 +27,9 @@ watch(sortBy, () => {
 const members = ref<UserInfo[]>([]);
 const error = ref<any>(undefined);
 const isLoading = ref(true);
+const selectedIds = ref<string[]>([]);
+const removeLoading = ref(false);
+const removeError = ref<string | null>(null);
 
 onMounted(async () => {
   try {
@@ -50,6 +53,8 @@ onMounted(async () => {
 });
 
 const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
+const rolesCanRemove = [UserRole.Admin, UserRole.Teacher];
+const canRemove = computed(() => rolesCanRemove.includes(session.role));
 
 const isOpen = ref(false);
 const newMembers = ref<File | null>();
@@ -113,6 +118,31 @@ async function submit() {
     isProcessingSignup.value = false;
   }
 }
+
+function toggleSelect(memberId?: string) {
+  if (!memberId) return;
+  const idx = selectedIds.value.indexOf(memberId);
+  if (idx === -1) selectedIds.value.push(memberId);
+  else selectedIds.value.splice(idx, 1);
+}
+
+async function removeSelected() {
+  if (!selectedIds.value.length) return;
+  removeLoading.value = true;
+  removeError.value = null;
+  try {
+    await api.Course.editMember(route.params.name as string, { remove: selectedIds.value, new: [] });
+    selectedIds.value = [];
+    const res = await api.Course.info(route.params.name as string);
+    if (res?.data.TAs && res?.data.students && res?.data.teacher) {
+      members.value = [res.data.teacher, ...res.data.students, ...res.data.TAs];
+    }
+  } catch (err: any) {
+    removeError.value = err?.response?.data?.message || err?.message || "Failed to remove members.";
+  } finally {
+    removeLoading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -125,9 +155,27 @@ async function submit() {
 
           <div class="flex-1" />
 
-          <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
-            <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
-          </label>
+          <div class="flex items-center gap-2">
+            <button
+              v-if="canRemove"
+              class="btn btn-error btn-sm"
+              :class="removeLoading && 'loading'"
+              :disabled="!selectedIds.length"
+              @click="removeSelected"
+            >
+              Remove Selected
+            </button>
+            <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
+              <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
+            </label>
+          </div>
+        </div>
+
+        <div v-if="removeError" class="alert alert-error my-3 shadow-lg">
+          <div>
+            <i-uil-times-circle />
+            <span>{{ removeError }}</span>
+          </div>
         </div>
 
         <div class="mb-4">
@@ -150,13 +198,24 @@ async function submit() {
             <table class="table w-full">
               <thead>
                 <tr>
+                  <th v-if="canRemove"></th>
                   <th>username</th>
                   <th>real name</th>
                   <th>role</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
+                <tr v-for="{ username, real_name, role, userid } in members" :key="username" class="hover">
+                  <td v-if="canRemove">
+                    <template v-if="role === 'student'">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-sm"
+                        :checked="userid ? selectedIds.includes(userid as string) : false"
+                        @change="toggleSelect(userid as string)"
+                      />
+                    </template>
+                  </td>
                   <td>
                     <router-link :to="`/profile/${username}`" class="link link-hover">
                       {{ username }}
@@ -218,8 +277,12 @@ async function submit() {
         </div>
 
         <template v-if="!newMembers">
-          <input type="file" id="file-uploader" accept=".csv"
-            @change="newMembers = ($event.target as HTMLInputElement).files?.[0]" />
+          <input
+            type="file"
+            id="file-uploader"
+            accept=".csv"
+            @change="newMembers = ($event.target as HTMLInputElement).files?.[0]"
+          />
         </template>
         <template v-else>
           <table class="table-auto">
