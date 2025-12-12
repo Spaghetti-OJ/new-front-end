@@ -9,11 +9,80 @@ declare enum ProblemStatus {
   Visible = 0,
 }
 
+interface ProblemTag {
+  id: number;
+  name: string;
+  usage_count: number;
+}
+
+interface ProblemItem {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  max_score: number;
+  is_public: "public" | "hidden" | "course";
+  total_submissions: number;
+  accepted_submissions: number;
+  acceptance_rate: string;
+  like_count: number;
+  view_count: number;
+  total_quota: number;
+  description: string;
+  input_description: string;
+  output_description: string;
+  sample_input: string;
+  sample_output: string;
+  hint: string;
+  subtask_description: string;
+  supported_languages: string[];
+  creator_id: string;
+  course_id: number;
+  course_name: string;
+  created_at: string;
+  updated_at: string;
+  tags: ProblemTag[];
+}
+
+interface ProblemList {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ProblemItem[];
+}
+
 interface ProblemTestCase {
   taskScore: number;
   caseCount: number;
   memoryLimit: number;
   timeLimit: number;
+}
+
+interface ProblemInfo {
+  problemName: string;
+  description: {
+    description: string;
+    input: string;
+    output: string;
+    hint: string;
+    sampleInput: string;
+    sampleOutput: string;
+  };
+  owner: {
+    id: string;
+    username: string;
+    real_name: string;
+  };
+  tags: ProblemTag[];
+  allowedLanguage: number;
+  courses: { id: number; name: string }[];
+  quota: number;
+  defaultCode: { [key: string]: string } | string;
+  status: "public" | "hidden" | "course";
+  type: ProblemType;
+  testCase: ProblemTestCase[];
+  fillInTemplate: string | null;
+  submitCount: number;
+  highScore: number;
 }
 
 interface ProblemForm {
@@ -31,7 +100,7 @@ interface ProblemForm {
   allowedLanguage: number;
   quota: number;
   type: ProblemType;
-  status: ProblemStatus;
+  status: number;
   testCaseInfo: {
     language: number;
     fillInTemplate: string;
@@ -41,60 +110,54 @@ interface ProblemForm {
   defaultCode: string;
 }
 
-interface Problem {
-  problemName: string;
-  description: {
-    description: string;
-    input: string;
-    output: string;
-    hint: string;
-    sampleInput: string[];
-    sampleOutput: string[];
-  };
-  courses: string[];
-  tags: string[];
-  allowedLanguage: number;
-  quota: number;
-  type: ProblemType;
-  status: ProblemStatus;
-  testCase: ProblemTestCase[];
-  canViewStdout: boolean;
-  owner: string;
-  defaultCode: string;
-  submitCount: number;
-  highScore: number;
-  ACUser: number;
-  submitter: number;
+interface ProblemCreatePayload {
+  title: string;
+  description: string;
+  course_id: string;
+  difficulty: "easy" | "medium" | "hard";
+  is_public: "public" | "hidden" | "course";
+  max_score: number;
+  total_quota: number;
+  input_description: string | null;
+  output_description: string | null;
+  sample_input: string | null;
+  sample_output: string | null;
+  hint: string | null;
+  subtask_description: string | null;
+  supported_languages?: string[];
+  tags: number[];
 }
 
-interface ProblemListItem {
-  problemId: number;
-  problemName: string;
-  status: ProblemStatus;
-  ACUser: number;
-  submitter: number;
-  tags: string[];
-  type: ProblemType;
-  quota: number;
-  submitCount: number;
+interface ProblemTop10RunTimeItem {
+  id: string;
+  user: string;
+  execution_time: number;
+  score: number;
+  status?: string;
 }
 
-type ProblemList = ProblemListItem[];
+interface ProblemTop10MemoryItem {
+  id: string;
+  user: string;
+  memory_usage: number;
+  score: number;
+  status?: string;
+}
 
 interface ProblemStats {
-  statusCount: { [key in SubmissionStatusCode]: number };
+  acUserRatio: [number, number];
   triedUserCount: number;
   average: number;
   std: number;
-  scoreDistribution: number[];
-  acUserRatio: number[];
-  top10RunTime: SubmissionList;
-  top10MemoryUsage: SubmissionList;
+  scoreDistribution: { score: number; count: number }[];
+  statusCount: { [key: string]: number };
+  top10RunTime: ProblemTop10RunTimeItem[];
+  top10MemoryUsage: ProblemTop10MemoryItem[];
 }
 
 interface MossReport {
-  cpp_report: string;
-  python_report: string;
+  cpp_report: string | null;
+  python_report: string | null;
 }
 
 type LangOption = { value: number; text: string; mask: number };

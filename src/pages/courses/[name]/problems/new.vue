@@ -4,13 +4,13 @@ import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import api from "@/api";
-import ProblemForm from "@/components/Problem/ProblemForm.vue";
+import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
 const router = useRouter();
 useTitle(`New Problem - ${route.params.name} | Normal OJ`);
 
-const formElement = ref<InstanceType<typeof ProblemForm>>();
+const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
 
 const newProblem = ref<ProblemForm>({
   problemName: "",
@@ -36,11 +36,13 @@ const newProblem = ref<ProblemForm>({
   },
   canViewStdout: false,
 });
+
 function update<K extends keyof ProblemForm>(
   key: K,
   value: ProblemForm[K] | ((arg: ProblemForm[K]) => ProblemForm[K]),
 ) {
   if (typeof value === "function") {
+    // @ts-ignore: complex union type issue
     newProblem.value[key] = value(newProblem.value[key]);
   } else {
     newProblem.value[key] = value;
@@ -48,6 +50,36 @@ function update<K extends keyof ProblemForm>(
 }
 provide<Ref<ProblemForm>>("problem", newProblem);
 const testdata = ref<File | null>(null);
+
+function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
+  const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
+
+  return {
+    title: p.problemName,
+    description: p.description.description,
+    course_id: courseId, // 後端要 UUID
+
+    difficulty: "medium" as "easy" | "medium" | "hard",
+    is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
+
+    max_score: 100,
+    total_quota: p.quota ?? -1,
+
+    input_description: emptyToNull(p.description.input),
+    output_description: emptyToNull(p.description.output),
+    sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
+    sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
+    hint: emptyToNull(p.description.hint),
+
+    subtask_description: null,
+
+    // 後端允許不填 → 讓後端用預設 languages
+    supported_languages: undefined,
+
+    // 後端 tags 要 ID 陣列. New problem likely has no tags or we can't map names to IDs yet.
+    tags: [],
+  };
+}
 
 async function submit() {
   if (!formElement.value) return;
@@ -57,12 +89,8 @@ async function submit() {
   }
   formElement.value.isLoading = true;
   try {
-    const { problemId } = (
-      await api.Problem.create({
-        ...newProblem.value,
-      })
-    ).data;
-
+    const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
+    const { problemId } = (await api.Problem.create(payload)).data;
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
@@ -90,11 +118,13 @@ async function submit() {
 
 const openPreview = ref<boolean>(false);
 const mockProblemMeta = {
-  owner: "",
+  id: 0,
+  owner: { id: "0", username: "mock", real_name: "Mock User" },
   highScore: 0,
   submitCount: 0,
-  ACUser: 0,
-  submitter: 0,
+  create_at: new Date().toISOString(),
+  difficulty: "easy" as const,
+  course_id: 0,
 };
 
 const openJSON = ref<boolean>(false);
@@ -106,7 +136,12 @@ const openJSON = ref<boolean>(false);
       <div class="card-body">
         <div class="card-title mb-3 justify-between">{{ $t("course.problem.new.title") }}</div>
 
-        <problem-form ref="formElement" v-model:testdata="testdata" @update="update" @submit="submit" />
+        <problem-form-component
+          ref="formElement"
+          v-model:testdata="testdata"
+          @update="update"
+          @submit="submit"
+        />
 
         <div class="divider" />
 
@@ -117,7 +152,21 @@ const openJSON = ref<boolean>(false);
 
         <problem-card
           v-if="openPreview"
-          :problem="{ ...mockProblemMeta, ...newProblem, testCase: newProblem.testCaseInfo.tasks }"
+          :problem="{
+            ...mockProblemMeta,
+            ...newProblem,
+            testCase: newProblem.testCaseInfo.tasks,
+            fillInTemplate: newProblem.testCaseInfo.fillInTemplate,
+            tags: newProblem.tags.map((t, i) => ({ id: i, name: t, usage_count: 0 })),
+            courses: newProblem.courses.map((c, i) => ({ id: i, name: c })),
+            status: newProblem.status === 0 ? 'public' : 'hidden',
+            defaultCode: typeof newProblem.defaultCode === 'string' ? {} : newProblem.defaultCode,
+            description: {
+              ...newProblem.description,
+              sampleInput: newProblem.description.sampleInput.join('\n'),
+              sampleOutput: newProblem.description.sampleOutput.join('\n'),
+            },
+          }"
           preview
         />
 
