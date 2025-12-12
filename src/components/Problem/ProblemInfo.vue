@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ProblemTag } from "@/types/problem";
 interface Props {
   id: number;
   problemName: string;

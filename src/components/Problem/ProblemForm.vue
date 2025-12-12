@@ -3,7 +3,6 @@ import { ref, watch, inject, Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
-import { ProblemForm, ProblemTestCase } from "@/types/problem";
 
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined

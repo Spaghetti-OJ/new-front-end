@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { inject, Ref } from "vue";
-import { ProblemForm } from "@/types/problem";
 
 defineProps<{
   // TODO: hard to type validator, does vuelidate have child component validation?
