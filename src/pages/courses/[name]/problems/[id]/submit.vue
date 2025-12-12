@@ -2,15 +2,13 @@
 import { reactive, watchEffect, computed, ref, onMounted } from "vue";
 import hljs from "highlight.js";
 import { BlobWriter, ZipWriter, TextReader } from "@zip.js/zip.js";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required, between, helpers } from "@vuelidate/validators";
-import api, { fetcher } from "@/api";
+import api from "@/api";
 import { useTitle, useStorage } from "@vueuse/core";
 import { LANGUAGE_OPTIONS, LOCAL_STORAGE_KEY } from "@/constants";
 import { useI18n } from "vue-i18n";
-import { ProblemInfo, LangOption } from "@/types/problem";
 
 const route = useRoute();
 const { t } = useI18n();

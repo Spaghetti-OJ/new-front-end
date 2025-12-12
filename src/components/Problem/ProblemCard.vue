@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useSession } from "@/stores/session";
 import api from "@/api";
-import { ProblemInfo } from "@/types/problem";
 import { isQuotaUnlimited } from "@/constants";
 interface Props {
   problem: ProblemInfo;

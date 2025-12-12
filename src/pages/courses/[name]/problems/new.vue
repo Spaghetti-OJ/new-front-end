@@ -5,7 +5,6 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import api from "@/api";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
-import { ProblemForm } from "@/types/problem";
 
 const route = useRoute();
 const router = useRouter();

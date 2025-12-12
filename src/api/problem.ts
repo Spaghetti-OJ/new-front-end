@@ -1,5 +1,4 @@
 import { fetcher } from "./fetcher";
-import { ProblemList, ProblemCreatePayload, ProblemInfo, ProblemStats } from "@/types/problem";
 
 export const Problem = {
   getProblemList: (query?: { difficulty?: string; is_public?: string; course_id?: number }) =>

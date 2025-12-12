@@ -5,7 +5,6 @@ import { useRoute } from "vue-router";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { fetcher } from "@/api";
-import { ProblemInfo } from "@/types/problem";
 
 const route = useRoute();
 const { t } = useI18n();

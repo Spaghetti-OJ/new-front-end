@@ -1,21 +1,21 @@
-export declare enum ProblemType {
+declare enum ProblemType {
   OJ = 0,
   FillIn = 1,
   HandWritten = 2,
 }
 
-export declare enum ProblemStatus {
+declare enum ProblemStatus {
   Hidden = 1,
   Visible = 0,
 }
 
-export interface ProblemTag {
+interface ProblemTag {
   id: number;
   name: string;
   usage_count: number;
 }
 
-export interface ProblemItem {
+interface ProblemItem {
   id: number;
   title: string;
   difficulty: "easy" | "medium" | "hard";
@@ -43,21 +43,21 @@ export interface ProblemItem {
   tags: ProblemTag[];
 }
 
-export interface ProblemList {
+interface ProblemList {
   count: number;
   next: string | null;
   previous: string | null;
   results: ProblemItem[];
 }
 
-export interface ProblemTestCase {
+interface ProblemTestCase {
   taskScore: number;
   caseCount: number;
   memoryLimit: number;
   timeLimit: number;
 }
 
-export interface ProblemInfo {
+interface ProblemInfo {
   problemName: string;
   description: {
     description: string;
@@ -85,7 +85,7 @@ export interface ProblemInfo {
   highScore: number;
 }
 
-export interface ProblemForm {
+interface ProblemForm {
   problemName: string;
   description: {
     description: string;
@@ -110,7 +110,7 @@ export interface ProblemForm {
   defaultCode: string;
 }
 
-export interface ProblemCreatePayload {
+interface ProblemCreatePayload {
   title: string;
   description: string;
   course_id: string;
@@ -128,7 +128,7 @@ export interface ProblemCreatePayload {
   tags: number[];
 }
 
-export interface ProblemTop10RunTimeItem {
+interface ProblemTop10RunTimeItem {
   id: string;
   user: string;
   execution_time: number;
@@ -136,7 +136,7 @@ export interface ProblemTop10RunTimeItem {
   status?: string;
 }
 
-export interface ProblemTop10MemoryItem {
+interface ProblemTop10MemoryItem {
   id: string;
   user: string;
   memory_usage: number;
@@ -144,7 +144,7 @@ export interface ProblemTop10MemoryItem {
   status?: string;
 }
 
-export interface ProblemStats {
+interface ProblemStats {
   acUserRatio: [number, number];
   triedUserCount: number;
   average: number;
@@ -155,10 +155,10 @@ export interface ProblemStats {
   top10MemoryUsage: ProblemTop10MemoryItem[];
 }
 
-export interface MossReport {
+interface MossReport {
   cpp_report: string | null;
   python_report: string | null;
 }
 
-export type LangOption = { value: number; text: string; mask: number };
-export type ProblemUpdater = <K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) => void;
+type LangOption = { value: number; text: string; mask: number };
+type ProblemUpdater = <K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) => void;
