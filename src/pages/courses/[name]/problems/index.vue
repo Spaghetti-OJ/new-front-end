@@ -136,7 +136,7 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                       <router-link
                         v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.name}/problems/${id}}/copycat`"
+                        :to="`/courses/${$route.params.name}/problems/${id}/copycat`"
                       >
                         <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
                       </router-link>
