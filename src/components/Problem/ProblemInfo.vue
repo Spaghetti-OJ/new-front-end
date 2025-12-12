@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { PROBLEM_STATUS } from "@/constants";
+import { ProblemTag } from "@/types/problem";
 interface Props {
   id: number;
   problemName: string;
   unlimitedQuota: boolean;
   quotaRemaining: number;
   quotaLimit: number;
-  tags: ApiTag[];
+  tags: ProblemTag[];
   visible: "hidden" | "public" | "course";
   isAdmin: boolean;
   isTeacher: boolean;
@@ -27,7 +27,7 @@ const props = defineProps<Props>();
       <div class="mt-3 flex flex-col">
         <div class="flex gap-1">
           <div v-for="tag in tags" :key="tag.id" class="badge badge-info">
-            {{ tag }}
+            {{ tag.name }}
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@ const props = defineProps<Props>();
           </div>
           <div class="stat-title text-sm">Visibility</div>
           <div class="stat-value text-lg">
-            {{ visible === PROBLEM_STATUS.VISIBLE ? "Public" : "Hidden" }}
+            {{ visible === "public" ? "Public" : "Hidden" }}
           </div>
         </div>
         <div v-if="isAdmin || isTeacher" class="stat">

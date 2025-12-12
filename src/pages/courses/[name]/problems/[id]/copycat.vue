@@ -4,6 +4,8 @@ import { useRoute } from "vue-router";
 import api, { fetcher } from "@/api";
 import { useIntervalFn, useTitle } from "@vueuse/core";
 import { ref, watchEffect, computed } from "vue";
+import { MossReport } from "@/types/problem";
+import { Course } from "@/types/course";
 
 const route = useRoute();
 useTitle(`Copycat - ${route.params.id} - ${route.params.name} | Normal OJ`);

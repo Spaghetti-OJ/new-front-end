@@ -1,13 +1,14 @@
 import { fetcher } from "./fetcher";
+import { ProblemList, ProblemCreatePayload, ProblemInfo, ProblemStats } from "@/types/problem";
 
 export const Problem = {
   getProblemList: (query?: { difficulty?: string; is_public?: string; course_id?: number }) =>
-    fetcher.get<ApiProblemList>("/problem/", { params: query }),
-  create: (body: ProblemForm) => fetcher.post("/problem/manage", body),
+    fetcher.get<ProblemList>("/problem/", { params: query }),
+  create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
-  getProblemInfo: (problemId: number) => fetcher.get<problemresponse>(`/problem/${problemId}`),
+  getProblemInfo: (problemId: number) => fetcher.get<ProblemInfo>(`/problem/${problemId}`),
   getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
-  modify: (id: string | number, body: ProblemForm) => fetcher.put(`/problem/manage/${id}`, body),
+  modify: (id: string | number, body: ProblemCreatePayload) => fetcher.put(`/problem/manage/${id}`, body),
   modifyTestdata: (id: string | number, body: FormData) =>
     fetcher.put(`/problem/manage/${id}`, body, { headers: { "Content-Type": "multipart/form-data" } }),
   delete: (id: string | number) => fetcher.delete(`/problem/manage/${id}`),

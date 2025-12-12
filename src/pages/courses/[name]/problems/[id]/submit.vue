@@ -10,13 +10,14 @@ import api, { fetcher } from "@/api";
 import { useTitle, useStorage } from "@vueuse/core";
 import { LANGUAGE_OPTIONS, LOCAL_STORAGE_KEY } from "@/constants";
 import { useI18n } from "vue-i18n";
+import { ProblemInfo, LangOption } from "@/types/problem";
 
 const route = useRoute();
 const { t } = useI18n();
 
 useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
 const router = useRouter();
-const problem = ref<problemresponse | null>(null);
+const problem = ref<ProblemInfo | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
 async function loadProblem() {

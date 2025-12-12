@@ -8,6 +8,7 @@ import { useTitle } from "@vueuse/core";
 import { isQuotaUnlimited } from "@/constants";
 import useInteractions from "@/composables/useInteractions";
 import api from "@/api";
+import { ProblemList } from "@/types/problem";
 const session = useSession();
 const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
 const route = useRoute();
@@ -16,7 +17,7 @@ const router = useRouter();
 const { isDesktop } = useInteractions();
 
 useTitle(`Problems - ${route.params.name} | Normal OJ`);
-const problems = ref<ApiProblemList | null>(null);
+const problems = ref<ProblemList | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
 

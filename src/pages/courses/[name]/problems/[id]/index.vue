@@ -5,9 +5,10 @@ import { fetcher } from "@/api";
 import { useTitle } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 import api from "@/api";
+import { ProblemInfo } from "@/types/problem";
 const route = useRoute();
 useTitle(`Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
-const problem = ref<problemresponse | null>(null);
+const problem = ref<ProblemInfo | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
 async function loadProblem() {
