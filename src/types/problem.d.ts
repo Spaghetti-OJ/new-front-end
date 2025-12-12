@@ -128,6 +128,22 @@ export interface ProblemCreatePayload {
   tags: number[];
 }
 
+export interface ProblemTop10RunTimeItem {
+  id: string;
+  user: string;
+  execution_time: number;
+  score: number;
+  status?: string;
+}
+
+export interface ProblemTop10MemoryItem {
+  id: string;
+  user: string;
+  memory_usage: number;
+  score: number;
+  status?: string;
+}
+
 export interface ProblemStats {
   acUserRatio: [number, number];
   triedUserCount: number;
@@ -135,8 +151,8 @@ export interface ProblemStats {
   std: number;
   scoreDistribution: { score: number; count: number }[];
   statusCount: { [key: string]: number };
-  top10RunTime: any[];
-  top10MemoryUsage: any[];
+  top10RunTime: ProblemTop10RunTimeItem[];
+  top10MemoryUsage: ProblemTop10MemoryItem[];
 }
 
 export interface MossReport {
