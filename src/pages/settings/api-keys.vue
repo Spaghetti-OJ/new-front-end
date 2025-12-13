@@ -28,10 +28,10 @@ interface ApiKeyRow {
   createdAt: string;
   expiresAt?: string;
 }
-interface createForm{
-  name:string;
-  permissions?:string[];
-  expires_at?:string;
+interface createForm {
+  name: string;
+  permissions?: string[];
+  expires_at?: string;
 }
 // ===== Reactive State ===== //
 const apiKeys = ref<ApiKeyRow[]>([]);
@@ -107,9 +107,7 @@ function mapApiKeyFromBackend(b: any): ApiKeyRow {
     expiresAt: b.expires_at ?? undefined,
   };
 }
-function mapPermissionsToApi(
-  permissions: PermissionRow[],
-): string[] {
+function mapPermissionsToApi(permissions: PermissionRow[]): string[] {
   return permissions.flatMap((p) => {
     const result: string[] = [];
     if (p.read) result.push(`read:${p.type}`);
@@ -119,19 +117,19 @@ function mapPermissionsToApi(
 }
 //加載目前apikey//
 async function getapikeylist() {
-  const res=await api.Auth.listtokens();
+  const res = await api.Auth.listtokens();
   const raw = Array.isArray(res) ? res : res;
-apiKeys.value = raw.map(mapApiKeyFromBackend);
+  apiKeys.value = raw.map(mapApiKeyFromBackend);
 }
 
 // ===== Load Demo ===== //
 onMounted(() => {
-   getapikeylist();
+  getapikeylist();
 });
 
 // ===== Utils ===== //
-async function generateKey(aa :createForm) {
-  const res=await api.Auth.generatetoken(aa);
+async function generateKey(aa: createForm) {
+  const res = await api.Auth.generatetoken(aa);
   return res.full_token;
 }
 
@@ -167,7 +165,6 @@ async function handleCreateKey() {
   createError.value = null;
   expiresError.value = null;
 
-  
   const now = new Date();
   const id = now.getTime();
 
@@ -179,17 +176,16 @@ async function handleCreateKey() {
       return;
     }
     expires = expiresDate.toISOString();
-    
   }
-  const input={
-    name:createFormName.value,
-    permissions:mapPermissionsToApi(createFormPermissions.value),
-    expires_at:expires,
-  }
+  const input = {
+    name: createFormName.value,
+    permissions: mapPermissionsToApi(createFormPermissions.value),
+    expires_at: expires,
+  };
 
-const fullKey = await generateKey(input);
+  const fullKey = await generateKey(input);
   const newKey: ApiKeyRow = {
-    id:"1",
+    id: "1",
     name: createFormName.value.trim(),
     status: "active",
     usage: 0,
@@ -221,7 +217,7 @@ function closeDetailModal() {
 // ===== Delete ===== //
 async function confirmDeleteSelected() {
   if (!selectedKey.value) return;
-const res=await api.Auth.deletetokens(selectedKey.value.id);
+  const res = await api.Auth.deletetokens(selectedKey.value.id);
   apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
   closeDetailModal();
   await getapikeylist();

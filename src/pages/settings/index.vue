@@ -19,7 +19,6 @@ locale.value = localeInStorage.value;
 watchEffect(() => {
   localeInStorage.value = locale.value;
 });
-
 </script>
 
 <template>
