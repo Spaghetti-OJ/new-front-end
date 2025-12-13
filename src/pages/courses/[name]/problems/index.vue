@@ -28,8 +28,8 @@ async function loadProblems() {
   try {
     const res = await api.Problem.getProblemList({
       course_id: Number(route.params.name),
-      count: -1, // Fetch all for client-side filtering
-    } as any);
+      page_size: 1000, // Fetch all for client-side filtering
+    });
 
     problems.value = res.data;
   } catch (err) {
