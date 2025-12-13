@@ -1,4 +1,3 @@
-import axios from "axios";
 import { fetcher } from "./fetcher";
 
 export const Auth = {
@@ -33,27 +32,12 @@ export const Auth = {
   refresh: (body: { refresh: string }) =>
     fetcher.post<{ access: string; refresh?: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
   verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
-  generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>{
-    const csrfToken = document.cookie .split('; ')
-  .find(row => row.startsWith('csrftoken='))
-  ?.split('=')[1];
-  return fetcher.post<{full_token:string}>(`/api-tokens/`,
-      body,
-      {
-        withCredentials: true, // 要讓 sessionid / csrftoken cookie 一起送出去
-        headers: {
-       //未知是否要   "X-CSRFToken": csrfToken,
-          "Content-Type": "application/json",
-          // 不給 Authorization，這樣後端就會走「Session + CSRF」那套，而不是 API Token 驗證
-        },
-      },
-    ).then((r) => r.data ?? r);
-  },
+  generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>fetcher.post<{full_token:string}>(`/api-tokens/`,body).then((r) => r.data ?? r),
+  
   listtokens: () => fetcher.get<apikeyresponse[]>("/api-tokens/").then((r) => r.data ?? r),
   deletetokens: (tokenid:string) => fetcher.delete(`/api-tokens/${tokenid}`).then((r) => r.data ?? r),
   getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
 };
-
 export const Copycat = {
   detect: (body: { course: string; problemId: number; studentNicknames: { [k: string]: string } }) =>
     fetcher.post("/copycat", body),

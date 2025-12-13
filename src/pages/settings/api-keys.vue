@@ -131,7 +131,6 @@ onMounted(() => {
 
 // ===== Utils ===== //
 async function generateKey(aa :createForm) {
-  console.log("token中");
   const res=await api.Auth.generatetoken(aa);
   return res.full_token;
 }
@@ -185,8 +184,9 @@ async function handleCreateKey() {
   const input={
     name:createFormName.value,
     permissions:mapPermissionsToApi(createFormPermissions.value),
-    expired_at:expires,
+    expires_at:expires,
   }
+
 const fullKey = await generateKey(input);
   const newKey: ApiKeyRow = {
     id:"1",
@@ -200,8 +200,6 @@ const fullKey = await generateKey(input);
   };
 
   apiKeys.value.push(newKey);
-
-console.log("key=",fullKey);
   showCreateModal.value = false;
   generatedKey.value = fullKey;
   showGeneratedModal.value = true;
@@ -223,9 +221,7 @@ function closeDetailModal() {
 // ===== Delete ===== //
 async function confirmDeleteSelected() {
   if (!selectedKey.value) return;
-  console.log(selectedKey.value.id);
 const res=await api.Auth.deletetokens(selectedKey.value.id);
-console.log("delete",res);
   apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
   closeDetailModal();
   await getapikeylist();
