@@ -49,3 +49,23 @@ interface AuthToken {
   access: string;
   refresh: string;
 }
+interface apikeyresponse {
+  id: string;
+  name: string;
+  prefix:string;
+  permissions: PermissionRow[];
+  usage_count: number;
+  last_used_at: string,
+  last_used_ip: string,
+  created_at: string;
+  expires_at?: string;
+  is_active: boolean,
+  is_expired: boolean
+}
+type PermissionType = "submissions" | "courses" | "homeworks" | "announcements";
+
+interface PermissionRow {
+  type: PermissionType;
+  read: boolean;
+  create: boolean;
+}

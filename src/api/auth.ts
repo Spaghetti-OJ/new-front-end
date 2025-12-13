@@ -37,24 +37,20 @@ export const Auth = {
     const csrfToken = document.cookie .split('; ')
   .find(row => row.startsWith('csrftoken='))
   ?.split('=')[1];
-  console.log("cstoken====",csrfToken);
-  console.log("body===",body);
-  return axios.post(
-      // 注意這裡要加上後端的 baseURL
-      `${import.meta.env.VITE_APP_API_BASE_URL || "/api"}/api-tokens/`,
+  return fetcher.post<{full_token:string}>(`/api-tokens/`,
       body,
       {
         withCredentials: true, // 要讓 sessionid / csrftoken cookie 一起送出去
         headers: {
-          "X-CSRFToken": csrfToken,
+       //未知是否要   "X-CSRFToken": csrfToken,
           "Content-Type": "application/json",
           // 不給 Authorization，這樣後端就會走「Session + CSRF」那套，而不是 API Token 驗證
         },
       },
     ).then((r) => r.data ?? r);
   },
-  listtokens: () => fetcher.get("/api-tokens/").then((r) => r.data ?? r),
-  deletetokens: (tokenid:string) => fetcher.delete(`/api-tokens/${tokenid}/`).then((r) => r.data ?? r),
+  listtokens: () => fetcher.get<apikeyresponse[]>("/api-tokens/").then((r) => r.data ?? r),
+  deletetokens: (tokenid:string) => fetcher.delete(`/api-tokens/${tokenid}`).then((r) => r.data ?? r),
   getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
 };
 
