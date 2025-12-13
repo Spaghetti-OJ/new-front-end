@@ -33,7 +33,6 @@ const removeError = ref<string | null>(null);
 const addUsername = ref("");
 const addLoading = ref(false);
 const addError = ref<string | null>(null);
-const isAddModalOpen = ref(false);
 
 const loadMembers = async () => {
   try {
@@ -154,7 +153,6 @@ async function addByUsername() {
   try {
     await api.Course.editMember(route.params.name as string, { new: [username], remove: [] });
     addUsername.value = "";
-    isAddModalOpen.value = false;
     await loadMembers();
   } catch (err: any) {
     addError.value = err?.response?.data?.message || err?.message || "Failed to add member.";
