@@ -75,24 +75,6 @@ const isProcessingSignup = ref(false);
 const errorMsg = ref("");
 const previewCSV = ref<{ headers?: string[]; body?: string[][] }>({});
 
-// no csv validation was handled
-const standardizeUsername = (csv: string): string => {
-  const rows = csv.split("\n");
-  const header = rows[0];
-  const body = rows.slice(1).map((r) => r.split(","));
-  const usernameFieldIndex = header.split(",").findIndex((v) => v === "username");
-  if (usernameFieldIndex < 0) {
-    return csv;
-  }
-
-  body.forEach((data) => {
-    data[usernameFieldIndex] = data[usernameFieldIndex]?.toUpperCase();
-  });
-
-  const bodyString = body.map((data) => data.join(","));
-  return [header, ...bodyString].join("\n");
-};
-
 watch(newMembers, () => {
   if (!newMembers.value) return;
   const reader = new FileReader();
