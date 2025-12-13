@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, provide, Ref } from "vue";
+import { ref, watchEffect, provide, Ref ,onMounted} from "vue";
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
@@ -18,7 +18,14 @@ const {
   error: fetchError,
   isLoading: isFetching,
 } = useAxios<ProblemInfo>(`/problem/${route.params.id}`, fetcher);
-
+async function getmanage() {
+  
+  const problemId=route.params.id as string;
+  console.log("problemid=",problemId);
+  const managedata=await api.Problem.getManageData(problemId);
+  console.log("managedata=",managedata);
+}
+onMounted(getmanage);
 const edittingProblem = ref<ProblemForm>();
 watchEffect(() => {
   if (problem.value) {
@@ -169,11 +176,17 @@ async function delete_() {
   formElement.value.isLoading = true;
   if (!confirm("Are u sure?")) return;
   try {
-    await api.Problem.delete(route.params.id as string);
+    const problemId = Number(route.params.id);
+    const subtaskres=await api.Problem.getSubtasks(problemId);
+    for (const subtask of subtaskres.data) {
+  await api.Problem.deleteSubtaks(problemId, subtask.id);
+}
+     const deleteres =await api.Problem.delete(route.params.id as string);
     router.push(`/courses/${route.params.name}/problems`);
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      formElement.value.errorMsg = error.response.data.message;
+    if (axios.isAxiosError(error) && error.response?.data) {
+      formElement.value.errorMsg = error.response.data.detail;
+      
     } else {
       formElement.value.errorMsg = "Unknown error occurred :(";
     }
