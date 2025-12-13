@@ -24,7 +24,19 @@ watch(sortBy, () => {
   router.replace({ query: { sort: sortBy.value || MemberTableColumn.USERNAME } });
 });
 
-const members = ref<UserInfo[]>([]);
+const rawMembers = ref<UserInfo[]>([]);
+const members = computed(() => {
+  return [...rawMembers.value].sort((a, b) => {
+    if (sortBy.value === "username") {
+      return a.username.localeCompare(b.username);
+    } else if (sortBy.value === "real_name") {
+      return a.real_name.localeCompare(b.real_name);
+    } else {
+      return a.role.localeCompare(b.role);
+    }
+  });
+});
+
 const error = ref<any>(undefined);
 const isLoading = ref(true);
 const selectedUsernames = ref<string[]>([]);
@@ -38,15 +50,7 @@ const loadMembers = async () => {
   try {
     const res = await api.Course.info(route.params.name as string);
     if (res?.data.TAs && res?.data.students && res?.data.teacher) {
-      members.value = [res.data.teacher, ...res.data.students, ...res.data.TAs].sort((a, b) => {
-        if (sortBy.value === "username") {
-          return a.username.localeCompare(b.username);
-        } else if (sortBy.value === "real_name") {
-          return a.real_name.localeCompare(b.real_name);
-        } else {
-          return a.role.localeCompare(b.role);
-        }
-      });
+      rawMembers.value = [res.data.teacher, ...res.data.students, ...res.data.TAs];
     }
   } catch (err: any) {
     error.value = err;
@@ -234,7 +238,7 @@ async function addByUsername() {
         </div>
         <data-status-wrapper :error="error" :is-loading="isLoading">
           <template #loading>
-            <skeleton-table :col="3" :row="5" />
+            <skeleton-table :col="canRemove ? 4 : 3" :row="5" />
           </template>
           <template #data>
             <table class="table w-full">
