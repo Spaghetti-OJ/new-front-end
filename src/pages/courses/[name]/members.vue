@@ -252,14 +252,14 @@ async function addByUsername() {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="{ username, real_name, role, userid } in members" :key="username" class="hover">
+                <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
                   <td v-if="canRemove">
                     <template v-if="role === 'student'">
                       <input
                         type="checkbox"
                         class="checkbox checkbox-sm"
-                        :checked="userid ? selectedIds.includes(userid as string) : false"
-                        @change="toggleSelect(userid as string)"
+                        :checked="selectedIds.includes(username)"
+                        @change="toggleSelect(username)"
                       />
                     </template>
                   </td>
