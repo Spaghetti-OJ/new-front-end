@@ -1,9 +1,18 @@
 import { fetcher } from "./fetcher";
 
 export const Problem = {
-  create: (body: ProblemForm) => fetcher.post("/problem/manage", body),
+  getProblemList: (query?: {
+    difficulty?: string;
+    is_public?: string;
+    course_id?: number;
+    page?: number;
+    page_size?: number;
+  }) => fetcher.get<ProblemList>("/problem/", { params: query }),
+  create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
+  getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
+  getProblemInfo: (problemId: number) => fetcher.get<ProblemInfo>(`/problem/${problemId}`),
   getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
-  modify: (id: string | number, body: ProblemForm) => fetcher.put(`/problem/manage/${id}`, body),
+  modify: (id: string | number, body: ProblemCreatePayload) => fetcher.put(`/problem/manage/${id}`, body),
   modifyTestdata: (id: string | number, body: FormData) =>
     fetcher.put(`/problem/manage/${id}`, body, { headers: { "Content-Type": "multipart/form-data" } }),
   delete: (id: string | number) => fetcher.delete(`/problem/manage/${id}`),

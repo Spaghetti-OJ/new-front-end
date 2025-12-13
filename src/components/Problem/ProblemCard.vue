@@ -2,9 +2,8 @@
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
-
 interface Props {
-  problem: Problem;
+  problem: ProblemInfo;
   preview?: boolean;
 }
 withDefaults(defineProps<Props>(), {
@@ -28,7 +27,9 @@ function downloadTestCase(problemId: number) {
             {{ $t("components.problem.card.title") }}{{ $route.params.id }} - {{ problem.problemName }}
           </div>
           <div class="flex">
-            <span class="badge badge-info mr-1" v-for="tag in problem.tags" :key="tag">{{ tag }}</span>
+            <span class="badge badge-info mr-1" v-for="tag in problem.tags" :key="tag.id">{{
+              tag.name
+            }}</span>
           </div>
         </div>
 
@@ -126,21 +127,18 @@ function downloadTestCase(problemId: number) {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="i in problem.description.sampleInput.length">
-                  <td class="align-top">{{ i }}</td>
+                <tr v-for="(input, index) in [problem.description.sampleInput]" :key="index">
+                  <td class="align-top">{{ index + 1 }}</td>
                   <td class="align-top">
-                    <sample-code-block
-                      v-if="problem.description.sampleInput[i - 1]"
-                      :code="problem.description.sampleInput[i - 1]"
-                    ></sample-code-block>
+                    <sample-code-block v-if="input" :code="input"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
                   </td>
                   <td class="align-top">
                     <sample-code-block
-                      v-if="problem.description.sampleOutput[i - 1]"
-                      :code="problem.description.sampleOutput[i - 1]"
+                      v-if="problem.description.sampleOutput"
+                      :code="problem.description.sampleOutput"
                     ></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")

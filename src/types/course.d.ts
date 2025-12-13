@@ -25,6 +25,9 @@ interface CourseInfo {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  teacher: Pick<User, "userid" | "username" | "real_name" | "role">;
+  TAs: Pick<User, "userid" | "username" | "real_name" | "role">[];
+  students: Pick<User, "userid" | "username" | "real_name" | "role">[];
 }
 
 interface CourseForm {
