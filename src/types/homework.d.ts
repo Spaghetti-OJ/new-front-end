@@ -33,8 +33,18 @@ interface Homework extends HomeworkForm {
   studentStatus: HomeworkStudentStatus;
 }
 
-interface HomeworkListItem extends Homework {
-  id: string;
+interface HomeworkListItem {
+  id: number;
+  name: string;
+  start: number | null;
+  end: number | null;
+  problemIds: number[];
+  markdown: string;
+  studentStatus: string;
+}
+
+interface GetHomeworksResponse {
+  items: HomeworkListItem[];
 }
 
 type HomeworkList = HomeworkListItem[];
