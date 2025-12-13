@@ -11,7 +11,7 @@ export function useProblemSelection(courseName: string) {
     data: problems,
     error,
     isLoading,
-  } = useAxios<ProblemList>(`/problem?offset=0&count=-1&course=${courseName}`, fetcher);
+  } = useAxios<ProblemList>(`/problem?page_size=1000&course=${courseName}`, fetcher);
 
   const problemSelections = computed<ProblemSelections>(() => {
     if (!problems.value) return [];
