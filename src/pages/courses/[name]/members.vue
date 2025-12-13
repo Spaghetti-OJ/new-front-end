@@ -66,7 +66,6 @@ const canRemove = computed(() => rolesCanRemove.includes(session.role));
 
 const isOpen = ref(false);
 const newMembers = ref<File | null>();
-const shouldStandardizeUsername = ref(true);
 const newMembersCSVString = ref("");
 const forceUpdate = ref(false);
 const isProcessingSignup = ref(false);
@@ -107,9 +106,7 @@ watch(newMembers, () => {
 async function submit() {
   if (!newMembersCSVString.value) return;
   isProcessingSignup.value = true;
-  const csv = shouldStandardizeUsername.value
-    ? standardizeUsername(newMembersCSVString.value)
-    : newMembersCSVString.value;
+  const csv = newMembersCSVString.value;
 
   try {
     const file = new File([csv], newMembers.value?.name ?? "students.csv", { type: "text/csv" });
@@ -301,13 +298,6 @@ async function addByUsername() {
         </div>
 
         <div class="my-4" />
-
-        <!-- <div class="form-control">
-          <label class="label cursor-pointer">
-            <span class="label-text">{{ $t("course.members.standardizeUsername") }}</span>
-            <input v-model="shouldStandardizeUsername" type="checkbox" class="checkbox checkbox-primary" />
-          </label>
-        </div> -->
 
         <div class="alert alert-error shadow-lg" v-if="errorMsg">
           <div>
