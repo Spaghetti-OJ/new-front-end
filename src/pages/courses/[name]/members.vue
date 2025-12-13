@@ -27,7 +27,7 @@ watch(sortBy, () => {
 const members = ref<UserInfo[]>([]);
 const error = ref<any>(undefined);
 const isLoading = ref(true);
-const selectedIds = ref<string[]>([]);
+const selectedUsernames = ref<string[]>([]);
 const removeLoading = ref(false);
 const removeError = ref<string | null>(null);
 const addUsername = ref("");
@@ -123,20 +123,20 @@ async function submit() {
   }
 }
 
-function toggleSelect(memberId?: string) {
-  if (!memberId) return;
-  const idx = selectedIds.value.indexOf(memberId);
-  if (idx === -1) selectedIds.value.push(memberId);
-  else selectedIds.value.splice(idx, 1);
+function toggleSelect(username?: string) {
+  if (!username) return;
+  const idx = selectedUsernames.value.indexOf(username);
+  if (idx === -1) selectedUsernames.value.push(username);
+  else selectedUsernames.value.splice(idx, 1);
 }
 
 async function removeSelected() {
-  if (!selectedIds.value.length) return;
+  if (!selectedUsernames.value.length) return;
   removeLoading.value = true;
   removeError.value = null;
   try {
-    await api.Course.editMember(route.params.name as string, { remove: selectedIds.value, new: [] });
-    selectedIds.value = [];
+    await api.Course.editMember(route.params.name as string, { remove: selectedUsernames.value, new: [] });
+    selectedUsernames.value = [];
     await loadMembers();
   } catch (err: any) {
     removeError.value = err?.response?.data?.message || err?.message || "Failed to remove members.";
@@ -221,7 +221,7 @@ async function addByUsername() {
                 v-if="canRemove"
                 class="flex h-10 w-10 items-center justify-center self-center border-none bg-transparent p-0 pl-2 shadow-none"
                 :class="removeLoading && 'loading'"
-                :disabled="!selectedIds.length"
+                :disabled="!selectedUsernames.length"
                 @click="removeSelected"
                 aria-label="Remove selected"
                 title="Remove selected"
@@ -253,7 +253,7 @@ async function addByUsername() {
                       <input
                         type="checkbox"
                         class="checkbox checkbox-sm"
-                        :checked="selectedIds.includes(username)"
+                        :checked="selectedUsernames.includes(username)"
                         @change="toggleSelect(username)"
                       />
                     </template>
