@@ -3,16 +3,14 @@ interface HomeworkForm {
   start: number;
   end: number;
   markdown: string;
-  problemIds: number[];
+  problem_ids: number[];
 }
 
 interface HomeworkCreationForm extends HomeworkForm {
-  courseName: string;
-  scoreboardStatus: 0 | 1;
+  course_id: number;
 }
 
 interface HomeworkEditionForm extends HomeworkForm {
-  scoreboardStatus: 0 | 1;
   name?: string;
 }
 

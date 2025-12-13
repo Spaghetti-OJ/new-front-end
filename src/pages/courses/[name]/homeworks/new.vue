@@ -17,7 +17,7 @@ const formElement = ref<InstanceType<typeof HomeworkForm>>();
 const newHomework = reactive<HomeworkForm>({
   name: "",
   markdown: `_Markdown_ & $\\text{katex}$ are supported.\n![](https://64.media.tumblr.com/2e2d5f1e4f0667c181c3afa9ef8cca1b/tumblr_mu4kbwQ0eY1qki7dgo1_500.gifv)`,
-  problemIds: [],
+  problem_ids: [],
   start: dayjs().unix(),
   end: dayjs().add(7, "day").unix(),
 });
@@ -46,8 +46,7 @@ async function submit() {
   try {
     await api.Homework.create({
       ...newHomework,
-      courseName: route.params.name as string,
-      scoreboardStatus: 0,
+      course_id: Number(route.params.name),
     });
     router.push(`/courses/${route.params.name}/homeworks`);
   } catch (error) {

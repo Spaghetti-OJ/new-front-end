@@ -47,7 +47,6 @@ async function submit() {
   try {
     await api.Homework.modify(route.params.id as string, {
       ...edittingHomework.value,
-      scoreboardStatus: 0,
       // TODO: backend bug
       name: edittingHomework.value.name === homework.value.name ? undefined : edittingHomework.value.name,
     });
