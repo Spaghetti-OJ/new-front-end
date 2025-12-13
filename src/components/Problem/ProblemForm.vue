@@ -12,7 +12,9 @@ const props = defineProps<{
 }>();
 const isLoading = ref(false);
 const errorMsg = ref("");
-defineExpose({ isLoading, errorMsg });
+const contentSection = ref<HTMLElement | null>(null);
+const testdataSection = ref<HTMLElement | null>(null);
+defineExpose({ isLoading, errorMsg, contentSection, testdataSection });
 const emits = defineEmits<{
   (e: "update", key: keyof ProblemForm, value: ProblemForm[typeof key]): void;
   (e: "update:testdata", value: File | null): void;
@@ -117,7 +119,7 @@ watch(
       <span>{{ errorMsg }}</span>
     </div>
   </div>
-  <div class="grid grid-cols-2 gap-y-4">
+  <div ref="contentSection" class="grid grid-cols-2 gap-y-4 scroll-mt-32">
     <div class="form-control w-full max-w-xs">
       <label class="label">
         <span class="label-text">{{ $t("components.problem.forms.nameField") }}</span>
@@ -210,134 +212,136 @@ watch(
     <ProblemDescriptionForm :v$="v$" @update="(...args) => update(...args)" />
 
     <template v-if="problem.type !== 2">
-      <div class="form-control col-span-2 w-full">
-        <label class="label justify-start">
-          <span class="label-text">{{ $t("components.problem.forms.testdata") }}</span>
-          <label for="testdata-description" class="modal-button btn btn-xs ml-3">{{
-            $t("components.problem.forms.howToPack")
-          }}</label>
-        </label>
-        <div
-          :class="['textarea textarea-bordered w-full p-4', isDrag ? 'border-accent' : '']"
-          @drop.prevent="$emit('update:testdata', $event.dataTransfer!.files![0])"
-          @dragover.prevent="isDrag = true"
-          @dragleave="isDrag = false"
-        >
-          <template v-if="!testdata">
-            <span class="mb-6 mr-6 text-sm">{{ $t("components.problem.forms.dropFile") }}</span>
-            <input
-              type="file"
-              id="file-uploader"
-              accept=".zip"
-              @change="$emit('update:testdata', ($event.target as HTMLInputElement).files![0])"
-            />
-          </template>
-          <template v-else>
-            <div class="flex">
-              <span class="mr-3">{{ testdata.name }}</span>
-              <button class="btn btn-sm" @click="$emit('update:testdata', null)">
-                <i-uil-times />
-              </button>
-            </div>
-          </template>
-        </div>
-      </div>
-
-      <label
-        class="label text-error"
-        v-show="v$.testCaseInfo.tasks.$error"
-        v-text="v$.testCaseInfo.tasks.$errors[0]?.$message"
-      />
-      <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
-        <div class="col-span-2">
-          <div class="font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <div class="form-control w-full">
-              <label class="label">
-                <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
-              </label>
+      <section ref="testdataSection" class="scroll-mt-32">
+        <div class="form-control col-span-2 w-full">
+          <label class="label justify-start">
+            <span class="label-text">{{ $t("components.problem.forms.testdata") }}</span>
+            <label for="testdata-description" class="modal-button btn btn-xs ml-3">{{
+              $t("components.problem.forms.howToPack")
+            }}</label>
+          </label>
+          <div
+            :class="['textarea textarea-bordered w-full p-4', isDrag ? 'border-accent' : '']"
+            @drop.prevent="$emit('update:testdata', $event.dataTransfer!.files![0])"
+            @dragover.prevent="isDrag = true"
+            @dragleave="isDrag = false"
+          >
+            <template v-if="!testdata">
+              <span class="mb-6 mr-6 text-sm">{{ $t("components.problem.forms.dropFile") }}</span>
               <input
-                type="text"
-                class="input input-bordered w-full max-w-xs"
-                :value="problem.testCaseInfo.tasks[i].caseCount"
-                readonly
+                type="file"
+                id="file-uploader"
+                accept=".zip"
+                @change="$emit('update:testdata', ($event.target as HTMLInputElement).files![0])"
               />
-            </div>
-
-            <div class="form-control w-full">
-              <label class="label">
-                <span class="label-text">{{ $t("components.problem.forms.score") }}</span>
-              </label>
-              <input
-                type="text"
-                class="input input-bordered w-full max-w-xs"
-                :value="problem.testCaseInfo.tasks[i].taskScore"
-                @input="
-                  update('testCaseInfo', {
-                    ...problem.testCaseInfo,
-                    tasks: [
-                      ...problem.testCaseInfo.tasks.slice(0, i),
-                      {
-                        ...problem.testCaseInfo.tasks[i],
-                        taskScore: Number(($event.target as HTMLInputElement).value),
-                      },
-                      ...problem.testCaseInfo.tasks.slice(i + 1),
-                    ],
-                  })
-                "
-              />
-            </div>
-
-            <div class="form-control w-full">
-              <label class="label">
-                <span class="label-text">{{ $t("components.problem.forms.memoryLimit") }}</span>
-              </label>
-              <input
-                type="text"
-                class="input input-bordered w-full max-w-xs"
-                :value="problem.testCaseInfo.tasks[i].memoryLimit"
-                @input="
-                  update('testCaseInfo', {
-                    ...problem.testCaseInfo,
-                    tasks: [
-                      ...problem.testCaseInfo.tasks.slice(0, i),
-                      {
-                        ...problem.testCaseInfo.tasks[i],
-                        memoryLimit: Number(($event.target as HTMLInputElement).value),
-                      },
-                      ...problem.testCaseInfo.tasks.slice(i + 1),
-                    ],
-                  })
-                "
-              />
-            </div>
-
-            <div class="form-control w-full">
-              <label class="label">
-                <span class="label-text">{{ $t("components.problem.forms.timeLimit") }}</span>
-              </label>
-              <input
-                type="text"
-                class="input input-bordered w-full max-w-xs"
-                :value="problem.testCaseInfo.tasks[i].timeLimit"
-                @input="
-                  update('testCaseInfo', {
-                    ...problem.testCaseInfo,
-                    tasks: [
-                      ...problem.testCaseInfo.tasks.slice(0, i),
-                      {
-                        ...problem.testCaseInfo.tasks[i],
-                        timeLimit: Number(($event.target as HTMLInputElement).value),
-                      },
-                      ...problem.testCaseInfo.tasks.slice(i + 1),
-                    ],
-                  })
-                "
-              />
-            </div>
+            </template>
+            <template v-else>
+              <div class="flex">
+                <span class="mr-3">{{ testdata.name }}</span>
+                <button class="btn btn-sm" @click="$emit('update:testdata', null)">
+                  <i-uil-times />
+                </button>
+              </div>
+            </template>
           </div>
         </div>
-      </template>
+
+        <label
+          class="label text-error"
+          v-show="v$.testCaseInfo.tasks.$error"
+          v-text="v$.testCaseInfo.tasks.$errors[0]?.$message"
+        />
+        <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
+          <div class="col-span-2">
+            <div class="font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
+                </label>
+                <input
+                  type="text"
+                  class="input input-bordered w-full max-w-xs"
+                  :value="problem.testCaseInfo.tasks[i].caseCount"
+                  readonly
+                />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">{{ $t("components.problem.forms.score") }}</span>
+                </label>
+                <input
+                  type="text"
+                  class="input input-bordered w-full max-w-xs"
+                  :value="problem.testCaseInfo.tasks[i].taskScore"
+                  @input="
+                    update('testCaseInfo', {
+                      ...problem.testCaseInfo,
+                      tasks: [
+                        ...problem.testCaseInfo.tasks.slice(0, i),
+                        {
+                          ...problem.testCaseInfo.tasks[i],
+                          taskScore: Number(($event.target as HTMLInputElement).value),
+                        },
+                        ...problem.testCaseInfo.tasks.slice(i + 1),
+                      ],
+                    })
+                  "
+                />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">{{ $t("components.problem.forms.memoryLimit") }}</span>
+                </label>
+                <input
+                  type="text"
+                  class="input input-bordered w-full max-w-xs"
+                  :value="problem.testCaseInfo.tasks[i].memoryLimit"
+                  @input="
+                    update('testCaseInfo', {
+                      ...problem.testCaseInfo,
+                      tasks: [
+                        ...problem.testCaseInfo.tasks.slice(0, i),
+                        {
+                          ...problem.testCaseInfo.tasks[i],
+                          memoryLimit: Number(($event.target as HTMLInputElement).value),
+                        },
+                        ...problem.testCaseInfo.tasks.slice(i + 1),
+                      ],
+                    })
+                  "
+                />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">{{ $t("components.problem.forms.timeLimit") }}</span>
+                </label>
+                <input
+                  type="text"
+                  class="input input-bordered w-full max-w-xs"
+                  :value="problem.testCaseInfo.tasks[i].timeLimit"
+                  @input="
+                    update('testCaseInfo', {
+                      ...problem.testCaseInfo,
+                      tasks: [
+                        ...problem.testCaseInfo.tasks.slice(0, i),
+                        {
+                          ...problem.testCaseInfo.tasks[i],
+                          timeLimit: Number(($event.target as HTMLInputElement).value),
+                        },
+                        ...problem.testCaseInfo.tasks.slice(i + 1),
+                      ],
+                    })
+                  "
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+      </section>
     </template>
 
     <ProblemTestdataDescriptionModal />

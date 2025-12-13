@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect, provide, Ref } from "vue";
+import { computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
@@ -68,8 +69,8 @@ const mockProblemMeta = {
 
 const openJSON = ref<boolean>(false);
 
-const contentSection = ref<HTMLElement | null>(null);
-const testdataSection = ref<HTMLElement | null>(null);
+const contentSection = computed<HTMLElement | null>(() => formElement.value?.contentSection ?? null);
+const testdataSection = computed<HTMLElement | null>(() => formElement.value?.testdataSection ?? null);
 const checkerSection = ref<HTMLElement | null>(null);
 
 const scrollToSection = (el: HTMLElement | null) => {
@@ -199,8 +200,8 @@ async function delete_() {
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
-        <div class="card-title mb-3 flex justify-between items-center sticky top-0 bg-white z-50">
+      <div class="card-body pt-0">
+        <div class="card-title mb-3 flex justify-between items-center sticky top-[53px] z-50 h-20 bg-base-100">
           <div class="flex items-center gap-x-4">
             <span>
               Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }}
@@ -244,7 +245,7 @@ async function delete_() {
             </button>
           </div>
         </div>
-
+        
         <data-status-wrapper :error="fetchError" :is-loading="isFetching">
           <template #loading>
             <skeleton-card />
