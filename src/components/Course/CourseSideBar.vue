@@ -26,7 +26,7 @@ const navs = [
     name: t("components.courseSideBar.submissions"),
     path: "/submissions",
   },
-  
+
   ...(session.isAdmin || session.role === UserRole.Teacher
     ? [
         {
@@ -37,7 +37,6 @@ const navs = [
           name: "Manage",
           path: "/manage",
         },
-        
       ]
     : []),
 ];
