@@ -15,9 +15,7 @@ const LANGUAGE_BIT_MAP = [
   { bit: 4, name: "java" },
 ];
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
-  return LANGUAGE_BIT_MAP
-    .filter((lang) => (mask & lang.bit) !== 0)
-    .map((lang) => lang.name);
+  return LANGUAGE_BIT_MAP.filter((lang) => (mask & lang.bit) !== 0).map((lang) => lang.name);
 }
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
 type SubtaskPayload = {
@@ -90,7 +88,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
     subtask_description: null,
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
-    tags: p.tags.map((t) => Number(t))
+    tags: p.tags.map((t) => Number(t)),
   };
 }
 
@@ -104,17 +102,17 @@ async function submit() {
   try {
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
     const res = await api.Problem.create(payload);
-    const problemId=res.data.problem_id;
+    const problemId = res.data.problem_id;
     const tasks = newProblem.value.testCaseInfo.tasks;
     for (let i = 0; i < tasks.length; i++) {
-  const t = tasks[i];
-   const sub= await api.Problem.createSubtasks(problemId, {
-    subtask_no: i + 1,
-    weight: t.taskScore,
-    time_limit_ms: t.timeLimit,
-    memory_limit_mb: Math.ceil(t.memoryLimit), // 如果你 memoryLimit 是 KB
-  });
-}
+      const t = tasks[i];
+      const sub = await api.Problem.createSubtasks(problemId, {
+        subtask_no: i + 1,
+        weight: t.taskScore,
+        time_limit_ms: t.timeLimit,
+        memory_limit_mb: Math.ceil(t.memoryLimit), // 如果你 memoryLimit 是 KB
+      });
+    }
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {

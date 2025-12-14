@@ -22,11 +22,11 @@ useTitle(`Copycat - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
 const { data: course, error: courseError } = useAxios<Course>(`/course/${route.params.name}`, fetcher);
 
-const { data: report, error: reportError, execute } = useAxios<CopycatResp>(
-  `/copycat/?problem_id=${route.params.id}`,
-  fetcher,
-  { immediate: true },
-);
+const {
+  data: report,
+  error: reportError,
+  execute,
+} = useAxios<CopycatResp>(`/copycat/?problem_id=${route.params.id}`, fetcher, { immediate: true });
 
 const status = computed(() => report.value?.data?.status);
 const mossUrl = computed(() => report.value?.data?.moss_url);
@@ -46,9 +46,9 @@ const isReportGenerationFailed = ref(false);
 async function generateReport() {
   isReportGenerationFailed.value = false;
   try {
-    await api.Copycat.detect({ problem_id: Number(route.params.id) }); 
-    await execute(); 
-    resume();     
+    await api.Copycat.detect({ problem_id: Number(route.params.id) });
+    await execute();
+    resume();
   } catch {
     isReportGenerationFailed.value = true;
   }
@@ -70,7 +70,7 @@ async function generateReport() {
 
         <!-- 查不到任何報告（404）或其他錯 -->
         <div v-if="reportError" class="alert alert-warning shadow-lg">
-          <div class="flex items-center justify-between w-full">
+          <div class="flex w-full items-center justify-between">
             <span>此題目尚未有報告，或查詢失敗。</span>
             <button class="btn btn-sm" @click="generateReport">Generate report</button>
           </div>
@@ -79,16 +79,14 @@ async function generateReport() {
         <div v-else>
           <!-- 失敗 -->
           <div v-if="status === 'failed'" class="alert alert-error shadow-lg">
-            <div class="flex items-center justify-between w-full">
+            <div class="flex w-full items-center justify-between">
               <span>生成失敗：{{ errMsg }}</span>
               <button class="btn btn-sm" @click="generateReport">Retry</button>
             </div>
           </div>
 
           <!-- pending -->
-          <div v-else-if="status === 'pending'">
-            Report generating... (polling)
-          </div>
+          <div v-else-if="status === 'pending'">Report generating... (polling)</div>
 
           <!-- success：用 iframe 或連結 -->
           <div v-else-if="status === 'success' && mossUrl">

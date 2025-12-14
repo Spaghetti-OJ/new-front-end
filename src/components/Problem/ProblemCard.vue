@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted,ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
@@ -9,16 +9,16 @@ interface Props {
   problem: ProblemInfo;
   preview?: boolean;
 }
-console.log('card');
+console.log("card");
 withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
-const subta=ref<subtasks[]|null>(null);
+const subta = ref<subtasks[] | null>(null);
 const session = useSession();
 async function getsub() {
-  const res=(await api.Problem.getSubtasks(Number(route.params.id))).data;
-  subta.value=res;
+  const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
+  subta.value = res;
 }
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
@@ -78,7 +78,7 @@ onMounted(getsub);
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
             <router-link
-              v-if="session.isAdmin||session.isTeacher"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
               :to="`/courses/${$route.params.name}/problems/${$route.params.id}/copycat`"
@@ -86,7 +86,7 @@ onMounted(getsub);
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
             <router-link
-              v-if="session.isAdmin||session.isTeacher"
+              v-if="session.isAdmin || session.isTeacher"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
               :to="`/courses/${$route.params.name}/problems/${$route.params.id}/edit`"
@@ -94,7 +94,7 @@ onMounted(getsub);
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
             <button
-              v-if="session.isAdmin||session.isTeacher"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Download test case"
               @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"

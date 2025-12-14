@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, provide, Ref ,onMounted} from "vue";
+import { ref, watchEffect, provide, Ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
@@ -18,9 +18,7 @@ const LANGUAGE_BIT_MAP = [
   { bit: 4, name: "java" },
 ];
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
-  return LANGUAGE_BIT_MAP
-    .filter((lang) => (mask & lang.bit) !== 0)
-    .map((lang) => lang.name);
+  return LANGUAGE_BIT_MAP.filter((lang) => (mask & lang.bit) !== 0).map((lang) => lang.name);
 }
 const {
   data: problem,
@@ -28,9 +26,8 @@ const {
   isLoading: isFetching,
 } = useAxios<ProblemInfo>(`/problem/${route.params.id}`, fetcher);
 async function getmanage() {
-  
-  const problemId=route.params.id as string;
-  const managedata=await api.Problem.getManageData(problemId);
+  const problemId = route.params.id as string;
+  const managedata = await api.Problem.getManageData(problemId);
 }
 onMounted(getmanage);
 const edittingProblem = ref<ProblemForm>();
@@ -105,7 +102,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
     subtask_description: null,
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
-    tags: p.tags.map((t) => Number(t))
+    tags: p.tags.map((t) => Number(t)),
   };
 }
 
@@ -114,23 +111,23 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapNewProblemToPayload(edittingProblem.value,String(route.params.name));
+    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.name));
     await api.Problem.modify(route.params.id as string, payload);
-    const tasks=edittingProblem.value.testCaseInfo.tasks;
-    const subtaskres=await api.Problem.getSubtasks(Number(route.params.id));
+    const tasks = edittingProblem.value.testCaseInfo.tasks;
+    const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
     for (const subtask of subtaskres.data) {
-  await api.Problem.deleteSubtaks(Number(route.params.id), subtask.id);
-}
-for (let i = 0; i < tasks.length; i++) {
-  const t = tasks[i];
-  
-   const sub= await api.Problem.createSubtasks(Number(route.params.id), {
-    subtask_no: i + 1,
-    weight: t.taskScore,
-    time_limit_ms: t.timeLimit,
-    memory_limit_mb: Math.ceil(t.memoryLimit), 
-  });
-}
+      await api.Problem.deleteSubtaks(Number(route.params.id), subtask.id);
+    }
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
+
+      const sub = await api.Problem.createSubtasks(Number(route.params.id), {
+        subtask_no: i + 1,
+        weight: t.taskScore,
+        time_limit_ms: t.timeLimit,
+        memory_limit_mb: Math.ceil(t.memoryLimit),
+      });
+    }
     if (testdata.value) {
       //await uploadTestCase();
     }
@@ -192,16 +189,15 @@ async function delete_() {
   if (!confirm("Are u sure?")) return;
   try {
     const problemId = Number(route.params.id);
-    const subtaskres=await api.Problem.getSubtasks(problemId);
+    const subtaskres = await api.Problem.getSubtasks(problemId);
     for (const subtask of subtaskres.data) {
-  await api.Problem.deleteSubtaks(problemId, subtask.id);
-}
-     const deleteres =await api.Problem.delete(route.params.id as string);
+      await api.Problem.deleteSubtaks(problemId, subtask.id);
+    }
+    const deleteres = await api.Problem.delete(route.params.id as string);
     router.push(`/courses/${route.params.name}/problems`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data) {
       formElement.value.errorMsg = error.response.data.detail;
-      
     } else {
       formElement.value.errorMsg = "Unknown error occurred :(";
     }
