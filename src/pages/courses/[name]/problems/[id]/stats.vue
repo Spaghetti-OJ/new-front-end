@@ -27,7 +27,7 @@ async function getStat() {
 
   try {
     const res = await api.Problem.getProblemStat(Number(route.params.id));
-
+    console.log(res.data);
     stats.value = res.data;
   } catch (err) {
     console.error(err);
@@ -164,7 +164,7 @@ const barOption = computed(() => ({
               <div class="stat place-items-center">
                 <div class="stat-title">{{ t("course.problem.stats.general.ac") }}</div>
                 <div class="stat-value">
-                  <span v-if="!acUserRatio[0]">-</span>
+                  <span v-if="!acUserRatio[1]">-</span>
                   <template v-else>
                     <span>{{ acUserRatio[0] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${acUserRatio[1]}` }}</span>
@@ -176,7 +176,7 @@ const barOption = computed(() => ({
                 <div class="stat-value">
                   <span v-if="!submissionCount || !stats">-</span>
                   <template v-else>
-                    <span>{{ stats.statusCount.accepted }}</span>
+                    <span>{{ stats.statusCount[0] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${submissionCount}` }}</span>
                   </template>
                 </div>
