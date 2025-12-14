@@ -26,15 +26,24 @@ const navs = [
     name: t("components.courseSideBar.submissions"),
     path: "/submissions",
   },
+  
   ...(session.isAdmin || session.role === UserRole.Teacher
     ? [
         {
           name: t("components.courseSideBar.members"),
           path: "/members",
         },
+        {
+          name: "Manage",
+          path: "/manage",
+        },
+        
       ]
     : []),
 ];
+
+console.log("session.role =", session.role);
+console.log("isAdmin =", session.isAdmin);
 </script>
 
 <template>
