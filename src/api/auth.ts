@@ -39,6 +39,8 @@ export const Auth = {
 };
 
 export const Copycat = {
-  detect: (body: { course: string; problemId: number; studentNicknames: { [k: string]: string } }) =>
-    fetcher.post("/copycat", body),
+  detect: (body:{problem_id:number|string}) =>
+    fetcher.post("/copycat/", body),
+  getcopycatreport: (problem_id:number) =>
+    fetcher.get(`/copycat/?problem_id=${problem_id}`),
 };

@@ -13,7 +13,6 @@ const LANGUAGE_BIT_MAP = [
   { bit: 1, name: "c" },
   { bit: 2, name: "cpp" },
   { bit: 4, name: "java" },
-  { bit: 8, name: "python" },
 ];
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
   return LANGUAGE_BIT_MAP
@@ -103,21 +102,18 @@ async function submit() {
   }
   formElement.value.isLoading = true;
   try {
-    console.log("data=",newProblem);
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
     const res = await api.Problem.create(payload);
     const problemId=res.data.problem_id;
     const tasks = newProblem.value.testCaseInfo.tasks;
     for (let i = 0; i < tasks.length; i++) {
   const t = tasks[i];
-  console.log('i=',i);
    const sub= await api.Problem.createSubtasks(problemId, {
     subtask_no: i + 1,
     weight: t.taskScore,
     time_limit_ms: t.timeLimit,
     memory_limit_mb: Math.ceil(t.memoryLimit), // 如果你 memoryLimit 是 KB
   });
-  console.log("subadd==",sub);
 }
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);

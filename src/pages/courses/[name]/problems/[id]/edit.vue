@@ -12,7 +12,16 @@ const router = useRouter();
 useTitle(`Edit Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
-
+const LANGUAGE_BIT_MAP = [
+  { bit: 1, name: "c" },
+  { bit: 2, name: "cpp" },
+  { bit: 4, name: "java" },
+];
+function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
+  return LANGUAGE_BIT_MAP
+    .filter((lang) => (mask & lang.bit) !== 0)
+    .map((lang) => lang.name);
+}
 const {
   data: problem,
   error: fetchError,
@@ -21,9 +30,7 @@ const {
 async function getmanage() {
   
   const problemId=route.params.id as string;
-  console.log("problemid=",problemId);
   const managedata=await api.Problem.getManageData(problemId);
-  console.log("managedata=",managedata);
 }
 onMounted(getmanage);
 const edittingProblem = ref<ProblemForm>();
@@ -40,7 +47,7 @@ watchEffect(() => {
         sampleOutput: (problem.value.description.sampleOutput || "").split("\n"),
       },
       courses: problem.value.courses.map((c) => c.name),
-      tags: problem.value.tags.map((t) => t.name),
+      tags: problem.value.tags.map((t) => String(t.id)),
       allowedLanguage: problem.value.allowedLanguage,
       quota: problem.value.quota,
       type: problem.value.type,
@@ -75,36 +82,30 @@ const mockProblemMeta = {
 
 const openJSON = ref<boolean>(false);
 
-function mapProblemFormToPayload(
-  p: ProblemForm,
-  originalTags: { id: number; name: string }[],
-): ProblemCreatePayload {
+function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
-
-  // Map tag names back to IDs
-  const tagIds = p.tags
-    .map((tagName) => {
-      const tag = originalTags.find((t) => t.name === tagName);
-      return tag ? tag.id : undefined;
-    })
-    .filter((id): id is number => id !== undefined);
 
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id: (route.params.course_id as string) || "0", // Fallback or fetch from somewhere
-    difficulty: "medium", // Default or map if available in form
-    is_public: p.status === 0 ? "public" : "hidden",
+    course_id: courseId, // 後端要 UUID
+
+    difficulty: "medium" as "easy" | "medium" | "hard",
+    is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
+
     max_score: 100,
-    total_quota: p.quota,
+    total_quota: p.quota ?? -1,
+
     input_description: emptyToNull(p.description.input),
     output_description: emptyToNull(p.description.output),
     sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
     sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
     hint: emptyToNull(p.description.hint),
+
     subtask_description: null,
-    supported_languages: undefined,
-    tags: tagIds,
+
+    supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
+    tags: p.tags.map((t) => Number(t))
   };
 }
 
@@ -113,11 +114,25 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapProblemFormToPayload(edittingProblem.value, problem.value.tags);
+    const payload = mapNewProblemToPayload(edittingProblem.value,String(route.params.name));
     await api.Problem.modify(route.params.id as string, payload);
-
+    const tasks=edittingProblem.value.testCaseInfo.tasks;
+    const subtaskres=await api.Problem.getSubtasks(Number(route.params.id));
+    for (const subtask of subtaskres.data) {
+  await api.Problem.deleteSubtaks(Number(route.params.id), subtask.id);
+}
+for (let i = 0; i < tasks.length; i++) {
+  const t = tasks[i];
+  
+   const sub= await api.Problem.createSubtasks(Number(route.params.id), {
+    subtask_no: i + 1,
+    weight: t.taskScore,
+    time_limit_ms: t.timeLimit,
+    memory_limit_mb: Math.ceil(t.memoryLimit), 
+  });
+}
     if (testdata.value) {
-      await uploadTestCase();
+      //await uploadTestCase();
     }
     router.push(`/courses/${route.params.name}/problems/${route.params.id}`);
   } catch (error) {

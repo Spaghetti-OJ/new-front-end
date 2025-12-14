@@ -27,7 +27,6 @@ async function getStat() {
 
   try {
     const res = await api.Problem.getProblemStat(Number(route.params.id));
-    console.log(res.data);
     stats.value = res.data;
   } catch (err) {
     console.error(err);

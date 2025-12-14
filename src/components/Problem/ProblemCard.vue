@@ -18,7 +18,6 @@ const subta=ref<subtasks[]|null>(null);
 const session = useSession();
 async function getsub() {
   const res=(await api.Problem.getSubtasks(Number(route.params.id))).data;
-  console.log("subtask=",res);
   subta.value=res;
 }
 function downloadTestCase(problemId: number) {
