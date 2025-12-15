@@ -47,6 +47,7 @@ const addLoading = ref(false);
 const addError = ref<string | null>(null);
 
 const loadMembers = async () => {
+  isLoading.value = true;
   try {
     const res = await api.Course.info(route.params.name as string);
     if (res?.data.TAs && res?.data.students && res?.data.teacher) {
