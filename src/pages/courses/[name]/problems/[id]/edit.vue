@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, watchEffect, provide, Ref, onMounted } from "vue";
+import { ref, provide, Ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/api";
+import api from "@/api";
 import axios from "axios";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
@@ -20,45 +19,63 @@ const LANGUAGE_BIT_MAP = [
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
   return LANGUAGE_BIT_MAP.filter((lang) => (mask & lang.bit) !== 0).map((lang) => lang.name);
 }
-const {
-  data: problem,
-  error: fetchError,
-  isLoading: isFetching,
-} = useAxios<ProblemInfo>(`/problem/${route.params.id}`, fetcher);
+const isFetching = ref(true);
+const fetchError = ref<any>(null);
+
 async function getmanage() {
-  const problemId = route.params.id as string;
-  const managedata = await api.Problem.getManageData(problemId);
+  try {
+    isFetching.value = true;
+    const problemId = Number(route.params.id);
+    const { data: problemData } = await api.Problem.getManageData(problemId);
+    const { data: subtasks } = await api.Problem.getSubtasks(problemId);
+    const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
+
+    const publicTestCases = publicInfo.testCase || publicInfo.test_case || publicInfo.test_cases || [];
+
+    const sortedSubtasks = subtasks.sort((a: any, b: any) => a.subtask_no - b.subtask_no);
+
+    edittingProblem.value = {
+      problemName: problemData.title,
+      description: {
+        description: problemData.description,
+        input: problemData.input_description || "",
+        output: problemData.output_description || "",
+        hint: problemData.hint || "",
+        sampleInput: (problemData.sample_input || "").split("\n"),
+        sampleOutput: (problemData.sample_output || "").split("\n"),
+      },
+      courses: [route.params.name as string], // Assuming context
+      tags: problemData.tags.map((t: any) => String(t.id)),
+      allowedLanguage: publicInfo.allowedLanguage ?? publicInfo.allowed_languages,
+      quota: problemData.total_quota,
+      type: 0, // Default or map if available
+      status: problemData.is_public === "public" ? 0 : 1,
+      testCaseInfo: {
+        language: 0,
+        fillInTemplate: "",
+        tasks: sortedSubtasks.map((s: any, index: number) => {
+          const info = publicTestCases[index];
+          return {
+            caseCount: info?.caseCount ?? info?.case_count ?? 0,
+            memoryLimit: s.memory_limit_mb,
+            taskScore: s.weight,
+            timeLimit: s.time_limit_ms,
+          };
+        }),
+      },
+      canViewStdout: true,
+      defaultCode: "",
+    };
+  } catch (err) {
+    fetchError.value = err;
+    console.error(err);
+  } finally {
+    isFetching.value = false;
+  }
 }
 onMounted(getmanage);
 const edittingProblem = ref<ProblemForm>();
-watchEffect(() => {
-  if (problem.value) {
-    edittingProblem.value = {
-      problemName: problem.value.problemName,
-      description: {
-        description: problem.value.description.description,
-        input: problem.value.description.input,
-        output: problem.value.description.output,
-        hint: problem.value.description.hint,
-        sampleInput: (problem.value.description.sampleInput || "").split("\n"),
-        sampleOutput: (problem.value.description.sampleOutput || "").split("\n"),
-      },
-      courses: problem.value.courses.map((c) => c.name),
-      tags: problem.value.tags.map((t) => String(t.id)),
-      allowedLanguage: problem.value.allowedLanguage,
-      quota: problem.value.quota,
-      type: problem.value.type,
-      status: problem.value.status === "public" ? 0 : 1, // 0: visible, 1: hidden
-      testCaseInfo: {
-        language: 0,
-        fillInTemplate: problem.value.fillInTemplate || "",
-        tasks: problem.value.testCase,
-      },
-      canViewStdout: true,
-      defaultCode: typeof problem.value.defaultCode === "string" ? problem.value.defaultCode : "", // Handle object/string mismatch if any
-    };
-  }
-});
+provide<Ref<ProblemForm | undefined>>("problem", edittingProblem);
 function update<K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) {
   if (!edittingProblem.value) return;
   edittingProblem.value[key] = value;
@@ -107,7 +124,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
 }
 
 async function submit() {
-  if (!edittingProblem.value || !formElement.value || !problem.value) return;
+  if (!edittingProblem.value || !formElement.value) return;
 
   formElement.value.isLoading = true;
   try {
