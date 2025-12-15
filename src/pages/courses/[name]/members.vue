@@ -94,8 +94,8 @@ async function submit() {
   const csv = newMembersCSVString.value;
 
   try {
-    const file = new File([csv], newMembers.value?.name ?? "students.csv", { type: "text/csv" });
-    await api.Course.importCSV(route.params.name as string, file);
+    if (!newMembers.value) return;
+    await api.Course.importCSV(route.params.name as string, newMembers.value, forceUpdate.value);
     router.go(0);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
