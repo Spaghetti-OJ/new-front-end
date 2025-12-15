@@ -263,10 +263,10 @@ async function addByUsername() {
         <div>
           {{ $t("course.members.csvUploadHint.header") }}
           <ul class="ml-4 list-disc">
-            <li v-for="h in ['username', 'email', 'real_name']">
+            <li v-for="h in ['username', 'email', 'real_name']" :key="h">
               <code>{{ h }}</code>
             </li>
-            <li v-for="h in ['student_id', 'password']">
+            <li v-for="h in ['student_id', 'password']" :key="h">
               <code>{{ h }}</code> (optional)
             </li>
           </ul>
