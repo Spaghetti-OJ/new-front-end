@@ -92,8 +92,6 @@ watch(newMembers, () => {
 async function submit() {
   if (!newMembersCSVString.value) return;
   isProcessingSignup.value = true;
-  const csv = newMembersCSVString.value;
-
   try {
     if (!newMembers.value) return;
     await api.Course.importCSV(route.params.name as string, newMembers.value, forceUpdate.value);
