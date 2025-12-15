@@ -194,11 +194,10 @@ async function addByUsername() {
                 placeholder="username"
               />
               <button
-                class="btn btn-primary btn-sm"
+                class="btn btn-primary btn-sm h-10 min-w-[3.5rem]"
                 :class="addLoading && 'loading'"
                 :disabled="!addUsername.trim()"
                 @click="addByUsername"
-                style="height: 2.5rem; min-width: 3.5rem"
               >
                 Add
               </button>
