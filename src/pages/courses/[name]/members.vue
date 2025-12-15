@@ -95,7 +95,7 @@ async function submit() {
   try {
     if (!newMembers.value) return;
     await api.Course.importCSV(route.params.name as string, newMembers.value, forceUpdate.value);
-    router.go(0);
+    await loadMembers();
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       errorMsg.value = error.response.data.message;
