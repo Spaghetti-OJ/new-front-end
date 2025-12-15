@@ -54,7 +54,6 @@ const loadMembers = async () => {
     }
   } catch (err: any) {
     error.value = err;
-    members.value = [];
   } finally {
     isLoading.value = false;
   }
