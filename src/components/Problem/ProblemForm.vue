@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, inject, Ref } from "vue";
+import { ref, watch, inject, Ref ,watchEffect} from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
-import LLMSubtaskEditor  from "@/components/Problem/Forms/SubtaskEditor.vue"
-import { onMounted, watchEffect } from "vue";
-
-
 
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
@@ -123,25 +119,46 @@ watch(
     });
   },
 );
-const defaultTask = () => ({
-  caseCount: 1,
-  taskScore: 100,
-  memoryLimit: 134218,
-  timeLimit: 1000,
-});
 
-const llmSubtasks = ref([
-  { caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 },
-]);
+watch(testdataMode, (mode) => {
+  if (mode === "uploadfile") {
+    update("testCaseInfo", {
+      ...problem.value.testCaseInfo,
+      tasks: [],
+    });
+    v$.value.testCaseInfo?.tasks?.$reset?.();
+  }
+});
 
 watchEffect(() => {
   if (testdataMode.value === "LLMgenerate" && problem.value.testCaseInfo.tasks.length === 0) {
     update("testCaseInfo", {
       ...problem.value.testCaseInfo,
-      tasks: [defaultTask()],
+       tasks: [{ caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 }],
     });
   }
 });
+
+function addSubtask() {
+  const tasks = problem.value.testCaseInfo.tasks ?? [];
+
+  update("testCaseInfo", {
+    ...problem.value.testCaseInfo,
+    tasks: [
+      ...problem.value.testCaseInfo.tasks,
+      { caseCount: 0, taskScore: 0, memoryLimit: 0, timeLimit: 0 },
+    ],
+  });
+}
+function removeLastSubtask() {
+  const tasks = problem.value.testCaseInfo.tasks ?? [];
+  if (tasks.length === 0) return;
+
+  update("testCaseInfo", {
+    ...problem.value.testCaseInfo,
+    tasks: tasks.slice(0, -1),
+  });
+}
 </script>
 
 <template>
@@ -330,7 +347,6 @@ watchEffect(() => {
             </template>
           </div>
 
-          <!--
           <label
             class="label text-error"
             v-show="v$.testCaseInfo.tasks.$error"
@@ -338,7 +354,7 @@ watchEffect(() => {
           />
           <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
             <div class="col-span-2">
-              <div class="font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
+              <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 <div class="form-control w-full">
                   <label class="label">
@@ -425,7 +441,7 @@ watchEffect(() => {
                 </div>
               </div>
             </div>
-          </template>-->
+          </template>
         </div>
 
         <div v-if="testdataMode === 'LLMgenerate'" class="mt-2">
@@ -460,9 +476,114 @@ watchEffect(() => {
             </option>
           </select>
 
-          <LLMSubtaskEditor v-model="llmSubtasks" />
+          <label
+            class="label text-error"
+            v-show="v$.testCaseInfo.tasks.$error"
+            v-text="v$.testCaseInfo.tasks.$errors[0]?.$message"
+          />
+          <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
+            <div class="col-span-2">
+              <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                <div class="form-control w-full">
+                  <label class="label">
+                    <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="input input-bordered w-full max-w-xs"
+                    :value="problem.testCaseInfo.tasks[i].caseCount"
+                    readonly
+                  />
+                </div>
 
+                <div class="form-control w-full">
+                  <label class="label">
+                    <span class="label-text">{{ $t("components.problem.forms.score") }}</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="input input-bordered w-full max-w-xs"
+                    :value="problem.testCaseInfo.tasks[i].taskScore"
+                    @input="
+                      update('testCaseInfo', {
+                        ...problem.testCaseInfo,
+                        tasks: [
+                          ...problem.testCaseInfo.tasks.slice(0, i),
+                          {
+                            ...problem.testCaseInfo.tasks[i],
+                            taskScore: Number(($event.target as HTMLInputElement).value),
+                          },
+                          ...problem.testCaseInfo.tasks.slice(i + 1),
+                        ],
+                      })
+                    "
+                  />
+                </div>
 
+                <div class="form-control w-full">
+                  <label class="label">
+                    <span class="label-text">{{ $t("components.problem.forms.memoryLimit") }}</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="input input-bordered w-full max-w-xs"
+                    :value="problem.testCaseInfo.tasks[i].memoryLimit"
+                    @input="
+                      update('testCaseInfo', {
+                        ...problem.testCaseInfo,
+                        tasks: [
+                          ...problem.testCaseInfo.tasks.slice(0, i),
+                          {
+                            ...problem.testCaseInfo.tasks[i],
+                            memoryLimit: Number(($event.target as HTMLInputElement).value),
+                          },
+                          ...problem.testCaseInfo.tasks.slice(i + 1),
+                        ],
+                      })
+                    "
+                  />
+                </div>
+
+                <div class="form-control w-full">
+                  <label class="label">
+                    <span class="label-text">{{ $t("components.problem.forms.timeLimit") }}</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="input input-bordered w-full max-w-xs"
+                    :value="problem.testCaseInfo.tasks[i].timeLimit"
+                    @input="
+                      update('testCaseInfo', {
+                        ...problem.testCaseInfo,
+                        tasks: [
+                          ...problem.testCaseInfo.tasks.slice(0, i),
+                          {
+                            ...problem.testCaseInfo.tasks[i],
+                            timeLimit: Number(($event.target as HTMLInputElement).value),
+                          },
+                          ...problem.testCaseInfo.tasks.slice(i + 1),
+                        ],
+                      })
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <div class="mt-4 flex justify-center gap-3">
+            <div class="tooltip" data-tip="append new sample">
+              <button type="button" class="btn btn-sm" @click="addSubtask">
+                <i-uil-plus class="mr-1" />
+              </button>
+            </div>
+            <div class="tooltip" data-tip="remove last sample">
+              <button type="button" class="btn btn-sm" @click="removeLastSubtask">
+                <i-uil-minus class="mr-1" />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
