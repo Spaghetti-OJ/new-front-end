@@ -22,7 +22,7 @@ async function verify() {
   status.value = "verifying";
   message.value = null;
   try {
-    const res = await api.Auth.VerifyEmail({ token: token.value });
+    const res = await api.Auth.verifyEmail({ token: token.value });
     status.value = "success";
     message.value = res?.message ?? "Email verified successfully.";
   } catch (err: any) {
