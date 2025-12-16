@@ -74,6 +74,11 @@ async function submit() {
   }
 }
 
+const llmMode = ref<"" | "LLM_INPUT_ONLY" | "LLM_DIRECT">("");
+function onGenerateClick() {
+  // TODO: connect backend later
+}
+
 type TestdataMode = "uploadfile" | "LLMgenerate" | null;
 const testdataMode = ref<TestdataMode>(null);
 const isDrag = ref(false);
@@ -219,7 +224,7 @@ watch(
       <label class="label flex-col items-start gap-1">
         <span class="text-base font-semibold">Solution</span>
         <span class="text-sm text-base-content/70">
-          Please upload the correct solution for student reference.
+          Please upload the correct solution for student reference.<!--待修改-->
         </span>
       </label>
 
@@ -234,22 +239,27 @@ watch(
 
           <!-- Save 按鈕 -->
           <button
-            class="btn btn-sm bg-[#02305f] shrink-0"
+            class="btn btn-sm bg-[#02305f] normal-case shrink-0"
             @click="$emit('save-solution')"
           >
             Save Solution
           </button>
         </div>
       </div>
+      <div class="divider mt-8 mb-0" />
     </div>
 
     <template v-if="problem.type !== 2">
-      <section ref="testdataSection" class="scroll-mt-32">
-        <div class="form-control col-span-2 w-full">
-          <div class="flex gap-3 mt-3">
+      <section ref="testdataSection" class="col-span-2 scroll-mt-32">
+        <div class="form-control w-full">
+          <label class="label p-0 flex-col items-start gap-1">
+            <span class="text-base font-semibold">Testdata</span>
+          </label>
+
+          <div class="flex gap-3 mt-2">
             <button
               type="button"
-              class="btn bg-[#02305f] btn-sm "
+              class="btn bg-[#02305f] btn-sm normal-case"
               @click="testdataMode = 'LLMgenerate'"
             >
               LLM generate testcase
@@ -257,22 +267,21 @@ watch(
 
             <button
               type="button"
-              class="btn bg-[#02305f] btn-sm "
+              class="btn bg-[#02305f] btn-sm normal-case"
               @click="testdataMode = 'uploadfile'"
             >
               Upload testcase
             </button>
           </div>
-
-          <label class="label justify-start mt-4">
-            <span class="label-text">{{ $t("components.problem.forms.testdata") }}</span>
-            <label for="testdata-description" class="modal-button btn btn-xs ml-3">{{
-              $t("components.problem.forms.howToPack")
-            }}</label>
-          </label>
         </div>
 
         <div v-if="testdataMode === 'uploadfile'" class="mt-2">
+          <label class="label justify-start mt-4">
+            <label for="testdata-description" class="modal-button btn btn-xs">{{
+              $t("components.problem.forms.howToPack")
+            }}</label>
+          </label>
+
           <div
               :class="['textarea textarea-bordered w-full p-4', isDrag ? 'border-accent' : '']"
               @drop.prevent="$emit('update:testdata', $event.dataTransfer!.files![0])"
@@ -396,6 +405,39 @@ watch(
         </div>
 
         <div v-if="testdataMode === 'LLMgenerate'" class="mt-2">
+          <div class="flex gap-4 mt-4">
+            <div class="text-lg font-semibold ">
+              AI generate testdata
+            </div>
+
+            <button type="button" class="btn btn-success btn-sm" @click="onGenerateClick">
+              GENERATE
+            </button>
+          </div>
+
+          <p class="mt-2 text-sm opacity-70">
+            LLM will generate test cases that refer to your solution and description.
+            AI may generate error output. Please double-check before you publish the problem.
+          </p>
+
+          <p class="mt-2 text-base font-semibold">
+            Mode
+          </p>
+
+          <select v-model="llmMode" class="select select-bordered w-full max-w-xl mt-2 px-3 py-1 text-sm">
+            <option disabled value="">
+              Please select mode
+            </option>
+            <option value="LLM_INPUT_ONLY">
+              LLM_INPUT_ONLY (LLM 只生 input + output 用正解跑)
+            </option>
+            <option value="LLM_DIRECT">
+              LLM_DIRECT (LLM 直接生 input + output，不依賴正解)
+            </option>
+          </select>
+
+
+
 
         </div>
       </section>
