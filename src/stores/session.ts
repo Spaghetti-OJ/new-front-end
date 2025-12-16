@@ -94,6 +94,10 @@ export const useSession = defineStore("session", {
       this.token = "";
       this.refreshtoken = "";
       this.email_verified = false;
+      this.user_id = "";
+      this.username = "";
+      this.role = UserRole.Guest;
+      this.email = "";
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
     },
