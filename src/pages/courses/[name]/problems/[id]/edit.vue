@@ -18,7 +18,7 @@ function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
 const isFetching = ref(true);
 const fetchError = ref<any>(null);
 
-async function getmanage() {
+async function getManage() {
   try {
     isFetching.value = true;
     const problemId = Number(route.params.id);
@@ -69,7 +69,7 @@ async function getmanage() {
     isFetching.value = false;
   }
 }
-onMounted(getmanage);
+onMounted(getManage);
 const edittingProblem = ref<ProblemForm>();
 provide<Ref<ProblemForm | undefined>>("problem", edittingProblem);
 function update<K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) {
