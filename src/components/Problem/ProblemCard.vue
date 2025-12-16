@@ -17,7 +17,7 @@ const subtasks = ref<Subtasks[] | null>(null);
 const session = useSession();
 async function getSubtasks() {
   const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
-  subta.value = res;
+  subtasks.value = res;
 }
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
