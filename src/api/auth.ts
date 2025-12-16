@@ -14,7 +14,6 @@ export const Auth = {
     fetcher.post<AuthToken>("/auth/session/", body).then((r) => r.data ?? r),
   logout: (body: { refresh: string }) =>
     fetcher.post<string>("/auth/session/revoke/", body).then((r) => r.data ?? r),
-  //activeredirect:(body:{token:string})=>,
   active: (body: { profile: { displayedName: string; bio: string }; agreement: boolean }) =>
     fetcher.post<string>("/auth/active/", body).then((r) => r.data ?? r),
   changePassword: (body: { old_password: string; new_password: string }) =>
@@ -27,9 +26,12 @@ export const Auth = {
   adduser: (body: { username: string; password: string; email: string }) =>
     fetcher.post<string>("/auth/user/", body).then((r) => r.data ?? r),
   getSession: () => fetcher.get<UserProperties>("/auth/me/").then((r) => r.data ?? r),
+  sendVerifyEmail: () => fetcher.post("/auth/send-email/", {}).then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>
     fetcher.post<{ access: string; refresh?: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
   verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
+  verifyEmail: (body: { token: string }) =>
+    fetcher.post("/auth/verify-email/", body).then((r) => r.data ?? r),
   generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>
     fetcher.post("/api-tokens/", body).then((r) => r.data ?? r),
   listtokens: () => fetcher.get("/api-tokens/").then((r) => r.data ?? r),
