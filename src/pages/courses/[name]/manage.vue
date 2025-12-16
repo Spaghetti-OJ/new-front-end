@@ -8,19 +8,19 @@ const session = useSession();
 
 const courseName = route.params.name as string;
 
-// ===== Permission =====
+// Permission
 const canEditCourse = computed(() => {
   return session.isAdmin || session.role === UserRole.Teacher;
 });
 
-// ===== Demo Course Form (replace with API later) =====
+// Course Form (replace with API later)
 const courseForm = ref({
   name: "",
   teacher: "",
   tas: "",
 });
 
-// ===== Demo Summary Data =====
+// Summary Data
 const summary = ref({
   userCount: 35,
   homeworkCount: 5,
@@ -28,7 +28,7 @@ const summary = ref({
   problemCount: 12,
 });
 
-// ===== Course Code =====
+// Course Code
 const courseCode = ref("abc1234567");
 
 function generateCourseCode() {
@@ -51,150 +51,163 @@ function deleteCourse() {
 </script>
 
 <template>
-  <div class="max-w-6xl p-6">
-    <!-- Page Title -->
-    <h1 class="mb-8 text-3xl font-bold">Manage Course – {{ courseName }}</h1>
+  <div class="card-container">
+    <div class="card min-w-full">
+      <div class="card-body">
+        <div class="card-title mb-6">Manage Course – {{ courseName }}</div>
 
-    <!-- ======================= -->
-    <!-- Edit Course (Teacher/Admin only) -->
-    <!-- ======================= -->
-    <div v-if="canEditCourse" class="mb-10 rounded-xl border bg-base-100 p-6 shadow-sm">
-      <h2 class="mb-6 text-xl font-semibold">Edit Course</h2>
+        <!-- Edit Course (Teacher/Admin only) -->
+        <template v-if="canEditCourse">
+          <div class="flex items-center gap-2 text-lg font-semibold">
+            <i-uil-edit class="h-6 w-6" /> Edit Course
+          </div>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <!-- Course Name -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">Course Name</span>
+              </label>
+              <input
+                v-model="courseForm.name"
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="Course name"
+              />
+            </div>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <!-- Course Name -->
-        <div>
-          <label class="label">
-            <span class="label-text">Course Name</span>
-          </label>
-          <input
-            v-model="courseForm.name"
-            type="text"
-            class="input input-bordered w-full"
-            placeholder="Course name"
-          />
+            <!-- Teacher -->
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">Teacher</span>
+              </label>
+              <input
+                v-model="courseForm.teacher"
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="Teacher username"
+              />
+            </div>
+
+            <!-- Teacher Assistants -->
+            <div class="form-control w-full md:col-span-2">
+              <label class="label">
+                <span class="label-text">Teacher Assistants</span>
+              </label>
+              <input
+                v-model="courseForm.tas"
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="TA usernames (comma separated)"
+              />
+            </div>
+          </div>
+
+          <div class="mt-8 flex gap-4">
+            <button class="btn btn-success" @click="submitCourseEdit">Submit</button>
+            <button class="btn btn-outline btn-error" @click="deleteCourse">Delete Course</button>
+          </div>
+          <div class="divider my-8" />
+        </template>
+
+        <!-- Summary -->
+        <div class="flex items-center gap-2 text-lg font-semibold">
+          <i-uil-analytics class="h-6 w-6" /> Summary
         </div>
 
-        <!-- Teacher Assistants -->
-        <div>
-          <label class="label">
-            <span class="label-text">Teacher Assistants</span>
-          </label>
-          <input
-            v-model="courseForm.tas"
-            type="text"
-            class="input input-bordered w-full"
-            placeholder="TA usernames (comma separated)"
-          />
-        </div>
+        <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div class="stat rounded-lg bg-base-200">
+            <div class="stat-figure text-primary">
+              <i-uil-users-alt class="h-8 w-8" />
+            </div>
+            <div class="stat-title">Users</div>
+            <div class="stat-value text-primary">
+              {{ summary.userCount }}
+            </div>
+          </div>
 
-        <!-- Teacher -->
-        <div>
-          <label class="label">
-            <span class="label-text">Teacher</span>
-          </label>
-          <input
-            v-model="courseForm.teacher"
-            type="text"
-            class="input input-bordered w-full"
-            placeholder="Teacher username"
-          />
-        </div>
-      </div>
+          <div class="stat rounded-lg bg-base-200">
+            <div class="stat-figure text-secondary">
+              <i-uil-file-alt class="h-8 w-8" />
+            </div>
+            <div class="stat-title">Homeworks</div>
+            <div class="stat-value text-secondary">
+              {{ summary.homeworkCount }}
+            </div>
+          </div>
 
-      <div class="mt-8 flex gap-4">
-        <button class="btn btn-success" @click="submitCourseEdit">Submit</button>
+          <div class="stat rounded-lg bg-base-200">
+            <div class="stat-figure text-accent">
+              <i-uil-upload class="h-8 w-8" />
+            </div>
+            <div class="stat-title">Submissions</div>
+            <div class="stat-value text-accent">
+              {{ summary.submissionCount }}
+            </div>
+          </div>
 
-        <button class="btn btn-outline btn-error" @click="deleteCourse">Delete Course</button>
-      </div>
-    </div>
-
-    <!-- ======================= -->
-    <!-- Summary -->
-    <!-- ======================= -->
-    <div class="mb-10 rounded-xl border bg-base-100 p-6 shadow-sm">
-      <h2 class="mb-6 text-xl font-semibold">Summary</h2>
-
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div class="stat rounded-lg bg-base-200">
-          <div class="stat-title">Users</div>
-          <div class="stat-value text-primary">
-            {{ summary.userCount }}
+          <div class="stat rounded-lg bg-base-200">
+            <div class="stat-figure">
+              <i-uil-puzzle-piece class="h-8 w-8" />
+            </div>
+            <div class="stat-title">Problems</div>
+            <div class="stat-value">
+              {{ summary.problemCount }}
+            </div>
           </div>
         </div>
 
-        <div class="stat rounded-lg bg-base-200">
-          <div class="stat-title">Homeworks</div>
-          <div class="stat-value text-secondary">
-            {{ summary.homeworkCount }}
-          </div>
+        <div class="mt-6 flex items-center gap-4">
+          <button class="btn btn-success btn-sm" @click="generateCourseCode">Generate course code</button>
+
+          <span class="font-mono text-lg font-bold tracking-wider">
+            {{ courseCode || "—" }}
+          </span>
+
+          <button v-if="courseCode" class="btn btn-circle btn-ghost btn-sm text-error" @click="deleteCode">
+            <i-uil-trash-alt class="h-5 w-5" />
+          </button>
         </div>
 
-        <div class="stat rounded-lg bg-base-200">
-          <div class="stat-title">Submissions</div>
-          <div class="stat-value">
-            {{ summary.submissionCount }}
-          </div>
+        <div class="divider my-8" />
+
+        <!-- Scoreboard -->
+        <div class="mb-4 flex items-center gap-2 text-lg font-semibold">
+          <i-uil-trophy class="h-6 w-6" /> Scoreboard
         </div>
 
-        <div class="stat rounded-lg bg-base-200">
-          <div class="stat-title">Problems</div>
-          <div class="stat-value">
-            {{ summary.problemCount }}
-          </div>
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Username</th>
+                <th>AC Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>1</th>
+                <td>dog123</td>
+                <td>熙氣ㄧ狗</td>
+                <td>66</td>
+              </tr>
+              <tr>
+                <th>2</th>
+                <td>cat666</td>
+                <td>奧貓</td>
+                <td>64</td>
+              </tr>
+              <tr>
+                <th>3</th>
+                <td>lion7</td>
+                <td>師大大師</td>
+                <td>60</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-
-      <div class="mt-6 flex items-center gap-4">
-        <button class="btn btn-success btn-sm" @click="generateCourseCode">Generate course code</button>
-
-        <span class="font-mono text-lg">
-          {{ courseCode || "—" }}
-        </span>
-
-        <button v-if="courseCode" class="btn btn-ghost btn-sm" @click="deleteCode">🗑</button>
-      </div>
-    </div>
-
-    <!-- ======================= -->
-    <!-- Scoreboard -->
-    <!-- ======================= -->
-    <div class="rounded-xl border bg-base-100 p-6 shadow-sm">
-      <h2 class="mb-6 text-xl font-semibold">Scoreboard</h2>
-
-      <table class="table table-zebra w-full">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>User</th>
-            <th>Username</th>
-            <th>AC Count</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>dog123</td>
-            <td>熙氣ㄧ狗</td>
-            <td>66</td>
-          </tr>
-
-          <tr>
-            <td>2</td>
-            <td>cat666</td>
-            <td>奧貓</td>
-            <td>64</td>
-          </tr>
-
-          <tr>
-            <td>3</td>
-            <td>lion7</td>
-            <td>師大大師</td>
-            <td>60</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>
