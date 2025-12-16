@@ -30,11 +30,9 @@ export const Problem = {
     parts: { ETag: string; PartNumber: number }[],
   ) => fetcher.post(`/problem/${problemId}/complete-test-case-upload`, { uploadId, parts }),
 
-  getSubtasks: (problemId: number | string) => fetcher.get<subtaskresponse>(`/problem/${problemId}/subtasks`),
-  createSubtasks: (
-    problemId: number,
-    body: { subtask_no: number; weight: number; time_limit_ms: number; memory_limit_mb: number },
-  ) => fetcher.post(`/problem/${problemId}/subtasks`, body),
+  getSubtasks: (problemId: number | string) => fetcher.get<SubtaskResponse>(`/problem/${problemId}/subtasks`),
+  createSubtasks: (problemId: number, body: SubtaskPayload) =>
+    fetcher.post(`/problem/${problemId}/subtasks`, body),
   deleteSubtaks: (problemId: number | string, subtaskId: number | string) =>
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
 };

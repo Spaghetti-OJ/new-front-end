@@ -9,12 +9,11 @@ interface Props {
   problem: ProblemInfo;
   preview?: boolean;
 }
-console.log("card");
 withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
-const subta = ref<subtasks[] | null>(null);
+const subta = ref<Subtasks[] | null>(null);
 const session = useSession();
 async function getsub() {
   const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
@@ -175,8 +174,11 @@ onMounted(getsub);
               </tr>
             </thead>
             <tbody>
-              <tr v-for="({ memory_limit_mb, time_limit_ms, weight }, id) in subta" :key="id">
-                <td>{{ id }}</td>
+              <tr
+                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subta || []"
+                :key="subtask_no"
+              >
+                <td>{{ subtask_no }}</td>
                 <td>{{ time_limit_ms }} ms</td>
                 <td>{{ memory_limit_mb }} KB</td>
                 <td>{{ weight }}</td>

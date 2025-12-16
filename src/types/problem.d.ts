@@ -163,7 +163,14 @@ interface MossReport {
 type LangOption = { value: number; text: string; mask: number };
 type ProblemUpdater = <K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) => void;
 
-interface subtasks {
+type SubtaskPayload = {
+  subtask_no: number;
+  weight: number;
+  time_limit_ms: number;
+  memory_limit_mb: number;
+};
+
+interface Subtasks {
   created_at: string;
   id: number;
   memory_limit_mb: number;
@@ -173,4 +180,4 @@ interface subtasks {
   updated_at: string;
   weight: number;
 }
-type subtaskresponse = subtasks[];
+type SubtaskResponse = Subtasks[];

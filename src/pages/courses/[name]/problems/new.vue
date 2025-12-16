@@ -18,14 +18,6 @@ function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
   return LANGUAGE_BIT_MAP.filter((lang) => (mask & lang.bit) !== 0).map((lang) => lang.name);
 }
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
-type SubtaskPayload = {
-  subtask_no: number;
-  weight: number;
-  time_limit_ms: number;
-  memory_limit_mb: number;
-};
-
-const subtasksToCreate = ref<SubtaskPayload[]>([]);
 const newProblem = ref<ProblemForm>({
   problemName: "",
   description: {
