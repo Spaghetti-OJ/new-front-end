@@ -13,11 +13,11 @@ withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
-const subta = ref<Subtasks[] | null>(null);
+const subtasks = ref<Subtasks[] | null>(null);
 const session = useSession();
 async function getsub() {
   const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
-  subta.value = res;
+  subtasks.value = res;
 }
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
@@ -175,7 +175,7 @@ onMounted(getsub);
             </thead>
             <tbody>
               <tr
-                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subta || []"
+                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subtasks || []"
                 :key="subtask_no"
               >
                 <td>{{ subtask_no }}</td>
