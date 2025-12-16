@@ -46,6 +46,7 @@ watchEffect(() => {
       },
       canViewStdout: true,
       defaultCode: typeof problem.value.defaultCode === "string" ? problem.value.defaultCode : "", // Handle object/string mismatch if any
+      solution: problem.value.solution ?? ""
     };
   }
 });
@@ -195,6 +196,11 @@ async function delete_() {
     formElement.value.isLoading = false;
   }
 }
+
+function onSaveSolution() {
+  console.log("save-solution clicked:", edittingProblem.value?.solution);
+  // TODO: connect solution-only API later
+}
 </script>
 
 <template>
@@ -210,19 +216,19 @@ async function delete_() {
             <!-- 三顆 tab 按鈕 -->
             <div class="flex items-center gap-x-4">
               <button
-                class="btn rounded-lg bg-[#02305f] text-white"
+                class="btn bg-[#02305f]"
                 @click="scrollToSection(contentSection)"
               >
                 Content
               </button>
               <button
-                class="btn rounded-lg bg-[#02305f] text-white"
+                class="btn bg-[#02305f]"
                 @click="scrollToSection(testdataSection)"
               >
                 Testdata
               </button>
               <button
-                class="btn rounded-lg bg-[#02305f] text-white"
+                class="btn bg-[#02305f]"
                 @click="scrollToSection(checkerSection)"
               >
                 Checker
@@ -257,6 +263,7 @@ async function delete_() {
                 v-model:testdata="testdata"
                 @update="update"
                 @submit="submit"
+                @save-solution="onSaveSolution"
               />
 
               <div class="divider" />

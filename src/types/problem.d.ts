@@ -83,6 +83,7 @@ interface ProblemInfo {
   fillInTemplate: string | null;
   submitCount: number;
   highScore: number;
+  solution: string;
 }
 
 interface ProblemForm {
@@ -108,6 +109,7 @@ interface ProblemForm {
   };
   canViewStdout: boolean;
   defaultCode: string;
+  solution: string;
 }
 
 interface ProblemCreatePayload {

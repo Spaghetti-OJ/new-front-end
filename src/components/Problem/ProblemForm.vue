@@ -19,6 +19,7 @@ const emits = defineEmits<{
   (e: "update", key: keyof ProblemForm, value: ProblemForm[typeof key]): void;
   (e: "update:testdata", value: File | null): void;
   (e: "submit"): void;
+  (e: "save-solution"): void;
 }>();
 
 const rules = {
@@ -38,6 +39,7 @@ const rules = {
         v.every((d) => d.length <= 1024),
       ),
     },
+    solution: { maxLength: maxLength(20000) },
   },
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
@@ -210,6 +212,34 @@ watch(
     </div>
 
     <ProblemDescriptionForm :v$="v$" @update="(...args) => update(...args)" />
+
+    <div class="form-control col-span-2">
+      <label class="label flex-col items-start gap-1">
+        <span class="label-text">Solution</span>
+        <span class="label-text-alt  opacity-70">
+          Please upload the correct solution for student reference.
+        </span>
+      </label>
+
+      <!-- 用 code-editor 輸入 -->
+      <div class="w-1/2">
+        <!-- 內層：左右排，底部對齊 -->
+        <div class="flex items-end gap-4">
+          <!-- Editor -->
+          <div class="flex-1">
+            <code-editor v-model="problem.solution" />
+          </div>
+
+          <!-- Save 按鈕 -->
+          <button
+            class="btn btn-sm bg-[#02305f] shrink-0"
+            @click="$emit('save-solution')"
+          >
+            Save Solution
+          </button>
+        </div>
+      </div>
+    </div>
 
     <template v-if="problem.type !== 2">
       <section ref="testdataSection" class="scroll-mt-32">
