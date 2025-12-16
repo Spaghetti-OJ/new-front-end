@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
-
+import api from "@/api";
 useTitle("Problems | Normal OJ");
 
 type Problem = {
@@ -11,58 +11,41 @@ type Problem = {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  course: string;
+  courseId: number;
+  courseName: string;
   acceptance: number;
 };
 
 const isLoading = ref(true);
+const baseProblems = ref<Problem[]>([]);
 
-const baseProblems = ref<Problem[]>([
-  {
-    id: 765,
-    title: "Emergency Dispatch 1",
-    difficulty: "hard",
-    tags: ["linked list", "dynamic programming"],
-    course: "資料結構",
-    acceptance: 0.0,
-  },
-  {
-    id: 764,
-    title: "Emergency Dispatch 2",
-    difficulty: "medium",
-    tags: ["dynamic programming"],
-    course: "演算法導論",
-    acceptance: 0.1,
-  },
-  {
-    id: 763,
-    title: "Emergency Dispatch 3",
-    difficulty: "easy",
-    tags: ["math"],
-    course: "程式設計入門",
-    acceptance: 0.2,
-  },
-  {
-    id: 762,
-    title: "Emergency Dispatch 4",
-    difficulty: "medium",
-    tags: ["graph", "dynamic programming"],
-    course: "演算法導論",
-    acceptance: 0.8,
-  },
-  {
-    id: 761,
-    title: "Emergency Dispatch 5",
-    difficulty: "easy",
-    tags: ["linked list"],
-    course: "資料結構",
-    acceptance: 0.8,
-  },
-]);
+async function getProblem() {
+  isLoading.value = true;
+  try {
+    const res = await api.Problem.getProblemList();
 
+    // 從 results 拿陣列
+    const list = Array.isArray(res.data.results) ? res.data.results : [];
+
+    baseProblems.value = list.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      difficulty: p.difficulty as Problem["difficulty"],
+      tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
+      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseName: typeof p.course_name === "string" ? p.course_name : "-",
+      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,
+    }));
+  } catch (err) {
+    console.error("getProblem error:", err);
+    baseProblems.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+}
 // Search and filters
 const q = ref("");
-const selectedCourses = ref<string[]>([]);
+const selectedCourses = ref<number[]>([]);
 // 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
@@ -70,7 +53,13 @@ const selectedDifficulties = ref<string[]>([]);
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
 const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
 
-const allCourses = computed(() => Array.from(new Set(baseProblems.value.map((p) => p.course))));
+const allCourses = computed(() => {
+  const map = new Map<number, string>();
+  baseProblems.value.forEach((p) => {
+    map.set(p.courseId, p.courseName);
+  });
+  return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+});
 const allDiffs = [
   { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
   { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
@@ -86,7 +75,7 @@ const filteredProblems = computed(() => {
       `${p.id}`.includes(keyword) ||
       p.tags.some((t) => t.toLowerCase().includes(keyword));
 
-    const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.course);
+    const matchCourse = !selectedCourses.value.length || selectedCourses.value.includes(p.courseId);
     const matchTag = !selectedTags.value.length || p.tags.some((t) => selectedTags.value.includes(t));
     const matchDiff = !selectedDifficulties.value.length || selectedDifficulties.value.includes(p.difficulty);
 
@@ -109,7 +98,7 @@ function resetFilters() {
 }
 
 onMounted(() => {
-  setTimeout(() => (isLoading.value = false), 300);
+  getProblem();
 });
 </script>
 
@@ -138,16 +127,16 @@ onMounted(() => {
           <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Courses") }}</span>
           <button
             v-for="c in allCourses"
-            :key="c"
+            :key="c.id"
             class="badge cursor-pointer transition-all duration-150"
             :class="
-              selectedCourses.includes(c)
+              selectedCourses.includes(c.id)
                 ? 'badge-primary text-white shadow-md'
                 : 'badge-outline hover:bg-primary hover:text-white'
             "
-            @click="toggleItem(selectedCourses, c)"
+            @click="toggleItem(selectedCourses, c.id)"
           >
-            {{ c }}
+            {{ c.name }}
           </button>
         </div>
 
@@ -235,14 +224,16 @@ onMounted(() => {
                 #{{ p.id }}
               </td>
               <td>
-                <router-link :to="`/problems/${p.id}`" class="link link-hover font-medium">{{
-                  p.title
-                }}</router-link>
+                <router-link
+                  :to="`/courses/${p.courseId}/problems/${p.id}`"
+                  class="link link-hover font-medium"
+                  >{{ p.title }}</router-link
+                >
               </td>
               <td>
                 <TagList :tags="p.tags" size="md" colorMode="outline" />
               </td>
-              <td>{{ p.course }}</td>
+              <td>{{ p.courseName }}</td>
               <td class="text-right">{{ (p.acceptance * 100).toFixed(0) }}%</td>
             </tr>
           </tbody>

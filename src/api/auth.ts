@@ -27,8 +27,6 @@ export const Auth = {
     fetcher.post<string>("/auth/password-recovery/", body).then((r) => r.data ?? r),
   adduser: (body: { username: string; password: string; email: string }) =>
     fetcher.post<string>("/auth/user/", body).then((r) => r.data ?? r),
-  batchSignup: (body: { new_users: string; force?: boolean; course?: string }) =>
-    fetcher.post<string>("/auth/batch-signup/", body).then((r) => r.data ?? r),
   getSession: () => fetcher.get<UserProperties>("/auth/me/").then((r) => r.data ?? r),
   sendVerifyEmail: () => fetcher.post("/auth/send-email/", {}).then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>

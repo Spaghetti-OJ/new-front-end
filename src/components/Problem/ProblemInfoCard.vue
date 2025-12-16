@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { UNLIMITED_QUOTA } from "@/constants";
 import { useI18n } from "vue-i18n";
-
 interface Props {
   name: string;
   id: string | number;

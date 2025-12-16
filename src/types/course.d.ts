@@ -25,6 +25,9 @@ interface CourseInfo {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  teacher: Pick<User, "userid" | "username" | "real_name" | "role">;
+  TAs: Pick<User, "userid" | "username" | "real_name" | "role">[];
+  students: Pick<User, "userid" | "username" | "real_name" | "role">[];
 }
 
 interface CourseForm {
@@ -41,4 +44,25 @@ interface CourseSummary {
     submissionCount: number;
     homeworkCount: number;
   }[];
+}
+
+interface CourseImportCSVResult {
+  id: string;
+  status: string;
+  fileName: string;
+  fileSize: number;
+  importResult: boolean;
+  createdUsers: number;
+  newMembers: number;
+  skippedExistingMembers: number;
+  errorCount: number;
+  errors: { row?: number; message: string }[];
+}
+
+interface CourseImportCSVResponse {
+  message: string;
+  status_code: number;
+  data: {
+    import: CourseImportCSVResult;
+  };
 }

@@ -5,30 +5,46 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import api, { fetcher } from "@/api";
 import axios from "axios";
-import ProblemForm from "@/components/Problem/ProblemForm.vue";
+import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
 const router = useRouter();
 useTitle(`Edit Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
-const formElement = ref<InstanceType<typeof ProblemForm>>();
+const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
 
 const {
   data: problem,
   error: fetchError,
   isLoading: isFetching,
-} = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+} = useAxios<ProblemInfo>(`/problem/${route.params.id}`, fetcher);
 
 const edittingProblem = ref<ProblemForm>();
 watchEffect(() => {
   if (problem.value) {
     edittingProblem.value = {
-      ...problem.value,
+      problemName: problem.value.problemName,
+      description: {
+        description: problem.value.description.description,
+        input: problem.value.description.input,
+        output: problem.value.description.output,
+        hint: problem.value.description.hint,
+        sampleInput: (problem.value.description.sampleInput || "").split("\n"),
+        sampleOutput: (problem.value.description.sampleOutput || "").split("\n"),
+      },
+      courses: problem.value.courses.map((c) => c.name),
+      tags: problem.value.tags.map((t) => t.name),
+      allowedLanguage: problem.value.allowedLanguage,
+      quota: problem.value.quota,
+      type: problem.value.type,
+      status: problem.value.status === "public" ? 0 : 1, // 0: visible, 1: hidden
       testCaseInfo: {
         language: 0,
-        fillInTemplate: "",
-        tasks: problem.value.testCase.slice(),
+        fillInTemplate: problem.value.fillInTemplate || "",
+        tasks: problem.value.testCase,
       },
+      canViewStdout: true,
+      defaultCode: typeof problem.value.defaultCode === "string" ? problem.value.defaultCode : "", // Handle object/string mismatch if any
     };
   }
 });
@@ -41,21 +57,57 @@ const testdata = ref<File | null>(null);
 
 const openPreview = ref<boolean>(false);
 const mockProblemMeta = {
-  owner: "",
+  id: 0,
+  owner: { id: "0", username: "mock", real_name: "Mock User" },
   highScore: 0,
   submitCount: 0,
-  ACUser: 0,
-  submitter: 0,
+  create_at: new Date().toISOString(),
+  difficulty: "easy" as const,
+  course_id: 0,
 };
 
 const openJSON = ref<boolean>(false);
 
+function mapProblemFormToPayload(
+  p: ProblemForm,
+  originalTags: { id: number; name: string }[],
+): ProblemCreatePayload {
+  const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
+
+  // Map tag names back to IDs
+  const tagIds = p.tags
+    .map((tagName) => {
+      const tag = originalTags.find((t) => t.name === tagName);
+      return tag ? tag.id : undefined;
+    })
+    .filter((id): id is number => id !== undefined);
+
+  return {
+    title: p.problemName,
+    description: p.description.description,
+    course_id: (route.params.course_id as string) || "0", // Fallback or fetch from somewhere
+    difficulty: "medium", // Default or map if available in form
+    is_public: p.status === 0 ? "public" : "hidden",
+    max_score: 100,
+    total_quota: p.quota,
+    input_description: emptyToNull(p.description.input),
+    output_description: emptyToNull(p.description.output),
+    sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
+    sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
+    hint: emptyToNull(p.description.hint),
+    subtask_description: null,
+    supported_languages: undefined,
+    tags: tagIds,
+  };
+}
+
 async function submit() {
-  if (!edittingProblem.value || !formElement.value) return;
+  if (!edittingProblem.value || !formElement.value || !problem.value) return;
 
   formElement.value.isLoading = true;
   try {
-    await api.Problem.modify(route.params.id as string, edittingProblem.value);
+    const payload = mapProblemFormToPayload(edittingProblem.value, problem.value.tags);
+    await api.Problem.modify(route.params.id as string, payload);
 
     if (testdata.value) {
       await uploadTestCase();
@@ -160,7 +212,12 @@ async function delete_() {
           </template>
           <template #data>
             <template v-if="edittingProblem">
-              <problem-form ref="formElement" v-model:testdata="testdata" @update="update" @submit="submit" />
+              <problem-form-component
+                ref="formElement"
+                v-model:testdata="testdata"
+                @update="update"
+                @submit="submit"
+              />
 
               <div class="divider" />
 
@@ -175,6 +232,17 @@ async function delete_() {
                   ...mockProblemMeta,
                   ...edittingProblem,
                   testCase: edittingProblem.testCaseInfo.tasks,
+                  fillInTemplate: edittingProblem.testCaseInfo.fillInTemplate,
+                  tags: edittingProblem.tags.map((t, i) => ({ id: i, name: t, usage_count: 0 })),
+                  courses: edittingProblem.courses.map((c, i) => ({ id: i, name: c })),
+                  status: edittingProblem.status === 0 ? 'public' : 'hidden',
+                  defaultCode:
+                    typeof edittingProblem.defaultCode === 'string' ? {} : edittingProblem.defaultCode,
+                  description: {
+                    ...edittingProblem.description,
+                    sampleInput: edittingProblem.description.sampleInput.join('\n'),
+                    sampleOutput: edittingProblem.description.sampleOutput.join('\n'),
+                  },
                 }"
                 preview
               />
