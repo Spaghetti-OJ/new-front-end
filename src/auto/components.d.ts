@@ -80,6 +80,7 @@ declare module '@vue/runtime-core' {
     SkeletonTable: typeof import('./../components/Shared/SkeletonTable.vue')['default']
     SystemAnnouncements: typeof import('./../components/Home/SystemAnnouncements.vue')['default']
     TagList: typeof import('./../components/Shared/TagList.vue')['default']
+    ToastContainer: typeof import('./../components/Shared/ToastContainer.vue')['default']
     TopBar: typeof import('./../components/Shared/TopBar.vue')['default']
     UiSpinner: typeof import('./../components/Shared/UiSpinner.vue')['default']
   }

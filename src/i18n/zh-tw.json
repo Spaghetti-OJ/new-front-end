@@ -222,9 +222,12 @@
     "operationFailed": "操作失敗，請稍後再試",
     "verifyEmail": "驗證信箱",
     "verifyEmailSuccess": "驗證信已寄出，請查收。",
-    "verifyEmailFailed": "寄送驗證信失敗。",
-    "emailNotSet": "尚未設定 Email。",
-    "emailAlreadyVerified": "Email 已經驗證過。"
+    "verifyEmailFailed": "發送驗證信失敗",
+    "emailNotSet": "請先設定電子郵件",
+    "emailAlreadyVerified": "您的電子郵件已驗證",
+    "verifyEmailSentTitle": "驗證信已發送",
+    "verifyEmailSentMessage": "我們已向您的信箱發送了一封驗證信，請查收。",
+    "close": "關閉"
   },
   "ann": {
     "id": {

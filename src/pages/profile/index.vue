@@ -87,25 +87,29 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
 }
 
 const isVerifying = ref(false);
+const showVerifyModal = ref(false);
+const error = ref<string | null>(null);
+
 async function sendVerifyEmail() {
   if (isVerifying.value) return;
   isVerifying.value = true;
+  error.value = null;
   try {
     await api.Auth.sendVerifyEmail();
-    alert(t("profile.verifyEmailSuccess"));
-  } catch (error) {
-    console.error(error);
-    if (axios.isAxiosError(error) && error.response?.data) {
-      const msg = (error.response.data as any).message;
+    showVerifyModal.value = true;
+  } catch (err) {
+    console.error(err);
+    if (axios.isAxiosError(err) && err.response?.data) {
+      const msg = (err.response.data as any).message;
       if (msg === "Email Not Set") {
-        alert(t("profile.emailNotSet"));
+        error.value = t("profile.emailNotSet");
       } else if (msg === "Email Already Verified") {
-        alert(t("profile.emailAlreadyVerified"));
+        error.value = t("profile.emailAlreadyVerified");
       } else {
-        alert(t("profile.verifyEmailFailed"));
+        error.value = t("profile.verifyEmailFailed");
       }
     } else {
-      alert(t("profile.verifyEmailFailed"));
+      error.value = t("profile.verifyEmailFailed");
     }
   } finally {
     isVerifying.value = false;
@@ -155,6 +159,7 @@ async function sendVerifyEmail() {
               {{ t("profile.verifyEmail") }}
             </button>
           </div>
+          <div v-if="error" class="text-sm text-error md:col-start-2">{{ error }}</div>
           <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
           <ProfileField
             :label="t('profile.introduction')"
@@ -180,4 +185,16 @@ async function sendVerifyEmail() {
   <div v-else-if="isLoadingProfile" class="flex min-h-screen items-center justify-center">
     <span class="loading-spinner loading-lg loading"></span>
   </div>
+
+  <!-- Verify Email Modal -->
+  <div class="modal" :class="{ 'modal-open': showVerifyModal }">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">{{ t("profile.verifyEmailSentTitle") }}</h3>
+      <p class="py-4">{{ t("profile.verifyEmailSentMessage") }}</p>
+      <div class="modal-action">
+        <button class="btn" @click="showVerifyModal = false">{{ t("profile.close") }}</button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showVerifyModal" class="modal-backdrop" @click="showVerifyModal = false"></div>
 </template>
