@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
+import { useRoute } from "vue-router";
+const route = useRoute();
 interface Props {
   problem: ProblemInfo;
   preview?: boolean;
@@ -10,12 +13,16 @@ withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
-
+const subtasks = ref<Subtasks[] | null>(null);
 const session = useSession();
-
+async function getSubtasks() {
+  const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
+  subtasks.value = res;
+}
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
 }
+onMounted(getSubtasks);
 </script>
 
 <template>
@@ -70,7 +77,7 @@ function downloadTestCase(problemId: number) {
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
             <router-link
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
               :to="`/courses/${$route.params.name}/problems/${$route.params.id}/copycat`"
@@ -78,7 +85,7 @@ function downloadTestCase(problemId: number) {
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
             <router-link
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
               :to="`/courses/${$route.params.name}/problems/${$route.params.id}/edit`"
@@ -86,7 +93,7 @@ function downloadTestCase(problemId: number) {
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
             <button
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Download test case"
               @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"
@@ -167,11 +174,14 @@ function downloadTestCase(problemId: number) {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="({ memoryLimit, timeLimit, taskScore }, index) in problem.testCase" :key="index">
-                <td>{{ index }}</td>
-                <td>{{ timeLimit }} ms</td>
-                <td>{{ memoryLimit }} KB</td>
-                <td>{{ taskScore }}</td>
+              <tr
+                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subtasks || []"
+                :key="subtask_no"
+              >
+                <td>{{ subtask_no }}</td>
+                <td>{{ time_limit_ms }} ms</td>
+                <td>{{ memory_limit_mb }} KB</td>
+                <td>{{ weight }}</td>
               </tr>
             </tbody>
           </table>

@@ -3,15 +3,19 @@ import { ref, provide, Ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { useI18n } from "vue-i18n";
 import api from "@/api";
+import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 useTitle(`New Problem - ${route.params.name} | Normal OJ`);
-
+function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
+  return LANGUAGE_OPTIONS.filter((lang) => (mask & lang.mask) !== 0).map((lang) => lang.text);
+}
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
-
 const newProblem = ref<ProblemForm>({
   problemName: "",
   description: {
@@ -73,11 +77,8 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
 
     subtask_description: null,
 
-    // 後端允許不填 → 讓後端用預設 languages
-    supported_languages: undefined,
-
-    // 後端 tags 要 ID 陣列. New problem likely has no tags or we can't map names to IDs yet.
-    tags: [],
+    supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
+    tags: p.tags.map((t) => Number(t)),
   };
 }
 
@@ -90,7 +91,18 @@ async function submit() {
   formElement.value.isLoading = true;
   try {
     const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
-    const { problemId } = (await api.Problem.create(payload)).data;
+    const res = await api.Problem.create(payload);
+    const problemId = res.data.problem_id;
+    const tasks = newProblem.value.testCaseInfo.tasks;
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
+      await api.Problem.createSubtasks(problemId, {
+        subtask_no: i + 1,
+        weight: t.taskScore,
+        time_limit_ms: t.timeLimit,
+        memory_limit_mb: Math.ceil(t.memoryLimit), // 如果你 memoryLimit 是 KB
+      });
+    }
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
