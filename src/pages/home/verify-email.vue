@@ -35,10 +35,6 @@ async function verify() {
 onMounted(() => {
   verify();
 });
-
-function goHome() {
-  router.push("/");
-}
 </script>
 
 <template>
