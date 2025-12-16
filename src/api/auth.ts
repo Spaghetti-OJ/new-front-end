@@ -15,7 +15,6 @@ export const Auth = {
     fetcher.post<AuthToken>("/auth/session/", body).then((r) => r.data ?? r),
   logout: (body: { refresh: string }) =>
     fetcher.post<string>("/auth/session/revoke/", body).then((r) => r.data ?? r),
-  //activeredirect:(body:{token:string})=>,
   active: (body: { profile: { displayedName: string; bio: string }; agreement: boolean }) =>
     fetcher.post<string>("/auth/active/", body).then((r) => r.data ?? r),
   changePassword: (body: { old_password: string; new_password: string }) =>
