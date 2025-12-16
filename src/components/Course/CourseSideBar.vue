@@ -40,9 +40,6 @@ const navs = [
       ]
     : []),
 ];
-
-console.log("session.role =", session.role);
-console.log("isAdmin =", session.isAdmin);
 </script>
 
 <template>
