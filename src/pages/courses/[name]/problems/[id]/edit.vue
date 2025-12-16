@@ -133,7 +133,7 @@ async function submit() {
     const tasks = edittingProblem.value.testCaseInfo.tasks;
     const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
     for (const subtask of subtaskres.data) {
-      await api.Problem.deleteSubtaks(Number(route.params.id), subtask.id);
+      await api.Problem.deleteSubtasks(Number(route.params.id), subtask.id);
     }
     for (let i = 0; i < tasks.length; i++) {
       const t = tasks[i];
@@ -208,9 +208,9 @@ async function delete_() {
     const problemId = Number(route.params.id);
     const subtaskres = await api.Problem.getSubtasks(problemId);
     for (const subtask of subtaskres.data) {
-      await api.Problem.deleteSubtaks(problemId, subtask.id);
+      await api.Problem.deleteSubtasks(problemId, subtask.id);
     }
-    const deleteres = await api.Problem.delete(route.params.id as string);
+    await api.Problem.delete(route.params.id as string);
     router.push(`/courses/${route.params.name}/problems`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data) {
