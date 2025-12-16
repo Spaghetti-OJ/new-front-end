@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { use } from "echarts/core";
 import VChart from "vue-echarts";
 import { TooltipComponent, LegendComponent, GridComponent } from "echarts/components";
@@ -9,31 +9,70 @@ import { CanvasRenderer } from "echarts/renderers";
 import { formatTime } from "@/utils/formatTime";
 import { useTheme } from "@/stores/theme";
 import { SUBMISSION_STATUS_REPR } from "@/constants";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/api";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
-
+import api from "@/api";
 const { t } = useI18n();
 const route = useRoute();
 const theme = useTheme();
 useTitle(`Problem Stats - ${route.params.id} - ${route.params.name} | Normal OJ`);
 use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer, LabelLayout, GridComponent, BarChart]);
+const stats = ref<ProblemStats | null>(null);
+const error = ref<any>(null);
+const isLoading = ref<boolean>(false);
+async function getStat() {
+  isLoading.value = true;
+  error.value = null;
 
-const {
-  data: stats,
-  error,
-  isLoading,
-} = useAxios<ProblemStats>(`/problem/${route.params.id}/stats`, fetcher);
+  try {
+    const res = await api.Problem.getProblemStat(Number(route.params.id));
+    stats.value = res.data;
+  } catch (err) {
+    console.error(err);
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  getStat();
+});
+
 const resultCounts = computed(() => {
   if (!stats.value) return [];
   const _stats = stats.value;
-  return Object.entries(SUBMISSION_STATUS_REPR).map(([statusCode, { label, color }]) => ({
-    name: label,
-    value: _stats.statusCount[statusCode],
-    itemStyle: { color: color },
-  }));
+  const mapping: Record<string, number> = {
+    pending: -1,
+    accepted: 0,
+    wrong_answer: 1,
+    compile_error: 2,
+    time_limit_exceed: 3,
+    memory_limit_exceed: 4,
+    runtime_error: 5,
+    judge_error: 6,
+    output_limit_exceed: 7,
+  };
+
+  return Object.entries(_stats.statusCount)
+    .map(([key, count]) => {
+      const code = mapping[key] ?? (Number.isFinite(Number(key)) ? Number(key) : undefined);
+      if (code !== undefined && SUBMISSION_STATUS_REPR[code as keyof typeof SUBMISSION_STATUS_REPR]) {
+        const { label, color } = SUBMISSION_STATUS_REPR[code as keyof typeof SUBMISSION_STATUS_REPR];
+        return {
+          name: label,
+          value: count,
+          itemStyle: { color },
+        };
+      }
+      return {
+        name: key,
+        value: count,
+        itemStyle: { color: "#ccc" },
+      };
+    })
+    .filter((item) => item.value > 0);
 });
 const triedUserCount = computed(() => stats.value?.triedUserCount || null);
 const acUserRatio = computed(() => stats.value?.acUserRatio || [null, null]);
@@ -45,9 +84,7 @@ const stdScore = computed(() => (stats.value ? stats.value.std : null));
 const scoreDistribution = computed(() => {
   if (!stats.value) return {};
   const counter: { [key: string]: number } = {};
-  stats.value.scoreDistribution.forEach(
-    (score) => (counter[String(score)] = (counter[String(score)] || 0) + 1),
-  );
+  stats.value.scoreDistribution.forEach((item) => (counter[String(item.score)] = item.count));
   return counter;
 });
 const top10RunTime = computed(() => stats.value?.top10RunTime || []);
@@ -126,7 +163,7 @@ const barOption = computed(() => ({
               <div class="stat place-items-center">
                 <div class="stat-title">{{ t("course.problem.stats.general.ac") }}</div>
                 <div class="stat-value">
-                  <span v-if="!acUserRatio[0]">-</span>
+                  <span v-if="!acUserRatio[1]">-</span>
                   <template v-else>
                     <span>{{ acUserRatio[0] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${acUserRatio[1]}` }}</span>
@@ -138,7 +175,7 @@ const barOption = computed(() => ({
                 <div class="stat-value">
                   <span v-if="!submissionCount || !stats">-</span>
                   <template v-else>
-                    <span>{{ stats.statusCount[0] }}</span>
+                    <span>{{ stats.statusCount["accepted"] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${submissionCount}` }}</span>
                   </template>
                 </div>
@@ -185,15 +222,15 @@ const barOption = computed(() => ({
               <th>{{ t("course.problem.stats.table.runtimeRank.id") }}</th>
               <th>{{ t("course.problem.stats.table.runtimeRank.user") }}</th>
               <th>{{ t("course.problem.stats.table.runtimeRank.runtime") }}</th>
-              <th>{{ t("course.problem.stats.table.runtimeRank.time") }}</th>
+              <th>Score</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(subm, index) in top10RunTime" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user.username }} ({{ subm.user.displayedName }})</td>
-              <td>{{ subm.runTime }} ms</td>
-              <td>{{ formatTime(subm.timestamp) }}</td>
+              <td>{{ subm.user }}</td>
+              <td>{{ subm.execution_time }} ms</td>
+              <td>{{ subm.score }}</td>
             </tr>
           </tbody>
         </table>
@@ -211,15 +248,15 @@ const barOption = computed(() => ({
               <th>{{ t("course.problem.stats.table.memoryRank.id") }}</th>
               <th>{{ t("course.problem.stats.table.memoryRank.user") }}</th>
               <th>{{ t("course.problem.stats.table.memoryRank.memory") }}</th>
-              <th>{{ t("course.problem.stats.table.memoryRank.time") }}</th>
+              <th>Score</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(subm, index) in top10MemoryUsage" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user.username }} ({{ subm.user.displayedName }})</td>
-              <td>{{ subm.memoryUsage }} KB</td>
-              <td>{{ formatTime(subm.timestamp) }}</td>
+              <td>{{ subm.user }}</td>
+              <td>{{ subm.memory_usage }} KB</td>
+              <td>{{ subm.score }}</td>
             </tr>
           </tbody>
         </table>

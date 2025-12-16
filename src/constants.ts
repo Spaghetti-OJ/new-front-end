@@ -73,8 +73,8 @@ export function isQuotaUnlimited(quota: number): boolean {
 }
 
 export const PROBLEM_STATUS = {
-  HIDDEN: 1,
-  VISIBLE: 0,
+  HIDDEN: "hidden",
+  VISIBLE: "public",
 };
 
 export const DIFFICULTY = {

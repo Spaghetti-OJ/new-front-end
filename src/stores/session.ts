@@ -21,16 +21,20 @@ const REFRESH_KEY = "refresh_token";
 export const useSession = defineStore("session", {
   state: () => ({
     state: SessionState.NotValidated,
-    userid: "",
+    user_id: "",
     username: "",
     role: UserRole.Guest,
     email: "",
+    email_verified: false,
     token: localStorage.getItem(ACCESS_KEY) || "",
     refreshtoken: localStorage.getItem(REFRESH_KEY) || "",
   }),
   getters: {
     isAdmin(state) {
       return state.role === UserRole.Admin;
+    },
+    isTeacher(state) {
+      return state.role === UserRole.Teacher;
     },
     isNotValidated(state) {
       return state.state === SessionState.NotValidated;
@@ -57,11 +61,12 @@ export const useSession = defineStore("session", {
       }
       try {
         const me = await api.Auth.getSession();
-        const { userid, username, role, email } = me;
-        this.userid = userid;
+        const { user_id, username, role, email, email_verified } = me;
+        this.user_id = user_id;
         this.username = username;
         this.role = role as UserRole;
         this.email = email;
+        this.email_verified = email_verified;
         this.state = SessionState.IsLogin;
       } catch (error) {
         this.logoutLocally();
@@ -88,6 +93,11 @@ export const useSession = defineStore("session", {
       this.state = SessionState.IsNotLogin;
       this.token = "";
       this.refreshtoken = "";
+      this.email_verified = false;
+      this.user_id = "";
+      this.username = "";
+      this.role = UserRole.Guest;
+      this.email = "";
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
     },
