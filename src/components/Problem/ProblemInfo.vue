@@ -10,7 +10,6 @@ interface Props {
   isAdmin: boolean;
   isTeacher: boolean;
 }
-console.log("info");
 const props = defineProps<Props>();
 </script>
 
