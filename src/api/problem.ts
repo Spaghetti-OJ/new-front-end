@@ -33,6 +33,6 @@ export const Problem = {
   getSubtasks: (problemId: number | string) => fetcher.get<SubtaskResponse>(`/problem/${problemId}/subtasks`),
   createSubtasks: (problemId: number, body: SubtaskPayload) =>
     fetcher.post(`/problem/${problemId}/subtasks`, body),
-  deleteSubtaks: (problemId: number | string, subtaskId: number | string) =>
+  deleteSubtasks: (problemId: number | string, subtaskId: number | string) =>
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
 };
