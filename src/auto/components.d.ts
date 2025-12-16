@@ -25,8 +25,10 @@ declare module '@vue/runtime-core' {
     IUilBolt: typeof import('~icons/uil/bolt')['default']
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
     IUilCheck: typeof import('~icons/uil/check')['default']
+    IUilCheckCircle: typeof import('~icons/uil/check-circle')['default']
     IUilCopy: typeof import('~icons/uil/copy')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
+    IUilEnvelopeCheck: typeof import('~icons/uil/envelope-check')['default']
     IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
     IUilEye: typeof import('~icons/uil/eye')['default']
     IUilFacebook: typeof import('~icons/uil/facebook')['default']
@@ -78,6 +80,7 @@ declare module '@vue/runtime-core' {
     SkeletonTable: typeof import('./../components/Shared/SkeletonTable.vue')['default']
     SystemAnnouncements: typeof import('./../components/Home/SystemAnnouncements.vue')['default']
     TagList: typeof import('./../components/Shared/TagList.vue')['default']
+    ToastContainer: typeof import('./../components/Shared/ToastContainer.vue')['default']
     TopBar: typeof import('./../components/Shared/TopBar.vue')['default']
     UiSpinner: typeof import('./../components/Shared/UiSpinner.vue')['default']
   }
