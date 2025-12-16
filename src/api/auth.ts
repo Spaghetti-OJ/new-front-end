@@ -30,6 +30,7 @@ export const Auth = {
   sendVerifyEmail: () => fetcher.post("/auth/send-email/", {}).then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>
     fetcher.post<{ access: string; refresh?: string }>("/auth/refresh/", body).then((r) => r.data ?? r),
+  verify: (body: { token: string }) => fetcher.post("/auth/verify/", body).then((r) => r.data ?? r),
   VerifyEmail: (body: { token: string }) =>
     fetcher.post("/auth/verify-email/", body).then((r) => r.data ?? r),
   generatetoken: (body: { name: string; permissions?: string[]; expires_at?: string }) =>

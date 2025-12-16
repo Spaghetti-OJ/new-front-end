@@ -2,8 +2,9 @@ interface User {
   username: string;
   role: string;
   email: string;
-  userid: string;
-  real_name: string;
+  user_id: string;
+  real_name?: string;
+  email_verified: boolean;
 }
 
 interface UserSignup {
@@ -15,7 +16,7 @@ interface UserSignup {
   date_joined: string;
   last_login: string | null;
 }
-type UserInfo = Pick<User, "username" | "role" | "real_name" | "userid">;
+type UserInfo = Pick<User, "username" | "role" | "real_name" | "user_id" | "email_verified">;
 
 interface UserSummary {
   userCount: number;
