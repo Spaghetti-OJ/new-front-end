@@ -96,7 +96,7 @@ async function submit() {
     const tasks = newProblem.value.testCaseInfo.tasks;
     for (let i = 0; i < tasks.length; i++) {
       const t = tasks[i];
-      const sub = await api.Problem.createSubtasks(problemId, {
+      await api.Problem.createSubtasks(problemId, {
         subtask_no: i + 1,
         weight: t.taskScore,
         time_limit_ms: t.timeLimit,
