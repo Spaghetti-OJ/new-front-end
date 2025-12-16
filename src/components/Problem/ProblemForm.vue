@@ -3,6 +3,10 @@ import { ref, watch, inject, Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+import LLMSubtaskEditor  from "@/components/Problem/Forms/SubtaskEditor.vue"
+import { onMounted, watchEffect } from "vue";
+
+
 
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
@@ -119,6 +123,25 @@ watch(
     });
   },
 );
+const defaultTask = () => ({
+  caseCount: 1,
+  taskScore: 100,
+  memoryLimit: 134218,
+  timeLimit: 1000,
+});
+
+const llmSubtasks = ref([
+  { caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 },
+]);
+
+watchEffect(() => {
+  if (testdataMode.value === "LLMgenerate" && problem.value.testCaseInfo.tasks.length === 0) {
+    update("testCaseInfo", {
+      ...problem.value.testCaseInfo,
+      tasks: [defaultTask()],
+    });
+  }
+});
 </script>
 
 <template>
@@ -307,6 +330,7 @@ watch(
             </template>
           </div>
 
+          <!--
           <label
             class="label text-error"
             v-show="v$.testCaseInfo.tasks.$error"
@@ -401,7 +425,7 @@ watch(
                 </div>
               </div>
             </div>
-          </template>
+          </template>-->
         </div>
 
         <div v-if="testdataMode === 'LLMgenerate'" class="mt-2">
@@ -436,7 +460,7 @@ watch(
             </option>
           </select>
 
-
+          <LLMSubtaskEditor v-model="llmSubtasks" />
 
 
         </div>
