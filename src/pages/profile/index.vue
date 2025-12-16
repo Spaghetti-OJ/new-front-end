@@ -5,6 +5,7 @@ import api from "@/api";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
+import axios from "axios";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
@@ -94,7 +95,18 @@ async function sendVerifyEmail() {
     alert(t("profile.verifyEmailSuccess"));
   } catch (error) {
     console.error(error);
-    alert(t("profile.verifyEmailFailed"));
+    if (axios.isAxiosError(error) && error.response?.data) {
+      const msg = (error.response.data as any).message;
+      if (msg === "Email Not Set") {
+        alert(t("profile.emailNotSet"));
+      } else if (msg === "Email Already Verified") {
+        alert(t("profile.emailAlreadyVerified"));
+      } else {
+        alert(t("profile.verifyEmailFailed"));
+      }
+    } else {
+      alert(t("profile.verifyEmailFailed"));
+    }
   } finally {
     isVerifying.value = false;
   }

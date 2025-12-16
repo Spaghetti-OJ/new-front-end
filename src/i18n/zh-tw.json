@@ -219,7 +219,12 @@
       "submit": "送出"
     },
     "wrongPassword": "密碼錯誤",
-    "operationFailed": "操作失敗，請稍後再重試"
+    "operationFailed": "操作失敗，請稍後再試",
+    "verifyEmail": "驗證信箱",
+    "verifyEmailSuccess": "驗證信已寄出，請查收。",
+    "verifyEmailFailed": "寄送驗證信失敗。",
+    "emailNotSet": "尚未設定 Email。",
+    "emailAlreadyVerified": "Email 已經驗證過。"
   },
   "ann": {
     "id": {
