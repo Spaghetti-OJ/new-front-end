@@ -33,8 +33,16 @@ interface UserEditorConfig {
   language: 0 | 1 | 2;
 }
 
-interface UserProperties extends User {
-  editorConfig: UserEditorConfig;
+interface UserProperties {
+  real_name: string;
+  username: string;
+  role: string;
+  email: string;
+  user_id: string;
+  student_id: string;
+  bio: string;
+  avatar: string;
+  email_verified: boolean;
 }
 
 interface UserEditionForm {
