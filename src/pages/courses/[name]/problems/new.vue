@@ -3,19 +3,17 @@ import { ref, provide, Ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { useI18n } from "vue-i18n";
 import api from "@/api";
+import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 useTitle(`New Problem - ${route.params.name} | Normal OJ`);
-const LANGUAGE_BIT_MAP = [
-  { bit: 1, name: "c" },
-  { bit: 2, name: "cpp" },
-  { bit: 4, name: "java" },
-];
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
-  return LANGUAGE_BIT_MAP.filter((lang) => (mask & lang.bit) !== 0).map((lang) => lang.name);
+  return LANGUAGE_OPTIONS.filter((lang) => (mask & lang.mask) !== 0).map((lang) => lang.text);
 }
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
 const newProblem = ref<ProblemForm>({
