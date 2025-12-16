@@ -175,7 +175,7 @@ const barOption = computed(() => ({
                 <div class="stat-value">
                   <span v-if="!submissionCount || !stats">-</span>
                   <template v-else>
-                    <span>{{ stats.statusCount[0] }}</span>
+                    <span>{{ stats.statusCount['accepted'] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${submissionCount}` }}</span>
                   </template>
                 </div>
@@ -193,18 +193,8 @@ const barOption = computed(() => ({
             <div class="my-4" />
 
             <div class="flex">
-              <v-chart
-                class="mx-auto h-[400px]"
-                :theme="theme.isDark ? 'dark' : ''"
-                :option="pieOption"
-                autoresize
-              />
-              <v-chart
-                class="mx-auto h-[400px]"
-                :theme="theme.isDark ? 'dark' : ''"
-                :option="barOption"
-                autoresize
-              />
+              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="pieOption" autoresize />
+              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="barOption" autoresize />
             </div>
           </template>
         </data-status-wrapper>
