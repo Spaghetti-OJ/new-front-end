@@ -15,14 +15,14 @@ withDefaults(defineProps<Props>(), {
 });
 const subtasks = ref<Subtasks[] | null>(null);
 const session = useSession();
-async function getsub() {
+async function getSubtasks() {
   const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
-  subtasks.value = res;
+  subta.value = res;
 }
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
 }
-onMounted(getsub);
+onMounted(getSubtasks);
 </script>
 
 <template>
