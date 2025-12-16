@@ -1,4 +1,3 @@
-import VerifyEmail from "@/pages/home/verify-email.vue";
 import { fetcher } from "./fetcher";
 
 export const Auth = {
