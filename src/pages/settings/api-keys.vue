@@ -100,7 +100,7 @@ function mapApiKeyFromBackend(b: any): ApiKeyRow {
     name: b.name,
     status: b.is_active ? "active" : "disabled",
     usage: b.usage_count,
-    maskedKey: b.prefix, // 你 UI 用 maskedKey
+    maskedKey: b.prefix,
     permissions: mapPermissions(b.permissions),
     createdAt: b.created_at,
     expiresAt: b.expires_at ?? undefined,
@@ -115,7 +115,7 @@ function mapPermissionsToApi(permissions: PermissionRow[]): string[] {
   });
 }
 //加載目前apikey
-async function getapikeylist() {
+async function getApiKeyList() {
   const res = await api.Auth.listTokens();
   const raw = Array.isArray(res) ? res : res;
   apiKeys.value = raw.map(mapApiKeyFromBackend);
@@ -123,7 +123,7 @@ async function getapikeylist() {
 
 // Load Demo
 onMounted(() => {
-  getapikeylist();
+  getApiKeyList();
 });
 
 // Utils
@@ -197,7 +197,7 @@ async function handleCreateKey() {
   showCreateModal.value = false;
   generatedKey.value = fullKey;
   showGeneratedModal.value = true;
-  await getapikeylist();
+  await getApiKeyList();
 }
 
 // Detail
@@ -218,7 +218,7 @@ async function confirmDeleteSelected() {
   const res = await api.Auth.deleteToken(selectedKey.value.id);
   apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
   closeDetailModal();
-  await getapikeylist();
+  await getApiKeyList();
 }
 
 // Copy
