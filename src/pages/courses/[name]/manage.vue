@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useSession, UserRole } from "@/stores/session";
 import api from "@/api";
 import axios from "axios";
 
 const route = useRoute();
+const router = useRouter();
 const session = useSession();
 
 const courseId = route.params.name as string;
@@ -63,13 +64,37 @@ async function deleteCode() {
   }
 }
 
-function submitCourseEdit() {
-  console.log("Submit course edit:", courseForm.value);
+async function submitCourseEdit() {
+  if (!confirm("Are you sure you want to update this course?")) return;
+  try {
+    await api.Course.editCourse({
+      course_id: Number(courseId),
+      new_course: courseForm.value.name,
+      teacher: courseForm.value.teacher,
+    });
+    alert("Course updated successfully.");
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("Failed to update course");
+    }
+  }
 }
 
-function deleteCourse() {
-  if (confirm("Are you sure you want to delete this course?")) {
-    console.log("Delete course:", courseId);
+async function deleteCourse() {
+  if (!confirm("Are you sure you want to delete this course? This action cannot be undone.")) return;
+
+  try {
+    await api.Course.deleteCourse({ course_id: Number(courseId) });
+    alert("Course deleted successfully.");
+    router.push("/courses");
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("Failed to delete course");
+    }
   }
 }
 
