@@ -296,7 +296,12 @@ onMounted(() => {
               <i-uil-copy v-else class="h-5 w-5" />
             </button>
 
-            <button v-if="courseCode" class="btn btn-circle btn-ghost btn-sm text-error" @click="deleteCode">
+            <button
+              v-if="courseCode"
+              class="btn btn-circle btn-ghost btn-sm text-error"
+              @click="deleteCode"
+              aria-label="Delete invite code"
+            >
               <i-uil-trash-alt class="h-5 w-5" />
             </button>
           </div>
