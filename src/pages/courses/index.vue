@@ -148,7 +148,7 @@ function getSummary(courseName: string) {
                     </h2>
                     <div class="mt-1 flex items-center gap-2 text-sm text-base-content/70">
                       <i-uil-user class="h-4 w-4" />
-                      <span class="font-medium">{{ teacher.real_name || teacher.username }}</span>
+                      <span class="font-medium">{{ teacher.username }}</span>
                     </div>
                   </div>
                 </div>
