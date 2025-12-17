@@ -9,7 +9,7 @@ import api from "@/api";
 const session = useSession();
 const route = useRoute();
 
-useTitle(`Announcements - ${route.params.name} | Normal OJ`);
+useTitle(`Announcements - ${route.params.courseId} | Normal OJ`);
 const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
@@ -18,7 +18,7 @@ onMounted(async () => {
   error.value = null;
 
   try {
-    const courseId = route.params.name as string;
+    const courseId = route.params.courseId as string;
 
     const res = await api.Announcement.getAnnouncement(courseId);
 
@@ -42,7 +42,7 @@ const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
           <router-link
             v-if="rolesCanCreateAnnouncement.includes(session.role)"
             class="btn btn-success"
-            :to="`/courses/${$route.params.name}/announcements/new`"
+            :to="`/courses/${$route.params.courseId}/announcements/new`"
           >
             <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.ann.index.new") }}
           </router-link>
@@ -68,7 +68,7 @@ const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
                 <tr v-for="{ title, creator, createTime, annId } in announcements" :key="annId" class="hover">
                   <td>
                     <router-link
-                      :to="`/courses/${$route.params.name}/announcements/${annId}`"
+                      :to="`/courses/${$route.params.courseId}/announcements/${annId}`"
                       class="link link-hover"
                     >
                       {{ title }}
@@ -80,7 +80,7 @@ const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/${$route.params.name}/announcements/${annId}/edit`"
+                        :to="`/courses/${$route.params.courseId}/announcements/${annId}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>

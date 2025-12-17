@@ -5,7 +5,7 @@ import { ref, onMounted } from "vue";
 import api from "@/api";
 
 const route = useRoute();
-useTitle(`Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Announcement - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const announcements = ref<AnnouncementList>([]);
 const isLoading = ref(true);
 const error = ref<any>(null);
@@ -14,7 +14,7 @@ onMounted(async () => {
   error.value = null;
 
   try {
-    const courseId = route.params.name as string;
+    const courseId = route.params.courseId as string;
     const annId = route.params.id as string;
 
     const res = await api.Announcement.getOne(courseId, annId);

@@ -2,7 +2,9 @@ interface User {
   username: string;
   role: string;
   email: string;
-  userid: string;
+  user_id: string;
+  real_name?: string;
+  email_verified: boolean;
 }
 
 interface UserSignup {
@@ -14,7 +16,7 @@ interface UserSignup {
   date_joined: string;
   last_login: string | null;
 }
-type UserInfo = Pick<User, "username" | "role">;
+type UserInfo = Pick<User, "username" | "role" | "real_name" | "user_id" | "email_verified">;
 
 interface UserSummary {
   userCount: number;
@@ -32,8 +34,16 @@ interface UserEditorConfig {
   language: 0 | 1 | 2;
 }
 
-interface UserProperties extends User {
-  editorConfig: UserEditorConfig;
+interface UserProperties {
+  real_name: string;
+  username: string;
+  role: string;
+  email: string;
+  user_id: string;
+  student_id: string;
+  bio: string;
+  avatar: string;
+  email_verified: boolean;
 }
 
 interface UserEditionForm {

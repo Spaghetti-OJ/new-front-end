@@ -16,7 +16,7 @@ import api from "@/api";
 const { t } = useI18n();
 const route = useRoute();
 const theme = useTheme();
-useTitle(`Problem Stats - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Problem Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer, LabelLayout, GridComponent, BarChart]);
 const stats = ref<ProblemStats | null>(null);
 const error = ref<any>(null);
@@ -27,7 +27,6 @@ async function getStat() {
 
   try {
     const res = await api.Problem.getProblemStat(Number(route.params.id));
-
     stats.value = res.data;
   } catch (err) {
     console.error(err);
@@ -164,7 +163,7 @@ const barOption = computed(() => ({
               <div class="stat place-items-center">
                 <div class="stat-title">{{ t("course.problem.stats.general.ac") }}</div>
                 <div class="stat-value">
-                  <span v-if="!acUserRatio[0]">-</span>
+                  <span v-if="!acUserRatio[1]">-</span>
                   <template v-else>
                     <span>{{ acUserRatio[0] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${acUserRatio[1]}` }}</span>
@@ -176,7 +175,7 @@ const barOption = computed(() => ({
                 <div class="stat-value">
                   <span v-if="!submissionCount || !stats">-</span>
                   <template v-else>
-                    <span>{{ stats.statusCount.accepted }}</span>
+                    <span>{{ stats.statusCount["accepted"] }}</span>
                     <span class="text-sm font-normal">{{ ` / ${submissionCount}` }}</span>
                   </template>
                 </div>

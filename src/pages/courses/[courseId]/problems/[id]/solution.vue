@@ -9,7 +9,7 @@ import { fetcher } from "@/api";
 const route = useRoute();
 const { t } = useI18n();
 
-useTitle(`Solution - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Solution - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
 const {
   data: problem,
