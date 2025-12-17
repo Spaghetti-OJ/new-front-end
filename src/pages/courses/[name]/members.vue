@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/api";
-import { ROLE } from "@/constants";
+import api from "@/api";
 import { useTitle } from "@vueuse/core";
 import { useSession, UserRole } from "@/stores/session";
 import axios from "axios";
@@ -14,7 +12,7 @@ const session = useSession();
 useTitle(`Members - ${route.params.name} | Normal OJ`);
 enum MemberTableColumn {
   USERNAME = "username",
-  DISPLAYED_NAME = "displayedName",
+  REAL_NAME = "real_name",
   ROLE = "role",
 }
 const sortBy = ref<MemberTableColumn>(
@@ -25,48 +23,58 @@ const sortBy = ref<MemberTableColumn>(
 watch(sortBy, () => {
   router.replace({ query: { sort: sortBy.value || MemberTableColumn.USERNAME } });
 });
-const { data, error, isLoading } = useAxios<Course>(`/course/${route.params.name}`, fetcher);
+
+const rawMembers = ref<UserInfo[]>([]);
 const members = computed(() => {
-  if (!data.value) return [];
-  return [data.value.teacher, ...data.value.students, ...data.value.TAs].sort((a, b) => {
+  return [...rawMembers.value].sort((a, b) => {
     if (sortBy.value === "username") {
       return a.username.localeCompare(b.username);
-    } else if (sortBy.value === "displayedName") {
-      return a.displayedName.localeCompare(b.displayedName);
+    } else if (sortBy.value === "real_name") {
+      return a.real_name.localeCompare(b.real_name);
     } else {
-      return a.role - b.role;
+      return a.role.localeCompare(b.role);
     }
   });
 });
 
+const error = ref<any>(undefined);
+const isLoading = ref(true);
+const selectedUsernames = ref<string[]>([]);
+const removeLoading = ref(false);
+const removeError = ref<string | null>(null);
+const addUsername = ref("");
+const addLoading = ref(false);
+const addError = ref<string | null>(null);
+
+const loadMembers = async () => {
+  isLoading.value = true;
+  try {
+    const res = await api.Course.info(route.params.name as string);
+    if (res?.data.TAs && res?.data.students && res?.data.teacher) {
+      rawMembers.value = [res.data.teacher, ...res.data.students, ...res.data.TAs];
+    }
+  } catch (err: any) {
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  void loadMembers();
+});
+
 const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
+const rolesCanRemove = [UserRole.Admin, UserRole.Teacher];
+const canRemove = computed(() => rolesCanRemove.includes(session.role));
 
 const isOpen = ref(false);
 const newMembers = ref<File | null>();
-const shouldStandardizeUsername = ref(true);
 const newMembersCSVString = ref("");
 const forceUpdate = ref(false);
 const isProcessingSignup = ref(false);
 const errorMsg = ref("");
 const previewCSV = ref<{ headers?: string[]; body?: string[][] }>({});
-
-// no csv validation was handled
-const standardizeUsername = (csv: string): string => {
-  const rows = csv.split("\n");
-  const header = rows[0];
-  const body = rows.slice(1).map((r) => r.split(","));
-  const usernameFieldIndex = header.split(",").findIndex((v) => v === "username");
-  if (usernameFieldIndex < 0) {
-    return csv;
-  }
-
-  body.forEach((data) => {
-    data[usernameFieldIndex] = data[usernameFieldIndex]?.toUpperCase();
-  });
-
-  const bodyString = body.map((data) => data.join(","));
-  return [header, ...bodyString].join("\n");
-};
 
 watch(newMembers, () => {
   if (!newMembers.value) return;
@@ -84,17 +92,10 @@ watch(newMembers, () => {
 async function submit() {
   if (!newMembersCSVString.value) return;
   isProcessingSignup.value = true;
-  const csv = shouldStandardizeUsername.value
-    ? standardizeUsername(newMembersCSVString.value)
-    : newMembersCSVString.value;
-
   try {
-    await api.Auth.batchSignup({
-      newUsers: csv,
-      force: forceUpdate.value,
-      course: route.params.name as string,
-    });
-    router.go(0);
+    if (!newMembers.value) return;
+    await api.Course.importCSV(route.params.name as string, newMembers.value, forceUpdate.value);
+    await loadMembers();
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       errorMsg.value = error.response.data.message;
@@ -106,6 +107,44 @@ async function submit() {
     isProcessingSignup.value = false;
   }
 }
+
+function toggleSelect(username?: string) {
+  if (!username) return;
+  const idx = selectedUsernames.value.indexOf(username);
+  if (idx === -1) selectedUsernames.value.push(username);
+  else selectedUsernames.value.splice(idx, 1);
+}
+
+async function removeSelected() {
+  if (!selectedUsernames.value.length) return;
+  removeLoading.value = true;
+  removeError.value = null;
+  try {
+    await api.Course.editMember(route.params.name as string, { remove: selectedUsernames.value, new: [] });
+    selectedUsernames.value = [];
+    await loadMembers();
+  } catch (err: any) {
+    removeError.value = err?.response?.data?.message || err?.message || "Failed to remove members.";
+  } finally {
+    removeLoading.value = false;
+  }
+}
+
+async function addByUsername() {
+  const username = addUsername.value.trim();
+  if (!username) return;
+  addLoading.value = true;
+  addError.value = null;
+  try {
+    await api.Course.editMember(route.params.name as string, { new: [username], remove: [] });
+    addUsername.value = "";
+    await loadMembers();
+  } catch (err: any) {
+    addError.value = err?.response?.data?.message || err?.message || "Failed to add member.";
+  } finally {
+    addLoading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -114,45 +153,102 @@ async function submit() {
       <div class="card-body">
         <div class="card-title">
           {{ $t("course.members.title") }}
-          <span v-if="data" class="text-sm opacity-70">({{ members.length }})</span>
+          <span v-if="members" class="text-sm opacity-70">({{ members.length }})</span>
 
           <div class="flex-1" />
 
-          <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
-            <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
-          </label>
+          <div class="flex items-center gap-2">
+            <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
+              <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
+            </label>
+          </div>
         </div>
 
-        <div class="mb-4">
+        <div v-if="removeError" class="alert alert-error my-3 shadow-lg">
+          <div>
+            <i-uil-times-circle />
+            <span>{{ removeError }}</span>
+          </div>
+        </div>
+
+        <div class="mb-4 flex flex-wrap items-end gap-3">
           <div class="form-control w-full max-w-xs">
             <label class="label">
               <span class="label-text">{{ $t("course.members.sortBy") }}</span>
             </label>
             <select v-model="sortBy" class="select select-bordered w-full max-w-xs">
               <option :value="MemberTableColumn.USERNAME">Username</option>
-              <option :value="MemberTableColumn.DISPLAYED_NAME">Display Name</option>
+              <option :value="MemberTableColumn.REAL_NAME">Real Name</option>
               <option :value="MemberTableColumn.ROLE">Role</option>
             </select>
+          </div>
+          <div v-if="rolesCanCreateCourse.includes(session.role)" class="form-control w-full max-w-xs">
+            <label class="label">
+              <span class="label-text">Add by username</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="addUsername"
+                type="text"
+                class="input input-bordered w-full max-w-xs"
+                placeholder="username"
+              />
+              <button
+                class="btn btn-primary btn-sm h-10 min-w-[3.5rem]"
+                :class="addLoading && 'loading'"
+                :disabled="!addUsername.trim()"
+                @click="addByUsername"
+              >
+                Add
+              </button>
+              <button
+                v-if="canRemove"
+                class="flex h-10 w-10 items-center justify-center self-center border-none bg-transparent p-0 pl-2 shadow-none"
+                :class="removeLoading && 'loading'"
+                :disabled="!selectedUsernames.length"
+                @click="removeSelected"
+                aria-label="Remove selected"
+                title="Remove selected"
+              >
+                <i-uil-trash-alt class="h-6 w-6 text-error" />
+              </button>
+            </div>
+            <p v-if="addError" class="mt-1 text-xs text-error">{{ addError }}</p>
           </div>
         </div>
         <data-status-wrapper :error="error" :is-loading="isLoading">
           <template #loading>
-            <skeleton-table :col="3" :row="5" />
+            <skeleton-table :col="canRemove ? 4 : 3" :row="5" />
           </template>
           <template #data>
             <table class="table w-full">
               <thead>
                 <tr>
+                  <th v-if="canRemove"></th>
                   <th>username</th>
-                  <th>display name</th>
+                  <th>real name</th>
                   <th>role</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="{ username, displayedName, role } in members" :key="username" class="hover">
-                  <td>{{ username }}</td>
-                  <td>{{ displayedName }}</td>
-                  <td>{{ ROLE[role] }}</td>
+                <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
+                  <td v-if="canRemove">
+                    <template v-if="role === 'student'">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-sm"
+                        :checked="selectedUsernames.includes(username)"
+                        @change="toggleSelect(username)"
+                      />
+                    </template>
+                  </td>
+                  <td>
+                    <router-link :to="`/profile/${username}`" class="link link-hover">
+                      {{ username }}
+                    </router-link>
+                  </td>
+                  <td>{{ real_name }}</td>
+                  <td>{{ role }}</td>
                 </tr>
               </tbody>
             </table>
@@ -167,10 +263,10 @@ async function submit() {
         <div>
           {{ $t("course.members.csvUploadHint.header") }}
           <ul class="ml-4 list-disc">
-            <li v-for="h in ['username', 'email', 'password']">
+            <li v-for="h in ['username', 'email', 'real_name']" :key="h">
               <code>{{ h }}</code>
             </li>
-            <li v-for="h in ['displayedName', 'role']">
+            <li v-for="h in ['student_id', 'password']" :key="h">
               <code>{{ h }}</code> (optional)
             </li>
           </ul>
@@ -184,13 +280,6 @@ async function submit() {
         </div>
 
         <div class="my-4" />
-
-        <div class="form-control">
-          <label class="label cursor-pointer">
-            <span class="label-text">{{ $t("course.members.standardizeUsername") }}</span>
-            <input v-model="shouldStandardizeUsername" type="checkbox" class="checkbox checkbox-primary" />
-          </label>
-        </div>
 
         <div class="alert alert-error shadow-lg" v-if="errorMsg">
           <div>

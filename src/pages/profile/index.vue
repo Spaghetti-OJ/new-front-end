@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { reactive, ref, toRef, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/api";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
-import { required, sameAs, helpers } from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
-import axios from "axios";
 import { useI18n } from "vue-i18n";
+import axios from "axios";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
@@ -16,7 +14,6 @@ import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 useTitle("Profile | Normal OJ");
 const router = useRouter();
 const session = useSession();
-const ROLE = ["Admin", "Teacher", "Student"];
 const { t } = useI18n();
 
 const profile = ref<UserProperties | null>(null);
@@ -34,7 +31,6 @@ async function loadProfile() {
   }
 }
 
-// 組件掛載時載入資料
 onMounted(() => {
   loadProfile();
 });
@@ -51,63 +47,6 @@ async function logout() {
     session.logoutLocally();
     router.replace("/");
   }
-}
-
-const changePasswordForm = reactive({
-  oldPassword: "",
-  newPassword: "",
-  confirmPassword: "",
-  isLoading: false,
-  errorMsg: "",
-  isFinished: false,
-});
-
-const rules = {
-  newPassword: { required },
-  oldPassword: { required },
-  confirmPassword: {
-    required,
-    sameAsRef: helpers.withMessage(
-      t("profile.rules.confirmPassword.sameAsRef"),
-      sameAs(toRef(changePasswordForm, "newPassword")),
-    ),
-  },
-};
-const v$ = useVuelidate(rules, changePasswordForm);
-
-async function changePassword() {
-  const isFormCorrect = await v$.value.$validate();
-  if (!isFormCorrect) return;
-  changePasswordForm.errorMsg = "";
-  changePasswordForm.isFinished = false;
-  changePasswordForm.isLoading = true;
-  try {
-    await api.Auth.changePassword({
-      old_password: changePasswordForm.oldPassword,
-      new_password: changePasswordForm.newPassword,
-    });
-    clearForm();
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.data.message === "Wrong Password") {
-        changePasswordForm.errorMsg = t("profile.wrongPassword");
-      } else {
-        changePasswordForm.errorMsg = t("profile.operationFailed");
-      }
-    } else {
-      throw error;
-    }
-  } finally {
-    changePasswordForm.isLoading = false;
-  }
-}
-
-function clearForm() {
-  changePasswordForm.oldPassword = "";
-  changePasswordForm.newPassword = "";
-  changePasswordForm.confirmPassword = "";
-  changePasswordForm.isFinished = true;
-  v$.value.$reset();
 }
 
 const heatmapData = [
@@ -146,6 +85,36 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
     logout();
   }
 }
+
+const isVerifying = ref(false);
+const showVerifyModal = ref(false);
+const error = ref<string | null>(null);
+
+async function sendVerifyEmail() {
+  if (isVerifying.value) return;
+  isVerifying.value = true;
+  error.value = null;
+  try {
+    await api.Auth.sendVerifyEmail();
+    showVerifyModal.value = true;
+  } catch (err) {
+    console.error(err);
+    if (axios.isAxiosError(err) && err.response?.data) {
+      const msg = (err.response.data as any).message;
+      if (msg === "Email Not Set") {
+        error.value = t("profile.emailNotSet");
+      } else if (msg === "Email Already Verified") {
+        error.value = t("profile.emailAlreadyVerified");
+      } else {
+        error.value = t("profile.verifyEmailFailed");
+      }
+    } else {
+      error.value = t("profile.verifyEmailFailed");
+    }
+  } finally {
+    isVerifying.value = false;
+  }
+}
 </script>
 
 <template>
@@ -153,7 +122,7 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
     <!-- 左邊：頭貼，可編輯 -->
     <template #left>
       <ProfileAvatarBlock
-        :avatar-url="profile.md5 || ''"
+        :avatar-url="profile.avatar || ''"
         :editable-avatar="false"
         :buttons="[
           { label: t('profile.edit'), variant: 'primary', action: 'Edit' },
@@ -168,18 +137,33 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
       <section class="w-full">
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
           <ProfileField :label="t('profile.realName')" :model-value="profile.real_name" :editable="false" />
-          <ProfileField :label="t('profile.username')" :model-value="profile.user_name" :editable="false" />
+          <ProfileField :label="t('profile.username')" :model-value="profile.username" :editable="false" />
           <ProfileField :label="t('profile.role')" :model-value="profile.role" :editable="false" />
-          <ProfileField
-            :label="t('profile.email')"
-            :model-value="profile.email"
-            :editable="false"
-            type="email"
-          />
+          <div class="flex items-end gap-2">
+            <ProfileField
+              :label="t('profile.email')"
+              :model-value="profile.email"
+              :editable="false"
+              type="email"
+              container-class="w-full"
+            />
+            <div v-if="profile.email_verified" class="mb-3 text-success">
+              <i-uil-check-circle class="h-6 w-6" />
+            </div>
+            <button
+              v-else
+              class="btn btn-primary mb-[2px]"
+              :class="{ loading: isVerifying }"
+              @click="sendVerifyEmail"
+            >
+              {{ t("profile.verifyEmail") }}
+            </button>
+          </div>
+          <div v-if="error" class="text-sm text-error md:col-start-2">{{ error }}</div>
           <ProfileField :label="t('profile.studentId')" :model-value="profile.student_id" :editable="false" />
           <ProfileField
             :label="t('profile.introduction')"
-            :model-value="profile.introduction"
+            :model-value="profile.bio"
             :editable="false"
             type="textarea"
             container-class="md:col-span-2"
@@ -201,4 +185,16 @@ function onAvatarAction(action: "Edit" | "Sign Out") {
   <div v-else-if="isLoadingProfile" class="flex min-h-screen items-center justify-center">
     <span class="loading-spinner loading-lg loading"></span>
   </div>
+
+  <!-- Verify Email Modal -->
+  <div class="modal" :class="{ 'modal-open': showVerifyModal }">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">{{ t("profile.verifyEmailSentTitle") }}</h3>
+      <p class="py-4">{{ t("profile.verifyEmailSentMessage") }}</p>
+      <div class="modal-action">
+        <button class="btn" @click="showVerifyModal = false">{{ t("profile.close") }}</button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showVerifyModal" class="modal-backdrop" @click="showVerifyModal = false"></div>
 </template>

@@ -10,7 +10,6 @@ interface Props {
   showStats?: boolean;
   showCopycat?: boolean;
 }
-
 const { t } = useI18n();
 
 withDefaults(defineProps<Props>(), {

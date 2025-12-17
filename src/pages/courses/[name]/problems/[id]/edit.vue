@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, watchEffect, provide, Ref } from "vue";
+import { ref, provide, Ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
-import api, { fetcher } from "@/api";
+import api from "@/api";
 import axios from "axios";
+import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
@@ -12,42 +12,66 @@ const router = useRouter();
 useTitle(`Edit Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
+function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
+  return LANGUAGE_OPTIONS.filter((lang) => (mask & lang.mask) !== 0).map((lang) => lang.text);
+}
+const isFetching = ref(true);
+const fetchError = ref<any>(null);
 
-const {
-  data: problem,
-  error: fetchError,
-  isLoading: isFetching,
-} = useAxios<ProblemInfo>(`/problem/${route.params.id}`, fetcher);
+async function getManage() {
+  try {
+    isFetching.value = true;
+    const problemId = Number(route.params.id);
+    const { data: problemData } = await api.Problem.getManageData(problemId);
+    const { data: subtasks } = await api.Problem.getSubtasks(problemId);
+    const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
 
-const edittingProblem = ref<ProblemForm>();
-watchEffect(() => {
-  if (problem.value) {
+    const publicTestCases = publicInfo.testCase || publicInfo.test_case || publicInfo.test_cases || [];
+
+    const sortedSubtasks = subtasks.sort((a: any, b: any) => a.subtask_no - b.subtask_no);
+
     edittingProblem.value = {
-      problemName: problem.value.problemName,
+      problemName: problemData.title,
       description: {
-        description: problem.value.description.description,
-        input: problem.value.description.input,
-        output: problem.value.description.output,
-        hint: problem.value.description.hint,
-        sampleInput: (problem.value.description.sampleInput || "").split("\n"),
-        sampleOutput: (problem.value.description.sampleOutput || "").split("\n"),
+        description: problemData.description,
+        input: problemData.input_description || "",
+        output: problemData.output_description || "",
+        hint: problemData.hint || "",
+        sampleInput: (problemData.sample_input || "").split("\n"),
+        sampleOutput: (problemData.sample_output || "").split("\n"),
       },
-      courses: problem.value.courses.map((c) => c.name),
-      tags: problem.value.tags.map((t) => t.name),
-      allowedLanguage: problem.value.allowedLanguage,
-      quota: problem.value.quota,
-      type: problem.value.type,
-      status: problem.value.status === "public" ? 0 : 1, // 0: visible, 1: hidden
+      courses: [route.params.name as string], // Assuming context
+      tags: problemData.tags.map((t: any) => String(t.id)),
+      allowedLanguage: publicInfo.allowedLanguage ?? publicInfo.allowed_languages,
+      quota: problemData.total_quota,
+      type: 0, // Default or map if available
+      status: problemData.is_public === "public" ? 0 : 1,
       testCaseInfo: {
         language: 0,
-        fillInTemplate: problem.value.fillInTemplate || "",
-        tasks: problem.value.testCase,
+        fillInTemplate: "",
+        tasks: sortedSubtasks.map((s: any, index: number) => {
+          const info = publicTestCases[index];
+          return {
+            caseCount: info?.caseCount ?? info?.case_count ?? 0,
+            memoryLimit: s.memory_limit_mb,
+            taskScore: s.weight,
+            timeLimit: s.time_limit_ms,
+          };
+        }),
       },
       canViewStdout: true,
-      defaultCode: typeof problem.value.defaultCode === "string" ? problem.value.defaultCode : "", // Handle object/string mismatch if any
+      defaultCode: "",
     };
+  } catch (err) {
+    fetchError.value = err;
+    console.error(err);
+  } finally {
+    isFetching.value = false;
   }
-});
+}
+onMounted(getManage);
+const edittingProblem = ref<ProblemForm>();
+provide<Ref<ProblemForm | undefined>>("problem", edittingProblem);
 function update<K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) {
   if (!edittingProblem.value) return;
   edittingProblem.value[key] = value;
@@ -68,49 +92,59 @@ const mockProblemMeta = {
 
 const openJSON = ref<boolean>(false);
 
-function mapProblemFormToPayload(
-  p: ProblemForm,
-  originalTags: { id: number; name: string }[],
-): ProblemCreatePayload {
+function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
-
-  // Map tag names back to IDs
-  const tagIds = p.tags
-    .map((tagName) => {
-      const tag = originalTags.find((t) => t.name === tagName);
-      return tag ? tag.id : undefined;
-    })
-    .filter((id): id is number => id !== undefined);
 
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id: (route.params.course_id as string) || "0", // Fallback or fetch from somewhere
-    difficulty: "medium", // Default or map if available in form
-    is_public: p.status === 0 ? "public" : "hidden",
+    course_id: courseId, // 後端要 UUID
+
+    difficulty: "medium" as "easy" | "medium" | "hard",
+    is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
+
     max_score: 100,
-    total_quota: p.quota,
+    total_quota: p.quota ?? -1,
+
     input_description: emptyToNull(p.description.input),
     output_description: emptyToNull(p.description.output),
     sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
     sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
     hint: emptyToNull(p.description.hint),
+
     subtask_description: null,
-    supported_languages: undefined,
-    tags: tagIds,
+
+    supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
+    tags: p.tags.map((t) => Number(t)),
   };
 }
 
 async function submit() {
-  if (!edittingProblem.value || !formElement.value || !problem.value) return;
+  if (!edittingProblem.value || !formElement.value) return;
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapProblemFormToPayload(edittingProblem.value, problem.value.tags);
+    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.name));
     await api.Problem.modify(route.params.id as string, payload);
+    const tasks = edittingProblem.value.testCaseInfo.tasks;
+    const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
+    for (const subtask of subtaskres.data) {
+      await api.Problem.deleteSubtasks(Number(route.params.id), subtask.id);
+    }
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
 
+      await api.Problem.createSubtasks(Number(route.params.id), {
+        subtask_no: i + 1,
+        weight: t.taskScore,
+        time_limit_ms: t.timeLimit,
+        memory_limit_mb: Math.ceil(t.memoryLimit),
+      });
+    }
     if (testdata.value) {
-      await uploadTestCase();
+      const testdataForm = new FormData();
+      testdataForm.append("case", testdata.value);
+      await api.Problem.modifyTestdata(Number(route.params.id), testdataForm);
     }
     router.push(`/courses/${route.params.name}/problems/${route.params.id}`);
   } catch (error) {
@@ -125,41 +159,6 @@ async function submit() {
   }
 }
 
-async function uploadTestCase() {
-  const problemId = Number.parseInt(route.params.id as string, 10);
-  const length = testdata.value?.size;
-  if (!length) {
-    console.error("No file to upload or file size is 0");
-    return;
-  }
-  const partSize = 5 * 1024 * 1024;
-  const uploadInfo = (
-    await api.Problem.initiateTestCaseUpload(problemId, {
-      length,
-      partSize,
-    })
-  ).data;
-
-  const parts = [];
-  const partCount = uploadInfo.urls.length;
-  for (let i = 0; i < partCount; i++) {
-    const start = i * partSize;
-    const end = Math.min((i + 1) * partSize, length);
-    const part = testdata.value?.slice(start, end);
-    if (!part) {
-      console.error("Failed to slice file");
-      return;
-    }
-    const resp = await fetch(uploadInfo.urls[i], { method: "PUT", body: part });
-    parts.push({
-      ETag: resp.headers.get("ETag")!,
-      PartNumber: i + 1,
-    });
-  }
-
-  await api.Problem.completeTestCaseUpload(problemId, uploadInfo.upload_id, parts);
-}
-
 async function discard() {
   if (!confirm("Are u sure?")) return;
   router.push(`/courses/${route.params.name}/problems`);
@@ -169,11 +168,16 @@ async function delete_() {
   formElement.value.isLoading = true;
   if (!confirm("Are u sure?")) return;
   try {
+    const problemId = Number(route.params.id);
+    const subtaskres = await api.Problem.getSubtasks(problemId);
+    for (const subtask of subtaskres.data) {
+      await api.Problem.deleteSubtasks(problemId, subtask.id);
+    }
     await api.Problem.delete(route.params.id as string);
     router.push(`/courses/${route.params.name}/problems`);
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      formElement.value.errorMsg = error.response.data.message;
+    if (axios.isAxiosError(error) && error.response?.data) {
+      formElement.value.errorMsg = error.response.data.detail;
     } else {
       formElement.value.errorMsg = "Unknown error occurred :(";
     }
