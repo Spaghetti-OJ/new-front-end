@@ -66,3 +66,34 @@ interface CourseImportCSVResponse {
     import: CourseImportCSVResult;
   };
 }
+
+interface StudentScore {
+  userId: string;
+  username: string;
+  realName: string;
+  scores: { [key: string]: number };
+  totalScore: number;
+  submittedCount: number;
+}
+
+interface ScoreBoardProblemStat {
+  problemId: number;
+  maxScore: number;
+  averageScore: number;
+  submissionCount: number;
+  submitterCount: number;
+  fullScore: number;
+}
+
+interface ScoreBoardData {
+  courseId: number;
+  problemIds: number[];
+  timeRange: { start: number; end: number | null };
+  students: StudentScore[];
+  problemStats: ScoreBoardProblemStat[];
+}
+
+interface ScoreBoardResponse {
+  message: string;
+  data: ScoreBoardData;
+}

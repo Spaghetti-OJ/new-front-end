@@ -170,8 +170,34 @@ async function fetchCourseInfo() {
   }
 }
 
+// Scoreboard state
+const scoreboardData = ref<ScoreBoardData | null>(null);
+
+async function fetchScoreboard() {
+  try {
+    // 1. Get problem list to find pids
+    const { data: problemList } = await api.Problem.getProblemList({
+      course_id: Number(courseId),
+      page_size: 1000, // Fetch all for scoreboard
+    });
+
+    if (!problemList.results.length) {
+      return;
+    }
+
+    const pids = problemList.results.map((p) => p.id).join(",");
+
+    // 2. Get scoreboard
+    const { data: sbData } = await api.Course.getScoreBoard(courseId, { pids });
+    scoreboardData.value = sbData.data;
+  } catch (error) {
+    console.warn("Failed to fetch scoreboard:", error);
+  }
+}
+
 onMounted(() => {
   fetchCourseInfo();
+  fetchScoreboard();
 });
 </script>
 
@@ -301,38 +327,43 @@ onMounted(() => {
             <i-uil-trophy class="h-6 w-6" /> Scoreboard
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="table w-full">
+          <div class="overflow-x-auto" v-if="scoreboardData">
+            <table class="table table-compact w-full">
               <thead>
                 <tr>
                   <th>Rank</th>
                   <th>User</th>
-                  <th>Username</th>
-                  <th>AC Count</th>
+                  <th>Total Score</th>
+                  <th v-for="pid in scoreboardData.problemIds" :key="pid">
+                    {{ pid }}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>dog123</td>
-                  <td>熙氣ㄧ狗</td>
-                  <td>66</td>
-                </tr>
-                <tr>
-                  <th>2</th>
-                  <td>cat666</td>
-                  <td>奧貓</td>
-                  <td>64</td>
-                </tr>
-                <tr>
-                  <th>3</th>
-                  <td>lion7</td>
-                  <td>師大大師</td>
-                  <td>60</td>
+                <tr v-for="(student, index) in scoreboardData.students" :key="student.userId">
+                  <th>{{ index + 1 }}</th>
+                  <td>
+                    <div class="font-bold">{{ student.realName }}</div>
+                    <div class="text-xs opacity-50">{{ student.username }}</div>
+                  </td>
+                  <td class="font-bold text-primary">{{ student.totalScore }}</td>
+                  <td v-for="pid in scoreboardData.problemIds" :key="pid">
+                    <span
+                      :class="{
+                        'font-bold text-success': student.scores[pid] === 100,
+                        'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
+                        'text-error': student.scores[pid] === 0,
+                        'text-base-content opacity-30': student.scores[pid] === undefined,
+                      }"
+                    >
+                      {{ student.scores[pid] !== undefined ? student.scores[pid] : "-" }}
+                    </span>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <div v-else class="py-4 text-center opacity-50">Loading scoreboard or no data...</div>
         </div>
       </div>
     </div>

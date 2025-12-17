@@ -21,6 +21,8 @@ export const Course = {
   deleteCourse: (body: { course_id: number }) =>
     fetcher.delete<{ message: string }>(`/course/`, { data: body }),
   getSummary: () => fetcher.get<CourseSummary>("/course/summary/"),
+  getScoreBoard: (courseId: string | number, params: { pids: string; start?: number; end?: number }) =>
+    fetcher.get<ScoreBoardResponse>(`/course/${courseId}/scoreboard/`, { params }),
 };
 
 export const Announcement = {
