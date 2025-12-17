@@ -130,8 +130,32 @@ function getSummary(courseName: string) {
 
       <data-status-wrapper :error="error" :is-loading="isLoading">
         <template #loading>
-          <div class="grid grid-cols-1 gap-4">
+          <div v-if="session.isAdmin" class="grid grid-cols-1 gap-4">
             <div v-for="i in 5" :key="i" class="h-32 animate-pulse rounded-xl bg-base-200"></div>
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th>
+                    <div class="h-4 w-24 animate-pulse rounded bg-base-200"></div>
+                  </th>
+                  <th>
+                    <div class="h-4 w-24 animate-pulse rounded bg-base-200"></div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="i in 5" :key="i" class="hover">
+                  <td>
+                    <div class="h-4 w-40 animate-pulse rounded bg-base-200"></div>
+                  </td>
+                  <td>
+                    <div class="h-4 w-32 animate-pulse rounded bg-base-200"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </template>
         <template #data>
