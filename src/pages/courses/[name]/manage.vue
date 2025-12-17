@@ -104,9 +104,7 @@ async function submitCourseEdit() {
       new_course: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    await router.replace(route.fullPath);
   } catch (err: any) {
     if (axios.isAxiosError(err) && err.response?.data?.message) {
       error.value = err.response.data.message;
