@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { useSession, UserRole } from "@/stores/session";
 import api from "@/api";
@@ -9,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const session = useSession();
 
-const courseId = route.params.name as string;
+const courseId = Number(route.params.name);
 
 // Permission
 const canEditCourse = computed(() => {
@@ -22,6 +23,8 @@ const courseForm = ref({
   teacher: "",
   tas: "",
 });
+const currentCourseName = ref("");
+useTitle(computed(() => `Manage ${currentCourseName.value || courseId} | Normal OJ`));
 
 // Summary Data
 const summary = ref({
@@ -100,10 +103,11 @@ async function submitCourseEdit() {
   error.value = null;
   try {
     await api.Course.editCourse({
-      course_id: Number(courseId),
+      course_id: courseId,
       new_course: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
+    currentCourseName.value = courseForm.value.name;
     await router.replace(route.fullPath);
   } catch (err: any) {
     if (axios.isAxiosError(err) && err.response?.data?.message) {
@@ -121,7 +125,7 @@ function deleteCourse() {
     onConfirm: async () => {
       error.value = null;
       try {
-        await api.Course.deleteCourse({ course_id: Number(courseId) });
+        await api.Course.deleteCourse({ course_id: courseId });
         router.push("/courses");
       } catch (err: any) {
         if (axios.isAxiosError(err) && err.response?.data?.message) {
@@ -142,6 +146,7 @@ async function fetchCourseInfo() {
       teacher: data.teacher.username,
       tas: data.TAs.map((ta) => ta.username).join(", "),
     };
+    currentCourseName.value = data.course.course;
     courseCode.value = data.course.joinCode;
     summary.value = {
       userCount: data.course.studentCount,
@@ -183,7 +188,7 @@ async function fetchScoreboard() {
   try {
     // 1. Get problem list to find pids
     const { data: problemList } = await api.Problem.getProblemList({
-      course_id: Number(courseId),
+      course_id: courseId,
       page_size: 1000, // Fetch all for scoreboard
     });
 
@@ -212,7 +217,7 @@ onMounted(() => {
     <div class="card-container">
       <div class="card min-w-full">
         <div class="card-body">
-          <div class="card-title mb-6">Manage Course – {{ courseForm.name || courseId }}</div>
+          <div class="card-title mb-6">Manage Course – {{ currentCourseName || courseId }}</div>
 
           <!-- Error Alert -->
           <div v-if="error" class="alert alert-error mb-4 shadow-lg">

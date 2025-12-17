@@ -3,18 +3,18 @@ import { fetcher } from "./fetcher";
 export const Course = {
   create: (body: CourseForm) => fetcher.post("/course/", body),
   list: () => fetcher.get<{ courses: CourseList }>("/course/"),
-  info: (courseId: string) => fetcher.get<Course>(`/course/${courseId}/`),
-  importCSV: (courseId: string, file: File, force?: boolean) => {
+  info: (courseId: string | number) => fetcher.get<Course>(`/course/${courseId}/`),
+  importCSV: (courseId: string | number, file: File, force?: boolean) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("force", force ? "1" : "0");
     return fetcher.post<CourseImportCSVResponse>(`/course/${courseId}/import-csv/`, formData);
   },
-  editMember: (courseId: string, body: { remove: string[]; new: string[] }) =>
+  editMember: (courseId: string | number, body: { remove: string[]; new: string[] }) =>
     fetcher.put<{ message: string }>(`/course/${courseId}/`, body),
-  generateInviteCode: (courseId: string) =>
+  generateInviteCode: (courseId: string | number) =>
     fetcher.post<{ joinCode: string }>(`/course/${courseId}/invite-code/`),
-  deleteInviteCode: (courseId: string, code: string) =>
+  deleteInviteCode: (courseId: string | number, code: string) =>
     fetcher.delete<{ message: string }>(`/course/${courseId}/invite-code/${code}/`),
   editCourse: (body: { course_id: number; new_course: string; teacher: string }) =>
     fetcher.put<{ message: string }>(`/course/`, body),
