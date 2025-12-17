@@ -33,6 +33,7 @@ const summary = ref({
 
 // Course Code
 const courseCode = ref("");
+const isCopied = ref(false);
 
 async function generateCourseCode() {
   try {
@@ -87,6 +88,21 @@ function deleteCode() {
       }
     },
   };
+}
+
+function copyCode() {
+  if (!courseCode.value) return;
+  navigator.clipboard
+    .writeText(courseCode.value)
+    .then(() => {
+      isCopied.value = true;
+      setTimeout(() => {
+        isCopied.value = false;
+      }, 2000);
+    })
+    .catch(() => {
+      showToast("Failed to copy code", "error");
+    });
 }
 
 async function submitCourseEdit() {
@@ -314,6 +330,11 @@ onMounted(() => {
             <span class="font-mono text-lg font-bold tracking-wider">
               {{ courseCode || "—" }}
             </span>
+
+            <button v-if="courseCode" class="btn btn-circle btn-ghost btn-sm" @click="copyCode">
+              <i-uil-check v-if="isCopied" class="h-5 w-5 text-success" />
+              <i-uil-copy v-else class="h-5 w-5" />
+            </button>
 
             <button v-if="courseCode" class="btn btn-circle btn-ghost btn-sm text-error" @click="deleteCode">
               <i-uil-trash-alt class="h-5 w-5" />
