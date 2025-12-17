@@ -16,7 +16,7 @@ const router = useRouter();
 
 const { isDesktop } = useInteractions();
 
-useTitle(`Problems - ${route.params.name} | Normal OJ`);
+useTitle(`Problems - ${route.params.courseId} | Normal OJ`);
 const problems = ref<ProblemList | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
@@ -27,7 +27,7 @@ async function loadProblems() {
 
   try {
     const res = await api.Problem.getProblemList({
-      course_id: Number(route.params.name),
+      course_id: Number(route.params.courseId),
       page_size: 1000, // Fetch all for client-side filtering
     });
 
@@ -81,7 +81,7 @@ const paginatedProblems = computed(() => {
             <router-link
               v-if="rolesCanCreateProblem.includes(session.role)"
               class="btn btn-success"
-              :to="`/courses/${$route.params.name}/problems/new`"
+              :to="`/courses/${$route.params.courseId}/problems/new`"
             >
               <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.problems.new") }}
             </router-link>
@@ -118,14 +118,14 @@ const paginatedProblems = computed(() => {
                         class="h-3 w-3 shrink-0 rounded-full"
                         :class="DIFFICULTY_COLOR_CLASS[p.difficulty]"
                       />
-                      <router-link :to="`/courses/${$route.params.name}/problems/${p.id}`" class="link">
+                      <router-link :to="`/courses/${$route.params.courseId}/problems/${p.id}`" class="link">
                         #{{ p.id }}
                       </router-link>
                     </div>
                   </td>
                   <td>
                     <router-link
-                      :to="`/courses/${$route.params.name}/problems/${p.id}`"
+                      :to="`/courses/${$route.params.courseId}/problems/${p.id}`"
                       class="link link-hover font-medium"
                     >
                       {{ p.title }}
@@ -149,7 +149,7 @@ const paginatedProblems = computed(() => {
                     <div class="tooltip" data-tip="Stats">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.name}/problems/${p.id}/stats`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/stats`"
                       >
                         <i-uil-chart-line class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -158,7 +158,7 @@ const paginatedProblems = computed(() => {
                       <router-link
                         v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.name}/problems/${p.id}/copycat`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/copycat`"
                       >
                         <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -167,7 +167,7 @@ const paginatedProblems = computed(() => {
                       <router-link
                         v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/${$route.params.name}/problems/${p.id}/edit`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>

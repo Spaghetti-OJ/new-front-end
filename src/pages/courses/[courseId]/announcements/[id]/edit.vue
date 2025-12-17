@@ -10,7 +10,7 @@ import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
 const route = useRoute();
 const router = useRouter();
 
-useTitle(`Edit Announcement - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Edit Announcement - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
@@ -27,7 +27,7 @@ onMounted(async () => {
   fetchError.value = null;
 
   try {
-    const courseId = route.params.name as string;
+    const courseId = route.params.courseId as string;
     const annId = route.params.id as string;
 
     const first = await api.Announcement.getOne(courseId, annId);
@@ -83,7 +83,7 @@ async function submit() {
 
     await api.Announcement.modify(body);
 
-    router.push(`/courses/${route.params.name}/announcements/${route.params.id}`);
+    router.push(`/courses/${route.params.courseId}/announcements/${route.params.id}`);
   } catch (error) {
     console.error("[UPDATE announcement error]", error);
     if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -107,7 +107,7 @@ async function delete_() {
 
   try {
     await api.Announcement.delete({ annId: Number(route.params.id) });
-    router.push(`/courses/${route.params.name}/announcements`);
+    router.push(`/courses/${route.params.courseId}/announcements`);
   } catch (error) {
     console.error("[DELETE announcement error]", error);
     if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -123,7 +123,7 @@ async function delete_() {
 
 function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/courses/${route.params.name}/announcements`);
+  router.push(`/courses/${route.params.courseId}/announcements`);
 }
 </script>
 

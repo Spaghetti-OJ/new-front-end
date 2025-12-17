@@ -10,7 +10,7 @@ import HomeworkForm from "@/components/Homework/HomeworkForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`New Homework - ${route.params.name} | Normal OJ`);
+useTitle(`New Homework - ${route.params.courseId} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof HomeworkForm>>();
 
@@ -27,7 +27,7 @@ const {
   problemId2Meta,
   error: fetchError,
   isLoading: isFetching,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
 
 function update<K extends keyof HomeworkForm>(key: K, value: HomeworkForm[K]) {
   newHomework[key] = value;
@@ -46,9 +46,9 @@ async function submit() {
   try {
     await api.Homework.create({
       ...newHomework,
-      course_id: Number(route.params.name),
+      course_id: Number(route.params.courseId),
     });
-    router.push(`/courses/${route.params.name}/homeworks`);
+    router.push(`/courses/${route.params.courseId}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;

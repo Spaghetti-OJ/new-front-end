@@ -11,7 +11,7 @@ import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
-useTitle(`New Problem - ${route.params.name} | Normal OJ`);
+useTitle(`New Problem - ${route.params.courseId} | Normal OJ`);
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
   return LANGUAGE_OPTIONS.filter((lang) => (mask & lang.mask) !== 0).map((lang) => lang.text);
 }
@@ -26,7 +26,7 @@ const newProblem = ref<ProblemForm>({
     sampleInput: [""],
     sampleOutput: [""],
   },
-  courses: [route.params.name as string],
+  courses: [route.params.courseId as string],
   defaultCode: "",
   tags: [],
   allowedLanguage: 3,
@@ -90,7 +90,7 @@ async function submit() {
   }
   formElement.value.isLoading = true;
   try {
-    const payload = mapNewProblemToPayload(newProblem.value, route.params.name as string);
+    const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;
     const tasks = newProblem.value.testCaseInfo.tasks;
@@ -113,10 +113,10 @@ async function submit() {
           ? error.response.data.message
           : "Unknown error occurred :(";
       alert(`Problem created, but testdata upload failed: ${errorMsg}`);
-      router.push(`/courses/${route.params.name}/problems/${problemId}/edit`);
+      router.push(`/courses/${route.params.courseId}/problems/${problemId}/edit`);
       throw error;
     }
-    router.push(`/courses/${route.params.name}/problems/${problemId}`);
+    router.push(`/courses/${route.params.courseId}/problems/${problemId}`);
   } catch (error) {
     formElement.value.errorMsg =
       axios.isAxiosError(error) && error.response?.data?.message

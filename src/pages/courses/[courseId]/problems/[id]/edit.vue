@@ -9,7 +9,7 @@ import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`Edit Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Edit Problem - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof ProblemFormComponent>>();
 function mapAllowedLanguageToSupportedLanguages(mask: number): string[] {
@@ -40,7 +40,7 @@ async function getManage() {
         sampleInput: (problemData.sample_input || "").split("\n"),
         sampleOutput: (problemData.sample_output || "").split("\n"),
       },
-      courses: [route.params.name as string], // Assuming context
+      courses: [route.params.courseId as string], // Assuming context
       tags: problemData.tags.map((t: any) => String(t.id)),
       allowedLanguage: publicInfo.allowedLanguage ?? publicInfo.allowed_languages,
       quota: problemData.total_quota,
@@ -124,7 +124,7 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.name));
+    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.courseId));
     await api.Problem.modify(route.params.id as string, payload);
     const tasks = edittingProblem.value.testCaseInfo.tasks;
     const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
@@ -146,7 +146,7 @@ async function submit() {
       testdataForm.append("case", testdata.value);
       await api.Problem.modifyTestdata(Number(route.params.id), testdataForm);
     }
-    router.push(`/courses/${route.params.name}/problems/${route.params.id}`);
+    router.push(`/courses/${route.params.courseId}/problems/${route.params.id}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -161,7 +161,7 @@ async function submit() {
 
 async function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/courses/${route.params.name}/problems`);
+  router.push(`/courses/${route.params.courseId}/problems`);
 }
 async function delete_() {
   if (!formElement.value) return;
@@ -174,7 +174,7 @@ async function delete_() {
       await api.Problem.deleteSubtasks(problemId, subtask.id);
     }
     await api.Problem.delete(route.params.id as string);
-    router.push(`/courses/${route.params.name}/problems`);
+    router.push(`/courses/${route.params.courseId}/problems`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data) {
       formElement.value.errorMsg = error.response.data.detail;

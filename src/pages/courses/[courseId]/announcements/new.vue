@@ -10,7 +10,7 @@ import { useSession } from "@/stores/session";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`New Announcement - ${route.params.name} | Normal OJ`);
+useTitle(`New Announcement - ${route.params.courseId} | Normal OJ`);
 
 const session = useSession();
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
@@ -41,11 +41,11 @@ async function submit() {
       title: newAnnouncement.title,
       content: newAnnouncement.markdown,
       is_pinned: newAnnouncement.pinned,
-      course_id: Number(route.params.name),
+      course_id: Number(route.params.courseId),
     };
     const { annId } = (await api.Announcement.create(body)).data;
 
-    router.push(`/courses/${route.params.name}/announcements/${annId}`);
+    router.push(`/courses/${route.params.courseId}/announcements/${annId}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;

@@ -66,13 +66,13 @@ onMounted(getSubtasks);
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/submit`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/submit`"
             >
               <i-uil-file-upload-alt class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.submit") }}
             </router-link>
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/stats`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/stats`"
             >
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
@@ -80,7 +80,7 @@ onMounted(getSubtasks);
               v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/copycat`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`"
             >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
@@ -88,7 +88,7 @@ onMounted(getSubtasks);
               v-if="session.isAdmin || session.isTeacher"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/edit`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`"
             >
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
@@ -137,7 +137,10 @@ onMounted(getSubtasks);
                 <tr v-for="(input, index) in [problem.description.sampleInput]" :key="index">
                   <td class="align-top">{{ index + 1 }}</td>
                   <td class="align-top">
-                    <sample-code-block v-if="input" :code="input"></sample-code-block>
+                    <sample-code-block
+                      v-if="input"
+                      :code="Array.isArray(input) ? input.join('\n') : input"
+                    ></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
@@ -145,7 +148,11 @@ onMounted(getSubtasks);
                   <td class="align-top">
                     <sample-code-block
                       v-if="problem.description.sampleOutput"
-                      :code="problem.description.sampleOutput"
+                      :code="
+                        Array.isArray(problem.description.sampleOutput)
+                          ? problem.description.sampleOutput.join('\n')
+                          : problem.description.sampleOutput
+                      "
                     ></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")

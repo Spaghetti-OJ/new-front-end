@@ -9,7 +9,7 @@ import axios from "axios";
 const route = useRoute();
 const router = useRouter();
 const session = useSession();
-useTitle(`Members - ${route.params.name} | Normal OJ`);
+useTitle(`Members - ${route.params.courseId} | Normal OJ`);
 enum MemberTableColumn {
   USERNAME = "username",
   REAL_NAME = "real_name",
@@ -30,7 +30,7 @@ const members = computed(() => {
     if (sortBy.value === "username") {
       return a.username.localeCompare(b.username);
     } else if (sortBy.value === "real_name") {
-      return a.real_name.localeCompare(b.real_name);
+      return (a.real_name || "").localeCompare(b.real_name || "");
     } else {
       return a.role.localeCompare(b.role);
     }
@@ -49,7 +49,7 @@ const addError = ref<string | null>(null);
 const loadMembers = async () => {
   isLoading.value = true;
   try {
-    const res = await api.Course.info(route.params.name as string);
+    const res = await api.Course.info(route.params.courseId as string);
     if (res?.data.TAs && res?.data.students && res?.data.teacher) {
       rawMembers.value = [res.data.teacher, ...res.data.students, ...res.data.TAs];
     }
@@ -94,7 +94,7 @@ async function submit() {
   isProcessingSignup.value = true;
   try {
     if (!newMembers.value) return;
-    await api.Course.importCSV(route.params.name as string, newMembers.value, forceUpdate.value);
+    await api.Course.importCSV(route.params.courseId as string, newMembers.value, forceUpdate.value);
     await loadMembers();
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
@@ -120,7 +120,10 @@ async function removeSelected() {
   removeLoading.value = true;
   removeError.value = null;
   try {
-    await api.Course.editMember(route.params.name as string, { remove: selectedUsernames.value, new: [] });
+    await api.Course.editMember(route.params.courseId as string, {
+      remove: selectedUsernames.value,
+      new: [],
+    });
     selectedUsernames.value = [];
     await loadMembers();
   } catch (err: any) {
@@ -136,7 +139,7 @@ async function addByUsername() {
   addLoading.value = true;
   addError.value = null;
   try {
-    await api.Course.editMember(route.params.name as string, { new: [username], remove: [] });
+    await api.Course.editMember(route.params.courseId as string, { new: [username], remove: [] });
     addUsername.value = "";
     await loadMembers();
   } catch (err: any) {

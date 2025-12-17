@@ -18,9 +18,9 @@ type CopycatResp = {
 };
 
 const route = useRoute();
-useTitle(`Copycat - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Copycat - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
-const { data: course, error: courseError } = useAxios<Course>(`/course/${route.params.name}`, fetcher);
+const { data: course, error: courseError } = useAxios<Course>(`/course/${route.params.courseId}`, fetcher);
 
 const {
   data: report,
