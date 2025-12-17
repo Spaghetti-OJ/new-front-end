@@ -7,8 +7,14 @@ import { ZipReader, BlobReader } from "@zip.js/zip.js";
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
 const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
+type GeneratedCase = {
+  input: string;
+  output: string;
+};
 const props = defineProps<{
   testdata: File | null;
+  generatedCases: GeneratedCase[];
+  isGenerating: boolean;
 }>();
 const isLoading = ref(false);
 const errorMsg = ref("");
@@ -20,6 +26,7 @@ const emits = defineEmits<{
   (e: "update:testdata", value: File | null): void;
   (e: "submit"): void;
   (e: "save-solution"): void;
+  (e: "generate", payload: { llmMode: string }): void;
 }>();
 
 const rules = {
@@ -75,9 +82,6 @@ async function submit() {
 }
 
 const llmMode = ref<"" | "LLM_INPUT_ONLY" | "LLM_DIRECT">("");
-function onGenerateClick() {
-  // TODO: connect backend later
-}
 
 type TestdataMode = "uploadfile" | "LLMgenerate" | null;
 const testdataMode = ref<TestdataMode>(null);
@@ -355,7 +359,7 @@ function removeLastSubtask() {
           <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
             <div class="col-span-2">
               <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="form-control w-full">
                   <label class="label">
                     <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
@@ -450,12 +454,17 @@ function removeLastSubtask() {
               AI generate testdata
             </div>
 
-            <button type="button" class="btn btn-success btn-sm" @click="onGenerateClick">
+            <button 
+              type="button" 
+              class="btn btn-success btn-sm" 
+              @click="
+                emits('generate', { llmMode });
+              ">
               GENERATE
             </button>
           </div>
 
-          <p class="mt-2 text-sm opacity-70">
+          <p class="mt-2 text-sm opacity-70 mb-3">
             LLM will generate test cases that refer to your solution and description.
             AI may generate error output. Please double-check before you publish the problem.
           </p>
@@ -464,7 +473,7 @@ function removeLastSubtask() {
             Mode
           </p>
 
-          <select v-model="llmMode" class="select select-bordered w-full max-w-xl mt-2 px-3 py-1 text-sm">
+          <select v-model="llmMode" class="select select-bordered w-full max-w-xl mt-2 mb-3 px-3 py-1 text-sm">
             <option disabled value="">
               Please select mode
             </option>
@@ -484,7 +493,7 @@ function removeLastSubtask() {
           <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
             <div class="col-span-2">
               <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="form-control w-full">
                   <label class="label">
                     <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
@@ -582,6 +591,66 @@ function removeLastSubtask() {
               <button type="button" class="btn btn-sm" @click="removeLastSubtask">
                 <i-uil-minus class="mr-1" />
               </button>
+            </div>
+          </div>
+
+          <!-- Generate Result -->
+          <div v-if="isGenerating || generatedCases.length > 0" class="mt-6">
+            <div class="text-lg font-semibold mb-3">Generate Result</div>
+
+            <!-- 先只顯示你剛剛輸入的 subtasks（沿用同一份 tasks） -->
+            <template v-for="(task, i) in problem.testCaseInfo.tasks" :key="i">
+              <div class="mb-4">
+                <div class="font-semibold mb-2">Subtask {{ i + 1 }}</div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div class="form-control w-full">
+                    <label class="label"><span class="label-text">The number of testcases</span></label>
+                    <input class="input input-bordered w-full" :value="task.caseCount" readonly />
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Score</span></label>
+                    <input class="input input-bordered w-full" :value="task.taskScore" readonly />
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Memory Limit (KB)</span></label>
+                    <input class="input input-bordered w-full" :value="task.memoryLimit" readonly />
+                  </div>
+
+                  <div class="form-control w-full">
+                    <label class="label"><span class="label-text">Time Limit (ms)</span></label>
+                    <input class="input input-bordered w-full" :value="task.timeLimit" readonly />
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <div class="overflow-x-auto">
+              <table class="table table-sm w-full">
+                <thead class="bg-base-200">
+                  <tr>
+                    <th class="w-16">#</th>
+                    <th>input</th>
+                    <th>output</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr v-for="(c, idx) in generatedCases" :key="idx">
+                    <td>{{ idx + 1 }}</td>
+
+                    <td class="align-top">
+                      <pre class="whitespace-pre-wrap break-words max-h-48 overflow-auto">{{ c.input }}</pre>
+                    </td>
+
+                    <td class="align-top">
+                      <pre class="whitespace-pre-wrap break-words max-h-48 overflow-auto">{{ c.output }}</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

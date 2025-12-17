@@ -201,6 +201,30 @@ function onSaveSolution() {
   console.log("save-solution clicked:", edittingProblem.value?.solution);
   // TODO: connect solution-only API later
 }
+
+type GeneratedCase = {
+  input: string;
+  output: string;
+};
+
+const generatedCases = ref<GeneratedCase[]>([]);
+const isGenerating = ref(false);
+
+async function onGenerate(payload: { llmMode: string }) {
+  // 先讓 UI 顯示 
+  isGenerating.value = true;
+  generatedCases.value = [];
+
+  try {
+    // TODO: 之後接後端
+    // const res = await api.Problem.generateTestcase(route.params.id as string, payload);
+    // generatedCases.value = res.data.cases;
+
+    // 暫時：先不接後端
+  } finally { 
+    //isGenerating.value = false;
+  }
+}
 </script>
 
 <template>
@@ -264,6 +288,9 @@ function onSaveSolution() {
                 @update="update"
                 @submit="submit"
                 @save-solution="onSaveSolution"
+                @generate="onGenerate"
+                :generated-cases="generatedCases"
+                :is-generating="isGenerating"
               />
 
               <div class="divider" />
