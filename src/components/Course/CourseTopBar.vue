@@ -5,13 +5,17 @@ import api from "@/api";
 
 // FIXME: this sucks
 const route = useRoute();
-const announcementsPage = { path: `/courses/${route.params.courseId}/announcements`, text: "Announcements" };
-const homeworksPage = { path: `/courses/${route.params.courseId}/homeworks`, text: "Homeworks" };
-const problemsPage = { path: `/courses/${route.params.courseId}/problems`, text: "Problems" };
-const submissionsPage = { path: `/courses/${route.params.courseId}/submissions`, text: "Submissions" };
-const membersPage = { path: `/courses/${route.params.courseId}/members`, text: "Members" };
-const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: string }[] }> = computed(
-  () => ({
+const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: string }[] }> = computed(() => {
+  const announcementsPage = {
+    path: `/courses/${route.params.courseId}/announcements`,
+    text: "Announcements",
+  };
+  const homeworksPage = { path: `/courses/${route.params.courseId}/homeworks`, text: "Homeworks" };
+  const problemsPage = { path: `/courses/${route.params.courseId}/problems`, text: "Problems" };
+  const submissionsPage = { path: `/courses/${route.params.courseId}/submissions`, text: "Submissions" };
+  const membersPage = { path: `/courses/${route.params.courseId}/members`, text: "Members" };
+
+  return {
     "courses-courseId-announcements": [{ path: null, text: "Announcements" }],
     "courses-courseId-announcements-new": [announcementsPage, { path: null, text: "New" }],
     "courses-courseId-announcements-id": [announcementsPage, { path: null, text: `${route.params.id}` }],
@@ -49,8 +53,8 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-courseId-submissions": [{ path: null, text: "Submissions" }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: "Members" }],
-  }),
-);
+  };
+});
 
 const courseName = ref<string>("");
 
