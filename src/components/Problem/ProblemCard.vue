@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
@@ -9,7 +9,7 @@ interface Props {
   problem: ProblemInfo;
   preview?: boolean;
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
@@ -22,6 +22,24 @@ async function getSubtasks() {
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
 }
+
+const samples = computed(() => {
+  const input = props.problem.description.sampleInput;
+  const output = props.problem.description.sampleOutput;
+  const inputs = Array.isArray(input) ? input : [input];
+  const outputs = Array.isArray(output) ? output : [output];
+  // If inputs/outputs are single strings, we treat them as one sample.
+  // If they are arrays, we assume parallel arrays for multiple samples.
+  // Exception: If the user intended lines of a single sample to be an array?
+  // User instruction implies array = multiple samples.
+
+  const length = Math.max(inputs.length, outputs.length);
+  return Array.from({ length }, (_, i) => ({
+    input: inputs[i] || "",
+    output: outputs[i] || "",
+  }));
+});
+
 onMounted(getSubtasks);
 </script>
 
@@ -134,26 +152,16 @@ onMounted(getSubtasks);
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(input, index) in [problem.description.sampleInput]" :key="index">
+                <tr v-for="(sample, index) in samples" :key="index">
                   <td class="align-top">{{ index + 1 }}</td>
                   <td class="align-top">
-                    <sample-code-block
-                      v-if="input"
-                      :code="Array.isArray(input) ? input.join('\n') : input"
-                    ></sample-code-block>
+                    <sample-code-block v-if="sample.input" :code="sample.input"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
                   </td>
                   <td class="align-top">
-                    <sample-code-block
-                      v-if="problem.description.sampleOutput"
-                      :code="
-                        Array.isArray(problem.description.sampleOutput)
-                          ? problem.description.sampleOutput.join('\n')
-                          : problem.description.sampleOutput
-                      "
-                    ></sample-code-block>
+                    <sample-code-block v-if="sample.output" :code="sample.output"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
