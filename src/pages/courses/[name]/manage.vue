@@ -56,7 +56,7 @@ const deleteConfirm = ref<{
 }>({
   show: false,
   target: "course",
-  onConfirm: async () => {},
+  onConfirm: async () => { },
 });
 
 function deleteCode() {
@@ -197,7 +197,7 @@ async function fetchScoreboard() {
 
     // 2. Get scoreboard
     const { data: sbData } = await api.Course.getScoreBoard(courseId, { pids });
-    scoreboardData.value = sbData.data;
+    scoreboardData.value = sbData as unknown as ScoreBoardData;
   } catch (error) {
     console.warn("Failed to fetch scoreboard:", error);
   }
@@ -234,12 +234,8 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Course Name</span>
                 </label>
-                <input
-                  v-model="courseForm.name"
-                  type="text"
-                  class="input input-bordered w-full"
-                  placeholder="Course name"
-                />
+                <input v-model="courseForm.name" type="text" class="input input-bordered w-full"
+                  placeholder="Course name" />
               </div>
 
               <!-- Teacher -->
@@ -247,12 +243,8 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Teacher</span>
                 </label>
-                <input
-                  v-model="courseForm.teacher"
-                  type="text"
-                  class="input input-bordered w-full"
-                  placeholder="Teacher username"
-                />
+                <input v-model="courseForm.teacher" type="text" class="input input-bordered w-full"
+                  placeholder="Teacher username" />
               </div>
 
               <!-- Teacher Assistants -->
@@ -260,12 +252,8 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Teacher Assistants</span>
                 </label>
-                <input
-                  v-model="courseForm.tas"
-                  type="text"
-                  class="input input-bordered w-full"
-                  placeholder="TA usernames (comma separated)"
-                />
+                <input v-model="courseForm.tas" type="text" class="input input-bordered w-full"
+                  placeholder="TA usernames (comma separated)" />
               </div>
             </div>
 
@@ -348,7 +336,7 @@ onMounted(() => {
           </div>
 
           <div class="overflow-x-auto" v-if="scoreboardData">
-            <table class="table table-compact w-full">
+            <table class="table w-full">
               <thead>
                 <tr>
                   <th>Rank</th>
@@ -360,22 +348,20 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(student, index) in scoreboardData.students" :key="student.userId">
+                <tr v-for="(student, index) in scoreboardData.students" :key="student.userId" class="hover">
                   <th>{{ index + 1 }}</th>
                   <td>
                     <div class="font-bold">{{ student.realName }}</div>
-                    <div class="text-xs opacity-50">{{ student.username }}</div>
+                    <div>{{ student.username }}</div>
                   </td>
                   <td class="font-bold text-primary">{{ student.totalScore }}</td>
                   <td v-for="pid in scoreboardData.problemIds" :key="pid">
-                    <span
-                      :class="{
-                        'font-bold text-success': student.scores[pid] === 100,
-                        'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
-                        'text-error': student.scores[pid] === 0,
-                        'text-base-content opacity-30': student.scores[pid] === undefined,
-                      }"
-                    >
+                    <span :class="{
+                      'font-bold text-success': student.scores[pid] === 100,
+                      'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
+                      'text-error': student.scores[pid] === 0,
+                      'text-base-content opacity-30': student.scores[pid] === undefined,
+                    }">
                       {{ student.scores[pid] !== undefined ? student.scores[pid] : "-" }}
                     </span>
                   </td>
@@ -405,13 +391,10 @@ onMounted(() => {
         </p>
         <div class="modal-action">
           <button class="btn" @click="deleteConfirm.show = false">Cancel</button>
-          <button
-            class="btn btn-error"
-            @click="
-              deleteConfirm.onConfirm();
-              deleteConfirm.show = false;
-            "
-          >
+          <button class="btn btn-error" @click="
+            deleteConfirm.onConfirm();
+          deleteConfirm.show = false;
+          ">
             Delete
           </button>
         </div>
@@ -419,3 +402,15 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.table thead tr {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+}
+</style>
