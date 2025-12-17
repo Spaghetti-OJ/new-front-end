@@ -14,6 +14,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
   const problemsPage = { path: `/courses/${route.params.courseId}/problems`, text: "Problems" };
   const submissionsPage = { path: `/courses/${route.params.courseId}/submissions`, text: "Submissions" };
   const membersPage = { path: `/courses/${route.params.courseId}/members`, text: "Members" };
+  const managePage = { path: `/courses/${route.params.courseId}/manage`, text: "Manage" };
 
   return {
     "courses-courseId-announcements": [{ path: null, text: "Announcements" }],
@@ -53,6 +54,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-courseId-submissions": [{ path: null, text: "Submissions" }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: "Members" }],
+    "courses-courseId-manage": [{ path: null, text: "Manage" }],
   };
 });
 
