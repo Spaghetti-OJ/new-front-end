@@ -6,7 +6,7 @@ export type ProblemId2Meta = Record<string, { name: string; quota: number }>;
 
 export function useProblemSelection(courseName: string) {
   const problems = ref<ProblemList>();
-  const error = ref<any>(null);
+  const error = ref<unknown>(null);
   const isLoading = ref(false);
 
   const fetchProblems = async () => {
