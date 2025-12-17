@@ -6,10 +6,9 @@ import "dayjs/locale/zh-tw";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { useI18n } from "vue-i18n";
 import api from "@/api";
-import Name from "../courses/[name].vue";
 dayjs.extend(LocalizedFormat);
 
-// ===== Type definitions ===== //
+// Type definitions
 type PermissionType = "submissions" | "courses" | "problems" | "user";
 
 interface PermissionRow {
@@ -28,12 +27,12 @@ interface ApiKeyRow {
   createdAt: string;
   expiresAt?: string;
 }
-interface createForm {
+interface CreateForm {
   name: string;
   permissions?: string[];
   expires_at?: string;
 }
-// ===== Reactive State ===== //
+// Reactive State
 const apiKeys = ref<ApiKeyRow[]>([]);
 
 const showCreateModal = ref(false);
@@ -75,7 +74,7 @@ const permissionLabel: Record<PermissionType, string> = {
   problems: "Problems",
   user: "User",
 };
-//前後端轉換//
+//前後端轉換
 function mapPermissions(perms: string[]): PermissionRow[] {
   const base: PermissionRow[] = [
     { type: "submissions", read: false, write: false },
@@ -115,21 +114,21 @@ function mapPermissionsToApi(permissions: PermissionRow[]): string[] {
     return result;
   });
 }
-//加載目前apikey//
+//加載目前apikey
 async function getapikeylist() {
-  const res = await api.Auth.listtokens();
+  const res = await api.Auth.listTokens();
   const raw = Array.isArray(res) ? res : res;
   apiKeys.value = raw.map(mapApiKeyFromBackend);
 }
 
-// ===== Load Demo ===== //
+// Load Demo
 onMounted(() => {
   getapikeylist();
 });
 
-// ===== Utils ===== //
-async function generateKey(formData: createForm) {
-  const res = await api.Auth.generatetoken(formData);
+// Utils
+async function generateKey(formData: CreateForm) {
+  const res = await api.Auth.generateToken(formData);
   return res.full_token;
 }
 
@@ -166,7 +165,6 @@ async function handleCreateKey() {
   expiresError.value = null;
 
   const now = new Date();
-  const id = now.getTime();
 
   let expires: string | undefined = undefined;
   if (createFormExpiresDate.value && createFormExpiresTime.value) {
@@ -202,7 +200,7 @@ async function handleCreateKey() {
   await getapikeylist();
 }
 
-// ===== Detail ===== //
+// Detail
 function openDetailModal(key: ApiKeyRow) {
   selectedKey.value = key;
   showDetailModal.value = true;
@@ -214,16 +212,16 @@ function closeDetailModal() {
   showDeleteConfirm.value = false;
 }
 
-// ===== Delete ===== //
+// Delete
 async function confirmDeleteSelected() {
   if (!selectedKey.value) return;
-  const res = await api.Auth.deletetokens(selectedKey.value.id);
+  const res = await api.Auth.deleteToken(selectedKey.value.id);
   apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
   closeDetailModal();
   await getapikeylist();
 }
 
-// ===== Copy ===== //
+// Copy
 async function copyGeneratedKey() {
   if (!generatedKey.value) return;
   try {
