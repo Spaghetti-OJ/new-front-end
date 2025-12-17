@@ -182,18 +182,7 @@ async function handleCreateKey() {
   };
 
   const fullKey = await generateKey(input);
-  const newKey: ApiKeyRow = {
-    id: "1",
-    name: createFormName.value.trim(),
-    status: "active",
-    usage: 0,
-    maskedKey: fullKey,
-    createdAt: now.toISOString(),
-    expiresAt: expires,
-    permissions: JSON.parse(JSON.stringify(createFormPermissions.value)),
-  };
 
-  apiKeys.value.push(newKey);
   showCreateModal.value = false;
   generatedKey.value = fullKey;
   showGeneratedModal.value = true;
