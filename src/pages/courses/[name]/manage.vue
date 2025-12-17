@@ -56,7 +56,7 @@ const deleteConfirm = ref<{
 }>({
   show: false,
   target: "course",
-  onConfirm: async () => { },
+  onConfirm: async () => {},
 });
 
 function deleteCode() {
@@ -212,7 +212,7 @@ onMounted(() => {
     <div class="card-container">
       <div class="card min-w-full">
         <div class="card-body">
-          <div class="card-title mb-6">Manage Course – {{ courseId }}</div>
+          <div class="card-title mb-6">Manage Course – {{ courseForm.name || courseId }}</div>
 
           <!-- Error Alert -->
           <div v-if="error" class="alert alert-error mb-4 shadow-lg">
@@ -232,8 +232,12 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Course Name</span>
                 </label>
-                <input v-model="courseForm.name" type="text" class="input input-bordered w-full"
-                  placeholder="Course name" />
+                <input
+                  v-model="courseForm.name"
+                  type="text"
+                  class="input input-bordered w-full"
+                  placeholder="Course name"
+                />
               </div>
 
               <!-- Teacher -->
@@ -241,8 +245,12 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Teacher</span>
                 </label>
-                <input v-model="courseForm.teacher" type="text" class="input input-bordered w-full"
-                  placeholder="Teacher username" />
+                <input
+                  v-model="courseForm.teacher"
+                  type="text"
+                  class="input input-bordered w-full"
+                  placeholder="Teacher username"
+                />
               </div>
 
               <!-- Teacher Assistants -->
@@ -250,8 +258,12 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Teacher Assistants</span>
                 </label>
-                <input v-model="courseForm.tas" type="text" class="input input-bordered w-full"
-                  placeholder="TA usernames (comma separated)" />
+                <input
+                  v-model="courseForm.tas"
+                  type="text"
+                  class="input input-bordered w-full"
+                  placeholder="TA usernames (comma separated)"
+                />
               </div>
             </div>
 
@@ -354,12 +366,14 @@ onMounted(() => {
                   </td>
                   <td class="font-bold text-primary">{{ student.totalScore }}</td>
                   <td v-for="pid in scoreboardData.problemIds" :key="pid">
-                    <span :class="{
-                      'font-bold text-success': student.scores[pid] === 100,
-                      'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
-                      'text-error': student.scores[pid] === 0,
-                      'text-base-content opacity-30': student.scores[pid] === undefined,
-                    }">
+                    <span
+                      :class="{
+                        'font-bold text-success': student.scores[pid] === 100,
+                        'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
+                        'text-error': student.scores[pid] === 0,
+                        'text-base-content opacity-30': student.scores[pid] === undefined,
+                      }"
+                    >
                       {{ student.scores[pid] !== undefined ? student.scores[pid] : "-" }}
                     </span>
                   </td>
@@ -389,10 +403,13 @@ onMounted(() => {
         </p>
         <div class="modal-action">
           <button class="btn" @click="deleteConfirm.show = false">Cancel</button>
-          <button class="btn btn-error" @click="
-            deleteConfirm.onConfirm();
-          deleteConfirm.show = false;
-          ">
+          <button
+            class="btn btn-error"
+            @click="
+              deleteConfirm.onConfirm();
+              deleteConfirm.show = false;
+            "
+          >
             Delete
           </button>
         </div>
