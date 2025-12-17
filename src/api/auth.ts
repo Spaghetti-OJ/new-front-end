@@ -36,7 +36,7 @@ export const Auth = {
     fetcher.post<{ full_token: string }>(`/api-tokens/`, body).then((r) => r.data ?? r),
 
   listtokens: () => fetcher.get<apikeyresponse[]>("/api-tokens/").then((r) => r.data ?? r),
-  deletetokens: (tokenid: string) => fetcher.delete(`/api-tokens/${tokenid}`).then((r) => r.data ?? r),
+  deleteTokens: (tokenId: string) => fetcher.delete(`/api-tokens/${tokenId}`).then((r) => r.data ?? r),
   getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
 };
 export const Copycat = {
