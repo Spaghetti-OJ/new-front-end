@@ -53,6 +53,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-courseId-submissions": [{ path: null, text: "Submissions" }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: "Members" }],
+    "courses-courseId-manage": [{ path: null, text: "Manage" }],
   };
 });
 
