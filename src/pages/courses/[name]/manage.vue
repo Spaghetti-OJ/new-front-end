@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useTitle } from "@vueuse/core";
+import { useTitle, useEventListener } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import { useSession, UserRole } from "@/stores/session";
 import api from "@/api";
@@ -60,6 +60,12 @@ const deleteConfirm = ref<{
   show: false,
   target: "course",
   onConfirm: async () => {},
+});
+
+useEventListener(window, "keydown", (e) => {
+  if (e.key === "Escape" && deleteConfirm.value.show) {
+    deleteConfirm.value.show = false;
+  }
 });
 
 function deleteCode() {
@@ -345,9 +351,9 @@ onMounted(() => {
 
     <!-- Delete Confirm Modal -->
     <input type="checkbox" id="delete-confirm-modal" class="modal-toggle" :checked="deleteConfirm.show" />
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-box">
-        <h3 class="text-lg font-bold">
+        <h3 class="text-lg font-bold" id="modal-title">
           Confirm Delete
           {{ deleteConfirm.target === "course" ? "Course" : "Invite Code" }}
         </h3>
