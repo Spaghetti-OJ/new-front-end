@@ -55,7 +55,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
 const courseName = ref<string>("");
 
 const courseId = computed(() => {
-  const id = route.params.courseId || route.params.id;
+  const id = route.params.courseId;
   return Array.isArray(id) ? id[0] : id;
 });
 
