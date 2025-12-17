@@ -26,14 +26,6 @@ const courseForm = ref({
 const currentCourseName = ref("");
 useTitle(computed(() => `Manage ${currentCourseName.value || courseId} | Normal OJ`));
 
-// Summary Data
-const summary = ref({
-  userCount: 35,
-  homeworkCount: 5,
-  submissionCount: 120,
-  problemCount: 12,
-});
-
 // Course Code
 const courseCode = ref("");
 const isCopied = ref(false);
@@ -154,31 +146,6 @@ async function fetchCourseInfo() {
     };
     currentCourseName.value = data.course.course;
     courseCode.value = data.course.joinCode;
-    summary.value = {
-      userCount: data.course.studentCount,
-      homeworkCount: 0,
-      submissionCount: 0,
-      problemCount: 0,
-    };
-
-    // Try to fetch detailed summary (likely requires admin/teacher)
-    try {
-      const { data: summaryData } = await api.Course.getSummary();
-      const currentCourseSummary = summaryData.breakdown.find(
-        (c) => c.course === data.course.course || c.course === courseForm.value.name,
-      );
-
-      if (currentCourseSummary) {
-        summary.value = {
-          userCount: currentCourseSummary.userCount,
-          homeworkCount: currentCourseSummary.homeworkCount,
-          submissionCount: currentCourseSummary.submissionCount,
-          problemCount: currentCourseSummary.problemCount,
-        };
-      }
-    } catch (err) {
-      console.warn("Could not fetch detailed summary:", err);
-    }
   } catch (err: any) {
     console.error("Failed to fetch course info:", err);
     if (axios.isAxiosError(err) && err.response?.data?.message) {

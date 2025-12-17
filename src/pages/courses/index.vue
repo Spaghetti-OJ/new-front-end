@@ -141,7 +141,7 @@ function getSummary(courseName: string) {
                 <!-- Course Info (Left) -->
                 <div class="flex flex-1 items-center gap-4">
                   <div class="flex flex-col">
-                    <h2 class="card-title text-xl font-bold">
+                    <h2 class="card-title text-xl">
                       <router-link :to="`/courses/${id}`" class="link link-hover text-base-content">
                         {{ course }}
                       </router-link>
