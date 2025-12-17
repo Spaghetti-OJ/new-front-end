@@ -109,8 +109,8 @@ async function submitCourseEdit() {
   error.value = null;
   try {
     await api.Course.editCourse({
-      course_id: courseId,
-      new_course: courseForm.value.name,
+      courseId: courseId,
+      newCourse: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
     currentCourseName.value = courseForm.value.name;
@@ -131,7 +131,7 @@ function deleteCourse() {
     onConfirm: async () => {
       error.value = null;
       try {
-        await api.Course.deleteCourse({ course_id: courseId });
+        await api.Course.deleteCourse({ courseId: courseId });
         router.push("/courses");
       } catch (err: any) {
         if (axios.isAxiosError(err) && err.response?.data?.message) {

@@ -16,10 +16,14 @@ export const Course = {
     fetcher.post<{ joinCode: string }>(`/course/${courseId}/invite-code/`),
   deleteInviteCode: (courseId: string | number, code: string) =>
     fetcher.delete<{ message: string }>(`/course/${courseId}/invite-code/${code}/`),
-  editCourse: (body: { course_id: number; new_course: string; teacher: string }) =>
-    fetcher.put<{ message: string }>(`/course/`, body),
-  deleteCourse: (body: { course_id: number }) =>
-    fetcher.delete<{ message: string }>(`/course/`, { data: body }),
+  editCourse: (body: { courseId: number; newCourse: string; teacher: string }) =>
+    fetcher.put<{ message: string }>(`/course/`, {
+      course_id: body.courseId,
+      new_course: body.newCourse,
+      teacher: body.teacher,
+    }),
+  deleteCourse: (body: { courseId: number }) =>
+    fetcher.delete<{ message: string }>(`/course/`, { data: { course_id: body.courseId } }),
   getSummary: () => fetcher.get<CourseSummary>("/course/summary/"),
   getScoreBoard: (courseId: string | number, params: { pids: string; start?: number; end?: number }) =>
     fetcher.get<ScoreBoardResponse>(`/course/${courseId}/scoreboard/`, { params }),
