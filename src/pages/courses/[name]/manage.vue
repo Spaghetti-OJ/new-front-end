@@ -276,55 +276,7 @@ onMounted(() => {
               <button class="btn btn-success" @click="submitCourseEdit">Submit</button>
               <button class="btn btn-outline btn-error" @click="deleteCourse">Delete Course</button>
             </div>
-            <div class="divider my-8" />
           </template>
-
-          <!-- Summary -->
-          <div class="flex items-center gap-2 text-lg font-semibold">
-            <i-uil-analytics class="h-6 w-6" /> Summary
-          </div>
-
-          <div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div class="stat rounded-lg bg-base-200">
-              <div class="stat-figure text-primary">
-                <i-uil-users-alt class="h-8 w-8" />
-              </div>
-              <div class="stat-title">Students</div>
-              <div class="stat-value text-primary">
-                {{ summary.userCount }}
-              </div>
-            </div>
-
-            <div class="stat rounded-lg bg-base-200">
-              <div class="stat-figure text-secondary">
-                <i-uil-file-alt class="h-8 w-8" />
-              </div>
-              <div class="stat-title">Homeworks</div>
-              <div class="stat-value text-secondary">
-                {{ summary.homeworkCount }}
-              </div>
-            </div>
-
-            <div class="stat rounded-lg bg-base-200">
-              <div class="stat-figure text-accent">
-                <i-uil-upload class="h-8 w-8" />
-              </div>
-              <div class="stat-title">Submissions</div>
-              <div class="stat-value text-accent">
-                {{ summary.submissionCount }}
-              </div>
-            </div>
-
-            <div class="stat rounded-lg bg-base-200">
-              <div class="stat-figure">
-                <i-uil-puzzle-piece class="h-8 w-8" />
-              </div>
-              <div class="stat-title">Problems</div>
-              <div class="stat-value">
-                {{ summary.problemCount }}
-              </div>
-            </div>
-          </div>
 
           <div class="mt-6 flex items-center gap-4">
             <button class="btn btn-success btn-sm" @click="generateCourseCode">Generate course code</button>
