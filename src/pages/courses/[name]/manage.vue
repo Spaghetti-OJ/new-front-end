@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useSession, UserRole } from "@/stores/session";
 import api from "@/api";
@@ -46,8 +46,21 @@ async function generateCourseCode() {
   }
 }
 
-function deleteCode() {
-  courseCode.value = "";
+async function deleteCode() {
+  if (!courseCode.value) return;
+  if (!confirm("Are you sure you want to delete this invite code?")) return;
+
+  try {
+    await api.Course.deleteInviteCode(courseId, courseCode.value);
+    courseCode.value = "";
+    alert("Invite code deleted successfully.");
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("Failed to delete code");
+    }
+  }
 }
 
 function submitCourseEdit() {
@@ -59,6 +72,34 @@ function deleteCourse() {
     console.log("Delete course:", courseId);
   }
 }
+
+async function fetchCourseInfo() {
+  try {
+    const { data } = await api.Course.info(courseId);
+    courseForm.value = {
+      name: data.course.course,
+      teacher: data.teacher.username,
+      tas: data.TAs.map((ta) => ta.username).join(", "),
+    };
+    courseCode.value = data.course.joinCode;
+    summary.value = {
+      userCount: data.course.studentCount,
+      // TODO: need more api support
+      homeworkCount: 0,
+      submissionCount: 0,
+      problemCount: 0,
+    };
+  } catch (error) {
+    console.error("Failed to fetch course info:", error);
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      alert(error.response.data.message);
+    }
+  }
+}
+
+onMounted(() => {
+  fetchCourseInfo();
+});
 </script>
 
 <template>

@@ -14,6 +14,8 @@ export const Course = {
     fetcher.put<{ message: string }>(`/course/${courseId}/`, body),
   generateInviteCode: (courseId: string) =>
     fetcher.post<{ joinCode: string }>(`/course/${courseId}/invite-code/`),
+  deleteInviteCode: (courseId: string, code: string) =>
+    fetcher.delete<{ message: string }>(`/course/${courseId}/invite-code/${code}/`),
 };
 
 export const Announcement = {
