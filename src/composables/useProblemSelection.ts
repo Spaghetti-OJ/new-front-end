@@ -4,7 +4,7 @@ import api from "@/api";
 type ProblemSelections = { value: string; text: string }[];
 export type ProblemId2Meta = Record<string, { name: string; quota: number }>;
 
-export function useProblemSelection(courseName: string) {
+export function useProblemSelection(courseId: string) {
   const problems = ref<ProblemList>();
   const error = ref<unknown>(null);
   const isLoading = ref(false);
@@ -14,7 +14,7 @@ export function useProblemSelection(courseName: string) {
     try {
       const { data } = await api.Problem.getProblemList({
         page_size: 1000,
-        course_id: Number(courseName),
+        course_id: Number(courseId),
       });
       problems.value = data;
     } catch (e) {
