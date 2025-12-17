@@ -34,28 +34,19 @@ const summary = ref({
 // Course Code
 const courseCode = ref("");
 const isCopied = ref(false);
+const error = ref<string | null>(null);
 
 async function generateCourseCode() {
   try {
     const { data } = await api.Course.generateInviteCode(courseId);
     courseCode.value = data.joinCode;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      showToast(error.response.data.message, "error");
+  } catch (err: any) {
+    if (axios.isAxiosError(err) && err.response?.data?.message) {
+      error.value = err.response.data.message;
     } else {
-      alert("Failed to generate code");
+      error.value = "Failed to generate code";
     }
   }
-}
-
-// UI State
-const toast = ref<{ message: string; type: "success" | "error" | "info" } | null>(null);
-
-function showToast(message: string, type: "success" | "error" | "info" = "info") {
-  toast.value = { message, type };
-  setTimeout(() => {
-    toast.value = null;
-  }, 3000);
 }
 
 const deleteConfirm = ref<{
@@ -75,15 +66,15 @@ function deleteCode() {
     show: true,
     target: "code",
     onConfirm: async () => {
+      error.value = null;
       try {
         await api.Course.deleteInviteCode(courseId, courseCode.value);
         courseCode.value = "";
-        showToast("Invite code deleted successfully.", "success");
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.data?.message) {
-          showToast(error.response.data.message, "error");
+      } catch (err: any) {
+        if (axios.isAxiosError(err) && err.response?.data?.message) {
+          error.value = err.response.data.message;
         } else {
-          showToast("Failed to delete code", "error");
+          error.value = "Failed to delete code";
         }
       }
     },
@@ -101,26 +92,26 @@ function copyCode() {
       }, 2000);
     })
     .catch(() => {
-      showToast("Failed to copy code", "error");
+      error.value = "Failed to copy code";
     });
 }
 
 async function submitCourseEdit() {
+  error.value = null;
   try {
     await api.Course.editCourse({
       course_id: Number(courseId),
       new_course: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
-    showToast("Course updated successfully.", "success");
     setTimeout(() => {
       window.location.reload();
     }, 1000);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      showToast(error.response.data.message, "error");
+  } catch (err: any) {
+    if (axios.isAxiosError(err) && err.response?.data?.message) {
+      error.value = err.response.data.message;
     } else {
-      showToast("Failed to update course", "error");
+      error.value = "Failed to update course";
     }
   }
 }
@@ -130,15 +121,15 @@ function deleteCourse() {
     show: true,
     target: "course",
     onConfirm: async () => {
+      error.value = null;
       try {
         await api.Course.deleteCourse({ course_id: Number(courseId) });
-        showToast("Course deleted successfully.", "success");
         router.push("/courses");
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.data?.message) {
-          showToast(error.response.data.message, "error");
+      } catch (err: any) {
+        if (axios.isAxiosError(err) && err.response?.data?.message) {
+          error.value = err.response.data.message;
         } else {
-          showToast("Failed to delete course", "error");
+          error.value = "Failed to delete course";
         }
       }
     },
@@ -161,6 +152,7 @@ async function fetchCourseInfo() {
       problemCount: 0,
     };
 
+    // Try to fetch detailed summary (likely requires admin/teacher)
     try {
       const { data: summaryData } = await api.Course.getSummary();
       const currentCourseSummary = summaryData.breakdown.find(
@@ -178,10 +170,10 @@ async function fetchCourseInfo() {
     } catch (err) {
       console.warn("Could not fetch detailed summary:", err);
     }
-  } catch (error) {
-    console.error("Failed to fetch course info:", error);
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      showToast(error.response.data.message, "error");
+  } catch (err: any) {
+    console.error("Failed to fetch course info:", err);
+    if (axios.isAxiosError(err) && err.response?.data?.message) {
+      error.value = err.response.data.message;
     }
   }
 }
@@ -223,6 +215,13 @@ onMounted(() => {
       <div class="card min-w-full">
         <div class="card-body">
           <div class="card-title mb-6">Manage Course – {{ courseId }}</div>
+
+          <!-- Error Alert -->
+          <div v-if="error" class="alert alert-error mb-4 shadow-lg">
+            <i-uil-exclamation-circle class="h-6 w-6" />
+            <span>{{ error }}</span>
+            <button class="btn btn-circle btn-ghost btn-xs" @click="error = null">✕</button>
+          </div>
 
           <!-- Edit Course (Teacher/Admin only) -->
           <template v-if="canEditCourse">
@@ -385,22 +384,6 @@ onMounted(() => {
             </table>
           </div>
           <div v-else class="py-4 text-center opacity-50">Loading scoreboard or no data...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Toast -->
-    <div v-if="toast" class="toast toast-end toast-bottom z-50">
-      <div
-        class="alert"
-        :class="{
-          'alert-success': toast.type === 'success',
-          'alert-error': toast.type === 'error',
-          'alert-info': toast.type === 'info',
-        }"
-      >
-        <div>
-          <span>{{ toast.message }}</span>
         </div>
       </div>
     </div>
