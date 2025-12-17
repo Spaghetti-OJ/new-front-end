@@ -97,7 +97,7 @@ function mapPermissions(perms: string[]): PermissionRow[] {
 }
 function mapApiKeyFromBackend(b: any): ApiKeyRow {
   return {
-    id: b.id, // 前端要 number，用時間戳
+    id: b.id,
     name: b.name,
     status: b.is_active ? "active" : "disabled",
     usage: b.usage_count,
