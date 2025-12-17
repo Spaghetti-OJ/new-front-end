@@ -128,8 +128,8 @@ onMounted(() => {
 });
 
 // ===== Utils ===== //
-async function generateKey(aa: createForm) {
-  const res = await api.Auth.generatetoken(aa);
+async function generateKey(formData: createForm) {
+  const res = await api.Auth.generatetoken(formData);
   return res.full_token;
 }
 
