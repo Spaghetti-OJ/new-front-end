@@ -2,11 +2,13 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useSession, UserRole } from "@/stores/session";
+import api from "@/api";
+import axios from "axios";
 
 const route = useRoute();
 const session = useSession();
 
-const courseName = route.params.name as string;
+const courseId = route.params.name as string;
 
 // Permission
 const canEditCourse = computed(() => {
@@ -29,10 +31,19 @@ const summary = ref({
 });
 
 // Course Code
-const courseCode = ref("abc1234567");
+const courseCode = ref("");
 
-function generateCourseCode() {
-  courseCode.value = Math.random().toString(36).substring(2, 10);
+async function generateCourseCode() {
+  try {
+    const { data } = await api.Course.generateInviteCode(courseId);
+    courseCode.value = data.joinCode;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert("Failed to generate code");
+    }
+  }
 }
 
 function deleteCode() {
@@ -45,7 +56,7 @@ function submitCourseEdit() {
 
 function deleteCourse() {
   if (confirm("Are you sure you want to delete this course?")) {
-    console.log("Delete course:", courseName);
+    console.log("Delete course:", courseId);
   }
 }
 </script>
@@ -54,7 +65,7 @@ function deleteCourse() {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title mb-6">Manage Course – {{ courseName }}</div>
+        <div class="card-title mb-6">Manage Course – {{ courseId }}</div>
 
         <!-- Edit Course (Teacher/Admin only) -->
         <template v-if="canEditCourse">
