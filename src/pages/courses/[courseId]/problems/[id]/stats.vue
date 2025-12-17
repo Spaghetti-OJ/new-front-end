@@ -16,7 +16,7 @@ import api from "@/api";
 const { t } = useI18n();
 const route = useRoute();
 const theme = useTheme();
-useTitle(`Problem Stats - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Problem Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer, LabelLayout, GridComponent, BarChart]);
 const stats = ref<ProblemStats | null>(null);
 const error = ref<any>(null);

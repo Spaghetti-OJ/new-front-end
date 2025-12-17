@@ -15,7 +15,7 @@ import { useTheme } from "@/stores/theme";
 import dayjs from "dayjs";
 
 const route = useRoute();
-useTitle(`Homework Stats - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const theme = useTheme();
 use([CanvasRenderer, LabelLayout, GridComponent, BarChart]);
 
@@ -52,7 +52,7 @@ const getScoreboardUrl = computed<string>(() => {
     start: scoreboardBegin.value,
     end: scoreboardEnd.value,
   });
-  return `/course/${route.params.name}/scoreboard?${qs}`;
+  return `/course/${route.params.courseId}/scoreboard?${qs}`;
 });
 const {
   execute,
@@ -146,7 +146,7 @@ function exportCSV() {
   const csvURL = URL.createObjectURL(csvData);
   const link = document.createElement("a");
   link.href = csvURL;
-  link.download = `${route.params.name}-${hw.value && hw.value.name}-scoreboard.csv`;
+  link.download = `${route.params.courseId}-${hw.value && hw.value.name}-scoreboard.csv`;
   document.body.appendChild(link);
   link.click();
 }

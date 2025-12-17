@@ -11,7 +11,7 @@ import { useTitle } from "@vueuse/core";
 
 const session = useSession();
 const route = useRoute();
-useTitle(`Submission - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Submission - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const router = useRouter();
 
 const {
@@ -119,7 +119,7 @@ async function rejudge() {
                     <tr>
                       <td>
                         <router-link
-                          :to="`/courses/${$route.params.name}/problems/${submission.problemId}`"
+                          :to="`/courses/${$route.params.courseId}/problems/${submission.problemId}`"
                           class="link"
                         >
                           {{ submission.problemId }}

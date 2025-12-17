@@ -10,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const session = useSession();
 
-const courseId = Number(route.params.name);
+const courseId = Number(route.params.courseId);
 
 // Permission
 const canEditCourse = computed(() => {

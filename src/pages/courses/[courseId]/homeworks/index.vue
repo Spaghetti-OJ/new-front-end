@@ -9,7 +9,7 @@ import { useProblemSelection } from "@/composables/useProblemSelection";
 const session = useSession();
 const route = useRoute();
 
-useTitle(`Homeworks - ${route.params.name} | Normal OJ`);
+useTitle(`Homeworks - ${route.params.courseId} | Normal OJ`);
 const homeworksData = ref<GetHomeworksResponse>();
 const isLoading = ref(true);
 const error = ref<any>(null);
@@ -18,7 +18,7 @@ const {
   problemId2Meta,
   error: fetchProblemError,
   isLoading: isFetchingProblem,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
 
 const homeworks = computed(() => {
   if (!homeworksData.value) return [];
@@ -27,7 +27,7 @@ const homeworks = computed(() => {
 
 onMounted(async () => {
   try {
-    const { data } = await api.Homework.list(route.params.name as string);
+    const { data } = await api.Homework.list(route.params.courseId as string);
     homeworksData.value = data;
   } catch (e) {
     error.value = e;
@@ -46,7 +46,7 @@ onMounted(async () => {
           <router-link
             v-if="session.isAdmin"
             class="btn btn-success"
-            :to="`/courses/${$route.params.name}/homeworks/new`"
+            :to="`/courses/${$route.params.courseId}/homeworks/new`"
           >
             <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.hw.index.new") }}
           </router-link>

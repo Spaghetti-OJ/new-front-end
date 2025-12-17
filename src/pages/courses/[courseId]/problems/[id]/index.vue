@@ -4,7 +4,7 @@ import { useTitle } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 import api from "@/api";
 const route = useRoute();
-useTitle(`Problem - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Problem - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const problem = ref<ProblemInfo | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);

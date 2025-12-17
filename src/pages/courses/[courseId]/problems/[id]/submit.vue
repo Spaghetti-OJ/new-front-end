@@ -13,7 +13,7 @@ import { useI18n } from "vue-i18n";
 const route = useRoute();
 const { t } = useI18n();
 
-useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Submit - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const router = useRouter();
 const problem = ref<ProblemInfo | null>(null);
 const error = ref<any>(null);
@@ -123,7 +123,7 @@ async function submit() {
     ).data;
 
     await api.Submission.modify(submissionId, formData);
-    router.push(`/courses/${route.params.name}/submissions/${submissionId}`);
+    router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
   } catch (error) {
     form.isSubmitError = true;
     throw error;
