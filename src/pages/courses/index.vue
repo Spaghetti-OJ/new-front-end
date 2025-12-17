@@ -130,7 +130,8 @@ function getSummary(courseName: string) {
           </div>
         </template>
         <template #data>
-          <div class="flex flex-col gap-4">
+          <!-- Admin View: Cards with Stats -->
+          <div v-if="session.isAdmin" class="flex flex-col gap-4">
             <div
               v-for="{ id, course, teacher } in displayedCourses"
               :key="id"
@@ -141,10 +142,7 @@ function getSummary(courseName: string) {
                 <div class="flex flex-1 items-center gap-4">
                   <div class="flex flex-col">
                     <h2 class="card-title text-xl font-bold">
-                      <router-link
-                        :to="`/courses/${id}`"
-                        class="link link-hover text-base-content hover:text-primary"
-                      >
+                      <router-link :to="`/courses/${id}`" class="link link-hover text-base-content">
                         {{ course }}
                       </router-link>
                     </h2>
@@ -157,7 +155,6 @@ function getSummary(courseName: string) {
 
                 <!-- Admin Stats (Right) -->
                 <div
-                  v-if="session.isAdmin"
                   class="w-full border-t border-base-200 pt-4 md:w-auto md:border-l md:border-t-0 md:pl-6 md:pt-0"
                 >
                   <div class="grid grid-cols-4 text-center md:flex md:gap-8 md:text-left">
@@ -210,6 +207,31 @@ function getSummary(courseName: string) {
                 </div>
               </div>
             </div>
+          </div>
+          <!-- General View -->
+          <div v-else class="overflow-x-auto">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th>{{ $t("courses.index.table.course") }}</th>
+                  <th>{{ $t("courses.index.table.teacher") }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="{ id, course, teacher } in displayedCourses" :key="id" class="hover">
+                  <td>
+                    <router-link :to="`/courses/${id}`" class="link link-hover text-base-content">
+                      {{ course }}
+                    </router-link>
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      {{ teacher.username }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </template>
       </data-status-wrapper>
