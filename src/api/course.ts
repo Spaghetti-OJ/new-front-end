@@ -20,6 +20,7 @@ export const Course = {
     fetcher.put<{ message: string }>(`/course/`, body),
   deleteCourse: (body: { course_id: number }) =>
     fetcher.delete<{ message: string }>(`/course/`, { data: body }),
+  getSummary: () => fetcher.get<CourseSummary>("/course/summary/"),
 };
 
 export const Announcement = {
