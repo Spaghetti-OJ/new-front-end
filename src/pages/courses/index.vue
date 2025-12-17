@@ -27,11 +27,16 @@ onMounted(async () => {
     }
 
     if (session.isAdmin) {
-      const { data: summaryData } = await api.Course.getSummary();
-      if (summaryData?.breakdown) {
-        summaryData.breakdown.forEach((item) => {
-          summaryMap.value[item.course] = item;
-        });
+      try {
+        const { data: summaryData } = await api.Course.getSummary();
+        if (summaryData?.breakdown) {
+          summaryData.breakdown.forEach((item) => {
+            summaryMap.value[item.course] = item;
+          });
+        }
+      } catch (summaryErr: any) {
+        // Log summary loading errors without affecting the main courses list display
+        console.error("Failed to load course summary:", summaryErr);
       }
     }
   } catch (err: any) {
