@@ -46,13 +46,17 @@ interface Submission extends SubmissionListItem {
 }
 
 interface GetSubmissionListResponse {
-  submissions: SubmissionList;
-  submissionCount: number;
+  submissions?: SubmissionList; // Legacy support
+  submissionCount?: number; // Legacy support
+  results?: SubmissionList;
+  count?: number;
 }
 
 interface SubmissionListQuery {
-  offset: number;
-  count: number;
+  page?: number;
+  page_size?: number;
+  offset?: number;
+  count?: number;
   course?: string;
   problemId?: string;
   status?: string;

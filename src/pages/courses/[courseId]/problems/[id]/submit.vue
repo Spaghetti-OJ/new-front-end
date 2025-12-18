@@ -112,29 +112,22 @@ async function submit() {
       languageType: Number(form.lang),
     });
 
-    // Parse submission ID from response
     let submissionId = null;
     const message = (res as any).message || (res as any).data;
 
     if (typeof message === "string" && message.includes("submission received.")) {
       submissionId = message.split("submission received.")[1].trim();
     } else if (typeof message === "string" && message.includes("submission recieved.")) {
-      // Check for backend typo
       submissionId = message.split("submission recieved.")[1].trim();
     }
 
     if (submissionId && typeof submissionId === "string") {
+      router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
       try {
         await api.Submission.upload(submissionId, { source_code: form.code });
       } catch (e) {
         console.error("Upload failed, but redirecting to submission page.", e);
       }
-
-      console.log(
-        "Submission successful. Redirecting to:",
-        `/courses/${route.params.courseId}/submissions/${submissionId}`,
-      );
-      router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
     } else {
       throw new Error("Failed to get valid submission ID");
     }

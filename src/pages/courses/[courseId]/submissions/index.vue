@@ -3,7 +3,7 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import queryString from "query-string";
-import { fetcher } from "@/api";
+import api from "@/api";
 import { useSession } from "@/stores/session";
 import { LANG, LANGUAGE_OPTIONS, SUBMISSION_STATUS_REPR } from "@/constants";
 import { formatTime } from "@/utils/formatTime";
@@ -55,26 +55,51 @@ function mutateFilter(newFilter: Partial<SubmissionListFilter>) {
     },
   });
 }
-const getSubmissionsUrl = computed(() => {
-  const query: SubmissionListQuery = {
-    ...routeQuery.value.filter,
-    offset: (routeQuery.value.page - 1) * 10,
-    count: 10,
-    course: route.params.courseId as string,
-  };
-  const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
-  return `/submission?${qs}`;
-});
-const { execute, data, error, isLoading } = useAxios<GetSubmissionListResponse>(fetcher);
+const getSubmissionsQuery = computed<SubmissionListQuery>(() => ({
+  ...routeQuery.value.filter,
+  page: routeQuery.value.page,
+  page_size: 10,
+  course: route.params.courseId as string,
+}));
+
+const data = ref<GetSubmissionListResponse | null>(null);
+const isLoading = ref(false);
+const error = ref<any>(null);
+
+const execute = async () => {
+  isLoading.value = true;
+  error.value = null;
+  try {
+    // Adapter for backend pagination if it expects offset/count, or page/page_size
+    // The user request specified page/page_size.
+    // However, existing types might use offset/count. Let's check definitions or override.
+    // The user prompt said: page (default 1), page_size (default 20).
+    // The existing code used offset/count.
+    // I will use properties that match the user request.
+    const res = await api.Submission.list({
+      ...getSubmissionsQuery.value,
+      // Ensure we send what backend expects as per user prompt
+      page: routeQuery.value.page,
+      page_size: 10,
+    } as any);
+    data.value = (res as any).data ?? res;
+  } catch (e) {
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 watch(
-  getSubmissionsUrl,
-  (url) => {
-    execute(url);
+  getSubmissionsQuery,
+  () => {
+    execute();
   },
-  { immediate: true },
+  { immediate: true, deep: true },
 );
-const submissions = computed(() => data.value?.submissions);
-const submissionCount = computed(() => data.value?.submissionCount);
+
+const submissions = computed(() => data.value?.results || data.value?.submissions || []); // Check for 'results' as per user prompt
+const submissionCount = computed(() => data.value?.count || data.value?.submissionCount || 0); // Check for 'count'
 const maxPage = computed(() => {
   return submissionCount.value ? Math.ceil(submissionCount.value / 10) : 1;
 });
@@ -149,7 +174,7 @@ async function downloadAllSubmissions() {
           <select
             :value="routeQuery.filter.problemId"
             class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ problemId: (event.target as HTMLSelectElement).value})"
+            @change="(event) => mutateFilter({ problemId: (event.target as HTMLSelectElement).value })"
           >
             <option value="" selected>{{ $t("course.submissions.problem") }}</option>
             <option v-for="{ text, value } in problemSelections" :value="value">{{ text }}</option>
@@ -158,7 +183,7 @@ async function downloadAllSubmissions() {
           <select
             :value="routeQuery.filter.status"
             class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ status: (event.target as HTMLSelectElement).value})"
+            @change="(event) => mutateFilter({ status: (event.target as HTMLSelectElement).value })"
           >
             <option value="" selected>{{ $t("course.submissions.status") }}</option>
             <option v-for="{ text, value } in submissionStatusCodes" :value="value">{{ text }}</option>
@@ -167,7 +192,7 @@ async function downloadAllSubmissions() {
           <select
             :value="routeQuery.filter.languageType"
             class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ languageType: (event.target as HTMLSelectElement).value})"
+            @change="(event) => mutateFilter({ languageType: (event.target as HTMLSelectElement).value })"
           >
             <option value="" selected>{{ $t("course.submissions.lang") }}</option>
             <option v-for="{ text, value } in languageTypes" :value="value">{{ text }}</option>
@@ -252,7 +277,7 @@ async function downloadAllSubmissions() {
                       <span>{{ submission.user.username }}</span>
                     </div>
                   </td>
-                  <td><judge-status :status="submission.status" /></td>
+                  <td><judge-status :status="Number(submission.status)" /></td>
                   <td>{{ submission.score }}</td>
                   <td>{{ submission.runTime }} ms</td>
                   <td>{{ submission.memoryUsage }} KB</td>
