@@ -6,7 +6,7 @@ export const Submission = {
       problem_id: body.problemId,
       language_type: body.languageType,
     };
-    return fetcher.post<any>("/submission/", payload);
+    return fetcher.post<{ message: string }>("/submission/", payload);
   },
 
   upload: (id: string, body: { source_code: string }) => {
