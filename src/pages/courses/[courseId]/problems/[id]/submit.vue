@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watchEffect, computed, ref, onMounted } from "vue";
 import hljs from "highlight.js";
-import { BlobWriter, ZipWriter, TextReader } from "@zip.js/zip.js";
+
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required, between, helpers } from "@vuelidate/validators";
@@ -107,23 +107,37 @@ async function submit() {
   form.isLoading = true;
   form.isSubmitError = false;
   try {
-    const blobWriter = new BlobWriter("application/zip");
-    const writer = new ZipWriter(blobWriter);
-    await writer.add(`main${LANGUAGE_EXTENSION[form.lang]}`, new TextReader(form.code));
-    await writer.close();
-    const blob = await blobWriter.getData();
-    const formData = new FormData();
-    formData.append("code", blob);
+    const res = await api.Submission.create({
+      problemId: Number(route.params.id),
+      languageType: Number(form.lang),
+    });
 
-    const { submissionId } = (
-      await api.Submission.create({
-        problemId: Number(route.params.id),
-        languageType: Number(form.lang),
-      })
-    ).data;
+    // Parse submission ID from response
+    let submissionId = null;
+    const message = (res as any).message || (res as any).data;
 
-    await api.Submission.modify(submissionId, formData);
-    router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
+    if (typeof message === "string" && message.includes("submission received.")) {
+      submissionId = message.split("submission received.")[1].trim();
+    } else if (typeof message === "string" && message.includes("submission recieved.")) {
+      // Check for backend typo
+      submissionId = message.split("submission recieved.")[1].trim();
+    }
+
+    if (submissionId && typeof submissionId === "string") {
+      try {
+        await api.Submission.upload(submissionId, { source_code: form.code });
+      } catch (e) {
+        console.error("Upload failed, but redirecting to submission page.", e);
+      }
+
+      console.log(
+        "Submission successful. Redirecting to:",
+        `/courses/${route.params.courseId}/submissions/${submissionId}`,
+      );
+      router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
+    } else {
+      throw new Error("Failed to get valid submission ID");
+    }
   } catch (error) {
     form.isSubmitError = true;
     throw error;

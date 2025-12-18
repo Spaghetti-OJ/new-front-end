@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import { useClipboard, useIntervalFn } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
@@ -14,19 +14,40 @@ const route = useRoute();
 useTitle(`Submission - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const router = useRouter();
 
-const {
-  data: submission,
-  error,
-  isLoading,
-  execute,
-} = useAxios<Submission>(`/submission/${route.params.id}`, fetcher);
+const submission = ref<SubmissionInfo | null>(null);
+const sourceCode = ref("");
+const error = ref<any>(null);
+const isLoading = ref(false);
+
+const execute = async () => {
+  try {
+    const res = await api.Submission.getDetail(route.params.id as string);
+    submission.value = (res as any).data ?? res;
+
+    try {
+      const codeRes = await api.Submission.getCode(route.params.id as string);
+      const codeData = (codeRes as any).data ?? codeRes;
+      sourceCode.value = codeData.source_code;
+    } catch {
+      sourceCode.value = "";
+    }
+  } catch (e) {
+    error.value = e;
+  }
+};
+
+onMounted(() => {
+  isLoading.value = true;
+  execute().finally(() => {
+    isLoading.value = false;
+  });
+});
 
 const {
   data: CEOutput,
   error: CEError,
   isLoading: CELoading,
   execute: fetchCEOutput,
-  // If the submission CE, then all test cases are CE, thus set /output/0/0
 } = useAxios<{ stderr: string; stdout: string }>(`/submission/${route.params.id}/output/0/0`, fetcher, {
   immediate: false,
 });
@@ -42,12 +63,18 @@ const { pause, isActive } = useIntervalFn(() => {
 const expandTasks = ref<boolean[]>([]);
 watchEffect(() => {
   if (submission.value != null) {
-    if (submission.value.tasks) {
-      expandTasks.value = submission.value.tasks.map(() => false);
+    const tasks = (submission.value as any).tasks;
+    if (tasks) {
+      if (expandTasks.value.length !== tasks.length) {
+        expandTasks.value = tasks.map(() => false);
+      }
     }
-    if (submission.value.status !== SUBMISSION_STATUS_CODE.PENDING) {
+
+    // Status check
+    const status = Number(submission.value.status);
+    if (status !== SUBMISSION_STATUS_CODE.PENDING) {
       pause();
-      if (submission.value.status === SUBMISSION_STATUS_CODE.COMPILE_ERROR) {
+      if (status === SUBMISSION_STATUS_CODE.COMPILE_ERROR) {
         fetchCEOutput();
       }
     }
@@ -125,12 +152,18 @@ async function rejudge() {
                           {{ submission.problemId }}
                         </router-link>
                       </td>
-                      <td>{{ submission.user.username }} ({{ submission.user.displayedName }})</td>
-                      <td><judge-status :status="submission.status" /></td>
+                      <td>
+                        {{ submission.user.username }} ({{
+                          (submission.user as any).real_name ||
+                          (submission.user as any).displayedName ||
+                          submission.user.username
+                        }})
+                      </td>
+                      <td><judge-status :status="Number(submission.status)" /></td>
                       <td>{{ submission.runTime }} ms</td>
                       <td>{{ submission.memoryUsage }} KB</td>
                       <td>{{ submission.score }}</td>
-                      <td>{{ LANG[submission.languageType] }}</td>
+                      <td>{{ LANG[Number(submission.languageType)] }}</td>
                       <td>{{ formatTime(submission.timestamp) }}</td>
                       <td v-if="session.isAdmin">{{ submission.ipAddr }}</td>
                     </tr>
@@ -141,7 +174,7 @@ async function rejudge() {
 
             <div class="my-4" />
 
-            <div v-if="submission?.status === SUBMISSION_STATUS_CODE.COMPILE_ERROR">
+            <div v-if="Number(submission?.status) === SUBMISSION_STATUS_CODE.COMPILE_ERROR">
               <div class="card-title md:text-xl lg:text-2xl">
                 <i-uil-exclamation-circle class="mr-2 text-error" />
                 {{ $t("course.submission.compile_error.title") }}
@@ -162,7 +195,11 @@ async function rejudge() {
             <div v-else-if="isActive" class="flex items-center">
               <ui-spinner class="mr-3 h-6 w-6" /> {{ $t("course.submission.detail.desc") }}
             </div>
-            <table v-else class="table table-compact w-full" v-for="(task, taskIndex) in submission.tasks">
+            <table
+              v-else
+              class="table table-compact w-full"
+              v-for="(task, taskIndex) in (submission as any).tasks"
+            >
               <thead>
                 <tr>
                   <th>{{ $t("course.submission.detail.id") }} {{ taskIndex }}</th>
@@ -215,17 +252,16 @@ async function rejudge() {
           <div class="card-body p-0">
             <div class="card-title md:text-xl lg:text-2xl">
               {{ $t("course.submission.source.text") }}
-              <!-- TODO submission?.code should without ? -->
               <button
-                v-if="isSupported && submission"
+                v-if="isSupported && sourceCode"
                 class="btn btn-info btn-xs ml-3"
-                @click="copy(submission?.code || '')"
+                @click="copy(sourceCode)"
               >
                 {{ copied ? $t("course.submission.source.copied") : $t("course.submission.source.copy") }}
               </button>
             </div>
             <div class="my-1" />
-            <code-editor v-model="submission.code" readonly />
+            <code-editor v-model="sourceCode" readonly />
           </div>
         </div>
       </div>

@@ -60,6 +60,21 @@ interface SubmissionListQuery {
   username?: string;
 }
 
+interface SubmissionInfo {
+  submissionId: string;
+  problemId: number;
+  user: UserInfo;
+  timestamp: string;
+  lastSend: string;
+  status: string | number; // JSON example shows "0", but could be enum
+  score: number;
+  runTime: number;
+  memoryUsage: number;
+  languageType: string | number;
+  ipAddr: string;
+  tasks?: Task[];
+}
+
 interface SubmissionListFilter {
   problemId?: string;
   status?: string;
