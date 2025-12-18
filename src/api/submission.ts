@@ -13,7 +13,7 @@ export const Submission = {
     return fetcher.put(`/submission/${id}/`, body);
   },
 
-  rejudge: (id: string) => fetcher.get(`/submission/${id}/rejudge`),
+  rejudge: (id: string) => fetcher.get(`/submission/${id}/rejudge/`),
   getDetail: (id: string) => fetcher.get<SubmissionInfo>(`/submission/${id}/`),
   getCode: (id: string) =>
     fetcher.get<{ source_code: string; language_type: number }>(`/submission/${id}/code/`),
