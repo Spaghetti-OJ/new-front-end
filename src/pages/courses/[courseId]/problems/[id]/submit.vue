@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { reactive, watchEffect, computed } from "vue";
+import { reactive, watchEffect, computed, ref, onMounted } from "vue";
 import hljs from "highlight.js";
 import { BlobWriter, ZipWriter, TextReader } from "@zip.js/zip.js";
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required, between, helpers } from "@vuelidate/validators";
-import api, { fetcher } from "@/api";
+import api from "@/api";
 import { useTitle, useStorage } from "@vueuse/core";
 import { LANGUAGE_OPTIONS, LOCAL_STORAGE_KEY } from "@/constants";
 import { useI18n } from "vue-i18n";
@@ -14,10 +13,25 @@ import { useI18n } from "vue-i18n";
 const route = useRoute();
 const { t } = useI18n();
 
-useTitle(`Submit - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Submit - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const router = useRouter();
-const { data: problem, error, isLoading } = useAxios<Problem>(`/problem/view/${route.params.id}`, fetcher);
+const problem = ref<ProblemInfo | null>(null);
+const error = ref<any>(null);
+const isLoading = ref<boolean>(false);
+async function loadProblem() {
+  isLoading.value = true;
+  error.value = null;
 
+  try {
+    const res = await api.Problem.getProblemInfo(Number(route.params.id));
+    problem.value = res.data ?? res;
+  } catch (err) {
+    console.error(err);
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
+}
 const lang = useStorage(LOCAL_STORAGE_KEY.LAST_USED_LANG, -1);
 const form = reactive({
   code: "",
@@ -109,7 +123,7 @@ async function submit() {
     ).data;
 
     await api.Submission.modify(submissionId, formData);
-    router.push(`/courses/${route.params.name}/submissions/${submissionId}`);
+    router.push(`/courses/${route.params.courseId}/submissions/${submissionId}`);
   } catch (error) {
     form.isSubmitError = true;
     throw error;
@@ -117,6 +131,7 @@ async function submit() {
     form.isLoading = false;
   }
 }
+onMounted(loadProblem);
 </script>
 
 <template>

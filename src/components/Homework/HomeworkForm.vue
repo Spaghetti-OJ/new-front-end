@@ -16,7 +16,7 @@ defineExpose({ isLoading, errorMsg });
 const rules = {
   name: { required, maxLength: maxLength(64) },
   markdown: { maxLength: maxLength(10000) },
-  problemIds: { required },
+  problem_ids: { required },
   start: { required },
   end: {
     required,
@@ -82,12 +82,12 @@ async function submit() {
         <span class="label-text">{{ $t("components.hw.form.problems") }}</span>
       </label>
       <problem-multi-select
-        :model-value="form.problemIds"
+        :model-value="form.problem_ids"
         :problems="problemSelections"
-        @update:model-value="(v) => updateForm('problemIds', v)"
+        @update:model-value="(v) => updateForm('problem_ids', v)"
       />
-      <label class="label" v-show="v$.problemIds.$error">
-        <span class="label-text-alt text-error" v-text="v$.problemIds.$errors[0]?.$message" />
+      <label class="label" v-show="v$.problem_ids.$error">
+        <span class="label-text-alt text-error" v-text="v$.problem_ids.$errors[0]?.$message" />
       </label>
     </div>
 

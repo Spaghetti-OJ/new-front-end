@@ -1,9 +1,19 @@
 import { fetcher } from "./fetcher";
 
 export const Problem = {
-  create: (body: ProblemForm) => fetcher.post("/problem/manage", body),
+  getProblemList: (query?: {
+    difficulty?: string;
+    is_public?: string;
+    course_id?: number;
+    page?: number;
+    page_size?: number;
+  }) => fetcher.get<ProblemList>("/problem/", { params: query }),
+  getManageData: (problemId: string | number) => fetcher.get(`/problem/manage/${problemId}`),
+  create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
+  getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
+  getProblemInfo: (problemId: number) => fetcher.get<ProblemInfo>(`/problem/${problemId}`),
   getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
-  modify: (id: string | number, body: ProblemForm) => fetcher.put(`/problem/manage/${id}`, body),
+  modify: (id: string | number, body: ProblemCreatePayload) => fetcher.put(`/problem/manage/${id}`, body),
   modifyTestdata: (id: string | number, body: FormData) =>
     fetcher.put(`/problem/manage/${id}`, body, { headers: { "Content-Type": "multipart/form-data" } }),
   delete: (id: string | number) => fetcher.delete(`/problem/manage/${id}`),
@@ -19,4 +29,10 @@ export const Problem = {
     uploadId: string,
     parts: { ETag: string; PartNumber: number }[],
   ) => fetcher.post(`/problem/${problemId}/complete-test-case-upload`, { uploadId, parts }),
+
+  getSubtasks: (problemId: number | string) => fetcher.get<SubtaskResponse>(`/problem/${problemId}/subtasks`),
+  createSubtasks: (problemId: number, body: SubtaskPayload) =>
+    fetcher.post(`/problem/${problemId}/subtasks`, body),
+  deleteSubtasks: (problemId: number | string, subtaskId: number | string) =>
+    fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
 };

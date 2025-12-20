@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useTitle } from "@vueuse/core";
 import { LOCAL_STORAGE_KEY } from "@/constants";
 import { useSession } from "@/stores/session";
-
+import api from "@/api";
 import ChangePasswordForm from "@/components/Settings/ChangePasswordForm.vue";
 
 useTitle("Settings | Normal OJ");

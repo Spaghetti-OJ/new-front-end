@@ -219,7 +219,15 @@
       "submit": "Submit"
     },
     "wrongPassword": "Wrong Password",
-    "operationFailed": "Operation failed, please try again later"
+    "operationFailed": "Operation failed, please try again later",
+    "verifyEmail": "Verify Email",
+    "verifyEmailSuccess": "Verification email sent, please check your inbox.",
+    "verifyEmailFailed": "Failed to send verification email.",
+    "emailNotSet": "Please set an email address first.",
+    "emailAlreadyVerified": "Your email is already verified.",
+    "verifyEmailSentTitle": "Verification Email Sent",
+    "verifyEmailSentMessage": "We have sent a verification email to your inbox. Please check it.",
+    "close": "Close"
   },
   "ann": {
     "id": {

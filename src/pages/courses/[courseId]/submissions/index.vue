@@ -15,7 +15,7 @@ const route = useRoute();
 const router = useRouter();
 const session = useSession();
 
-useTitle(`Submissions - ${route.params.name} | Normal OJ`);
+useTitle(`Submissions - ${route.params.courseId} | Normal OJ`);
 
 // url is the single source of truth
 // 1. grab query parameters from url, store into local states used by inputs
@@ -60,7 +60,7 @@ const getSubmissionsUrl = computed(() => {
     ...routeQuery.value.filter,
     offset: (routeQuery.value.page - 1) * 10,
     count: 10,
-    course: route.params.name as string,
+    course: route.params.courseId as string,
   };
   const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
   return `/submission?${qs}`;
@@ -83,7 +83,7 @@ const {
   problemSelections,
   problemId2Meta,
   error: fetchProblemError,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
 
 const submissionStatusCodes = Object.entries(SUBMISSION_STATUS_REPR).map(([statusCode, { label }]) => ({
   text: label,
@@ -105,7 +105,7 @@ async function downloadAllSubmissions() {
     ...routeQuery.value.filter,
     offset: 0,
     count: submissionCount.value ?? 0,
-    course: route.params.name as string,
+    course: route.params.courseId as string,
   };
   const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
   const url = `/submission?${qs}`;
@@ -212,7 +212,7 @@ async function downloadAllSubmissions() {
                     <div class="flex items-center">
                       <div class="tooltip tooltip-bottom" data-tip="show details">
                         <router-link
-                          :to="`/courses/${$route.params.name}/submissions/${submission.submissionId}`"
+                          :to="`/courses/${$route.params.courseId}/submissions/${submission.submissionId}`"
                           class="link"
                         >
                           {{ submission.submissionId.slice(-6) }}
@@ -227,7 +227,7 @@ async function downloadAllSubmissions() {
                           class="ml-2 h-4 w-4 cursor-pointer"
                           @click="
                             copySubmissionLink(
-                              `/courses/${$route.params.name}/submissions/${submission.submissionId}`,
+                              `/courses/${$route.params.courseId}/submissions/${submission.submissionId}`,
                             )
                           "
                         />
@@ -240,7 +240,7 @@ async function downloadAllSubmissions() {
                       :data-tip="problemId2Meta[submission.problemId.toString()]?.name || 'loading...'"
                     >
                       <router-link
-                        :to="`/courses/${$route.params.name}/problems/${submission.problemId}`"
+                        :to="`/courses/${$route.params.courseId}/problems/${submission.problemId}`"
                         class="link"
                       >
                         {{ submission.problemId }}

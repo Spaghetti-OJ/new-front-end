@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-import { PROBLEM_STATUS } from "@/constants";
-
 interface Props {
   id: number;
   problemName: string;
   unlimitedQuota: boolean;
   quotaRemaining: number;
   quotaLimit: number;
-  tags: string[];
-  visible: ProblemStatus;
+  tags: ProblemTag[];
+  visible: "hidden" | "public" | "course";
   isAdmin: boolean;
+  isTeacher: boolean;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>
@@ -27,8 +25,8 @@ defineProps<Props>();
     <div class="collapse-content flex flex-col gap-2 bg-base-300">
       <div class="mt-3 flex flex-col">
         <div class="flex gap-1">
-          <div v-for="tag in tags" :key="tag" class="badge badge-info">
-            {{ tag }}
+          <div v-for="tag in tags" :key="tag.id" class="badge badge-info">
+            {{ tag.name }}
           </div>
         </div>
       </div>
@@ -45,16 +43,16 @@ defineProps<Props>();
             <template v-else> {{ quotaRemaining }} / {{ quotaLimit }} </template>
           </div>
         </div>
-        <div v-if="isAdmin" class="stat">
+        <div v-if="isAdmin || isTeacher" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-eye class="h-6 w-6" />
           </div>
           <div class="stat-title text-sm">Visibility</div>
           <div class="stat-value text-lg">
-            {{ visible === PROBLEM_STATUS.VISIBLE ? "Public" : "Hidden" }}
+            {{ visible === "public" ? "Public" : "Hidden" }}
           </div>
         </div>
-        <div v-if="isAdmin" class="stat">
+        <div v-if="isAdmin || isTeacher" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-monitor class="h-6 w-6" />
           </div>
@@ -63,7 +61,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Stats">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm mr-1"
-                :to="`/courses/${$route.params.name}/problems/${id}/stats`"
+                :to="`/courses/${$route.params.courseId}/problems/${id}/stats`"
               >
                 <i-uil-chart-line class="lg:h-5 lg:w-5" />
               </router-link>
@@ -71,7 +69,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Copycat">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm mr-1"
-                :to="`/courses/${$route.params.name}/problems/${id}/copycat`"
+                :to="`/courses/${$route.params.courseId}/problems/${id}/copycat`"
               >
                 <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
               </router-link>
@@ -79,7 +77,7 @@ defineProps<Props>();
             <div class="tooltip" data-tip="Edit">
               <router-link
                 class="btn btn-circle btn-ghost btn-sm"
-                :to="`/courses/${$route.params.name}/problems/${id}/edit`"
+                :to="`/courses/${$route.params.courseId}/problems/${id}/edit`"
               >
                 <i-uil-edit class="lg:h-5 lg:w-5" />
               </router-link>
@@ -89,7 +87,7 @@ defineProps<Props>();
       </div>
       <div class="grow">
         <button class="btn btn-primary btn-sm">
-          <router-link :to="`/courses/${$route.params.name}/problems/${id}`"> View Problem </router-link>
+          <router-link :to="`/courses/${$route.params.courseId}/problems/${id}`"> View Problem </router-link>
         </button>
       </div>
     </div>

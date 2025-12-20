@@ -1,25 +1,39 @@
 <script setup lang="ts">
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute } from "vue-router";
-import { fetcher } from "@/api";
+import api from "@/api";
 import { useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useProblemSelection } from "@/composables/useProblemSelection";
 
 const session = useSession();
 const route = useRoute();
 
-useTitle(`Homeworks - ${route.params.name} | Normal OJ`);
-const { data, error, isLoading } = useAxios<HomeworkList>(`/course/${route.params.name}/homework`, fetcher);
+useTitle(`Homeworks - ${route.params.courseId} | Normal OJ`);
+const homeworksData = ref<GetHomeworksResponse>();
+const isLoading = ref(true);
+const error = ref<any>(null);
+
 const {
   problemId2Meta,
   error: fetchProblemError,
   isLoading: isFetchingProblem,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
+
 const homeworks = computed(() => {
-  if (!data.value) return [];
-  return data.value.sort((a, b) => b.start - a.start);
+  if (!homeworksData.value) return [];
+  return homeworksData.value.items.sort((a, b) => (b.start || 0) - (a.start || 0));
+});
+
+onMounted(async () => {
+  try {
+    const { data } = await api.Homework.list(route.params.courseId as string);
+    homeworksData.value = data;
+  } catch (e) {
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
 
@@ -32,7 +46,7 @@ const homeworks = computed(() => {
           <router-link
             v-if="session.isAdmin"
             class="btn btn-success"
-            :to="`/courses/${$route.params.name}/homeworks/new`"
+            :to="`/courses/${$route.params.courseId}/homeworks/new`"
           >
             <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.hw.index.new") }}
           </router-link>
