@@ -7,13 +7,13 @@ const form = reactive({
   newPassword: "",
   confirmPassword: "",
   currentPassword: "",
-  errorMsg:"",
-  success:"",
+  errorMsg: "",
+  success: "",
 });
-const passwordform={
-old_password:"",
-new_password:"",
-}
+const passwordform = {
+  old_password: "",
+  new_password: "",
+};
 const rules = {
   newPassword: { required },
   confirmPassword: {
@@ -26,25 +26,26 @@ const rules = {
 const v$ = useVuelidate(rules, form);
 
 async function change() {
-  try{
-    const res=await api.Auth.changePassword(passwordform);
-    if (res.status=="ok"){
-      form.success="1"
+  try {
+    const res = await api.Auth.changePassword(passwordform);
+    if (res.status == "ok") {
+      form.success = "1";
     }
-  }catch(e){
-    if(e.response?.data.data.old_password){
-    form.errorMsg=(e.response?.data.data.old_password[0]);
-  }if(e.response?.data.data.new_password){
-    form.errorMsg=(e.response?.data.data.new_password[0]);
-  }
+  } catch (e) {
+    if (e.response?.data.data.old_password) {
+      form.errorMsg = e.response?.data.data.old_password[0];
+    }
+    if (e.response?.data.data.new_password) {
+      form.errorMsg = e.response?.data.data.new_password[0];
+    }
   }
 }
 function submit() {
   v$.value.$validate();
-  form.success="";
-  form.errorMsg="";
-  passwordform.old_password=form.currentPassword;
-  passwordform.new_password=form.newPassword;
+  form.success = "";
+  form.errorMsg = "";
+  passwordform.old_password = form.currentPassword;
+  passwordform.new_password = form.newPassword;
   change();
 }
 </script>
@@ -108,16 +109,16 @@ function submit() {
     <!-- Submit Button -->
     <button class="btn btn-primary mt-4 w-full" @click="submit">SUBMIT</button>
     <div class="alert alert-error shadow-lg" v-if="form.errorMsg">
-            <div>
-              <i-uil-times-circle />
-              <span>{{form.errorMsg }}</span>
-            </div>
-          </div>
-           <div class="alert alert-success shadow-lg" v-if="form.success">
-            <div>
-              <i-uil-times-circle />
-              <span>{{'Password changed successfully.' }}</span>
-            </div>
-          </div>
+      <div>
+        <i-uil-times-circle />
+        <span>{{ form.errorMsg }}</span>
+      </div>
+    </div>
+    <div class="alert alert-success shadow-lg" v-if="form.success">
+      <div>
+        <i-uil-times-circle />
+        <span>{{ "Password changed successfully." }}</span>
+      </div>
+    </div>
   </div>
 </template>
