@@ -8,7 +8,7 @@ const form = reactive({
   confirmPassword: "",
   currentPassword: "",
   errorMsg: "",
-  success: "",
+  success: false,
 });
 const passwordform = {
   old_password: "",
@@ -29,7 +29,7 @@ async function change() {
   try {
     const res = await api.Auth.changePassword(passwordform);
     if (res.status === "ok") {
-      form.success = "1";
+      form.success = true;
     }
   } catch (e) {
     if (e.response?.data.data.old_password) {
@@ -42,7 +42,7 @@ async function change() {
 }
 function submit() {
   v$.value.$validate();
-  form.success = "";
+  form.success = false;
   form.errorMsg = "";
   passwordform.old_password = form.currentPassword;
   passwordform.new_password = form.newPassword;
