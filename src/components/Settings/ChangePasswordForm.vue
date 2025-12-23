@@ -42,8 +42,9 @@ async function change() {
     }
   }
 }
-function submit() {
-  v$.value.$validate();
+async function submit() {
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
   form.success = false;
   form.errorMsg = "";
   passwordform.old_password = form.currentPassword;
