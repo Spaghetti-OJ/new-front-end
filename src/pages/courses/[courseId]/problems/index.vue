@@ -3,17 +3,20 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, ref, watch, watchEffect, onMounted } from "vue";
 import { UserRole, useSession } from "@/stores/session";
 import { useTitle } from "@vueuse/core";
-import { isQuotaUnlimited } from "@/constants";
+import { isQuotaUnlimited, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import useInteractions from "@/composables/useInteractions";
 import api from "@/api";
+import TagList from "@/components/Shared/TagList.vue";
+
 const session = useSession();
 const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
+const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
 const route = useRoute();
 const router = useRouter();
 
 const { isDesktop } = useInteractions();
 
-useTitle(`Problems - ${route.params.name} | Normal OJ`);
+useTitle(`Problems - ${route.params.courseId} | Normal OJ`);
 const problems = ref<ProblemList | null>(null);
 const error = ref<any>(null);
 const isLoading = ref<boolean>(false);
@@ -24,7 +27,8 @@ async function loadProblems() {
 
   try {
     const res = await api.Problem.getProblemList({
-      course_id: Number(route.params.name),
+      course_id: Number(route.params.courseId),
+      page_size: 1000, // Fetch all for client-side filtering
     });
 
     problems.value = res.data;
@@ -37,35 +41,51 @@ async function loadProblems() {
 }
 
 onMounted(loadProblems);
+
+// Pagination
 const page = ref(!isNaN(Number(route.query.page)) ? Number(route.query.page) : 1);
+const pageSize = 10;
+
 watchEffect(() => {
-  if (problems.value != null && (page.value < 1 || page.value >= problems.value.results.length)) {
-    page.value = 1;
-  }
+  if (!problems.value) return;
+  const total = problems.value.results.length;
+  const max = Math.ceil(total / pageSize) || 1;
+  if (page.value < 1) page.value = 1;
+  if (page.value > max) page.value = max;
 });
+
 watch(page, () => {
-  router.replace({ query: { page: page.value } });
+  router.replace({ query: { ...route.query, page: page.value } });
 });
+
 const maxPage = computed(() => {
-  return problems.value ? Math.ceil(problems.value.results.length / 10) : 1;
+  if (!problems.value) return 1;
+  return Math.ceil(problems.value.results.length / pageSize) || 1;
 });
-const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
+
+const paginatedProblems = computed(() => {
+  if (!problems.value) return [];
+  const start = (page.value - 1) * pageSize;
+  return problems.value.results.slice(start, start + pageSize);
+});
 </script>
 
 <template>
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title justify-between">
-          {{ $t("course.problems.text") }}
-
-          <router-link
-            v-if="rolesCanCreateProblem.includes(session.role)"
-            class="btn btn-success"
-            :to="`/courses/${$route.params.name}/problems/new`"
-          >
-            <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.problems.new") }}
-          </router-link>
+        <!-- Header & Actions -->
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="card-title">{{ $t("course.problems.text") }}</h2>
+          <div class="flex gap-2">
+            <router-link
+              v-if="rolesCanCreateProblem.includes(session.role)"
+              class="btn btn-success"
+              :to="`/courses/${$route.params.courseId}/problems/new`"
+            >
+              <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.problems.new") }}
+            </router-link>
+          </div>
         </div>
 
         <div class="my-2" />
@@ -91,40 +111,45 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="{ id, title, tags, total_quota, total_submissions, is_public } in (
-                    problems?.results || []
-                  ).slice((page - 1) * 10, page * 10)"
-                  :key="id"
-                  class="hover"
-                >
+                <tr v-for="p in paginatedProblems" :key="p.id" class="hover">
+                  <td class="h-px">
+                    <div class="flex h-full items-center gap-2">
+                      <span
+                        class="h-3 w-3 shrink-0 rounded-full"
+                        :class="DIFFICULTY_COLOR_CLASS[p.difficulty]"
+                      />
+                      <router-link :to="`/courses/${$route.params.courseId}/problems/${p.id}`" class="link">
+                        #{{ p.id }}
+                      </router-link>
+                    </div>
+                  </td>
                   <td>
-                    <router-link :to="`/courses/${$route.params.name}/problems/${id}`" class="link">
-                      {{ id }}
+                    <router-link
+                      :to="`/courses/${$route.params.courseId}/problems/${p.id}`"
+                      class="link link-hover font-medium"
+                    >
+                      {{ p.title }}
                     </router-link>
                   </td>
-                  <td>
-                    {{ title }}
-                  </td>
                   <td v-if="rolesCanReadProblemStatus.includes(session.role)">
-                    <span class="badge ml-1">{{ is_public }}</span>
+                    <span class="badge ml-1">{{ p.is_public }}</span>
                   </td>
                   <td>
-                    <span class="badge badge-info mr-1" v-for="tag in tags" :key="tag.id">{{
-                      tag.name
-                    }}</span>
+                    <TagList :tags="p.tags.map((t) => t.name)" size="md" colorMode="outline" />
                   </td>
                   <td>
-                    <template v-if="isQuotaUnlimited(total_quota)">
+                    <template v-if="isQuotaUnlimited(p.total_quota)">
                       <span class="text-sm">{{ $t("components.problem.card.unlimited") }}</span>
                     </template>
-                    <template v-else> {{ total_quota - total_submissions }} / {{ total_quota }} </template>
+                    <template v-else>
+                      {{ p.total_quota - p.total_submissions }} / {{ p.total_quota }}
+                    </template>
                   </td>
                   <td>
                     <div class="tooltip" data-tip="Stats">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.name}/problems/${id}/stats`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/stats`"
                       >
                         <i-uil-chart-line class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -133,7 +158,7 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                       <router-link
                         v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.name}/problems/${id}/copycat`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/copycat`"
                       >
                         <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -142,7 +167,7 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                       <router-link
                         v-if="rolesCanReadProblemStatus.includes(session.role)"
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/${$route.params.name}/problems/${id}/edit`"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -151,20 +176,17 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
                 </tr>
               </tbody>
             </table>
-            <template
-              v-else
-              v-for="{ id, title, tags, total_quota, total_submissions, is_public } in (
-                problems?.results || []
-              ).slice((page - 1) * 10, page * 10)"
-            >
+
+            <!-- Mobile View -->
+            <template v-else v-for="p in paginatedProblems" :key="p.id">
               <problem-info
-                :id="id"
-                :problem-name="title"
-                :unlimited-quota="isQuotaUnlimited(total_quota)"
-                :quota-limit="total_quota"
-                :quota-remaining="total_quota - total_submissions"
-                :tags="tags"
-                :visible="is_public"
+                :id="p.id"
+                :problem-name="p.title"
+                :unlimited-quota="isQuotaUnlimited(p.total_quota)"
+                :quota-limit="p.total_quota"
+                :quota-remaining="p.total_quota - p.total_submissions"
+                :tags="p.tags"
+                :visible="p.is_public"
                 :is-admin="session.isAdmin"
                 :is-teacher="session.isTeacher"
               />
@@ -172,10 +194,22 @@ const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
           </template>
         </data-status-wrapper>
 
-        <div class="card-actions mt-5">
-          <pagination-buttons v-model="page" :maxPage="maxPage" />
+        <div class="card-actions mt-5 justify-center">
+          <pagination-buttons v-if="maxPage > 1" v-model="page" :maxPage="maxPage" />
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.table thead tr {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+}
+</style>

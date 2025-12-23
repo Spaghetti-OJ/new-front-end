@@ -2,10 +2,12 @@
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/vue";
 
 interface Props {
-  modelValue: number[];
+  modelValue?: number[];
   problems: { text: string; value: string }[];
 }
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+});
 defineEmits<{
   (e: "update:model-value", newValue: number[]): void;
 }>();
@@ -15,7 +17,7 @@ defineEmits<{
   <Listbox :model-value="modelValue" multiple @update:model-value="(v) => $emit('update:model-value', v)">
     <div class="relative mt-1">
       <ListboxButton class="input input-bordered w-full max-w-xs text-left">
-        <span class="block truncate">{{ modelValue.join(", ") }}</span>
+        <span class="block truncate">{{ (modelValue || []).join(", ") }}</span>
         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <i-uil-angle-down class="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>

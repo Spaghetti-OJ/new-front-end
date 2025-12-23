@@ -10,7 +10,7 @@ import HomeworkForm from "@/components/Homework/HomeworkForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`Edit Homework - ${route.params.id} - ${route.params.name} | Normal OJ`);
+useTitle(`Edit Homework - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof HomeworkForm>>();
 
@@ -36,7 +36,7 @@ const {
   problemId2Meta,
   error: fetchProblemError,
   isLoading: isFetchingProblem,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
 
 const openPreview = ref<boolean>(false);
 
@@ -47,11 +47,10 @@ async function submit() {
   try {
     await api.Homework.modify(route.params.id as string, {
       ...edittingHomework.value,
-      scoreboardStatus: 0,
       // TODO: backend bug
       name: edittingHomework.value.name === homework.value.name ? undefined : edittingHomework.value.name,
     });
-    router.push(`/courses/${route.params.name}/homeworks`);
+    router.push(`/courses/${route.params.courseId}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -69,7 +68,7 @@ async function delete_() {
   if (!confirm("Are u sure?")) return;
   try {
     await api.Homework.delete(route.params.id as string);
-    router.push(`/courses/${route.params.name}/homeworks`);
+    router.push(`/courses/${route.params.courseId}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
@@ -83,7 +82,7 @@ async function delete_() {
 }
 function discard() {
   if (!confirm("Are u sure?")) return;
-  router.push(`/courses/${route.params.name}/homeworks`);
+  router.push(`/courses/${route.params.courseId}/homeworks`);
 }
 </script>
 

@@ -32,7 +32,7 @@ const session = useSession();
       <tr v-for="(pid, index) in homework.problemIds">
         <td>{{ index + 1 }}</td>
         <td>
-          <router-link class="link" :to="`/courses/${$route.params.name}/problems/${pid}`">
+          <router-link class="link" :to="`/courses/${$route.params.courseId}/problems/${pid}`">
             {{ pid }}
           </router-link>
         </td>
@@ -59,7 +59,7 @@ const session = useSession();
           <div class="tooltip" data-tip="Stats">
             <router-link
               class="btn btn-ghost btn-xs"
-              :to="`/courses/${$route.params.name}/problems/${pid}/stats`"
+              :to="`/courses/${$route.params.courseId}/problems/${pid}/stats`"
             >
               <i-uil-chart-line class="lg:h-5 lg:w-5" />
             </router-link>
@@ -69,7 +69,7 @@ const session = useSession();
           <div class="tooltip" data-tip="Copycat">
             <router-link
               class="btn btn-ghost btn-xs"
-              :to="`/courses/${$route.params.name}/problems/${pid}/copycat`"
+              :to="`/courses/${$route.params.courseId}/problems/${pid}/copycat`"
             >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>

@@ -10,14 +10,14 @@ import HomeworkForm from "@/components/Homework/HomeworkForm.vue";
 
 const route = useRoute();
 const router = useRouter();
-useTitle(`New Homework - ${route.params.name} | Normal OJ`);
+useTitle(`New Homework - ${route.params.courseId} | Normal OJ`);
 
 const formElement = ref<InstanceType<typeof HomeworkForm>>();
 
 const newHomework = reactive<HomeworkForm>({
   name: "",
   markdown: `_Markdown_ & $\\text{katex}$ are supported.\n![](https://64.media.tumblr.com/2e2d5f1e4f0667c181c3afa9ef8cca1b/tumblr_mu4kbwQ0eY1qki7dgo1_500.gifv)`,
-  problemIds: [],
+  problem_ids: [],
   start: dayjs().unix(),
   end: dayjs().add(7, "day").unix(),
 });
@@ -27,7 +27,7 @@ const {
   problemId2Meta,
   error: fetchError,
   isLoading: isFetching,
-} = useProblemSelection(route.params.name as string);
+} = useProblemSelection(route.params.courseId as string);
 
 function update<K extends keyof HomeworkForm>(key: K, value: HomeworkForm[K]) {
   newHomework[key] = value;
@@ -46,10 +46,9 @@ async function submit() {
   try {
     await api.Homework.create({
       ...newHomework,
-      courseName: route.params.name as string,
-      scoreboardStatus: 0,
+      course_id: Number(route.params.courseId),
     });
-    router.push(`/courses/${route.params.name}/homeworks`);
+    router.push(`/courses/${route.params.courseId}/homeworks`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;

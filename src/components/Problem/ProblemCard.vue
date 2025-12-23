@@ -1,21 +1,46 @@
 <script setup lang="ts">
+import { onMounted, ref, computed } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
+import { useRoute } from "vue-router";
+const route = useRoute();
 interface Props {
   problem: ProblemInfo;
   preview?: boolean;
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   preview: false,
 });
-
+const subtasks = ref<Subtasks[] | null>(null);
 const session = useSession();
-
+async function getSubtasks() {
+  const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
+  subtasks.value = res;
+}
 function downloadTestCase(problemId: number) {
   window.location.assign(api.Problem.getTestCaseUrl(problemId));
 }
+
+const samples = computed(() => {
+  const input = props.problem.description.sampleInput;
+  const output = props.problem.description.sampleOutput;
+  const inputs = Array.isArray(input) ? input : [input];
+  const outputs = Array.isArray(output) ? output : [output];
+  // If inputs/outputs are single strings, we treat them as one sample.
+  // If they are arrays, we assume parallel arrays for multiple samples.
+  // Exception: If the user intended lines of a single sample to be an array?
+  // User instruction implies array = multiple samples.
+
+  const length = Math.max(inputs.length, outputs.length);
+  return Array.from({ length }, (_, i) => ({
+    input: inputs[i] || "",
+    output: outputs[i] || "",
+  }));
+});
+
+onMounted(getSubtasks);
 </script>
 
 <template>
@@ -59,34 +84,34 @@ function downloadTestCase(problemId: number) {
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/submit`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/submit`"
             >
               <i-uil-file-upload-alt class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.submit") }}
             </router-link>
             <router-link
               class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/stats`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/stats`"
             >
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
             <router-link
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/copycat`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`"
             >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
             <router-link
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
-              :to="`/courses/${$route.params.name}/problems/${$route.params.id}/edit`"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`"
             >
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
             <button
-              v-if="session.isAdmin"
+              v-if="session.isAdmin || session.isTeacher"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Download test case"
               @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"
@@ -127,19 +152,16 @@ function downloadTestCase(problemId: number) {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(input, index) in [problem.description.sampleInput]" :key="index">
+                <tr v-for="(sample, index) in samples" :key="index">
                   <td class="align-top">{{ index + 1 }}</td>
                   <td class="align-top">
-                    <sample-code-block v-if="input" :code="input"></sample-code-block>
+                    <sample-code-block v-if="sample.input" :code="sample.input"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
                   </td>
                   <td class="align-top">
-                    <sample-code-block
-                      v-if="problem.description.sampleOutput"
-                      :code="problem.description.sampleOutput"
-                    ></sample-code-block>
+                    <sample-code-block v-if="sample.output" :code="sample.output"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
                     }}</span>
@@ -167,11 +189,14 @@ function downloadTestCase(problemId: number) {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="({ memoryLimit, timeLimit, taskScore }, index) in problem.testCase" :key="index">
-                <td>{{ index }}</td>
-                <td>{{ timeLimit }} ms</td>
-                <td>{{ memoryLimit }} KB</td>
-                <td>{{ taskScore }}</td>
+              <tr
+                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subtasks || []"
+                :key="subtask_no"
+              >
+                <td>{{ subtask_no }}</td>
+                <td>{{ time_limit_ms }} ms</td>
+                <td>{{ memory_limit_mb }} KB</td>
+                <td>{{ weight }}</td>
               </tr>
             </tbody>
           </table>

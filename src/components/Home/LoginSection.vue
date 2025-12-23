@@ -40,7 +40,23 @@ async function login() {
     const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
     console.log(tokens);
     await session.setTokens(tokens.access, tokens.refresh);
-    const redirect = (route.query.redirect as string) ?? "/";
+    let redirect = (route.query.redirect as string) ?? "/";
+
+    // Prevent open redirect: must start with / and not //
+    if (!redirect.startsWith("/") || redirect.startsWith("//")) {
+      redirect = "/";
+    }
+
+    try {
+      const redirectUrl = new URL(redirect, window.location.origin);
+      const redirectPath = redirectUrl.pathname;
+      if (redirectPath === "/login" || redirectPath.startsWith("/login/")) {
+        redirect = "/";
+      }
+    } catch {
+      redirect = "/";
+    }
+
     router.replace(redirect);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {

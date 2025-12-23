@@ -5,20 +5,20 @@ import "dayjs/locale/en";
 import "dayjs/locale/zh-tw";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { useI18n } from "vue-i18n";
-
+import api from "@/api";
 dayjs.extend(LocalizedFormat);
 
-// ===== Type definitions ===== //
-type PermissionType = "submissions" | "courses" | "homeworks" | "announcements";
+// Type definitions
+type PermissionType = "submissions" | "courses" | "problems" | "user";
 
 interface PermissionRow {
   type: PermissionType;
   read: boolean;
-  create: boolean;
+  write: boolean;
 }
 
 interface ApiKeyRow {
-  id: number;
+  id: string;
   name: string;
   status: "active" | "disabled";
   usage: number;
@@ -27,8 +27,12 @@ interface ApiKeyRow {
   createdAt: string;
   expiresAt?: string;
 }
-
-// ===== Reactive State ===== //
+interface CreateForm {
+  name: string;
+  permissions?: string[];
+  expires_at?: string;
+}
+// Reactive State
 const apiKeys = ref<ApiKeyRow[]>([]);
 
 const showCreateModal = ref(false);
@@ -37,10 +41,10 @@ const showGeneratedModal = ref(false);
 
 const createFormName = ref("");
 const createFormPermissions = ref<PermissionRow[]>([
-  { type: "submissions", read: false, create: false },
-  { type: "courses", read: false, create: false },
-  { type: "homeworks", read: false, create: false },
-  { type: "announcements", read: false, create: false },
+  { type: "submissions", read: false, write: false },
+  { type: "courses", read: false, write: false },
+  { type: "problems", read: false, write: false },
+  { type: "user", read: false, write: false },
 ]);
 
 const createFormExpiresDate = ref("");
@@ -67,39 +71,65 @@ watch(
 const permissionLabel: Record<PermissionType, string> = {
   submissions: "Submissions",
   courses: "Courses",
-  homeworks: "Homeworks",
-  announcements: "Announcements",
+  problems: "Problems",
+  user: "User",
 };
-
-// ===== Load Demo ===== //
-onMounted(() => {
-  apiKeys.value = [
-    {
-      id: 1,
-      name: "my api key 01",
-      status: "active",
-      usage: 42,
-      maskedKey: "sk-live-****abcd",
-      permissions: [
-        { type: "submissions", read: true, create: false },
-        { type: "courses", read: false, create: true },
-        { type: "homeworks", read: true, create: false },
-        { type: "announcements", read: false, create: true },
-      ],
-      createdAt: new Date().toISOString(),
-      expiresAt: "2026-01-01T00:00:00Z",
-    },
+//前後端轉換
+function mapPermissions(perms: string[]): PermissionRow[] {
+  const base: PermissionRow[] = [
+    { type: "submissions", read: false, write: false },
+    { type: "courses", read: false, write: false },
+    { type: "problems", read: false, write: false },
+    { type: "user", read: false, write: false },
   ];
+
+  for (const p of perms) {
+    const [action, resource] = p.split(":"); // e.g. read:problems
+    const row = base.find((r) => r.type === resource);
+    if (!row) continue;
+
+    if (action === "read") row.read = true;
+    if (action === "write") row.write = true;
+  }
+
+  return base;
+}
+function mapApiKeyFromBackend(b: any): ApiKeyRow {
+  return {
+    id: b.id,
+    name: b.name,
+    status: b.is_active ? "active" : "disabled",
+    usage: b.usage_count,
+    maskedKey: b.prefix,
+    permissions: mapPermissions(b.permissions),
+    createdAt: b.created_at,
+    expiresAt: b.expires_at ?? undefined,
+  };
+}
+function mapPermissionsToApi(permissions: PermissionRow[]): string[] {
+  return permissions.flatMap((p) => {
+    const result: string[] = [];
+    if (p.read) result.push(`read:${p.type}`);
+    if (p.write) result.push(`write:${p.type}`);
+    return result;
+  });
+}
+//加載目前apikey
+async function getApiKeyList() {
+  const res = await api.Auth.listTokens();
+  const raw = Array.isArray(res) ? res : res;
+  apiKeys.value = raw.map(mapApiKeyFromBackend);
+}
+
+// Load Demo
+onMounted(() => {
+  getApiKeyList();
 });
 
-// ===== Utils ===== //
-function generateKey() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < 32; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return `sk-live-${result}`;
+// Utils
+async function generateKey(formData: CreateForm) {
+  const res = await api.Auth.generateToken(formData);
+  return res.full_token;
 }
 
 function masked(key: string) {
@@ -109,10 +139,10 @@ function masked(key: string) {
 function resetCreateForm() {
   createFormName.value = "";
   createFormPermissions.value = [
-    { type: "submissions", read: false, create: false },
-    { type: "courses", read: false, create: false },
-    { type: "homeworks", read: false, create: false },
-    { type: "announcements", read: false, create: false },
+    { type: "submissions", read: false, write: false },
+    { type: "courses", read: false, write: false },
+    { type: "problems", read: false, write: false },
+    { type: "user", read: false, write: false },
   ];
   createFormExpiresDate.value = "";
   createFormExpiresTime.value = "";
@@ -126,7 +156,7 @@ function openCreateModal() {
 }
 
 // ===== Create API Key ===== //
-function handleCreateKey() {
+async function handleCreateKey() {
   if (!createFormName.value.trim()) {
     createError.value = "Please enter a name.";
     return;
@@ -134,9 +164,7 @@ function handleCreateKey() {
   createError.value = null;
   expiresError.value = null;
 
-  const fullKey = generateKey();
   const now = new Date();
-  const id = now.getTime();
 
   let expires: string | undefined = undefined;
   if (createFormExpiresDate.value && createFormExpiresTime.value) {
@@ -147,26 +175,21 @@ function handleCreateKey() {
     }
     expires = expiresDate.toISOString();
   }
-
-  const newKey: ApiKeyRow = {
-    id,
-    name: createFormName.value.trim(),
-    status: "active",
-    usage: 0,
-    maskedKey: masked(fullKey),
-    createdAt: now.toISOString(),
-    expiresAt: expires,
-    permissions: JSON.parse(JSON.stringify(createFormPermissions.value)),
+  const input = {
+    name: createFormName.value,
+    permissions: mapPermissionsToApi(createFormPermissions.value),
+    expires_at: expires,
   };
 
-  apiKeys.value.push(newKey);
+  const fullKey = await generateKey(input);
 
   showCreateModal.value = false;
   generatedKey.value = fullKey;
   showGeneratedModal.value = true;
+  await getApiKeyList();
 }
 
-// ===== Detail ===== //
+// Detail
 function openDetailModal(key: ApiKeyRow) {
   selectedKey.value = key;
   showDetailModal.value = true;
@@ -178,14 +201,16 @@ function closeDetailModal() {
   showDeleteConfirm.value = false;
 }
 
-// ===== Delete ===== //
-function confirmDeleteSelected() {
+// Delete
+async function confirmDeleteSelected() {
   if (!selectedKey.value) return;
+  const res = await api.Auth.deleteToken(selectedKey.value.id);
   apiKeys.value = apiKeys.value.filter((k) => k.id !== selectedKey.value!.id);
   closeDetailModal();
+  await getApiKeyList();
 }
 
-// ===== Copy ===== //
+// Copy
 async function copyGeneratedKey() {
   if (!generatedKey.value) return;
   try {
@@ -297,7 +322,7 @@ function formatDateTime(value?: string) {
               <tr>
                 <th>Types</th>
                 <th class="text-center">Read</th>
-                <th class="text-center">Create</th>
+                <th class="text-center">Write</th>
               </tr>
             </thead>
             <tbody>
@@ -307,7 +332,7 @@ function formatDateTime(value?: string) {
                   <input type="checkbox" v-model="perm.read" class="checkbox checkbox-sm" />
                 </td>
                 <td class="text-center">
-                  <input type="checkbox" v-model="perm.create" class="checkbox checkbox-sm" />
+                  <input type="checkbox" v-model="perm.write" class="checkbox checkbox-sm" />
                 </td>
               </tr>
             </tbody>
@@ -405,7 +430,7 @@ function formatDateTime(value?: string) {
                   <i-uil-check v-if="perm.read" class="mx-auto h-7 w-7 text-black" />
                 </td>
                 <td class="text-center">
-                  <i-uil-check v-if="perm.create" class="mx-auto h-7 w-7 text-black" />
+                  <i-uil-check v-if="perm.write" class="mx-auto h-7 w-7 text-black" />
                 </td>
               </tr>
             </tbody>
