@@ -196,9 +196,9 @@ async function rejudge() {
               <ui-spinner class="mr-3 h-6 w-6" /> {{ $t("course.submission.detail.desc") }}
             </div>
             <table
-              v-else
+              v-else-if="submission.tasks"
               class="table table-compact w-full"
-              v-for="(task, taskIndex) in (submission as any).tasks"
+              v-for="(task, taskIndex) in submission.tasks"
             >
               <thead>
                 <tr>
