@@ -31,12 +31,14 @@ async function change() {
     if (res.status === "ok") {
       form.success = true;
     }
-  } catch (e) {
-    if (e.response?.data.data.old_password) {
-      form.errorMsg = e.response?.data.data.old_password[0];
-    }
-    if (e.response?.data.data.new_password) {
-      form.errorMsg = e.response?.data.data.new_password[0];
+  } catch (e: any) {
+    const errorData = e?.response?.data?.data;
+    if (errorData) {
+      if (errorData.old_password) {
+        form.errorMsg = errorData.old_password[0];
+      } else if (errorData.new_password) {
+        form.errorMsg = errorData.new_password[0];
+      }
     }
   }
 }
