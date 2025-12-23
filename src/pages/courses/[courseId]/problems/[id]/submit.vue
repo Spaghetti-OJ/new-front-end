@@ -117,8 +117,6 @@ async function submit() {
 
     if (typeof message === "string" && message.includes("submission received.")) {
       submissionId = message.split("submission received.")[1].trim();
-    } else if (typeof message === "string" && message.includes("submission recieved.")) {
-      submissionId = message.split("submission recieved.")[1].trim();
     }
 
     if (submissionId && typeof submissionId === "string") {
