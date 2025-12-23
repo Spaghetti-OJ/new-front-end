@@ -72,7 +72,7 @@ watchEffect(() => {
 
     // Status check
     const status = Number(submission.value.status);
-    if (status !== SUBMISSION_STATUS_CODE.PENDING) {
+    if (status !== SUBMISSION_STATUS_CODE.PENDING && status !== SUBMISSION_STATUS_CODE.QUEUING) {
       pause();
       if (status === SUBMISSION_STATUS_CODE.COMPILE_ERROR) {
         fetchCEOutput();

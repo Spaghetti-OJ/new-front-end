@@ -53,6 +53,7 @@ export const SUBMISSION_STATUS_REPR = {
 } as const;
 
 export const SUBMISSION_STATUS_CODE = {
+  QUEUING: -2,
   PENDING: -1,
   ACCEPTED: 0,
   WRONG_ANSWER: 1,
