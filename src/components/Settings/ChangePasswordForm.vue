@@ -28,7 +28,7 @@ const v$ = useVuelidate(rules, form);
 async function change() {
   try {
     const res = await api.Auth.changePassword(passwordform);
-    if (res.status == "ok") {
+    if (res.status === "ok") {
       form.success = "1";
     }
   } catch (e) {
