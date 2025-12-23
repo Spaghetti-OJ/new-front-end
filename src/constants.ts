@@ -10,6 +10,10 @@ export const ROLE = ["Admin", "Teacher", "Student"];
 
 // keyof SUBMISSION_STATUS_REPR please refer to '@/types/submission.d.ts'
 export const SUBMISSION_STATUS_REPR = {
+  [-2]: {
+    label: "Queuing",
+    color: "#607d8b",
+  },
   [-1]: {
     label: "Pending",
     color: "#9e675a",
@@ -49,6 +53,7 @@ export const SUBMISSION_STATUS_REPR = {
 } as const;
 
 export const SUBMISSION_STATUS_CODE = {
+  QUEUING: -2,
   PENDING: -1,
   ACCEPTED: 0,
   WRONG_ANSWER: 1,
