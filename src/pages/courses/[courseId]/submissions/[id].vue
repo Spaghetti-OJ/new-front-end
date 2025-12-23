@@ -162,7 +162,7 @@ async function rejudge() {
                       <td>{{ submission.memoryUsage }} KB</td>
                       <td>{{ submission.score }}</td>
                       <td>{{ LANG[Number(submission.languageType)] }}</td>
-                      <td>{{ formatTime(submission.timestamp) }}</td>
+                      <td>{{ formatTime(Number(submission.timestamp)) }}</td>
                       <td v-if="session.isAdmin">{{ submission.ipAddr }}</td>
                     </tr>
                   </tbody>
