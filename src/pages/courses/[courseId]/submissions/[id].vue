@@ -157,7 +157,7 @@ async function rejudge() {
                           submission.user.real_name || submission.user.username
                         }})
                       </td>
-                      <td><judge-status :status="Number(submission.status)" /></td>
+                      <td><judge-status :status="Number(submission.status) as any" /></td>
                       <td>{{ submission.runTime }} ms</td>
                       <td>{{ submission.memoryUsage }} KB</td>
                       <td>{{ submission.score }}</td>
