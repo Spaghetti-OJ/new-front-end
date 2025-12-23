@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide, Ref, onMounted } from "vue";
+import { ref, provide, Ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
@@ -216,7 +216,7 @@ const generatedCases = ref<GeneratedCase[]>([]);
 const isGenerating = ref(false);
 
 async function onGenerate(payload: { llmMode: string }) {
-  // 先讓 UI 顯示 
+  // 先讓 UI 顯示
   isGenerating.value = true;
   generatedCases.value = [];
 
@@ -224,7 +224,6 @@ async function onGenerate(payload: { llmMode: string }) {
     // TODO: 之後接後端
     // const res = await api.Problem.generateTestcase(route.params.id as string, payload);
     // generatedCases.value = res.data.cases;
-
     // 暫時：先不接後端
   } finally {
     //isGenerating.value = false;
@@ -236,32 +235,31 @@ async function onGenerate(payload: { llmMode: string }) {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body pt-0">
-        <div class="card-title mb-3 flex justify-between items-center sticky top-[53px] z-50 h-20 bg-base-100">
+        <div
+          class="card-title sticky top-[53px] z-50 mb-3 flex h-20 items-center justify-between bg-base-100"
+        >
           <div class="flex items-center gap-x-4">
-            <span>
-              Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }}
-            </span>
+            <span> Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }} </span>
 
             <!-- 三顆 tab 按鈕 -->
             <div class="flex items-center gap-x-4">
-              <button class="btn bg-[#02305f]" @click="scrollToSection(contentSection)">
-                Content
-              </button>
-              <button class="btn bg-[#02305f]" @click="scrollToSection(testdataSection)">
-                Testdata
-              </button>
-              <button class="btn bg-[#02305f]" @click="scrollToSection(checkerSection)">
-                Checker
-              </button>
+              <button class="btn bg-[#02305f]" @click="scrollToSection(contentSection)">Content</button>
+              <button class="btn bg-[#02305f]" @click="scrollToSection(testdataSection)">Testdata</button>
+              <button class="btn bg-[#02305f]" @click="scrollToSection(checkerSection)">Checker</button>
             </div>
           </div>
 
           <div class="flex gap-x-3">
-            <button :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
-              @click="delete_">
+            <button
+              :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="delete_"
+            >
               <i-uil-trash-alt class="mr-1 lg:h-5 lg:w-5" /> Delete
             </button>
-            <button :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']" @click="discard">
+            <button
+              :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="discard"
+            >
               <i-uil-times-circle class="mr-1 lg:h-5 lg:w-5" /> Discard Changes
             </button>
           </div>
@@ -273,9 +271,16 @@ async function onGenerate(payload: { llmMode: string }) {
           </template>
           <template #data>
             <template v-if="edittingProblem">
-              <problem-form-component ref="formElement" v-model:testdata="testdata" @update="update" @submit="submit"
-                @save-solution="onSaveSolution" @generate="onGenerate" :generated-cases="generatedCases"
-                :is-generating="isGenerating" />
+              <problem-form-component
+                ref="formElement"
+                v-model:testdata="testdata"
+                @update="update"
+                @submit="submit"
+                @save-solution="onSaveSolution"
+                @generate="onGenerate"
+                :generated-cases="generatedCases"
+                :is-generating="isGenerating"
+              />
 
               <div class="divider" />
 
@@ -284,22 +289,26 @@ async function onGenerate(payload: { llmMode: string }) {
                 <input v-model="openPreview" type="checkbox" class="toggle" />
               </div>
 
-              <problem-card v-if="openPreview" :problem="{
-                ...mockProblemMeta,
-                ...edittingProblem,
-                testCase: edittingProblem.testCaseInfo.tasks,
-                fillInTemplate: edittingProblem.testCaseInfo.fillInTemplate,
-                tags: edittingProblem.tags.map((t, i) => ({ id: i, name: t, usage_count: 0 })),
-                courses: edittingProblem.courses.map((c, i) => ({ id: i, name: c })),
-                status: edittingProblem.status === 0 ? 'public' : 'hidden',
-                defaultCode:
-                  typeof edittingProblem.defaultCode === 'string' ? {} : edittingProblem.defaultCode,
-                description: {
-                  ...edittingProblem.description,
-                  sampleInput: edittingProblem.description.sampleInput.join('\n'),
-                  sampleOutput: edittingProblem.description.sampleOutput.join('\n'),
-                },
-              }" preview />
+              <problem-card
+                v-if="openPreview"
+                :problem="{
+                  ...mockProblemMeta,
+                  ...edittingProblem,
+                  testCase: edittingProblem.testCaseInfo.tasks,
+                  fillInTemplate: edittingProblem.testCaseInfo.fillInTemplate,
+                  tags: edittingProblem.tags.map((t, i) => ({ id: i, name: t, usage_count: 0 })),
+                  courses: edittingProblem.courses.map((c, i) => ({ id: i, name: c })),
+                  status: edittingProblem.status === 0 ? 'public' : 'hidden',
+                  defaultCode:
+                    typeof edittingProblem.defaultCode === 'string' ? {} : edittingProblem.defaultCode,
+                  description: {
+                    ...edittingProblem.description,
+                    sampleInput: edittingProblem.description.sampleInput.join('\n'),
+                    sampleOutput: edittingProblem.description.sampleOutput.join('\n'),
+                  },
+                }"
+                preview
+              />
 
               <div class="divider my-4" />
 

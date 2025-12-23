@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, inject, Ref ,watchEffect} from "vue";
+import { ref, watch, inject, Ref, watchEffect } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
@@ -138,7 +138,7 @@ watchEffect(() => {
   if (testdataMode.value === "LLMgenerate" && problem.value.testCaseInfo.tasks.length === 0) {
     update("testCaseInfo", {
       ...problem.value.testCaseInfo,
-       tasks: [{ caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 }],
+      tasks: [{ caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 }],
     });
   }
 });
@@ -172,7 +172,7 @@ function removeLastSubtask() {
       <span>{{ errorMsg }}</span>
     </div>
   </div>
-  <div ref="contentSection" class="grid grid-cols-2 gap-y-4 scroll-mt-32">
+  <div ref="contentSection" class="grid scroll-mt-32 grid-cols-2 gap-y-4">
     <div class="form-control w-full max-w-xs">
       <label class="label">
         <span class="label-text">{{ $t("components.problem.forms.nameField") }}</span>
@@ -282,28 +282,25 @@ function removeLastSubtask() {
           </div>
 
           <!-- Save 按鈕 -->
-          <button
-            class="btn btn-sm bg-[#02305f] normal-case shrink-0"
-            @click="$emit('save-solution')"
-          >
+          <button class="btn btn-sm shrink-0 bg-[#02305f] normal-case" @click="$emit('save-solution')">
             Save Solution
           </button>
         </div>
       </div>
-      <div class="divider mt-8 mb-0" />
+      <div class="divider mb-0 mt-8" />
     </div>
 
     <template v-if="problem.type !== 2">
       <section ref="testdataSection" class="col-span-2 scroll-mt-32">
         <div class="form-control w-full">
-          <label class="label p-0 flex-col items-start gap-1">
+          <label class="label flex-col items-start gap-1 p-0">
             <span class="text-base font-semibold">Testdata</span>
           </label>
 
-          <div class="flex gap-3 mt-2">
+          <div class="mt-2 flex gap-3">
             <button
               type="button"
-              class="btn bg-[#02305f] btn-sm normal-case"
+              class="btn btn-sm bg-[#02305f] normal-case"
               @click="testdataMode = 'LLMgenerate'"
             >
               LLM generate testcase
@@ -311,7 +308,7 @@ function removeLastSubtask() {
 
             <button
               type="button"
-              class="btn bg-[#02305f] btn-sm normal-case"
+              class="btn btn-sm bg-[#02305f] normal-case"
               @click="testdataMode = 'uploadfile'"
             >
               Upload testcase
@@ -320,18 +317,18 @@ function removeLastSubtask() {
         </div>
 
         <div v-if="testdataMode === 'uploadfile'" class="mt-2">
-          <label class="label justify-start mt-4">
+          <label class="label mt-4 justify-start">
             <label for="testdata-description" class="modal-button btn btn-xs">{{
               $t("components.problem.forms.howToPack")
             }}</label>
           </label>
 
           <div
-              :class="['textarea textarea-bordered w-full p-4', isDrag ? 'border-accent' : '']"
-              @drop.prevent="$emit('update:testdata', $event.dataTransfer!.files![0])"
-              @dragover.prevent="isDrag = true"
-              @dragleave="isDrag = false"
-            >
+            :class="['textarea textarea-bordered w-full p-4', isDrag ? 'border-accent' : '']"
+            @drop.prevent="$emit('update:testdata', $event.dataTransfer!.files![0])"
+            @dragover.prevent="isDrag = true"
+            @dragleave="isDrag = false"
+          >
             <template v-if="!testdata">
               <span class="mb-6 mr-6 text-sm">{{ $t("components.problem.forms.dropFile") }}</span>
               <input
@@ -358,8 +355,8 @@ function removeLastSubtask() {
           />
           <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
             <div class="col-span-2">
-              <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="mt-2 font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div class="form-control w-full">
                   <label class="label">
                     <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
@@ -449,40 +446,28 @@ function removeLastSubtask() {
         </div>
 
         <div v-if="testdataMode === 'LLMgenerate'" class="mt-2">
-          <div class="flex gap-4 mt-4">
-            <div class="text-lg font-semibold ">
-              AI generate testdata
-            </div>
+          <div class="mt-4 flex gap-4">
+            <div class="text-lg font-semibold">AI generate testdata</div>
 
-            <button 
-              type="button" 
-              class="btn btn-success btn-sm" 
-              @click="
-                emits('generate', { llmMode });
-              ">
+            <button type="button" class="btn btn-success btn-sm" @click="emits('generate', { llmMode })">
               GENERATE
             </button>
           </div>
 
-          <p class="mt-2 text-sm opacity-70 mb-3">
-            LLM will generate test cases that refer to your solution and description.
-            AI may generate error output. Please double-check before you publish the problem.
+          <p class="mb-3 mt-2 text-sm opacity-70">
+            LLM will generate test cases that refer to your solution and description. AI may generate error
+            output. Please double-check before you publish the problem.
           </p>
 
-          <p class="mt-2 text-base font-semibold">
-            Mode
-          </p>
+          <p class="mt-2 text-base font-semibold">Mode</p>
 
-          <select v-model="llmMode" class="select select-bordered w-full max-w-xl mt-2 mb-3 px-3 py-1 text-sm">
-            <option disabled value="">
-              Please select mode
-            </option>
-            <option value="LLM_INPUT_ONLY">
-              LLM_INPUT_ONLY (LLM 只生 input + output 用正解跑)
-            </option>
-            <option value="LLM_DIRECT">
-              LLM_DIRECT (LLM 直接生 input + output，不依賴正解)
-            </option>
+          <select
+            v-model="llmMode"
+            class="select select-bordered mb-3 mt-2 w-full max-w-xl px-3 py-1 text-sm"
+          >
+            <option disabled value="">Please select mode</option>
+            <option value="LLM_INPUT_ONLY">LLM_INPUT_ONLY (LLM 只生 input + output 用正解跑)</option>
+            <option value="LLM_DIRECT">LLM_DIRECT (LLM 直接生 input + output，不依賴正解)</option>
           </select>
 
           <label
@@ -492,8 +477,8 @@ function removeLastSubtask() {
           />
           <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
             <div class="col-span-2">
-              <div class="font-semibold mt-2">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="mt-2 font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div class="form-control w-full">
                   <label class="label">
                     <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
@@ -596,14 +581,14 @@ function removeLastSubtask() {
 
           <!-- Generate Result -->
           <div v-if="isGenerating || generatedCases.length > 0" class="mt-6">
-            <div class="text-lg font-semibold mb-3">Generate Result</div>
+            <div class="mb-3 text-lg font-semibold">Generate Result</div>
 
             <!-- 先只顯示你剛剛輸入的 subtasks（沿用同一份 tasks） -->
             <template v-for="(task, i) in problem.testCaseInfo.tasks" :key="i">
               <div class="mb-4">
-                <div class="font-semibold mb-2">Subtask {{ i + 1 }}</div>
+                <div class="mb-2 font-semibold">Subtask {{ i + 1 }}</div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <div class="form-control w-full">
                     <label class="label"><span class="label-text">The number of testcases</span></label>
                     <input class="input input-bordered w-full" :value="task.caseCount" readonly />
@@ -628,7 +613,7 @@ function removeLastSubtask() {
             </template>
 
             <div class="overflow-x-auto">
-              <table class="table table-sm w-full">
+              <table class="table-sm table w-full">
                 <thead class="bg-base-200">
                   <tr>
                     <th class="w-16">#</th>
@@ -642,11 +627,11 @@ function removeLastSubtask() {
                     <td>{{ idx + 1 }}</td>
 
                     <td class="align-top">
-                      <pre class="whitespace-pre-wrap break-words max-h-48 overflow-auto">{{ c.input }}</pre>
+                      <pre class="max-h-48 overflow-auto whitespace-pre-wrap break-words">{{ c.input }}</pre>
                     </td>
 
                     <td class="align-top">
-                      <pre class="whitespace-pre-wrap break-words max-h-48 overflow-auto">{{ c.output }}</pre>
+                      <pre class="max-h-48 overflow-auto whitespace-pre-wrap break-words">{{ c.output }}</pre>
                     </td>
                   </tr>
                 </tbody>
@@ -655,8 +640,6 @@ function removeLastSubtask() {
           </div>
         </div>
       </section>
-
-      
     </template>
 
     <ProblemTestdataDescriptionModal />
