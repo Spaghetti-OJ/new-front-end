@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, inject, Ref, watchEffect } from "vue";
+import { ref, watch, inject, Ref, watchEffect, onMounted, onBeforeUnmount, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
@@ -15,18 +15,21 @@ const props = defineProps<{
   testdata: File | null;
   generatedCases: GeneratedCase[];
   isGenerating: boolean;
+  checker: File | null;
 }>();
 const isLoading = ref(false);
 const errorMsg = ref("");
 const contentSection = ref<HTMLElement | null>(null);
 const testdataSection = ref<HTMLElement | null>(null);
-defineExpose({ isLoading, errorMsg, contentSection, testdataSection });
+const checkerSection = ref<HTMLElement | null>(null);
+defineExpose({ isLoading, errorMsg, contentSection, testdataSection, checkerSection });
 const emits = defineEmits<{
   (e: "update", key: keyof ProblemForm, value: ProblemForm[typeof key]): void;
   (e: "update:testdata", value: File | null): void;
   (e: "submit"): void;
   (e: "save-solution"): void;
   (e: "generate", payload: { llmMode: string }): void;
+  (e: "update:checker", value: File | null): void;
 }>();
 
 const rules = {
@@ -86,6 +89,7 @@ const llmMode = ref<"" | "LLM_INPUT_ONLY" | "LLM_DIRECT">("");
 type TestdataMode = "uploadfile" | "LLMgenerate" | null;
 const testdataMode = ref<TestdataMode>(null);
 const isDrag = ref(false);
+const isCheckerDrag = ref(false);
 watch(
   () => props.testdata,
   () => {
@@ -163,6 +167,60 @@ function removeLastSubtask() {
     tasks: tasks.slice(0, -1),
   });
 }
+
+const staticAnalysis = ref<string[]>([""]);
+
+const staticAnalysisOptions = [
+  { label: "diff", value: "diff" },
+  { label: "forbid-loops", value: "forbid-loops" },
+  { label: "forbid-arrays", value: "forbid-arrays" },
+];
+const staticAnalysisSummary = computed(() => {
+  const picked = staticAnalysis.value.filter(Boolean); // 避免 [""] 這種狀況
+  return picked.length ? picked.join(", ") : "Select analysis rules";
+});
+const staticAnalysisLabels = computed(() => staticAnalysis.value.join(", "));
+const toggleStaticAnalysis = (value: string) => {
+  const set = new Set(staticAnalysis.value);
+
+  if (set.has(value)) set.delete(value);
+  else set.add(value);
+
+  const order = new Map(staticAnalysisOptions.map((o, i) => [o.value, i]));
+  staticAnalysis.value = Array.from(set).sort(
+    (a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9),
+  );
+};
+
+// 點外面關閉 dropdown
+const staticDropdownRef = ref<HTMLDetailsElement | null>(null);
+const onDocClick = (e: MouseEvent) => {
+  const el = staticDropdownRef.value;
+  if (!el) return;
+  if (!el.contains(e.target as Node)) el.removeAttribute("open");
+};
+onMounted(() => document.addEventListener("click", onDocClick));
+onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
+
+const allowedDomains = ref<string[]>([]);
+const domainInput = ref("");
+
+const addDomain = () => {
+  const v = domainInput.value.trim();
+  if (!v) return;
+
+  // 如果你不想避免重複，可以把這個 if 拿掉
+  if (!allowedDomains.value.includes(v)) {
+    allowedDomains.value = [...allowedDomains.value, v];
+  }
+
+  domainInput.value = "";
+};
+
+const removeDomain = (d: string) => {
+  allowedDomains.value = allowedDomains.value.filter((x) => x !== d);
+};
+
 </script>
 
 <template>
@@ -292,29 +350,29 @@ function removeLastSubtask() {
 
     <template v-if="problem.type !== 2">
       <section ref="testdataSection" class="col-span-2 scroll-mt-32">
-        <div class="form-control w-full">
-          <label class="label flex-col items-start gap-1 p-0">
-            <span class="text-base font-semibold">Testdata</span>
-          </label>
+        <label class="label flex items-start gap-1">
+          <span class="text-base font-semibold">Testdata</span>
+        </label>
 
-          <div class="mt-2 flex gap-3">
-            <button
-              type="button"
-              class="btn btn-sm bg-[#02305f] normal-case"
-              @click="testdataMode = 'LLMgenerate'"
-            >
-              LLM generate testcase
-            </button>
+        <!-- Buttons -->
+        <div class="mt-2 flex gap-3">
+          <button
+            type="button"
+            class="btn btn-sm bg-[#02305f] normal-case"
+            @click="testdataMode = 'LLMgenerate'"
+          >
+            LLM generate testcase
+          </button>
 
-            <button
-              type="button"
-              class="btn btn-sm bg-[#02305f] normal-case"
-              @click="testdataMode = 'uploadfile'"
-            >
-              Upload testcase
-            </button>
-          </div>
+          <button
+            type="button"
+            class="btn btn-sm bg-[#02305f] normal-case"
+            @click="testdataMode = 'uploadfile'"
+          >
+            Upload testcase
+          </button>
         </div>
+
 
         <div v-if="testdataMode === 'uploadfile'" class="mt-2">
           <label class="label mt-4 justify-start">
@@ -640,6 +698,132 @@ function removeLastSubtask() {
           </div>
         </div>
       </section>
+
+      <div class="divider col-span-2 mb-0" />
+
+      <section ref="checkerSection" class="col-span-2 scroll-mt-32">
+        <label class="label flex-col items-start gap-1">
+          <div class="flex item-start justify-start gap-2">
+            <span class="text-base font-semibold">Checker</span>
+            <label for="testdata-description" class="modal-button btn btn-xs">
+              {{ $t("components.problem.forms.whatischecker") }}</label>
+          </div>
+          
+          <span class="mt-2 text-sm text-base-content/70">
+            If teacher do not upload checker file, system will check submission refer to teacher's testdata.<!--待修改-->
+          </span>
+        </label>
+
+        <div
+          class="textarea textarea-bordered w-full p-4"
+          :class="isCheckerDrag ? 'border-accent' : ''"
+          @drop.prevent="$emit('update:checker', $event.dataTransfer!.files![0])"
+          @dragover.prevent="isCheckerDrag = true"
+          @dragleave="isCheckerDrag = false"
+        >
+          <template v-if="!checker">
+            <span class="mb-6 mr-6 text-sm">
+              {{ $t("components.problem.forms.dropChecker") }}
+            </span>
+            <input
+              type="file"
+              accept=".zip"
+              @change="$emit('update:checker', ($event.target as HTMLInputElement).files![0])"
+            />
+          </template>
+
+          <template v-else>
+            <div class="flex items-center">
+              <span class="mr-3">{{ checker.name }}</span>
+              <button class="btn btn-sm" @click="$emit('update:checker', null)">
+                <i-uil-times />
+              </button>
+            </div>
+          </template>
+        </div>
+
+        <div class="form-control w-1/2 mt-2">
+          <label class="label">
+            <span class="label-text font-semibold">Static program analysis</span>
+          </label>
+
+          <details ref="staticDropdownRef" class="dropdown w-full">
+            <summary
+              class="input input-bordered flex cursor-pointer items-center justify-between normal-case"
+            >
+              <span class="truncate text-sm">
+                 {{ staticAnalysisSummary }}
+              </span>
+              <span class="ml-2 opacity-60">▾</span>
+            </summary>
+
+            <div
+              class="dropdown-content z-[50] mt-1 w-full rounded-md border border-base-300 bg-base-100 p-1 shadow"
+            >
+              <label
+                v-for="opt in staticAnalysisOptions"
+                :key="opt.value"
+                class="flex cursor-pointer items-center gap-2 rounded px-2 py-2 hover:bg-base-200"
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-sm"
+                  :checked="staticAnalysis.includes(opt.value)"
+                  @change="toggleStaticAnalysis(opt.value)"
+                />
+                <span class="text-sm">{{ opt.label }}</span>
+              </label>
+            </div>
+          </details>
+        </div>
+
+        <div class="form-control w-1/2 mt-2">
+          <label class="label">
+            <span class="text-base font-semibold">Allow connect to network</span>
+          </label>
+
+          <!-- 已新增的 domain -->
+          <div v-if="allowedDomains.length" class="mt-2 flex flex-wrap gap-2">
+            <div
+              v-for="d in allowedDomains"
+              :key="d"
+              class="flex items-center gap-1 rounded-md border border-base-300 bg-base-100 px-3 py-1 text-sm"
+            >
+              <span>{{ d }}</span>
+              <button
+                type="button"
+                class="btn btn-ghost btn-xs"
+                @click="removeDomain(d)"
+              >
+                <i-uil-times />
+              </button>
+            </div>
+          </div>
+
+          <!-- 輸入 -->
+          <div class="mt-2 flex gap-3">
+            <input
+              v-model="domainInput"
+              type="text"
+              class="input input-bordered w-full"
+              placeholder="Please add domain."
+              @keydown.enter.prevent="addDomain"
+            />
+
+            <button
+              type="button"
+              :class="[
+                'btn btn-success',
+                !domainInput.trim() && 'btn-disabled'
+              ]"
+              @click="addDomain"
+            >
+              ADD DOMAIN
+            </button>
+          </div>
+        </div>
+      </section>
+
     </template>
 
     <ProblemTestdataDescriptionModal />

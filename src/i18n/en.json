@@ -335,6 +335,7 @@
         "allowedLangs": "Allowed Languages",
         "testdata": "Testdata",
         "howToPack": "How to pack testdata",
+        "whatischecker": "What is checker",
         "dropFile": "Drop File here or Choose File to upload",
         "subtask": "Subtask {no}",
         "numOfCases": "The number of testcases",

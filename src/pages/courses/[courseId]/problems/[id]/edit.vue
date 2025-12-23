@@ -94,7 +94,7 @@ const openJSON = ref<boolean>(false);
 
 const contentSection = computed<HTMLElement | null>(() => formElement.value?.contentSection ?? null);
 const testdataSection = computed<HTMLElement | null>(() => formElement.value?.testdataSection ?? null);
-const checkerSection = ref<HTMLElement | null>(null);
+const checkerSection = computed<HTMLElement | null>(() => formElement.value?.checkerSection ?? null);
 
 const scrollToSection = (el: HTMLElement | null) => {
   if (!el) return;
