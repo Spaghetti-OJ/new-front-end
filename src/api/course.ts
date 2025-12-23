@@ -3,6 +3,7 @@ import { fetcher } from "./fetcher";
 export const Course = {
   create: (body: CourseForm) => fetcher.post("/course/", body),
   list: () => fetcher.get<{ courses: CourseList }>("/course/"),
+  join: (code: string) => fetcher.post(`/course/${code}/join/`),
   info: (courseId: string | number) => fetcher.get<Course>(`/course/${courseId}/`),
   importCSV: (courseId: string | number, file: File, force?: boolean) => {
     const formData = new FormData();
