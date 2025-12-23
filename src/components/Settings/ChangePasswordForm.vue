@@ -10,7 +10,7 @@ const form = reactive({
   errorMsg: "",
   success: false,
 });
-const passwordform = {
+const passwordForm = {
   old_password: "",
   new_password: "",
 };
@@ -27,7 +27,7 @@ const v$ = useVuelidate(rules, form);
 
 async function change() {
   try {
-    const res = await api.Auth.changePassword(passwordform);
+    const res = await api.Auth.changePassword(passwordForm);
     if (res.status === "ok") {
       form.success = true;
     }
@@ -47,8 +47,8 @@ async function submit() {
   if (!isFormCorrect) return;
   form.success = false;
   form.errorMsg = "";
-  passwordform.old_password = form.currentPassword;
-  passwordform.new_password = form.newPassword;
+  passwordForm.old_password = form.currentPassword;
+  passwordForm.new_password = form.newPassword;
   change();
 }
 </script>
