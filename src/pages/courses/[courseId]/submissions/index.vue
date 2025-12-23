@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, watch } from "vue";
 import queryString from "query-string";
-import api from "@/api";
+import api, { fetcher } from "@/api";
 import { useSession } from "@/stores/session";
 import { LANG, LANGUAGE_OPTIONS, SUBMISSION_STATUS_REPR } from "@/constants";
 import { formatTime } from "@/utils/formatTime";
@@ -70,18 +69,7 @@ const execute = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    // Adapter for backend pagination if it expects offset/count, or page/page_size
-    // The user request specified page/page_size.
-    // However, existing types might use offset/count. Let's check definitions or override.
-    // The user prompt said: page (default 1), page_size (default 20).
-    // The existing code used offset/count.
-    // I will use properties that match the user request.
-    const res = await api.Submission.list({
-      ...getSubmissionsQuery.value,
-      // Ensure we send what backend expects as per user prompt
-      page: routeQuery.value.page,
-      page_size: 10,
-    } as any);
+    const res = await api.Submission.list(getSubmissionsQuery.value);
     data.value = (res as any).data ?? res;
   } catch (e) {
     error.value = e;
@@ -159,54 +147,36 @@ async function downloadAllSubmissions() {
                 <i-uil-file-download class="h-5 w-5" />
               </div>
             </div>
-            <input
-              v-model="searchUsername"
-              type="text"
-              placeholder="Username (exact match)"
+            <input v-model="searchUsername" type="text" placeholder="Username (exact match)"
               class="input input-bordered w-full max-w-xs"
-              @keydown.enter="mutateFilter({ username: searchUsername })"
-            />
+              @keydown.enter="mutateFilter({ username: searchUsername })" />
           </div>
         </div>
 
         <div class="my-2" />
         <div class="mb-4 flex items-end gap-x-4">
-          <select
-            :value="routeQuery.filter.problemId"
-            class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ problemId: (event.target as HTMLSelectElement).value })"
-          >
+          <select :value="routeQuery.filter.problemId" class="select select-bordered w-full flex-1"
+            @change="(event) => mutateFilter({ problemId: (event.target as HTMLSelectElement).value })">
             <option value="" selected>{{ $t("course.submissions.problem") }}</option>
             <option v-for="{ text, value } in problemSelections" :value="value">{{ text }}</option>
           </select>
 
-          <select
-            :value="routeQuery.filter.status"
-            class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ status: (event.target as HTMLSelectElement).value })"
-          >
+          <select :value="routeQuery.filter.status" class="select select-bordered w-full flex-1"
+            @change="(event) => mutateFilter({ status: (event.target as HTMLSelectElement).value })">
             <option value="" selected>{{ $t("course.submissions.status") }}</option>
             <option v-for="{ text, value } in submissionStatusCodes" :value="value">{{ text }}</option>
           </select>
 
-          <select
-            :value="routeQuery.filter.languageType"
-            class="select select-bordered w-full flex-1"
-            @change="(event) => mutateFilter({ languageType: (event.target as HTMLSelectElement).value })"
-          >
+          <select :value="routeQuery.filter.languageType" class="select select-bordered w-full flex-1"
+            @change="(event) => mutateFilter({ languageType: (event.target as HTMLSelectElement).value })">
             <option value="" selected>{{ $t("course.submissions.lang") }}</option>
             <option v-for="{ text, value } in languageTypes" :value="value">{{ text }}</option>
           </select>
 
-          <div
-            v-show="
-              routeQuery.filter.problemId != null ||
-              routeQuery.filter.status != null ||
-              routeQuery.filter.languageType != null
-            "
-            class="btn"
-            @click="mutateFilter({ problemId: '', status: '', languageType: '' })"
-          >
+          <div v-show="routeQuery.filter.problemId != null ||
+            routeQuery.filter.status != null ||
+            routeQuery.filter.languageType != null
+            " class="btn" @click="mutateFilter({ problemId: '', status: '', languageType: '' })">
             <i-uil-filter-slash class="mr-1" /> {{ $t("course.submissions.clear") }}
           </div>
         </div>
@@ -236,38 +206,26 @@ async function downloadAllSubmissions() {
                   <td>
                     <div class="flex items-center">
                       <div class="tooltip tooltip-bottom" data-tip="show details">
-                        <router-link
-                          :to="`/courses/${$route.params.courseId}/submissions/${submission.submissionId}`"
-                          class="link"
-                        >
+                        <router-link :to="`/courses/${$route.params.courseId}/submissions/${submission.submissionId}`"
+                          class="link">
                           {{ submission.submissionId.slice(-6) }}
                         </router-link>
                       </div>
-                      <div
-                        v-if="isSupported"
-                        class="tooltip tooltip-bottom"
-                        :data-tip="copied ? 'copied!' : 'copy link'"
-                      >
-                        <i-uil-link
-                          class="ml-2 h-4 w-4 cursor-pointer"
-                          @click="
-                            copySubmissionLink(
-                              `/courses/${$route.params.courseId}/submissions/${submission.submissionId}`,
-                            )
-                          "
-                        />
+                      <div v-if="isSupported" class="tooltip tooltip-bottom"
+                        :data-tip="copied ? 'copied!' : 'copy link'">
+                        <i-uil-link class="ml-2 h-4 w-4 cursor-pointer" @click="
+                          copySubmissionLink(
+                            `/courses/${$route.params.courseId}/submissions/${submission.submissionId}`,
+                          )
+                          " />
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div
-                      class="tooltip tooltip-bottom"
-                      :data-tip="problemId2Meta[submission.problemId.toString()]?.name || 'loading...'"
-                    >
-                      <router-link
-                        :to="`/courses/${$route.params.courseId}/problems/${submission.problemId}`"
-                        class="link"
-                      >
+                    <div class="tooltip tooltip-bottom"
+                      :data-tip="problemId2Meta[submission.problemId.toString()]?.name || 'loading...'">
+                      <router-link :to="`/courses/${$route.params.courseId}/problems/${submission.problemId}`"
+                        class="link">
                         {{ submission.problemId }}
                       </router-link>
                     </div>
@@ -295,11 +253,8 @@ async function downloadAllSubmissions() {
         </data-status-wrapper>
 
         <div class="card-actions mt-5">
-          <pagination-buttons
-            :modelValue="routeQuery.page"
-            :maxPage="maxPage"
-            @update:modelValue="(newPage: number) => mutatePage(newPage)"
-          />
+          <pagination-buttons :modelValue="routeQuery.page" :maxPage="maxPage"
+            @update:modelValue="(newPage: number) => mutatePage(newPage)" />
         </div>
       </div>
     </div>
