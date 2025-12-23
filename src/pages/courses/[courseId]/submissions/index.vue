@@ -261,7 +261,10 @@ async function downloadAllSubmissions() {
                     </div>
                   </td>
                   <td>
-                    <div class="tooltip tooltip-bottom" :data-tip="submission.user.displayedName">
+                    <div
+                      class="tooltip tooltip-bottom"
+                      :data-tip="submission.user.real_name || submission.user.username"
+                    >
                       <span>{{ submission.user.username }}</span>
                     </div>
                   </td>
