@@ -154,9 +154,7 @@ async function rejudge() {
                       </td>
                       <td>
                         {{ submission.user.username }} ({{
-                          (submission.user as any).real_name ||
-                          (submission.user as any).displayedName ||
-                          submission.user.username
+                          submission.user.real_name || submission.user.username
                         }})
                       </td>
                       <td><judge-status :status="Number(submission.status)" /></td>
