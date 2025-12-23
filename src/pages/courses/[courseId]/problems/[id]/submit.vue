@@ -194,7 +194,10 @@ onMounted(loadProblem);
                 <ui-spinner v-if="isLoading" class="h-6 w-6" />
               </label>
 
-              <select v-model="v$.lang.$model" :class="['select select-bordered', v$.lang.$error && 'input-error']">
+              <select
+                v-model="v$.lang.$model"
+                :class="['select select-bordered', v$.lang.$error && 'input-error']"
+              >
                 <option disabled :value="-1">
                   {{ t("course.problem.submit.lang.select") }}
                 </option>
@@ -216,8 +219,12 @@ onMounted(loadProblem);
                 <label class="label">
                   <span class="label-text font-semibold">Input testcase</span>
                 </label>
-                <textarea v-model="testForm.input" class="textarea textarea-bordered w-full" rows="3"
-                  placeholder="輸入要測試的資料" />
+                <textarea
+                  v-model="testForm.input"
+                  class="textarea textarea-bordered w-full"
+                  rows="3"
+                  placeholder="輸入要測試的資料"
+                />
               </div>
 
               <!-- Test output -->
@@ -225,8 +232,13 @@ onMounted(loadProblem);
                 <label class="label">
                   <span class="label-text font-semibold">Test output</span>
                 </label>
-                <textarea v-model="testForm.output" class="textarea textarea-bordered w-full" rows="4" readonly
-                  placeholder="按下TEST，顯示程式輸出" />
+                <textarea
+                  v-model="testForm.output"
+                  class="textarea textarea-bordered w-full"
+                  rows="4"
+                  readonly
+                  placeholder="按下TEST，顯示程式輸出"
+                />
               </div>
             </div>
 

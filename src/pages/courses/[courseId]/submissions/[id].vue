@@ -22,7 +22,23 @@ const isLoading = ref(false);
 const execute = async () => {
   try {
     const res = await api.Submission.getDetail(route.params.id as string);
-    submission.value = (res as any).data ?? res;
+    const raw = (res as any).data ?? res;
+    if (raw) {
+      raw.status = Number(raw.status);
+      raw.languageType = Number(raw.languageType);
+      raw.timestamp = Number(raw.timestamp);
+      if (raw.tasks) {
+        raw.tasks.forEach((t: any) => {
+          t.status = Number(t.status);
+          if (t.cases) {
+            t.cases.forEach((c: any) => {
+              c.status = Number(c.status);
+            });
+          }
+        });
+      }
+    }
+    submission.value = raw;
 
     try {
       const codeRes = await api.Submission.getCode(route.params.id as string);
@@ -75,10 +91,12 @@ watchEffect(() => {
     }
 
     // Status check
-    const status = Number(submission.value.status);
-    if (status !== SUBMISSION_STATUS_CODE.PENDING && status !== SUBMISSION_STATUS_CODE.QUEUING) {
+    if (
+      submission.value.status !== SUBMISSION_STATUS_CODE.PENDING &&
+      submission.value.status !== SUBMISSION_STATUS_CODE.QUEUING
+    ) {
       pause();
-      if (status === SUBMISSION_STATUS_CODE.COMPILE_ERROR) {
+      if (submission.value.status === SUBMISSION_STATUS_CODE.COMPILE_ERROR) {
         fetchCEOutput();
       }
     }
@@ -161,12 +179,12 @@ async function rejudge() {
                           submission.user.real_name || submission.user.username
                         }})
                       </td>
-                      <td><judge-status :status="Number(submission.status) as any" /></td>
+                      <td><judge-status :status="submission.status as any" /></td>
                       <td>{{ submission.runTime }} ms</td>
                       <td>{{ submission.memoryUsage }} KB</td>
                       <td>{{ submission.score }}</td>
-                      <td>{{ LANG[Number(submission.languageType)] }}</td>
-                      <td>{{ formatTime(Number(submission.timestamp)) }}</td>
+                      <td>{{ LANG[submission.languageType as any] }}</td>
+                      <td>{{ formatTime(submission.timestamp as any) }}</td>
                       <td v-if="session.isAdmin">{{ submission.ipAddr }}</td>
                     </tr>
                   </tbody>
@@ -176,7 +194,7 @@ async function rejudge() {
 
             <div class="my-4" />
 
-            <div v-if="Number(submission?.status) === SUBMISSION_STATUS_CODE.COMPILE_ERROR">
+            <div v-if="submission?.status === SUBMISSION_STATUS_CODE.COMPILE_ERROR">
               <div class="card-title md:text-xl lg:text-2xl">
                 <i-uil-exclamation-circle class="mr-2 text-error" />
                 {{ $t("course.submission.compile_error.title") }}
