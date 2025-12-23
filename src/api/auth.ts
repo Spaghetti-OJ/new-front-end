@@ -14,17 +14,11 @@ export const Auth = {
     fetcher.post<AuthToken>("/auth/session/", body).then((r) => r.data ?? r),
   logout: (body: { refresh: string }) =>
     fetcher.post<string>("/auth/session/revoke/", body).then((r) => r.data ?? r),
-  active: (body: { profile: { displayedName: string; bio: string }; agreement: boolean }) =>
-    fetcher.post<string>("/auth/active/", body).then((r) => r.data ?? r),
   changePassword: (body: { old_password: string; new_password: string }) =>
-    fetcher.post<string>("/auth/change-password/", body).then((r) => r.data ?? r),
+    fetcher.post("/auth/change-password/", body).then((r) => r.data ?? r),
   checkEmail: (item: "username" | "email", body: { email?: string; username?: string }) =>
     fetcher.post<{ message: string; data: { valid: number } }>(`/auth/check/${item}/`, body), //<CheckEmail>
   resendEmail: (body: { email: string }) => fetcher.post<string>("/auth/resend-email/", body),
-  sendRecoveryEmail: (body: { email: string }) =>
-    fetcher.post<string>("/auth/password-recovery/", body).then((r) => r.data ?? r),
-  addUser: (body: { username: string; password: string; email: string }) =>
-    fetcher.post<string>("/auth/user/", body).then((r) => r.data ?? r),
   getSession: () => fetcher.get<UserProperties>("/auth/me/").then((r) => r.data ?? r),
   sendVerifyEmail: () => fetcher.post("/auth/send-email/", {}).then((r) => r.data ?? r),
   refresh: (body: { refresh: string }) =>

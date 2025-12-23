@@ -2,13 +2,18 @@
 import { reactive, toRef } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, sameAs, helpers } from "@vuelidate/validators";
-
+import api from "@/api";
 const form = reactive({
   newPassword: "",
   confirmPassword: "",
   currentPassword: "",
+  errorMsg: "",
+  success: false,
 });
-
+const passwordForm = {
+  old_password: "",
+  new_password: "",
+};
 const rules = {
   newPassword: { required },
   confirmPassword: {
@@ -20,9 +25,31 @@ const rules = {
 
 const v$ = useVuelidate(rules, form);
 
-function submit() {
-  v$.value.$validate();
-  console.log("UI only submit:", form);
+async function change() {
+  try {
+    const res = await api.Auth.changePassword(passwordForm);
+    if (res.status === "ok") {
+      form.success = true;
+    }
+  } catch (e: any) {
+    const errorData = e?.response?.data?.data;
+    if (errorData) {
+      if (errorData.old_password) {
+        form.errorMsg = errorData.old_password[0];
+      } else if (errorData.new_password) {
+        form.errorMsg = errorData.new_password[0];
+      }
+    }
+  }
+}
+async function submit() {
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
+  form.success = false;
+  form.errorMsg = "";
+  passwordForm.old_password = form.currentPassword;
+  passwordForm.new_password = form.newPassword;
+  change();
 }
 </script>
 
@@ -84,5 +111,17 @@ function submit() {
 
     <!-- Submit Button -->
     <button class="btn btn-primary mt-4 w-full" @click="submit">SUBMIT</button>
+    <div class="alert alert-error shadow-lg" v-if="form.errorMsg">
+      <div>
+        <i-uil-times-circle />
+        <span>{{ form.errorMsg }}</span>
+      </div>
+    </div>
+    <div class="alert alert-success shadow-lg" v-if="form.success">
+      <div>
+        <i-uil-times-circle />
+        <span>Password changed successfully.</span>
+      </div>
+    </div>
   </div>
 </template>
