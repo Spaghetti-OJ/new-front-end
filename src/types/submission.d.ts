@@ -46,18 +46,37 @@ interface Submission extends SubmissionListItem {
 }
 
 interface GetSubmissionListResponse {
-  submissions: SubmissionList;
-  submissionCount: number;
+  submissions?: SubmissionList; // Legacy support
+  submissionCount?: number; // Legacy support
+  results?: SubmissionList;
+  count?: number;
 }
 
 interface SubmissionListQuery {
-  offset: number;
-  count: number;
+  page?: number;
+  page_size?: number;
+  offset?: number;
+  count?: number;
   course?: string;
   problemId?: string;
   status?: string;
   languageType?: string;
   username?: string;
+}
+
+interface SubmissionInfo {
+  submissionId: string;
+  problemId: number;
+  user: UserInfo;
+  timestamp: string;
+  lastSend: string;
+  status: string | number; // JSON example shows "0", but could be enum
+  score: number;
+  runTime: number;
+  memoryUsage: number;
+  languageType: string | number;
+  ipAddr: string;
+  tasks?: Task[];
 }
 
 interface SubmissionListFilter {
