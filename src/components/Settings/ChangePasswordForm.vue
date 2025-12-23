@@ -117,7 +117,7 @@ function submit() {
     <div class="alert alert-success shadow-lg" v-if="form.success">
       <div>
         <i-uil-times-circle />
-        <span>{{ "Password changed successfully." }}</span>
+        <span>Password changed successfully.</span>
       </div>
     </div>
   </div>
