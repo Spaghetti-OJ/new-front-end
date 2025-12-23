@@ -32,7 +32,11 @@ const execute = async () => {
       sourceCode.value = "";
     }
   } catch (e) {
-    error.value = e;
+    if (isLoading.value) {
+      error.value = e;
+    } else {
+      console.error(e);
+    }
   }
 };
 
