@@ -214,10 +214,18 @@ onMounted(() => document.addEventListener("click", onDocClick));
 onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
 const domainInput = ref("");
+const domainError = ref("");
+const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
 
 const addDomain = () => {
   const v = domainInput.value.trim();
   if (!v) return;
+
+  if (!domainRegex.test(v)) {
+    domainError.value = "Invalid domain format (e.g., example.com)";
+    return;
+  }
+  domainError.value = "";
 
   const currentDomains = problem.value.allowedDomains ?? [];
   if (!currentDomains.includes(v)) {
@@ -645,22 +653,26 @@ const removeDomain = (d: string) => {
           </div>
 
           <!-- 輸入 -->
-          <div class="mt-2 flex gap-3">
-            <input
-              v-model="domainInput"
-              type="text"
-              class="input input-bordered w-full"
-              placeholder="Please add domain."
-              @keydown.enter.prevent="addDomain"
-            />
+          <div class="mt-2 flex flex-col gap-1">
+            <div class="flex gap-3">
+              <input
+                v-model="domainInput"
+                type="text"
+                :class="['input input-bordered w-full', domainError && 'input-error']"
+                placeholder="Please add domain."
+                @keydown.enter.prevent="addDomain"
+                @input="domainError = ''"
+              />
 
-            <button
-              type="button"
-              :class="['btn btn-success', !domainInput.trim() && 'btn-disabled']"
-              @click="addDomain"
-            >
-              ADD DOMAIN
-            </button>
+              <button
+                type="button"
+                :class="['btn btn-success', !domainInput.trim() && 'btn-disabled']"
+                @click="addDomain"
+              >
+                ADD DOMAIN
+              </button>
+            </div>
+            <span v-if="domainError" class="text-xs text-error">{{ domainError }}</span>
           </div>
         </div>
       </section>
