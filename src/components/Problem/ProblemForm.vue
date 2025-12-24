@@ -4,6 +4,9 @@ import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
 
+import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
+import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
+
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
 const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
@@ -165,6 +168,14 @@ function removeLastSubtask() {
   update("testCaseInfo", {
     ...problem.value.testCaseInfo,
     tasks: tasks.slice(0, -1),
+  });
+}
+
+function updateSubtask(index: number, newTask: ProblemTestCase) {
+  const currentTasks = problem.value.testCaseInfo.tasks;
+  update("testCaseInfo", {
+    ...problem.value.testCaseInfo,
+    tasks: [...currentTasks.slice(0, index), newTask, ...currentTasks.slice(index + 1)],
   });
 }
 
@@ -407,95 +418,12 @@ const removeDomain = (d: string) => {
             v-show="v$.testCaseInfo.tasks.$error"
             v-text="v$.testCaseInfo.tasks.$errors[0]?.$message"
           />
-          <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
-            <div class="col-span-2">
-              <div class="mt-2 font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].caseCount"
-                    readonly
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.score") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].taskScore"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            taskScore: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.memoryLimit") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].memoryLimit"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            memoryLimit: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.timeLimit") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].timeLimit"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            timeLimit: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-              </div>
-            </div>
+          <template v-for="(task, i) in problem.testCaseInfo.tasks" :key="i">
+            <problem-subtask-item
+              :model-value="task"
+              :index="i"
+              @update:model-value="updateSubtask(i, $event)"
+            />
           </template>
         </div>
 
@@ -529,95 +457,12 @@ const removeDomain = (d: string) => {
             v-show="v$.testCaseInfo.tasks.$error"
             v-text="v$.testCaseInfo.tasks.$errors[0]?.$message"
           />
-          <template v-for="(no, i) in problem.testCaseInfo.tasks.length">
-            <div class="col-span-2">
-              <div class="mt-2 font-semibold">{{ $t("components.problem.forms.subtask", { no }) }}</div>
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.numOfCases") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].caseCount"
-                    readonly
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.score") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].taskScore"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            taskScore: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.memoryLimit") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].memoryLimit"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            memoryLimit: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-
-                <div class="form-control w-full">
-                  <label class="label">
-                    <span class="label-text">{{ $t("components.problem.forms.timeLimit") }}</span>
-                  </label>
-                  <input
-                    type="text"
-                    class="input input-bordered w-full max-w-xs"
-                    :value="problem.testCaseInfo.tasks[i].timeLimit"
-                    @input="
-                      update('testCaseInfo', {
-                        ...problem.testCaseInfo,
-                        tasks: [
-                          ...problem.testCaseInfo.tasks.slice(0, i),
-                          {
-                            ...problem.testCaseInfo.tasks[i],
-                            timeLimit: Number(($event.target as HTMLInputElement).value),
-                          },
-                          ...problem.testCaseInfo.tasks.slice(i + 1),
-                        ],
-                      })
-                    "
-                  />
-                </div>
-              </div>
-            </div>
+          <template v-for="(task, i) in problem.testCaseInfo.tasks" :key="i">
+            <problem-subtask-item
+              :model-value="task"
+              :index="i"
+              @update:model-value="updateSubtask(i, $event)"
+            />
           </template>
 
           <div class="mt-4 flex justify-center gap-3">
