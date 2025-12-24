@@ -110,6 +110,7 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
+  staticAnalysis: string[];
 }
 
 interface ProblemCreatePayload {

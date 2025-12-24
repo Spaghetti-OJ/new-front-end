@@ -61,6 +61,8 @@ async function getManage() {
       },
       canViewStdout: true,
       defaultCode: "",
+      staticAnalysis: [],
+      solution: "",
     };
   } catch (err) {
     fetchError.value = err;
@@ -78,6 +80,7 @@ function update<K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) {
 }
 provide<Ref<ProblemForm | undefined>>("problem", edittingProblem);
 const testdata = ref<File | null>(null);
+const checker = ref<File | null>(null);
 
 const openPreview = ref<boolean>(false);
 const mockProblemMeta = {
@@ -104,10 +107,7 @@ const scrollToSection = (el: HTMLElement | null) => {
   });
 };
 
-function mapProblemFormToPayload(
-  p: ProblemForm,
-  originalTags: { id: number; name: string }[],
-): ProblemCreatePayload {
+function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
 
   return {
@@ -139,7 +139,7 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.courseId));
+    const payload = mapProblemFormToPayload(edittingProblem.value);
     await api.Problem.modify(route.params.id as string, payload);
     const tasks = edittingProblem.value.testCaseInfo.tasks;
     const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
@@ -274,6 +274,7 @@ async function onGenerate(payload: { llmMode: string }) {
               <problem-form-component
                 ref="formElement"
                 v-model:testdata="testdata"
+                v-model:checker="checker"
                 @update="update"
                 @submit="submit"
                 @save-solution="onSaveSolution"

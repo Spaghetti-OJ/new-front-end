@@ -168,26 +168,26 @@ function removeLastSubtask() {
   });
 }
 
-const staticAnalysis = ref<string[]>([""]);
-
 const staticAnalysisOptions = [
   { label: "diff", value: "diff" },
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
 const staticAnalysisSummary = computed(() => {
-  const picked = staticAnalysis.value.filter(Boolean); // 避免 [""] 這種狀況
+  const picked = problem.value.staticAnalysis?.filter(Boolean) ?? [];
   return picked.length ? picked.join(", ") : "Select analysis rules";
 });
-const staticAnalysisLabels = computed(() => staticAnalysis.value.join(", "));
 const toggleStaticAnalysis = (value: string) => {
-  const set = new Set(staticAnalysis.value);
+  const set = new Set(problem.value.staticAnalysis ?? []);
 
   if (set.has(value)) set.delete(value);
   else set.add(value);
 
   const order = new Map(staticAnalysisOptions.map((o, i) => [o.value, i]));
-  staticAnalysis.value = Array.from(set).sort((a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9));
+  update(
+    "staticAnalysis",
+    Array.from(set).sort((a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9)),
+  );
 };
 
 // 點外面關閉 dropdown
@@ -761,11 +761,12 @@ const removeDomain = (d: string) => {
                 v-for="opt in staticAnalysisOptions"
                 :key="opt.value"
                 class="flex cursor-pointer items-center gap-2 rounded px-2 py-2 hover:bg-base-200"
+                @click.stop
               >
                 <input
                   type="checkbox"
                   class="checkbox checkbox-sm"
-                  :checked="staticAnalysis.includes(opt.value)"
+                  :checked="problem.staticAnalysis?.includes(opt.value)"
                   @change="toggleStaticAnalysis(opt.value)"
                 />
                 <span class="text-sm">{{ opt.label }}</span>
