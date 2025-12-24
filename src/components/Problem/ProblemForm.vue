@@ -187,9 +187,7 @@ const toggleStaticAnalysis = (value: string) => {
   else set.add(value);
 
   const order = new Map(staticAnalysisOptions.map((o, i) => [o.value, i]));
-  staticAnalysis.value = Array.from(set).sort(
-    (a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9),
-  );
+  staticAnalysis.value = Array.from(set).sort((a, b) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9));
 };
 
 // 點外面關閉 dropdown
@@ -220,7 +218,6 @@ const addDomain = () => {
 const removeDomain = (d: string) => {
   allowedDomains.value = allowedDomains.value.filter((x) => x !== d);
 };
-
 </script>
 
 <template>
@@ -372,7 +369,6 @@ const removeDomain = (d: string) => {
             Upload testcase
           </button>
         </div>
-
 
         <div v-if="testdataMode === 'uploadfile'" class="mt-2">
           <label class="label mt-4 justify-start">
@@ -703,12 +699,13 @@ const removeDomain = (d: string) => {
 
       <section ref="checkerSection" class="col-span-2 scroll-mt-32">
         <label class="label flex-col items-start gap-1">
-          <div class="flex item-start justify-start gap-2">
+          <div class="item-start flex justify-start gap-2">
             <span class="text-base font-semibold">Checker</span>
             <label for="testdata-description" class="modal-button btn btn-xs">
-              {{ $t("components.problem.forms.whatischecker") }}</label>
+              {{ $t("components.problem.forms.whatischecker") }}</label
+            >
           </div>
-          
+
           <span class="mt-2 text-sm text-base-content/70">
             If teacher do not upload checker file, system will check submission refer to teacher's testdata.<!--待修改-->
           </span>
@@ -742,7 +739,7 @@ const removeDomain = (d: string) => {
           </template>
         </div>
 
-        <div class="form-control w-1/2 mt-2">
+        <div class="form-control mt-2 w-1/2">
           <label class="label">
             <span class="label-text font-semibold">Static program analysis</span>
           </label>
@@ -752,7 +749,7 @@ const removeDomain = (d: string) => {
               class="input input-bordered flex cursor-pointer items-center justify-between normal-case"
             >
               <span class="truncate text-sm">
-                 {{ staticAnalysisSummary }}
+                {{ staticAnalysisSummary }}
               </span>
               <span class="ml-2 opacity-60">▾</span>
             </summary>
@@ -777,7 +774,7 @@ const removeDomain = (d: string) => {
           </details>
         </div>
 
-        <div class="form-control w-1/2 mt-2">
+        <div class="form-control mt-2 w-1/2">
           <label class="label">
             <span class="text-base font-semibold">Allow connect to network</span>
           </label>
@@ -790,11 +787,7 @@ const removeDomain = (d: string) => {
               class="flex items-center gap-1 rounded-md border border-base-300 bg-base-100 px-3 py-1 text-sm"
             >
               <span>{{ d }}</span>
-              <button
-                type="button"
-                class="btn btn-ghost btn-xs"
-                @click="removeDomain(d)"
-              >
+              <button type="button" class="btn btn-ghost btn-xs" @click="removeDomain(d)">
                 <i-uil-times />
               </button>
             </div>
@@ -812,10 +805,7 @@ const removeDomain = (d: string) => {
 
             <button
               type="button"
-              :class="[
-                'btn btn-success',
-                !domainInput.trim() && 'btn-disabled'
-              ]"
+              :class="['btn btn-success', !domainInput.trim() && 'btn-disabled']"
               @click="addDomain"
             >
               ADD DOMAIN
@@ -823,7 +813,6 @@ const removeDomain = (d: string) => {
           </div>
         </div>
       </section>
-
     </template>
 
     <ProblemTestdataDescriptionModal />

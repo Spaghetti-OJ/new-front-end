@@ -15,7 +15,13 @@ const sidebarType = computed(() => (isDesktop.value ? "side" : "tab"));
         'flex-col': !isDesktop,
       }"
     >
-      <div class="sticky top-[53px] mr-6 w-52 shrink-0 self-start bg-base-100">
+      <div
+        class="sticky top-[53px] shrink-0 self-start bg-base-100"
+        :class="{
+          'mr-6 w-52': isDesktop,
+          'z-40 w-full': !isDesktop,
+        }"
+      >
         <course-side-bar :display-type="sidebarType" />
       </div>
 
