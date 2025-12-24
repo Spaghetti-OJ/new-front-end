@@ -140,11 +140,7 @@ watch(testdataMode, (mode) => {
       tasks: [],
     });
     v$.value.testCaseInfo?.tasks?.$reset?.();
-  }
-});
-
-watchEffect(() => {
-  if (testdataMode.value === "LLMgenerate" && problem.value.testCaseInfo.tasks.length === 0) {
+  } else if (mode === "LLMgenerate" && problem.value.testCaseInfo.tasks.length === 0) {
     update("testCaseInfo", {
       ...problem.value.testCaseInfo,
       tasks: [{ caseCount: 1, taskScore: 100, memoryLimit: 134218, timeLimit: 1000 }],
