@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide, Ref, onMounted } from "vue";
+import { ref, provide, Ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
@@ -61,6 +61,9 @@ async function getManage() {
       },
       canViewStdout: true,
       defaultCode: "",
+      staticAnalysis: [],
+      solution: "",
+      allowedDomains: [],
     };
   } catch (err) {
     fetchError.value = err;
@@ -78,6 +81,7 @@ function update<K extends keyof ProblemForm>(key: K, value: ProblemForm[K]) {
 }
 provide<Ref<ProblemForm | undefined>>("problem", edittingProblem);
 const testdata = ref<File | null>(null);
+const checker = ref<File | null>(null);
 
 const openPreview = ref<boolean>(false);
 const mockProblemMeta = {
@@ -92,7 +96,19 @@ const mockProblemMeta = {
 
 const openJSON = ref<boolean>(false);
 
-function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
+const contentSection = computed<HTMLElement | null>(() => formElement.value?.contentSection ?? null);
+const testdataSection = computed<HTMLElement | null>(() => formElement.value?.testdataSection ?? null);
+const checkerSection = computed<HTMLElement | null>(() => formElement.value?.checkerSection ?? null);
+
+const scrollToSection = (el: HTMLElement | null) => {
+  if (!el) return;
+  el.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
+function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
 
   return {
@@ -116,6 +132,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
+    allowed_domains: p.allowedDomains,
   };
 }
 
@@ -124,7 +141,7 @@ async function submit() {
 
   formElement.value.isLoading = true;
   try {
-    const payload = mapNewProblemToPayload(edittingProblem.value, String(route.params.courseId));
+    const payload = mapProblemFormToPayload(edittingProblem.value);
     await api.Problem.modify(route.params.id as string, payload);
     const tasks = edittingProblem.value.testCaseInfo.tasks;
     const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
@@ -186,14 +203,54 @@ async function delete_() {
     formElement.value.isLoading = false;
   }
 }
+
+function onSaveSolution() {
+  console.log("save-solution clicked:", edittingProblem.value?.solution);
+  // TODO: connect solution-only API later
+}
+
+type GeneratedCase = {
+  input: string;
+  output: string;
+};
+
+const generatedCases = ref<GeneratedCase[]>([]);
+const isGenerating = ref(false);
+
+async function onGenerate(payload: GeneratePayload) {
+  // 先讓 UI 顯示
+  isGenerating.value = true;
+  generatedCases.value = [];
+
+  try {
+    // TODO: 之後接後端
+    // const res = await api.Problem.generateTestcase(route.params.id as string, payload);
+    // generatedCases.value = res.data.cases;
+    // 暫時：先不接後端
+  } finally {
+    //isGenerating.value = false;
+  }
+}
 </script>
 
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
-        <div class="card-title mb-3 justify-between">
-          Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }}
+      <div class="card-body pt-0">
+        <div
+          class="card-title sticky top-[53px] z-50 mb-3 flex h-20 items-center justify-between bg-base-100"
+        >
+          <div class="flex items-center gap-x-4">
+            <span> Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }} </span>
+
+            <!-- 三顆 tab 按鈕 -->
+            <div class="flex items-center gap-x-4">
+              <button class="btn btn-primary" @click="scrollToSection(contentSection)">Content</button>
+              <button class="btn btn-primary" @click="scrollToSection(testdataSection)">Testdata</button>
+              <button class="btn btn-primary" @click="scrollToSection(checkerSection)">Checker</button>
+            </div>
+          </div>
+
           <div class="flex gap-x-3">
             <button
               :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
@@ -219,8 +276,13 @@ async function delete_() {
               <problem-form-component
                 ref="formElement"
                 v-model:testdata="testdata"
+                v-model:checker="checker"
                 @update="update"
                 @submit="submit"
+                @save-solution="onSaveSolution"
+                @generate="onGenerate"
+                :generated-cases="generatedCases"
+                :is-generating="isGenerating"
               />
 
               <div class="divider" />

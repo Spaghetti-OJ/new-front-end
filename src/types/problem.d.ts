@@ -83,6 +83,7 @@ interface ProblemInfo {
   fillInTemplate: string | null;
   submitCount: number;
   highScore: number;
+  solution: string;
 }
 
 interface ProblemForm {
@@ -108,6 +109,9 @@ interface ProblemForm {
   };
   canViewStdout: boolean;
   defaultCode: string;
+  solution: string;
+  staticAnalysis: string[];
+  allowedDomains: string[];
 }
 
 interface ProblemCreatePayload {
@@ -126,6 +130,7 @@ interface ProblemCreatePayload {
   subtask_description: string | null;
   supported_languages?: string[];
   tags: number[];
+  allowed_domains?: string[];
 }
 
 interface ProblemTop10RunTimeItem {
@@ -181,3 +186,9 @@ interface Subtasks {
   weight: number;
 }
 type SubtaskResponse = Subtasks[];
+
+type LlmMode = "" | "LLM_INPUT_ONLY" | "LLM_DIRECT";
+
+interface GeneratePayload {
+  llmMode: LlmMode;
+}

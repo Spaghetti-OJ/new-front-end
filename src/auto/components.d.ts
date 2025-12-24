@@ -67,6 +67,7 @@ declare module '@vue/runtime-core' {
     ProblemInfo: typeof import('./../components/Problem/ProblemInfo.vue')['default']
     ProblemInfoCard: typeof import('./../components/Problem/ProblemInfoCard.vue')['default']
     ProblemMultiSelect: typeof import('./../components/Homework/Fields/ProblemMultiSelect.vue')['default']
+    ProblemSubtaskItem: typeof import('./../components/Problem/ProblemSubtaskItem.vue')['default']
     ProblemTestdataDescriptionModal: typeof import('./../components/Problem/Forms/ProblemTestdataDescriptionModal.vue')['default']
     ProfileAvatarBlock: typeof import('./../components/Profile/ProfileAvatarBlock.vue')['default']
     ProfileField: typeof import('./../components/Profile/ProfileField.vue')['default']
