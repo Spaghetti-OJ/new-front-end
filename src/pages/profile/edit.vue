@@ -16,11 +16,14 @@ const profile = ref<UserProperties | null>(null);
 
 const form = reactive<UserProperties>({
   avatar: "",
-  realname: "",
+  real_name: "",
   username: "",
   role: "",
   email: "",
-  intro: "",
+  bio: "",
+  user_id: "",
+  student_id: "",
+  email_verified: false,
 });
 
 async function loadProfile() {
@@ -30,6 +33,7 @@ async function loadProfile() {
     const data = await api.Auth.getProfile();
     profile.value = data;
     Object.assign(form, data);
+    // No manual mapping needed now as properties match
   } catch (error: any) {
     loadError.value = error?.message || "Failed to load profile";
   } finally {
@@ -53,15 +57,15 @@ async function saveProfile() {
     if (avatarFile.value) {
       const formData = new FormData();
       formData.append("email", form.email);
-      formData.append("bio", (form as any).intro || form.bio || "");
+      formData.append("bio", form.bio);
       formData.append("avatar", toRaw(avatarFile.value));
-      formData.append("real_name", (form as any).realname || form.real_name || "");
+      formData.append("real_name", form.real_name);
       payload = formData;
     } else {
       payload = {
         email: form.email,
-        bio: (form as any).intro || form.bio,
-        real_name: (form as any).realname || form.real_name,
+        bio: form.bio,
+        real_name: form.real_name,
       };
     }
     await api.Auth.updateProfile(payload);
@@ -112,13 +116,13 @@ function onAvatarAction(action: string) {
     <template #right>
       <section class="w-full max-w-4xl">
         <div class="grid grid-cols-1 gap-4" :class="{ 'pointer-events-none opacity-50': isLoadingProfile }">
-          <ProfileField :label="t('profile.realName')" v-model="form.realname" :editable="false" />
+          <ProfileField :label="t('profile.realName')" v-model="form.real_name" :editable="false" />
           <ProfileField :label="t('profile.username')" v-model="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
           <ProfileField
             :label="t('profile.introduction')"
-            v-model="form.intro"
+            v-model="form.bio"
             :editable="true"
             type="textarea"
           />
