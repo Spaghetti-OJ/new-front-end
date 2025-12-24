@@ -334,6 +334,7 @@
         "allowedLangs": "作答語言",
         "testdata": "測資",
         "howToPack": "了解測資檔案格式",
+        "whatischecker": "什麼是檢查器",
         "dropFile": "拖曳檔案至此，或透過右方按鈕選擇檔案",
         "subtask": "子任務 {no}",
         "numOfCases": "測資筆數",

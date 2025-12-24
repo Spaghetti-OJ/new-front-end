@@ -3,7 +3,505 @@
     "title": "設定",
     "selectLang": "揀你愛个語言"
   },
-  "profile": {},
-  "about": {},
-  "course": {}
+  "about": {
+    "contributor": "貢獻者",
+    "links": "連結",
+    "maintainer": "維護人員",
+    "serviceLearning2022": "臺師大資工系 2022 年秋季服務學習",
+    "serviceLearning2021": "臺師大資工系 2021 年春季服務學習",
+    "swe2019": "2019 年秋季軟體工程「紅隊」組"
+  },
+  "course": {
+    "ann": {
+      "index": {
+        "title": "公告",
+        "table": {
+          "title": "標題",
+          "author": "發布者",
+          "time": "發布時間"
+        },
+        "new": "新增"
+      },
+      "new": {
+        "title": "新增公告",
+        "preview": "預覽"
+      }
+    },
+    "hw": {
+      "index": {
+        "title": "作業",
+        "new": "新增"
+      },
+      "new": {
+        "title": "新增作業",
+        "preview": "預覽"
+      }
+    },
+    "problem": {
+      "new": {
+        "title": "新增題目",
+        "preview": "預覽",
+        "json": "JSON（供開發人員檢查）"
+      },
+      "submit": {
+        "err": {
+          "code": "請佇遮貼你个原始碼來繳交。",
+          "lang": "請揀程式語言。",
+          "msg": "Oops! 繳交程式碼个時陣出代誌矣。等咧閣試看覓。"
+        },
+        "card": {
+          "title": "繳交到題號 ",
+          "placeholder": "佇遮貼程式碼"
+        },
+        "lang": {
+          "text": "語言",
+          "select": "揀語言"
+        },
+        "text": "提交"
+      },
+      "stats": {
+        "pieTitle": "繳交結果",
+        "title": "數據檢視－題號",
+        "general": {
+          "tried": "已經試過个使用者數量",
+          "ac": "AC 使用者數量",
+          "acRatio": "AC Submission 比率",
+          "avg": "平均分數",
+          "sd": "標準差"
+        },
+        "table": {
+          "runtimeRank": {
+            "title": "執行時間頭十名",
+            "id": "名次",
+            "user": "使用者",
+            "runtime": "執行時間",
+            "time": "繳交時間"
+          },
+          "memoryRank": {
+            "title": "記憶體用量頭十名",
+            "id": "名次",
+            "user": "使用者",
+            "memory": "記憶體用量",
+            "time": "繳交時間"
+          }
+        }
+      }
+    },
+    "problems": {
+      "text": "題目",
+      "id": "題號",
+      "name": "題名",
+      "tags": "標籤",
+      "quota": "額度",
+      "new": "新增",
+      "status": "藏起來"
+    },
+    "submissions": {
+      "text": "繳交狀態",
+      "problem": "題目",
+      "status": "狀態",
+      "lang": "語言",
+      "clear": "清掉",
+      "table": {
+        "id": "id",
+        "pid": "題號",
+        "user": "使用者",
+        "result": "評判結果",
+        "score": "得分",
+        "runtime": "執行時間",
+        "memory": "記憶體用量",
+        "lang": "語言",
+        "time": "繳交時間",
+        "ipAddr": "IP 位址"
+      }
+    },
+    "submission": {
+      "title": "Submission ID: ",
+      "general": {
+        "title": "總覽",
+        "problem": "題號",
+        "user": "使用者",
+        "status": "評判結果",
+        "runtime": "執行時間",
+        "memory": "記憶體用量",
+        "score": "得分",
+        "lang": "語言",
+        "time": "繳交時間",
+        "ipAddr": "IP 位址"
+      },
+      "detail": {
+        "title": "細節",
+        "desc": "作業當咧批改，頁面會家己更新。",
+        "id": "子任務",
+        "status": "評判結果",
+        "runtime": "執行時間",
+        "memory": "記憶體用量",
+        "score": "得分",
+        "overall": "整體結果",
+        "result": {
+          "hide": "藏起所有結果",
+          "show": "顯示所有結果"
+        }
+      },
+      "source": {
+        "text": "原始碼",
+        "copied": "已經複製矣！",
+        "copy": "複製"
+      },
+      "compile_error": {
+        "title": "編譯錯誤訊息"
+      }
+    },
+    "members": {
+      "title": "成員",
+      "new": "新增",
+      "sortBy": "排序依據",
+      "cancel": "取消",
+      "submit": "送出",
+      "csvUploadHint": {
+        "header": "上傳一个 csv 檔來批次新增學生，頭一列 Headers 應該是：",
+        "content": "第二列開始逐列是一个成員个資料",
+        "caution": "請注意若系統已經有使用者用著 CSV 內底个 username 抑是 email，彼个學生猶是會加入課程，毋過其他欄位个資訊袂更新，若欲強制更新伊个資訊請勾下跤个選項。"
+      },
+      "forceUpdate": "強制更新已經存在个使用者个資訊",
+      "standardizeUsername": "統一使用者名稱（字母大寫）"
+    }
+  },
+  "courses": {
+    "index": {
+      "list": "課程清單",
+      "table": {
+        "course": "課程",
+        "teacher": "教師"
+      },
+      "new": "新增"
+    },
+    "new": {
+      "title": "新增課程",
+      "nameField": "課程名稱",
+      "teacherField": "課程教師",
+      "submit": "送出",
+      "unknown-error-occurred": "發生毋知影个錯誤 :("
+    }
+  },
+  "profile": {
+    "title": "個人資料",
+    "rules": {
+      "confirmPassword": {
+        "sameAsRef": "密碼無合。"
+      }
+    },
+    "username": "帳號",
+    "dispname": "顯示名稱",
+    "email": "電子批",
+    "role": "身份",
+    "studentId": "學號",
+    "introduction": "家己紹介",
+    "realName": "真實姓名",
+    "progressBar": "進度展示",
+    "heatmap": "貢獻度",
+    "edit": "編輯",
+    "noImage": "無頭像",
+    "save": "保存",
+    "cancel": "取消",
+    "signOut": "登出",
+    "pw": {
+      "change": "變更密碼",
+      "success": "密碼已經成功變更矣",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "current": "舊密碼",
+      "placeholder": {
+        "new": "新密碼",
+        "again": "閣輸入一擺新密碼",
+        "current": "舊密碼"
+      },
+      "submit": "送出"
+    },
+    "wrongPassword": "密碼毋著",
+    "operationFailed": "操作失敗，請等咧閣試",
+    "verifyEmail": "驗證信箱",
+    "verifyEmailSuccess": "驗證信已經寄出矣，請查收。",
+    "verifyEmailFailed": "發送驗證信失敗",
+    "emailNotSet": "請先設定電子批",
+    "emailAlreadyVerified": "你个電子批已經驗證矣",
+    "verifyEmailSentTitle": "驗證信已經發送矣",
+    "verifyEmailSentMessage": "阮已經向你个信箱發送一封驗證信矣，請查收。",
+    "close": "關閉"
+  },
+  "ann": {
+    "id": {
+      "back": "轉去"
+    }
+  },
+  "problems": {
+    "title": "題目列表",
+    "loading": "當咧載入題目...",
+    "filter": {
+      "Courses": "課程",
+      "Tags": "標籤",
+      "difficulty": "困難度"
+    },
+    "table": {
+      "id": "題號",
+      "name": "題名",
+      "tags": "標籤",
+      "course": "課程",
+      "ac": "AC 比率 (%)"
+    },
+    "difficulty": {
+      "easy": "簡單",
+      "medium": "中等",
+      "hard": "困難",
+      "reset": "重設"
+    },
+    "empty": "揣無題目。",
+    "search": {
+      "placeholder": "搜揣題目..."
+    }
+  },
+  "ranking": {
+    "title": "排行榜",
+    "table": {
+      "id": "#",
+      "avatar": "頭像",
+      "userId": "使用者ID",
+      "displayName": "使用者名稱",
+      "ac": "AC 數量統計"
+    },
+    "loading": "當咧載入排行榜資料...",
+    "error": "載入排行榜資料失敗。"
+  },
+  "components": {
+    "ann": {
+      "form": {
+        "titleField": "標題",
+        "pinToggle": "置頂",
+        "descField": "內容",
+        "submit": "送出"
+      },
+      "card": {
+        "lastUpdate": "上尾更新時間：{time}",
+        "postBy": "由 {author} 張貼佇 {time}"
+      }
+    },
+    "hw": {
+      "form": {
+        "nameField": "作業名稱",
+        "problems": "題目集",
+        "fromField": "開始時間",
+        "dueField": "截止時間",
+        "descField": "說明",
+        "submit": "送出"
+      },
+      "card": {
+        "statusLabel": {
+          "running": "進行中",
+          "notStart": "猶未開始",
+          "over": "已經結束矣"
+        },
+        "availability": {
+          "text": "期限",
+          "from": "自",
+          "due": "至"
+        },
+        "problems": {
+          "text": "題目",
+          "id": "序號",
+          "pid": "題號",
+          "name": "題名",
+          "quota": "額度",
+          "score": "得分",
+          "stats": "數據",
+          "copycat": "抄襲"
+        },
+        "description": {
+          "text": "說明",
+          "edit": "編輯",
+          "stats": "數據"
+        }
+      }
+    },
+    "problem": {
+      "forms": {
+        "nameField": "題目名稱",
+        "hiddenToggle": "藏起來",
+        "quotaField": "額度",
+        "quotaHint": "若輸入 -1 就是無額度限制",
+        "tags": "標籤",
+        "tagsHint": "濟个標籤用逗號分開，例如：「HW1,HW2」",
+        "type": "題型",
+        "allowedLangs": "作答語言",
+        "testdata": "測資",
+        "howToPack": "了解測資檔案格式",
+        "whatischecker": "啥物是檢查器",
+        "dropFile": "拖曳檔案到遮，抑是透過正爿按鈕揀檔案",
+        "subtask": "子任務 {no}",
+        "numOfCases": "測資筆數",
+        "score": "子任務分數",
+        "memoryLimit": "記憶體限制（MB）",
+        "timeLimit": "執行時間限制（ms）",
+        "submit": "送出",
+        "probDescForm": {
+          "desc": "說明",
+          "input": "輸入",
+          "output": "輸出",
+          "hint": "提示",
+          "err": {
+            "input": "範例輸入錯誤: ",
+            "output": "範例輸出錯誤: "
+          },
+          "sample": {
+            "input": "範例輸入 ",
+            "output": "範例輸出 "
+          }
+        },
+        "testdataRule1": "你需要共所有个輸入輸出檔囥佇一个 .zip 檔，而且愛照下跤个命名規則",
+        "testdataRule2": "輸入檔个檔名應該是 \"sstt.in\"，其中 \"ss\" 代表是第幾个子任務，而 \"tt\" 代表是彼个子任務內底个第幾筆測資",
+        "testdataRule3": "仝款，輸出檔个檔名應該是 \"sstt.out\"，另外請注意 \"ss\" 佮 \"tt\" 是對零開始編號.",
+        "testdataRule4": "舉例來講，一个有 3 个子任務个題目，伊个子任務个測資數量分別是 3, 5, 15",
+        "testdataRule5": "按呢 zip 檔內底應該包含遮的檔案：",
+        "gotIt": "好"
+      },
+      "card": {
+        "title": "題目編號 ",
+        "quota": "額度",
+        "score": "得分",
+        "submit": "提交",
+        "stats": "數據",
+        "desc": "說明",
+        "input": "輸入",
+        "output": "輸出",
+        "ex": "範例",
+        "sample": {
+          "id": "編號",
+          "input": "輸入",
+          "output": "輸出"
+        },
+        "hint": "提示",
+        "subtasks": {
+          "title": "子任務",
+          "id": "編號",
+          "tl": "執行時間限制",
+          "ml": "記憶體限制",
+          "score": "配分"
+        },
+        "noContent": "無",
+        "unlimited": "無限制"
+      },
+      "infoCard": {
+        "score": "得分",
+        "tags": "標籤",
+        "quota": "額度",
+        "unlimited": "無限制"
+      }
+    },
+    "courseSideBar": {
+      "ann": "公告",
+      "hw": "作業",
+      "problems": "題目",
+      "submissions": "繳交狀態",
+      "members": "成員"
+    },
+    "systemAnn": {
+      "ann": "公告",
+      "title": "標題",
+      "createTime": "建立時間"
+    },
+    "loginSection": {
+      "welcome": "歡迎轉來，{user}",
+      "signin": "登入",
+      "loginFailed": "登入失敗：帳號 / 電子批地址抑是密碼輸入毋著",
+      "username": "帳號 / 電子批地址",
+      "pw": "密碼",
+      "placeholder": {
+        "username": "帳號 / 電子批地址",
+        "pw": "密碼"
+      },
+      "forgot": "袂記得密碼?",
+      "button": "登入"
+    },
+    "topBar": {
+      "home": "頭頁",
+      "course": "課程",
+      "about": "關於",
+      "admin": "管理",
+      "profile": "個人",
+      "ranking": "排名",
+      "problems": "題目",
+      "settings": "設定"
+    },
+    "dueCountdown": {
+      "days": "日",
+      "hours": "點鐘",
+      "min": "分",
+      "sec": "秒"
+    },
+    "markdownRenderer": {
+      "noContent": "無"
+    },
+    "dataStatusWrapper": {
+      "errorMsg": "Oops! 系統發生一寡錯誤矣，請重新試看覓，若試幾若擺攏失敗請聯絡管理員。"
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "問我任何關於程式設計抑是 NOJ 个問題...",
+      "sendButton": "發送"
+    }
+  },
+  "admin": {
+    "user": {
+      "pwHint": "留空就袂改變密碼，改變密碼了後彼个使用者會予登出",
+      "cancel": "取消",
+      "submit": "提交",
+      "password": "密碼",
+      "role": "角色",
+      "display-name": "顯示名稱",
+      "username": "帳號",
+      "editing": "當咧編輯：{user}",
+      "student": "學生",
+      "teacher": "教師",
+      "admin": "管理員",
+      "select-role": "揀角色",
+      "row-count": "資料筆數：{n}",
+      "search-name": "搜揣名稱"
+    },
+    "unknown-error-occurred": "發生毋知影个錯誤 :(",
+    "tab": {
+      "dashboard": "儀表板",
+      "user": "使用者"
+    },
+    "dashboard": {
+      "usercount": {
+        "title": "使用者總覽",
+        "count": "數量",
+        "total": "總數"
+      },
+      "coursecount": {
+        "title": "課程總覽",
+        "coursename": "課程名稱",
+        "user": "人數",
+        "homework": "作業數量",
+        "problem": "題目數量",
+        "submission": "提交數量"
+      }
+    }
+  },
+  "errorCode": {
+    "ERR001": "登入失敗：帳號抑是密碼毋著。",
+    "ERR002": "登入失敗：帳號猶未開通，請去 https://v1.noj.tw 驗證信箱來開通帳號。",
+    "ERR003": "註冊失敗：彼个使用者名稱已經予人用矣。",
+    "ERR004": "註冊失敗：彼个電子批已經予人用矣。",
+    "UNKNOWN": "毋知影个錯誤，請洽助教抑是管理者協助處理，抑是請等咧閣試一擺。"
+  },
+  "password_reset": {
+    "forgot-password": "袂記得密碼",
+    "description": "請輸入你註冊用个信箱，阮會傳送一封電子批予你。",
+    "submit": "送出",
+    "email": "電子批",
+    "status": {
+      "error": "揣無彼个信箱。",
+      "success": "發送成功，請檢查你个電子信箱。"
+    },
+    "return-home": "轉去頭頁"
+  }
 }

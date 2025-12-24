@@ -240,7 +240,7 @@
     "filter": {
       "Courses": "Courses",
       "Tags": "Tags",
-      "Difficulty": "Difficulty"
+      "difficulty": "Difficulty"
     },
     "table": {
       "id": "ID",
@@ -320,8 +320,7 @@
           "edit": "Edit",
           "stats": "Stats"
         }
-      },
-      "hwForm": {}
+      }
     },
     "problem": {
       "forms": {
