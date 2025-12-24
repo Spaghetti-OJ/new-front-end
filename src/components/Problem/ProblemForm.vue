@@ -134,7 +134,7 @@ watch(
 );
 
 watch(testdataMode, (mode) => {
-  if (mode === "uploadfile") {
+  if (mode === "uploadfile" && !props.testdata) {
     update("testCaseInfo", {
       ...problem.value.testCaseInfo,
       tasks: [],
