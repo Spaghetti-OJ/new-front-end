@@ -55,8 +55,8 @@ onMounted(async () => {
           <tr>
             <th class="w-16 text-center">#</th>
             <th class="w-24 text-center">{{ $t("ranking.table.avatar") }}</th>
-            <th>{{ $t("ranking.table.userId") }}</th>
-            <th>{{ $t("ranking.table.displayName") }}</th>
+            <th>{{ $t("profile.username") }}</th>
+            <th>{{ $t("profile.realName") }}</th>
             <th class="text-right">{{ $t("ranking.table.ac") }}</th>
           </tr>
         </thead>
@@ -64,14 +64,41 @@ onMounted(async () => {
           <tr v-for="(item, index) in ranking" :key="item.user?.username || index" class="hover">
             <td class="text-center font-semibold">{{ index + 1 }}</td>
             <td class="flex justify-center">
-              <div class="avatar">
+              <router-link
+                v-if="item.user?.username"
+                :to="`/profile/${item.user.username}`"
+                class="avatar transition-opacity hover:opacity-80"
+              >
+                <div class="mask mask-squircle h-10 w-10">
+                  <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
+                </div>
+              </router-link>
+              <div v-else class="avatar">
                 <div class="mask mask-squircle h-10 w-10">
                   <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
                 </div>
               </div>
             </td>
-            <td>{{ item.user?.username || "Unknown" }}</td>
-            <td>{{ item.user?.real_name || "-" }}</td>
+            <td>
+              <router-link
+                v-if="item.user?.username"
+                :to="`/profile/${item.user.username}`"
+                class="hover:underline"
+              >
+                {{ item.user?.username || "Unknown" }}
+              </router-link>
+              <span v-else>{{ item.user?.username || "Unknown" }}</span>
+            </td>
+            <td>
+              <router-link
+                v-if="item.user?.username"
+                :to="`/profile/${item.user.username}`"
+                class="link link-hover"
+              >
+                {{ item.user?.real_name || "-" }}
+              </router-link>
+              <span v-else>{{ item.user?.real_name || "-" }}</span>
+            </td>
             <td class="text-right">{{ item.ACProblem ?? 0 }}</td>
           </tr>
         </tbody>
