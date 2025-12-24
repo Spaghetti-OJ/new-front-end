@@ -191,9 +191,27 @@ const openJSON = ref<boolean>(false);
             <span>{{ $t("course.problem.new.title") }}</span>
 
             <div class="flex items-center gap-x-4">
-              <button class="btn btn-primary" @click="scrollToSection(contentSection)">Content</button>
-              <button class="btn btn-primary" @click="scrollToSection(testdataSection)">Testdata</button>
-              <button class="btn btn-primary" @click="scrollToSection(checkerSection)">Checker</button>
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Content Section"
+                @click="scrollToSection(contentSection)"
+              >
+                Content
+              </button>
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Testdata Section"
+                @click="scrollToSection(testdataSection)"
+              >
+                Testdata
+              </button>
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Checker Section"
+                @click="scrollToSection(checkerSection)"
+              >
+                Checker
+              </button>
             </div>
           </div>
         </div>
