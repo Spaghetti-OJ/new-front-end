@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide, Ref } from "vue";
+import { ref, provide, Ref, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
@@ -61,6 +61,37 @@ const checker = ref<File | null>(null);
 const generatedCases = ref<{ input: string; output: string }[]>([]);
 const isGenerating = ref(false);
 
+const contentSection = computed<HTMLElement | null>(() => formElement.value?.contentSection ?? null);
+const testdataSection = computed<HTMLElement | null>(() => formElement.value?.testdataSection ?? null);
+const checkerSection = computed<HTMLElement | null>(() => formElement.value?.checkerSection ?? null);
+
+const scrollToSection = (el: HTMLElement | null) => {
+  if (!el) return;
+  el.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
+function onSaveSolution() {
+  // TODO: connect solution-only API later
+}
+
+async function onGenerate(payload: GeneratePayload) {
+  // 先讓 UI 顯示
+  isGenerating.value = true;
+  generatedCases.value = [];
+
+  try {
+    // TODO: 之後接後端
+    // const res = await api.Problem.generateTestcase(route.params.id as string, payload);
+    // generatedCases.value = res.data.cases;
+    // 暫時：先不接後端
+  } finally {
+    //isGenerating.value = false;
+  }
+}
+
 function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
 
@@ -85,6 +116,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
+    allowed_domains: p.allowedDomains,
   };
 }
 
@@ -151,8 +183,38 @@ const openJSON = ref<boolean>(false);
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
-        <div class="card-title mb-3 justify-between">{{ $t("course.problem.new.title") }}</div>
+      <div class="card-body pt-0">
+        <div
+          class="card-title sticky top-[53px] z-50 mb-3 flex h-20 items-center justify-between bg-base-100"
+        >
+          <div class="flex items-center gap-x-4">
+            <span>{{ $t("course.problem.new.title") }}</span>
+
+            <div class="flex items-center gap-x-4">
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Content Section"
+                @click="scrollToSection(contentSection)"
+              >
+                Content
+              </button>
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Testdata Section"
+                @click="scrollToSection(testdataSection)"
+              >
+                Testdata
+              </button>
+              <button
+                class="btn btn-primary"
+                aria-label="Scroll to Checker Section"
+                @click="scrollToSection(checkerSection)"
+              >
+                Checker
+              </button>
+            </div>
+          </div>
+        </div>
 
         <problem-form-component
           ref="formElement"
@@ -162,8 +224,9 @@ const openJSON = ref<boolean>(false);
           :is-generating="isGenerating"
           @update="update"
           @submit="submit"
+          @save-solution="onSaveSolution"
+          @generate="onGenerate"
         />
-
         <div class="divider" />
 
         <div class="card-title mb-3">
