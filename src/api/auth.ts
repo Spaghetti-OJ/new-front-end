@@ -34,6 +34,8 @@ export const Auth = {
   getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
   updateProfile: (body: Partial<UserProperties> | FormData) =>
     fetcher.post<UserProperties>("/profile/", body).then((r) => r.data ?? r),
+  getPublicProfile: (username: string) =>
+    fetcher.get<PublicUserProfile>(`/profile/${username}/`).then((r) => r.data ?? r),
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),

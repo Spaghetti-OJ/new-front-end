@@ -46,6 +46,15 @@ interface UserProperties {
   email_verified: boolean;
 }
 
+interface PublicUserProfile {
+  username: string;
+  role: string;
+  email: string;
+  user_id: string;
+  bio: string;
+  avatar: string | null;
+}
+
 interface UserEditionForm {
   password: string | null;
   displayedName: string;
