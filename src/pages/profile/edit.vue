@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
@@ -39,19 +39,42 @@ async function loadProfile() {
 
 onMounted(loadProfile);
 
+const avatarFile = ref<File | null>(null);
+
+function onAvatarUpload(file: File) {
+  avatarFile.value = file;
+  console.log("avatar upload:", file);
+}
+
 async function saveProfile() {
   try {
-    // TODO: 換成真正的更新 API
-    await api.Auth.updateProfile?.({
-      email: form.email,
-      intro: form.intro,
-      avatar: form.avatar,
-    });
-    if (profile.value) Object.assign(profile.value, form);
-  } catch (e) {
+    let payload: Partial<UserProperties> | FormData;
+
+    if (avatarFile.value) {
+      const formData = new FormData();
+      formData.append("email", form.email);
+      formData.append("bio", (form as any).intro || form.bio || "");
+      formData.append("avatar", toRaw(avatarFile.value));
+      formData.append("real_name", (form as any).realname || form.real_name || "");
+      payload = formData;
+    } else {
+      payload = {
+        email: form.email,
+        bio: (form as any).intro || form.bio,
+        real_name: (form as any).realname || form.real_name,
+      };
+    }
+    await api.Auth.updateProfile(payload);
+    if (profile.value) {
+      Object.assign(profile.value, form);
+    }
+    router.push("/profile");
+  } catch (e: any) {
     console.error(e);
-  } finally {
-    router.push("/profile"); // 返回原本的 profile page
+    if (e.response && e.response.data) {
+      const errorDetail = e.response.data.data || e.response.data;
+      alert("Update failed details: " + JSON.stringify(errorDetail, null, 2));
+    }
   }
 }
 
@@ -63,11 +86,6 @@ function cancelEdit() {
 function onAvatarAction(action: string) {
   if (action === "save") saveProfile();
   else if (action === "cancel") cancelEdit();
-}
-
-function onAvatarUpload(file: File) {
-  // TODO: 上傳後設定 form.avatar
-  console.log("avatar upload:", file);
 }
 </script>
 

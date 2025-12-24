@@ -32,6 +32,8 @@ export const Auth = {
   listTokens: () => fetcher.get<apikeyresponse[]>("/api-tokens/").then((r) => r.data ?? r),
   deleteToken: (tokenId: string) => fetcher.delete(`/api-tokens/${tokenId}`).then((r) => r.data ?? r),
   getProfile: () => fetcher.get<UserProperties>("/profile/").then((r) => r.data ?? r),
+  updateProfile: (body: Partial<UserProperties> | FormData) =>
+    fetcher.post<UserProperties>("/profile/", body).then((r) => r.data ?? r),
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),

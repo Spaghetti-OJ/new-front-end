@@ -33,6 +33,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/media": {
+        target: process.env.NODE_ENV === "test" ? "http://localhost:8000" : "https://noj-backend-dev.little7.pp.ua",
+        changeOrigin: true,
+      },
     },
   },
   resolve: {
