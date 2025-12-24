@@ -149,8 +149,6 @@ watch(testdataMode, (mode) => {
 });
 
 function addSubtask() {
-  const tasks = problem.value.testCaseInfo.tasks ?? [];
-
   update("testCaseInfo", {
     ...problem.value.testCaseInfo,
     tasks: [
