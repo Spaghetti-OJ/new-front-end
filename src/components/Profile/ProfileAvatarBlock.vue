@@ -30,11 +30,9 @@ watch(
 
 /* 上傳相關 */
 const fileInput = ref(null);
-const cameraInput = ref(null);
 
-function openFilePicker(type) {
-  if (type === "file") fileInput.value?.click();
-  else if (type === "camera") cameraInput.value?.click();
+function openFilePicker() {
+  fileInput.value?.click();
 }
 
 function onFileSelected(e) {
@@ -73,35 +71,17 @@ function onFileSelected(e) {
 
       <!-- 可編輯頭貼時的 + 按鈕（右下角） -->
       <div v-if="editableAvatar" class="absolute bottom-5 right-5">
-        <div class="dropdown dropdown-end">
-          <label
-            tabindex="0"
-            class="btn btn-circle btn-primary btn-sm shadow-md"
-            aria-label="Upload avatar options"
-          >
-            +
-          </label>
-
-          <ul tabindex="0" class="dropdown-content menu rounded-box mt-2 w-40 bg-base-100 p-2 shadow">
-            <li>
-              <button type="button" @click="openFilePicker('file')">上傳檔案</button>
-            </li>
-            <li>
-              <button type="button" @click="openFilePicker('camera')">使用相機 / 裝置</button>
-            </li>
-          </ul>
-        </div>
+        <button
+          type="button"
+          class="btn btn-circle btn-primary btn-sm shadow-md"
+          aria-label="Upload avatar"
+          @click="openFilePicker"
+        >
+          +
+        </button>
 
         <!-- 隱藏 input -->
         <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileSelected" />
-        <input
-          ref="cameraInput"
-          type="file"
-          accept="image/*"
-          capture="environment"
-          class="hidden"
-          @change="onFileSelected"
-        />
       </div>
     </div>
 
