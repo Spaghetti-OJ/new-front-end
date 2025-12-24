@@ -74,7 +74,6 @@ const scrollToSection = (el: HTMLElement | null) => {
 };
 
 function onSaveSolution() {
-  console.log("save-solution clicked:", newProblem.value?.solution);
   // TODO: connect solution-only API later
 }
 
