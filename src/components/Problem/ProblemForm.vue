@@ -438,7 +438,12 @@ const removeDomain = (d: string) => {
           <div class="mt-4 flex gap-4">
             <div class="text-lg font-semibold">AI generate testdata</div>
 
-            <button type="button" class="btn btn-success btn-sm" @click="emits('generate', { llmMode })">
+            <button
+              type="button"
+              class="btn btn-success btn-sm"
+              :disabled="!llmMode"
+              @click="emits('generate', { llmMode })"
+            >
               GENERATE
             </button>
           </div>
