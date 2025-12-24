@@ -72,6 +72,8 @@ const rules = {
   canViewStdout: {},
   defaultCode: {},
   solution: { maxLength: maxLength(20000) },
+  staticAnalysis: {},
+  allowedDomains: {},
 };
 const v$ = useVuelidate(rules, problem.value);
 
@@ -211,23 +213,26 @@ const onDocClick = (e: MouseEvent) => {
 onMounted(() => document.addEventListener("click", onDocClick));
 onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 
-const allowedDomains = ref<string[]>([]);
 const domainInput = ref("");
 
 const addDomain = () => {
   const v = domainInput.value.trim();
   if (!v) return;
 
-  // 如果你不想避免重複，可以把這個 if 拿掉
-  if (!allowedDomains.value.includes(v)) {
-    allowedDomains.value = [...allowedDomains.value, v];
+  const currentDomains = problem.value.allowedDomains ?? [];
+  if (!currentDomains.includes(v)) {
+    update("allowedDomains", [...currentDomains, v]);
   }
 
   domainInput.value = "";
 };
 
 const removeDomain = (d: string) => {
-  allowedDomains.value = allowedDomains.value.filter((x) => x !== d);
+  const currentDomains = problem.value.allowedDomains ?? [];
+  update(
+    "allowedDomains",
+    currentDomains.filter((x) => x !== d),
+  );
 };
 </script>
 
@@ -626,9 +631,9 @@ const removeDomain = (d: string) => {
           </label>
 
           <!-- 已新增的 domain -->
-          <div v-if="allowedDomains.length" class="mt-2 flex flex-wrap gap-2">
+          <div v-if="problem.allowedDomains?.length" class="mt-2 flex flex-wrap gap-2">
             <div
-              v-for="d in allowedDomains"
+              v-for="d in problem.allowedDomains"
               :key="d"
               class="flex items-center gap-1 rounded-md border border-base-300 bg-base-100 px-3 py-1 text-sm"
             >

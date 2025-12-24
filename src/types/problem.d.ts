@@ -111,6 +111,7 @@ interface ProblemForm {
   defaultCode: string;
   solution: string;
   staticAnalysis: string[];
+  allowedDomains: string[];
 }
 
 interface ProblemCreatePayload {
@@ -129,6 +130,7 @@ interface ProblemCreatePayload {
   subtask_description: string | null;
   supported_languages?: string[];
   tags: number[];
+  allowed_domains?: string[];
 }
 
 interface ProblemTop10RunTimeItem {

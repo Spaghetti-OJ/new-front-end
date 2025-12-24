@@ -63,6 +63,7 @@ async function getManage() {
       defaultCode: "",
       staticAnalysis: [],
       solution: "",
+      allowedDomains: [],
     };
   } catch (err) {
     fetchError.value = err;
@@ -131,6 +132,7 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
+    allowed_domains: p.allowedDomains,
   };
 }
 

@@ -39,6 +39,9 @@ const newProblem = ref<ProblemForm>({
     tasks: [],
   },
   canViewStdout: false,
+  solution: "",
+  staticAnalysis: [],
+  allowedDomains: [],
 });
 
 function update<K extends keyof ProblemForm>(
@@ -54,6 +57,9 @@ function update<K extends keyof ProblemForm>(
 }
 provide<Ref<ProblemForm>>("problem", newProblem);
 const testdata = ref<File | null>(null);
+const checker = ref<File | null>(null);
+const generatedCases = ref<{ input: string; output: string }[]>([]);
+const isGenerating = ref(false);
 
 function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
@@ -151,6 +157,9 @@ const openJSON = ref<boolean>(false);
         <problem-form-component
           ref="formElement"
           v-model:testdata="testdata"
+          v-model:checker="checker"
+          :generated-cases="generatedCases"
+          :is-generating="isGenerating"
           @update="update"
           @submit="submit"
         />
