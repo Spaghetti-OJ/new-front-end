@@ -245,9 +245,9 @@ async function onGenerate(payload: { llmMode: string }) {
 
             <!-- 三顆 tab 按鈕 -->
             <div class="flex items-center gap-x-4">
-              <button class="btn bg-[#02305f]" @click="scrollToSection(contentSection)">Content</button>
-              <button class="btn bg-[#02305f]" @click="scrollToSection(testdataSection)">Testdata</button>
-              <button class="btn bg-[#02305f]" @click="scrollToSection(checkerSection)">Checker</button>
+              <button class="btn btn-primary" @click="scrollToSection(contentSection)">Content</button>
+              <button class="btn btn-primary" @click="scrollToSection(testdataSection)">Testdata</button>
+              <button class="btn btn-primary" @click="scrollToSection(checkerSection)">Checker</button>
             </div>
           </div>
 
