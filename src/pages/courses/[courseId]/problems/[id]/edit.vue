@@ -217,7 +217,7 @@ type GeneratedCase = {
 const generatedCases = ref<GeneratedCase[]>([]);
 const isGenerating = ref(false);
 
-async function onGenerate(payload: { llmMode: string }) {
+async function onGenerate(payload: GeneratePayload) {
   // 先讓 UI 顯示
   isGenerating.value = true;
   generatedCases.value = [];

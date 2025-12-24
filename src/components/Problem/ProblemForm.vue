@@ -31,7 +31,7 @@ const emits = defineEmits<{
   (e: "update:testdata", value: File | null): void;
   (e: "submit"): void;
   (e: "save-solution"): void;
-  (e: "generate", payload: { llmMode: string }): void;
+  (e: "generate", payload: GeneratePayload): void;
   (e: "update:checker", value: File | null): void;
 }>();
 
@@ -89,7 +89,7 @@ async function submit() {
   }
 }
 
-const llmMode = ref<"" | "LLM_INPUT_ONLY" | "LLM_DIRECT">("");
+const llmMode = ref<LlmMode>("");
 
 type TestdataMode = "uploadfile" | "LLMgenerate" | null;
 const testdataMode = ref<TestdataMode>(null);

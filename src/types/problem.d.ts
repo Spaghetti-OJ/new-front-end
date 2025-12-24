@@ -186,3 +186,9 @@ interface Subtasks {
   weight: number;
 }
 type SubtaskResponse = Subtasks[];
+
+type LlmMode = "" | "LLM_INPUT_ONLY" | "LLM_DIRECT";
+
+interface GeneratePayload {
+  llmMode: LlmMode;
+}
