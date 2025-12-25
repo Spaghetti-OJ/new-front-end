@@ -212,7 +212,7 @@ useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password
         </template>
 
         <div class="card-actions mt-4 justify-center" v-if="!invalidTokenError">
-          <button class="btn btn-primary" :class="{ loading }" @click="handleSubmit">
+          <button class="btn btn-primary" :class="{ loading }" :disabled="loading" @click="handleSubmit">
             {{ isResetMode ? "Reset Password" : t("password_reset.submit") }}
           </button>
         </div>
