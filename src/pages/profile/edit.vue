@@ -12,6 +12,7 @@ const router = useRouter();
 
 const isLoadingProfile = ref(false);
 const loadError = ref<string | null>(null);
+const saveError = ref<string | null>(null);
 const profile = ref<UserProperties | null>(null);
 
 const form = reactive<UserProperties>({
@@ -51,7 +52,16 @@ function onAvatarUpload(file: File) {
 }
 
 async function saveProfile() {
+  saveError.value = null;
   try {
+    const hasChanges =
+      form.email !== profile.value?.email || form.bio !== profile.value?.bio || !!avatarFile.value;
+
+    if (!hasChanges) {
+      router.push("/profile");
+      return;
+    }
+
     let payload: Partial<UserProperties> | FormData;
 
     if (avatarFile.value) {
@@ -59,16 +69,15 @@ async function saveProfile() {
       formData.append("email", form.email);
       formData.append("bio", form.bio);
       formData.append("avatar", toRaw(avatarFile.value));
-      formData.append("real_name", form.real_name);
       payload = formData;
     } else {
       payload = {
         email: form.email,
         bio: form.bio,
-        real_name: form.real_name,
       };
     }
     await api.Auth.updateProfile(payload);
+    avatarFile.value = null;
     if (profile.value) {
       Object.assign(profile.value, form);
     }
@@ -77,7 +86,11 @@ async function saveProfile() {
     console.error(e);
     if (e.response && e.response.data) {
       const errorDetail = e.response.data.data || e.response.data;
-      alert("Update failed details: " + JSON.stringify(errorDetail, null, 2));
+      // Format error details for display
+      saveError.value =
+        typeof errorDetail === "object" ? Object.values(errorDetail).flat().join(", ") : String(errorDetail);
+    } else {
+      saveError.value = "Failed to update profile";
     }
   }
 }
@@ -109,6 +122,9 @@ function onAvatarAction(action: string) {
       />
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
+      </div>
+      <div v-if="saveError" class="mt-2 text-sm text-error">
+        {{ saveError }}
       </div>
     </template>
 
