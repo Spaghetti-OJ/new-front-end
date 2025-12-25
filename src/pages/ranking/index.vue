@@ -85,7 +85,7 @@ onMounted(async () => {
                 :to="`/profile/${item.user.username}`"
                 class="hover:underline"
               >
-                {{ item.user?.username || "Unknown" }}
+                {{ item.user.username }}
               </router-link>
               <span v-else>{{ item.user?.username || "Unknown" }}</span>
             </td>
