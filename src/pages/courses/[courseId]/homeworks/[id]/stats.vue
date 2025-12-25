@@ -291,16 +291,23 @@ function exportCSV() {
         <div class="mb-4 mt-8 flex items-center justify-between">
           <div class="card-title">Scoreboard</div>
           <div class="flex gap-2">
-            <select v-model="sortBy" class="select select-bordered select-sm w-full max-w-xs">
+            <select
+              v-model="sortBy"
+              class="select select-bordered select-sm w-full max-w-xs"
+              aria-label="Sort scoreboard"
+            >
               <option :value="Columns.USERNAME">Sort by Username</option>
               <option :value="Columns.TOTAL_SCORE_DESC">Sort by Score (Desc)</option>
               <option :value="Columns.TOTAL_SCORE_ASC">Sort by Score (Asc)</option>
             </select>
-            <button class="btn btn-sm" @click="exportCSV">Export CSV</button>
+            <button class="btn btn-sm" @click="exportCSV" aria-label="Export scoreboard as CSV">
+              Export CSV
+            </button>
             <button
               class="btn btn-primary btn-sm"
               :class="{ loading: isScoreboardFetching }"
               @click="fetchHomework"
+              aria-label="Refresh scoreboard data"
             >
               Refresh
             </button>
