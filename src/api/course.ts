@@ -3,6 +3,7 @@ import { fetcher } from "./fetcher";
 export const Course = {
   create: (body: CourseForm) => fetcher.post("/course/", body),
   list: () => fetcher.get<{ courses: CourseList }>("/course/"),
+  join: (code: string) => fetcher.post(`/course/${encodeURIComponent(code)}/join/`),
   info: (courseId: string | number) => fetcher.get<Course>(`/course/${courseId}/`),
   importCSV: (courseId: string | number, file: File, force?: boolean) => {
     const formData = new FormData();
@@ -15,7 +16,7 @@ export const Course = {
   generateInviteCode: (courseId: string | number) =>
     fetcher.post<{ joinCode: string }>(`/course/${courseId}/invite-code/`),
   deleteInviteCode: (courseId: string | number, code: string) =>
-    fetcher.delete<{ message: string }>(`/course/${courseId}/invite-code/${code}/`),
+    fetcher.delete<{ message: string }>(`/course/${courseId}/invite-code/${encodeURIComponent(code)}`),
   editCourse: (body: { courseId: number; newCourse: string; teacher: string }) =>
     fetcher.put<{ message: string }>(`/course/`, {
       course_id: body.courseId,

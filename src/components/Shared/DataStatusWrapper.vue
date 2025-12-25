@@ -2,7 +2,7 @@
 import { AxiosError } from "axios";
 
 defineProps<{
-  error?: AxiosError;
+  error?: AxiosError | string | null;
   isLoading?: boolean;
 }>();
 </script>
