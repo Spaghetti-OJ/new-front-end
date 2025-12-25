@@ -103,7 +103,7 @@ onMounted(async () => {
                 :aria-label="`View profile of ${item.user.username}`"
                 :title="`View profile of ${item.user.username}`"
               >
-                {{ item.user?.real_name || "-" }}
+                {{ item.user.real_name || "-" }}
               </router-link>
               <span v-else>{{ item.user?.real_name || "-" }}</span>
             </td>
