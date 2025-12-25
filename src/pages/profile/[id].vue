@@ -1,26 +1,32 @@
-<script setup>
-import { reactive } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
 import ProfileProgressBar from "@/components/Profile/ProfileProgressBar.vue";
 import { useI18n } from "vue-i18n";
+import api from "@/api";
+
 const { t } = useI18n();
-// 根據 route 參數 id 取得 user，可以之後接 API
 const route = useRoute();
-const userId = route.params.id;
-// TODO: Replace with API call to fetch user by userId
-const user = {
-  realName: "陳育濬",
-  username: "doggggg",
-  role: "Student",
-  email: `${userId}@gapps.ntnu.edu.tw`,
-  id: userId,
-  studentId: userId,
-  intro: "哈囉我是資工116\n這是我的自我介紹\n哈哈哈\n隨便\n再打一點\n然後",
-  avatar: "",
-};
+const username = route.params.id as string;
+
+const user = ref<PublicUserProfile | null>(null);
+const isLoading = ref(true);
+const error = ref<string | null>(null);
+
+onMounted(async () => {
+  try {
+    user.value = await api.Auth.getPublicProfile(username);
+  } catch (err: any) {
+    console.error("Failed to fetch public profile:", err);
+    error.value = "Failed to load user profile.";
+  } finally {
+    isLoading.value = false;
+  }
+});
+
 const heatmapData = [
   { date: "2025-01-01", count: 5 },
   { date: "2025-01-02", count: 1 },
@@ -48,15 +54,19 @@ const heatmapData = [
   { date: "2025-01-24", count: 10 },
   { date: "2025-01-25", count: 0 },
 ];
-
-const form = reactive({ ...user });
 </script>
 
 <template>
-  <ProfileLayout>
+  <div v-if="isLoading" class="flex min-h-screen items-center justify-center">
+    <span class="loading-spinner loading-lg loading"></span>
+  </div>
+  <div v-else-if="error || !user" class="flex min-h-screen items-center justify-center text-error">
+    {{ error || "User not found" }}
+  </div>
+  <ProfileLayout v-else>
     <!-- 左邊-->
     <template #left>
-      <ProfileAvatarBlock :avatar-url="form.avatar" :editable-avatar="false" />
+      <ProfileAvatarBlock :avatar-url="user.avatar || ''" :editable-avatar="false" />
     </template>
 
     <!-- 右邊 -->
@@ -76,11 +86,10 @@ const form = reactive({ ...user });
         </div>
 
         <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-          <ProfileField :label="t('profile.username')" :model-value="form.username" :editable="false" />
-          <ProfileField :label="t('profile.userId')" :model-value="form.id" :editable="false" />
+          <ProfileField :label="t('profile.userId')" :model-value="user.username" :editable="false" />
           <ProfileField
             :label="t('profile.introduction')"
-            :model-value="form.intro"
+            :model-value="user.bio"
             :editable="false"
             type="textarea"
             container-class="md:col-span-2"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
@@ -12,15 +12,19 @@ const router = useRouter();
 
 const isLoadingProfile = ref(false);
 const loadError = ref<string | null>(null);
+const saveError = ref<string | null>(null);
 const profile = ref<UserProperties | null>(null);
 
 const form = reactive<UserProperties>({
   avatar: "",
-  realname: "",
+  real_name: "",
   username: "",
   role: "",
   email: "",
-  intro: "",
+  bio: "",
+  user_id: "",
+  student_id: "",
+  email_verified: false,
 });
 
 async function loadProfile() {
@@ -30,6 +34,7 @@ async function loadProfile() {
     const data = await api.Auth.getProfile();
     profile.value = data;
     Object.assign(form, data);
+    // No manual mapping needed now as properties match
   } catch (error: any) {
     loadError.value = error?.message || "Failed to load profile";
   } finally {
@@ -39,19 +44,53 @@ async function loadProfile() {
 
 onMounted(loadProfile);
 
+const avatarFile = ref<File | null>(null);
+
+function onAvatarUpload(file: File) {
+  avatarFile.value = file;
+}
+
 async function saveProfile() {
+  saveError.value = null;
   try {
-    // TODO: 換成真正的更新 API
-    await api.Auth.updateProfile?.({
-      email: form.email,
-      intro: form.intro,
-      avatar: form.avatar,
-    });
-    if (profile.value) Object.assign(profile.value, form);
-  } catch (e) {
+    const hasChanges =
+      form.email !== profile.value?.email || form.bio !== profile.value?.bio || !!avatarFile.value;
+
+    if (!hasChanges) {
+      router.push("/profile");
+      return;
+    }
+
+    let payload: Partial<UserProperties> | FormData;
+
+    if (avatarFile.value) {
+      const formData = new FormData();
+      formData.append("email", form.email);
+      formData.append("bio", form.bio);
+      formData.append("avatar", toRaw(avatarFile.value));
+      payload = formData;
+    } else {
+      payload = {
+        email: form.email,
+        bio: form.bio,
+      };
+    }
+    const updatedProfile = await api.Auth.updateProfile(payload);
+    avatarFile.value = null;
+    if (updatedProfile && profile.value) {
+      Object.assign(profile.value, updatedProfile);
+    }
+    router.push("/profile");
+  } catch (e: any) {
     console.error(e);
-  } finally {
-    router.push("/profile"); // 返回原本的 profile page
+    if (e.response && e.response.data) {
+      const errorDetail = e.response.data.data || e.response.data;
+      // Format error details for display
+      saveError.value =
+        typeof errorDetail === "object" ? Object.values(errorDetail).flat().join(", ") : String(errorDetail);
+    } else {
+      saveError.value = "Failed to update profile";
+    }
   }
 }
 
@@ -63,11 +102,6 @@ function cancelEdit() {
 function onAvatarAction(action: string) {
   if (action === "save") saveProfile();
   else if (action === "cancel") cancelEdit();
-}
-
-function onAvatarUpload(file: File) {
-  // TODO: 上傳後設定 form.avatar
-  console.log("avatar upload:", file);
 }
 </script>
 
@@ -88,19 +122,22 @@ function onAvatarUpload(file: File) {
       <div v-if="loadError" class="mt-2 text-sm text-error">
         {{ loadError }}
       </div>
+      <div v-if="saveError" class="mt-2 text-sm text-error">
+        {{ saveError }}
+      </div>
     </template>
 
     <!-- 右邊：可編輯資訊 -->
     <template #right>
       <section class="w-full max-w-4xl">
         <div class="grid grid-cols-1 gap-4" :class="{ 'pointer-events-none opacity-50': isLoadingProfile }">
-          <ProfileField :label="t('profile.realName')" v-model="form.realname" :editable="false" />
+          <ProfileField :label="t('profile.realName')" v-model="form.real_name" :editable="false" />
           <ProfileField :label="t('profile.username')" v-model="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
           <ProfileField
             :label="t('profile.introduction')"
-            v-model="form.intro"
+            v-model="form.bio"
             :editable="true"
             type="textarea"
           />
