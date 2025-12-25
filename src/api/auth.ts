@@ -39,7 +39,9 @@ export const Auth = {
   getUserStats: (userId: string) =>
     fetcher.get<UserStatsResponse>(`/stats/user/${userId}/`).then((r) => r.data),
   getSubmissionsActivity: (userId: string) =>
-    fetcher.get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`).then((r) => r.data),
+    fetcher
+      .get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`)
+      .then((r) => r.data ?? r),
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),
