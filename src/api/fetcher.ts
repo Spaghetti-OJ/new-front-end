@@ -14,7 +14,7 @@ function shouldRefreshToken(error: AxiosError) {
   if (status === 401) return true;
 
   if (status === 403) {
-    const data: any = error.response?.data;
+    const data = error.response?.data;
     const detail = String(data?.detail ?? data?.message ?? "");
     const code = String(data?.code ?? "");
     return code === "token_not_valid" || detail.includes("Authentication credentials were not provided");
