@@ -75,10 +75,10 @@ async function saveProfile() {
         bio: form.bio,
       };
     }
-    await api.Auth.updateProfile(payload);
+    const updatedProfile = await api.Auth.updateProfile(payload);
     avatarFile.value = null;
-    if (profile.value) {
-      Object.assign(profile.value, form);
+    if (updatedProfile && profile.value) {
+      Object.assign(profile.value, updatedProfile);
     }
     router.push("/profile");
   } catch (e: any) {
