@@ -24,10 +24,26 @@ async function loadProfile() {
   try {
     const data = await api.Auth.getProfile();
     profile.value = data;
+    if (data && data.user_id) {
+      await loadStats(data.user_id);
+    }
   } catch (error) {
     console.error("Failed to load profile:", error);
   } finally {
     isLoadingProfile.value = false;
+  }
+}
+
+const stats = ref<UserStats | null>(null);
+
+async function loadStats(userId: string) {
+  try {
+    const res = await api.Auth.getUserStats(userId);
+    if (res?.data?.user_stats) {
+      stats.value = res.data.user_stats;
+    }
+  } catch (error) {
+    console.warn("Failed to load user stats:", error);
   }
 }
 
@@ -172,11 +188,11 @@ async function sendVerifyEmail() {
         <div class="mt-4">
           <ProfileProgressBar
             :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
+            :submission="stats?.total_submissions ?? 0"
+            :acceptance="stats?.accept_percent ?? 0"
+            :totalsolved="stats?.ac_problems ?? 0"
+            :data="{ easy: 0, med: 0, hard: 0 }"
+            :beatrate="0"
           />
         </div>
       </section>

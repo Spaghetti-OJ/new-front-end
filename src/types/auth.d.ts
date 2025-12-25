@@ -88,3 +88,30 @@ interface PermissionRow {
   read: boolean;
   create: boolean;
 }
+
+interface UserStats {
+  user: User & {
+    id: string;
+    is_active: boolean;
+    date_joined: string;
+  };
+  total_submissions: number;
+  ac_submissions: number;
+  ac_problems: number;
+  best_score: number;
+  average_score: number | null;
+  first_ac_time: string | null;
+  last_submission_time: string | null;
+  acceptance_rate?: number;
+  accept_percent?: number;
+  top_languages?: string[];
+  solved_problem_list?: number[];
+}
+
+interface UserStatsResponse {
+  data: {
+    user_stats: UserStats;
+  };
+  message: string;
+  status: string;
+}
