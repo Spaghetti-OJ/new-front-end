@@ -169,7 +169,7 @@ useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password
           <input
             v-model="v$.username.$model"
             type="text"
-            name="Username"
+            name="username"
             :placeholder="$t('auth.username')"
             :class="['input input-bordered', v$.username.$error && 'input-error']"
           />
