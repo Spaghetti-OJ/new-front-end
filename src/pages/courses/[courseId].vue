@@ -8,14 +8,23 @@ const sidebarType = computed(() => (isDesktop.value ? "side" : "tab"));
 
 <template>
   <div>
-    <course-top-bar />
+    <course-top-bar class="sticky top-0 z-50 bg-base-100" />
     <div
       class="flex"
       :class="{
         'flex-col': !isDesktop,
       }"
     >
-      <course-side-bar :display-type="sidebarType" />
+      <div
+        class="sticky top-[53px] shrink-0 self-start bg-base-100"
+        :class="{
+          'mr-6 w-52': isDesktop,
+          'z-40 w-full': !isDesktop,
+        }"
+      >
+        <course-side-bar :display-type="sidebarType" />
+      </div>
+
       <div class="flex-1">
         <router-view />
       </div>
