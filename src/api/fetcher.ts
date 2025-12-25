@@ -17,10 +17,7 @@ function shouldRefreshToken(error: AxiosError) {
     const data: any = error.response?.data;
     const detail = String(data?.detail ?? data?.message ?? "");
     const code = String(data?.code ?? "");
-    return (
-      code === "token_not_valid" ||
-      detail.includes("Authentication credentials were not provided") 
-    );
+    return code === "token_not_valid" || detail.includes("Authentication credentials were not provided");
   }
 
   return false;
@@ -74,7 +71,7 @@ fetcher.interceptors.response.use(
     if (error?.response?.status && error?.response?.status >= 500 && serverErrorHandler) {
       void serverErrorHandler(error);
     }
-    if (!shouldRefreshToken(error)  || original?._retry) {
+    if (!shouldRefreshToken(error) || original?._retry) {
       return Promise.reject(error);
     }
     if (!refreshProvider) {
