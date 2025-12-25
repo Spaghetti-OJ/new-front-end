@@ -38,6 +38,8 @@ export const Auth = {
     fetcher.get<PublicUserProfile>(`/profile/${username}/`).then((r) => r.data ?? r),
   getUserStats: (userId: string) =>
     fetcher.get<UserStatsResponse>(`/stats/user/${userId}/`).then((r) => r.data),
+  getSubmissionsActivity: (userId: string) =>
+    fetcher.get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`).then((r) => r.data),
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),

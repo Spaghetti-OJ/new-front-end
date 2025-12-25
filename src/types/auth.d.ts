@@ -115,3 +115,9 @@ interface UserStatsResponse {
   message: string;
   status: string;
 }
+
+interface SubmissionActivityResponse {
+  status: string;
+  data: Record<string, number>;
+  message: string;
+}

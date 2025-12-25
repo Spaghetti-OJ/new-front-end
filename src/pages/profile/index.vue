@@ -25,7 +25,7 @@ async function loadProfile() {
     const data = await api.Auth.getProfile();
     profile.value = data;
     if (data && data.user_id) {
-      await loadStats(data.user_id);
+      await Promise.all([loadStats(data.user_id), loadSubmissionActivity(data.user_id)]);
     }
   } catch (error) {
     console.error("Failed to load profile:", error);
@@ -65,33 +65,21 @@ async function logout() {
   }
 }
 
-const heatmapData = [
-  { date: "2025-01-01", count: 5 },
-  { date: "2025-01-02", count: 1 },
-  { date: "2025-01-03", count: 0 },
-  { date: "2025-01-04", count: 8 },
-  { date: "2025-01-05", count: 3 },
-  { date: "2025-01-06", count: 2 },
-  { date: "2025-01-07", count: 6 },
-  { date: "2025-01-08", count: 0 },
-  { date: "2025-01-09", count: 10 },
-  { date: "2025-01-10", count: 4 },
-  { date: "2025-01-11", count: 7 },
-  { date: "2025-01-12", count: 2 },
-  { date: "2025-01-13", count: 1 },
-  { date: "2025-01-14", count: 9 },
-  { date: "2025-01-15", count: 3 },
-  { date: "2025-01-16", count: 0 },
-  { date: "2025-01-17", count: 6 },
-  { date: "2025-01-18", count: 4 },
-  { date: "2025-01-19", count: 1 },
-  { date: "2025-01-20", count: 5 },
-  { date: "2025-01-21", count: 3 },
-  { date: "2025-01-22", count: 2 },
-  { date: "2025-01-23", count: 8 },
-  { date: "2025-01-24", count: 10 },
-  { date: "2025-01-25", count: 0 },
-];
+const heatmapData = ref<{ date: string; count: number }[]>([]);
+
+async function loadSubmissionActivity(userId: string) {
+  try {
+    const res = await api.Auth.getSubmissionsActivity(userId);
+    if (res?.data) {
+      heatmapData.value = Object.entries(res.data).map(([date, count]) => ({
+        date,
+        count,
+      }));
+    }
+  } catch (error) {
+    console.warn("Failed to load submission activity:", error);
+  }
+}
 
 function onAvatarAction(action: "Edit" | "Sign Out") {
   if (action === "Edit") {
