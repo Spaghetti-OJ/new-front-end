@@ -25,7 +25,17 @@ async function loadProfile() {
     const data = await api.Auth.getProfile();
     profile.value = data;
     if (data && data.user_id) {
-      await Promise.all([loadStats(data.user_id), loadSubmissionActivity(data.user_id)]);
+      const results = await Promise.allSettled([
+        loadStats(data.user_id),
+        loadSubmissionActivity(data.user_id),
+      ]);
+
+      if (results[0].status === "rejected") {
+        console.warn("Failed to load user stats:", results[0].reason);
+      }
+      if (results[1].status === "rejected") {
+        console.warn("Failed to load submission activity:", results[1].reason);
+      }
     }
   } catch (error) {
     console.error("Failed to load profile:", error);
@@ -37,13 +47,9 @@ async function loadProfile() {
 const stats = ref<UserStats | null>(null);
 
 async function loadStats(userId: string) {
-  try {
-    const res = await api.Auth.getUserStats(userId);
-    if (res?.data?.user_stats) {
-      stats.value = res.data.user_stats;
-    }
-  } catch (error) {
-    console.warn("Failed to load user stats:", error);
+  const res = await api.Auth.getUserStats(userId);
+  if (res?.data?.user_stats) {
+    stats.value = res.data.user_stats;
   }
 }
 
@@ -68,16 +74,12 @@ async function logout() {
 const heatmapData = ref<{ date: string; count: number }[]>([]);
 
 async function loadSubmissionActivity(userId: string) {
-  try {
-    const res = await api.Auth.getSubmissionsActivity(userId);
-    if (res?.data) {
-      heatmapData.value = Object.entries(res.data).map(([date, count]) => ({
-        date,
-        count,
-      }));
-    }
-  } catch (error) {
-    console.warn("Failed to load submission activity:", error);
+  const res = await api.Auth.getSubmissionsActivity(userId);
+  if (res?.data) {
+    heatmapData.value = Object.entries(res.data).map(([date, count]) => ({
+      date,
+      count,
+    }));
   }
 }
 
