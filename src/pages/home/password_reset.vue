@@ -4,13 +4,12 @@ import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
-import { email } from "@vuelidate/validators";
-import api from "@/api";
-
+import api, { User } from "@/api";
+console.log('123');
 const router = useRouter();
 
 const rules = {
-  email: { email },
+email:{}
 };
 
 const form = reactive({
@@ -22,20 +21,31 @@ const { t } = useI18n();
 
 const showError = ref(false);
 const success = ref(false);
-
+const error = ref<any>(null);
 const handleSubmit = async () => {
   if (!v$.value.$validate()) return;
+    try{
+      console.log(form.email);
+      const res=await api.Auth.forgotpassword({username:form.email});
+      console.log(res);
+      success.value = true;
+    }catch(e){
+      if(e.response?.status==400){
+      console.log(e.response?.data.message);
+      error.value=e.response?.data.message;
+      }
+      if(e.response?.status==404){
+      console.log(e.response?.data.message);
+      error.value=e.response?.data.message;
+      }
+      if(e.response?.status==429){
+      console.log(e.response?.data.detail);
+      error.value=e.response?.data.detail;
+      }
+       showError.value = true;   
+    }finally{
 
-  const checkEmail = await api.Auth.checkEmail({ email: form.email });
-  if (checkEmail.data.valid === 1) {
-    showError.value = true;
-    return;
-  }
-
-  const res = await api.Auth.sendRecoveryEmail({ email: form.email });
-  if (res.statusText === "OK") {
-    success.value = true;
-  }
+    }
 };
 
 useTitle("Forgot Password");
@@ -48,7 +58,7 @@ useTitle("Forgot Password");
       <div v-if="!success" class="card-body">
         <div class="card-title flex-col">
           <div v-if="showError" class="alert alert-error text-base">
-            {{ t("password_reset.status.error") }}
+            {{ error }}
             <div class="flex-none">
               <button @click="showError = false" class="btn btn-circle btn-ghost btn-sm">X</button>
             </div>
