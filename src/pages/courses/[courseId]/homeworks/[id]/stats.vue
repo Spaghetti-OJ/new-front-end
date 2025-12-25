@@ -1,106 +1,150 @@
 <script setup lang="ts">
 import { useTitle } from "@vueuse/core";
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { computed, watch, ref, watchEffect } from "vue";
+import { computed, watch, ref } from "vue";
 import { useRoute } from "vue-router";
-import queryString from "query-string";
 import { use } from "echarts/core";
 import VChart from "vue-echarts";
-import { GridComponent } from "echarts/components";
+import { GridComponent, TooltipComponent } from "echarts/components";
 import { BarChart } from "echarts/charts";
 import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
-import { fetcher } from "@/api";
+import api from "@/api";
 import { useTheme } from "@/stores/theme";
-import dayjs from "dayjs";
 
 const route = useRoute();
 useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const theme = useTheme();
-use([CanvasRenderer, LabelLayout, GridComponent, BarChart]);
+use([CanvasRenderer, LabelLayout, GridComponent, TooltipComponent, BarChart]);
 
-const {
-  data: hw,
-  error: hwError,
-  isLoading: isHWFetching,
-} = useAxios<Homework>(`/homework/${route.params.id}`, fetcher);
-const pids = ref<number[] | undefined>();
-const scoreboardBegin = ref<number>();
-const scoreboardEnd = ref<number>();
-watchEffect(() => {
-  if (!hw.value) return;
-  pids.value = hw.value.problemIds;
-  scoreboardBegin.value = hw.value.start;
-  scoreboardEnd.value = hw.value.end;
-});
-const startDateTime = computed(
-  () => scoreboardBegin.value && dayjs(scoreboardBegin.value * 1000).format("YYYY-MM-DD\THH:mm"),
-);
-const endDateTime = computed(
-  () => scoreboardEnd.value && dayjs(scoreboardEnd.value * 1000).format("YYYY-MM-DD\THH:mm"),
-);
-function setScoreboardBegin(event: Event) {
-  scoreboardBegin.value = dayjs((event.target as HTMLInputElement).value).valueOf() / 1000;
+const hw = ref<Homework | null>(null);
+const hwError = ref<any>(null);
+const isHWFetching = ref(false);
+
+async function fetchHomework() {
+  isHWFetching.value = true;
+  hwError.value = null;
+  try {
+    const res = await api.Homework.get(route.params.id as string);
+    hw.value = res;
+  } catch (err) {
+    hwError.value = err;
+  } finally {
+    isHWFetching.value = false;
+  }
 }
-function setScoreboardEnd(event: Event) {
-  scoreboardEnd.value = dayjs((event.target as HTMLInputElement).value).valueOf() / 1000;
-}
-const getScoreboardUrl = computed<string>(() => {
-  if (!pids.value || !scoreboardBegin.value || !scoreboardEnd.value) return "";
-  const qs = queryString.stringify({
-    pids: pids.value.join(","),
-    start: scoreboardBegin.value,
-    end: scoreboardEnd.value,
-  });
-  return `/course/${route.params.courseId}/scoreboard?${qs}`;
-});
-const {
-  execute,
-  data: scoreboard,
-  error: scoreboardError,
-  isLoading: isScoreboardFetching,
-} = useAxios<Scoreboard>(fetcher);
+
 watch(
-  getScoreboardUrl,
-  (url) => {
-    if (url && !scoreboard.value) {
-      execute(url);
-    }
+  () => route.params.id,
+  () => {
+    fetchHomework();
   },
   { immediate: true },
 );
+
+const pids = computed(() => hw.value?.problem_ids);
+
+const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
+  if (!hw.value || !pids.value) return null;
+
+  const items: HomeworkScoreboardItem[] = [];
+  const statusMap = hw.value.studentStatus || {};
+
+  Object.entries(statusMap).forEach(([username, problemsParams]) => {
+    const problems = problemsParams as Record<string, { score: number; problemStatus: string | null }>;
+
+    let totalScore = 0;
+
+    const problemItems: HomeworkScoreboardItemProblem[] = pids.value!.map((pid) => {
+      const pData = problems[String(pid)];
+      const score = pData?.score ?? 0;
+      totalScore += score;
+
+      // Map status
+      let status: "unsolved" | "partial" | "solved" = "unsolved";
+      if (pData?.problemStatus === "accepted") status = "solved";
+      else if (score > 0) status = "partial";
+
+      return {
+        problem_id: pid,
+        best_score: score,
+        max_possible_score: 100,
+        solve_status: status,
+      };
+    });
+
+    items.push({
+      rank: 0,
+      user_id: username,
+      username: username,
+      real_name: username,
+      total_score: totalScore,
+      max_total_score: pids.value!.length * 100,
+      is_late: false,
+      first_ac_time: null,
+      last_submission_time: null,
+      problems: problemItems,
+    });
+  });
+
+  items.sort((a, b) => {
+    if (b.total_score !== a.total_score) return b.total_score - a.total_score;
+    return a.username.localeCompare(b.username);
+  });
+
+  items.forEach((item, index) => {
+    item.rank = index + 1;
+  });
+
+  return {
+    homework_id: Number(route.params.id),
+    homework_title: hw.value.name,
+    course_id: String(route.params.courseId),
+    items,
+  };
+});
+
+const isScoreboardFetching = computed(() => isHWFetching.value);
+const scoreboardError = computed(() => hwError.value);
+
 enum Columns {
   USERNAME = "username",
-  SUM_ASC = "sum ascending",
-  SUM_DESC = "sum descending",
+  TOTAL_SCORE_ASC = "total score ascending",
+  TOTAL_SCORE_DESC = "total score descending",
 }
-const sortBy = ref<Columns>(Columns.SUM_DESC);
+const sortBy = ref<Columns>(Columns.TOTAL_SCORE_DESC);
+
 const sortedScoreboard = computed(() => {
-  if (!scoreboard.value) return scoreboard.value;
-  if (sortBy.value === Columns.SUM_ASC) {
-    return scoreboard.value.sort((a: ScoreboardRow, b: ScoreboardRow) => a.sum - b.sum);
-  } else if (sortBy.value === Columns.SUM_DESC) {
-    return scoreboard.value.sort((a: ScoreboardRow, b: ScoreboardRow) => b.sum - a.sum);
+  if (!scoreboardData.value?.items) return [];
+  const items = [...scoreboardData.value.items];
+
+  if (sortBy.value === Columns.TOTAL_SCORE_ASC) {
+    return items.sort((a, b) => a.total_score - b.total_score);
+  } else if (sortBy.value === Columns.TOTAL_SCORE_DESC) {
+    return items.sort((a, b) => b.total_score - a.total_score);
   } else {
-    return scoreboard.value.sort((a: ScoreboardRow, b: ScoreboardRow) =>
-      a.user.username.localeCompare(b.user.username),
-    );
+    return items.sort((a, b) => a.username.localeCompare(b.username));
   }
 });
-function getCellColor(cell: ScoreCell | undefined) {
-  if (!cell) return "";
-  if (cell.count === 0) return "bg-gray-200";
-  if (cell.max < 100) return "bg-red-300 text-neutral";
-  return "bg-green-300 text-neutral";
+
+function getCellColor(problem: HomeworkScoreboardItemProblem | undefined) {
+  if (!problem) return "";
+  if (problem.solve_status === "solved") return "bg-green-300 text-neutral";
+  if (problem.solve_status === "partial") return "bg-yellow-200 text-neutral";
+  if (problem.best_score > 0) return "bg-red-200 text-neutral"; // Unsolved but has score? usually partial covers this, but just in case
+  return "bg-gray-100"; // Unsolved
 }
+
+// Chart Data
 const scoreDistribution = computed(() => {
-  if (!scoreboard.value) return {};
+  if (!scoreboardData.value?.items) return {};
   const counter: { [key: string]: number } = {};
-  scoreboard.value.forEach(
-    (row: ScoreboardRow) => (counter[String(row.sum)] = (counter[String(row.sum)] || 0) + 1),
-  );
+  scoreboardData.value.items.forEach((row) => {
+    const score = String(row.total_score);
+    counter[score] = (counter[score] || 0) + 1;
+  });
   return counter;
 });
+
 const barOption = computed(() => ({
   backgroundColor: "transparent",
   xAxis: {
@@ -119,36 +163,62 @@ const barOption = computed(() => ({
         show: true,
         position: "outside",
       },
+      itemStyle: {
+        borderRadius: [4, 4, 0, 0],
+        color: theme.isDark ? "#3b82f6" : "#2563eb",
+      },
     },
   ],
   textStyle: {
     fontSize: 13,
   },
+  tooltip: {
+    trigger: "axis",
+    axisPointer: {
+      type: "shadow",
+    },
+  },
 }));
+
 function exportCSV() {
   if (!sortedScoreboard.value || !pids.value) return;
   const _pids = pids.value;
-  const csvHeader: string = ["username", "display name", ...pids.value.map(String), "avg", "sum"].join(",");
+  const csvHeader: string = [
+    "rank",
+    "username",
+    "real_name",
+    ..._pids.map(String),
+    "is_late",
+    "total_score",
+  ].join(",");
   const csvBody: string = sortedScoreboard.value
-    .map((row: ScoreboardRow) =>
-      [
-        row.user.username,
-        row.user.displayedName,
-        ..._pids.map((pid) => (row[`${pid}`] ? row[`${pid}`].max : 0)),
-        row.avg,
-        row.sum,
-      ].join(","),
-    )
+    .map((row) => {
+      const problemScores = _pids.map((pid: number) => {
+        const problem = row.problems.find((p) => p.problem_id === pid);
+        return problem ? problem.best_score : 0;
+      });
+
+      return [
+        row.rank,
+        row.username,
+        row.real_name,
+        ...problemScores,
+        row.is_late ? "Yes" : "No",
+        row.total_score,
+      ].join(",");
+    })
     .join("\n");
+
   const csvData = new Blob([`${csvHeader}\n${csvBody}`], {
     type: "text/csv;charset=utf-8",
   });
   const csvURL = URL.createObjectURL(csvData);
   const link = document.createElement("a");
   link.href = csvURL;
-  link.download = `${route.params.courseId}-${hw.value && hw.value.name}-scoreboard.csv`;
+  link.download = `${route.params.courseId}-${hw.value?.name ?? "homework"}-scoreboard.csv`;
   document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
 }
 </script>
 
@@ -160,90 +230,89 @@ function exportCSV() {
 
         <div class="flex">
           <v-chart
-            class="mx-auto h-[400px]"
+            class="mx-auto h-[400px] w-full"
             :theme="theme.isDark ? 'dark' : ''"
             :option="barOption"
             autoresize
           />
         </div>
 
-        <div class="card-title">Scoreboard</div>
-
-        <div class="mb-4 flex items-end gap-x-4">
-          <div class="form-control w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">Sort By</span>
-            </label>
-            <select v-model="sortBy" class="select select-bordered w-full max-w-xs">
-              <option :value="Columns.USERNAME">Username</option>
-              <option :value="Columns.SUM_DESC">Sum in descending</option>
-              <option :value="Columns.SUM_ASC">Sum in ascending</option>
+        <div class="mb-4 mt-8 flex items-center justify-between">
+          <div class="card-title">Scoreboard</div>
+          <div class="flex gap-2">
+            <select v-model="sortBy" class="select select-bordered select-sm w-full max-w-xs">
+              <option :value="Columns.USERNAME">Sort by Username</option>
+              <option :value="Columns.TOTAL_SCORE_DESC">Sort by Score (Desc)</option>
+              <option :value="Columns.TOTAL_SCORE_ASC">Sort by Score (Asc)</option>
             </select>
+            <button class="btn btn-sm" @click="exportCSV">Export CSV</button>
+            <button
+              class="btn btn-primary btn-sm"
+              :class="{ loading: isScoreboardFetching }"
+              @click="fetchHomework"
+            >
+              Refresh
+            </button>
           </div>
-          <div class="form-control w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">Begin</span>
-            </label>
-            <input
-              type="datetime-local"
-              class="input input-bordered w-full max-w-xs"
-              :value="startDateTime"
-              @change="setScoreboardBegin"
-            />
-          </div>
-          <div class="form-control w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">End</span>
-            </label>
-            <input
-              type="datetime-local"
-              class="input input-bordered w-full max-w-xs"
-              :value="endDateTime"
-              @change="setScoreboardEnd"
-            />
-          </div>
-          <button
-            :class="['btn', isScoreboardFetching && 'loading']"
-            @click="() => execute(getScoreboardUrl)"
-          >
-            Fetch
-          </button>
-          <button class="btn" @click="() => exportCSV()">Export</button>
         </div>
+
         <data-status-wrapper
           :error="hwError || scoreboardError"
-          :is-loading="isHWFetching || isScoreboardFetching"
+          :is-loading="isHWFetching && !scoreboardData"
         >
+          <!-- Show loading state for initial fetch -->
           <template #loading>
-            <skeleton-table :col="7" :row="20" />
+            <skeleton-table :col="pids ? pids.length + 4 : 5" :row="10" />
           </template>
+
           <template #data>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>user</th>
-                  <th class="text-center" v-for="pid in pids" :key="pid">{{ pid }}</th>
-                  <th class="text-center">avg</th>
-                  <th class="text-center">sum</th>
-                </tr>
-              </thead>
-              <tbody class="font-mono">
-                <tr v-for="row in sortedScoreboard" :key="row.user.username">
-                  <td>{{ row.user.username }} ({{ row.user.displayedName }})</td>
-                  <td v-for="pid in pids" :key="pid" class="p-0">
-                    <div
-                      v-if="row[`${pid}`]"
-                      :class="['flex h-full flex-col px-4 py-2 text-center', getCellColor(row[`${pid}`])]"
-                    >
-                      <div class="text-md">{{ row[`${pid}`].max }}</div>
-                      <div class="text-xs">{{ row[`${pid}`].count }} tries</div>
-                    </div>
-                  </td>
-                  <td class="text-center">{{ row.avg.toFixed(2) }}</td>
-                  <td class="text-center">{{ row.sum }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="overflow-x-auto">
+              <table class="table table-compact w-full">
+                <thead>
+                  <tr>
+                    <th class="w-16 text-center">Rank</th>
+                    <th>User</th>
+                    <th class="w-16 text-center" v-for="pid in pids" :key="pid">{{ pid }}</th>
+                    <th class="w-24 text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="font-mono text-base">
+                  <tr v-for="row in sortedScoreboard" :key="row.user_id">
+                    <td class="text-center text-lg font-bold">{{ row.rank }}</td>
+                    <td>
+                      <div class="flex flex-col">
+                        <span class="font-bold">{{ row.username }}</span>
+                        <span class="text-xs opacity-70">{{ row.real_name }}</span>
+                        <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">Late</span>
+                      </div>
+                    </td>
+                    <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
+                      <div
+                        class="flex h-16 h-full w-full flex-col items-center justify-center py-2"
+                        :class="getCellColor(row.problems.find((p) => p.problem_id === pid))"
+                      >
+                        <template v-if="row.problems.find((p) => p.problem_id === pid)">
+                          <div class="font-bold">
+                            {{ row.problems.find((p) => p.problem_id === pid)?.best_score }}
+                          </div>
+                          <!-- Optional: show max score if different -->
+                        </template>
+                        <div v-else class="text-gray-300">-</div>
+                      </div>
+                    </td>
+                    <td class="text-center text-lg font-bold">
+                      {{ row.total_score }}
+                      <div class="text-[10px] font-normal opacity-50">/ {{ row.max_total_score }}</div>
+                    </td>
+                  </tr>
+                  <tr v-if="sortedScoreboard.length === 0">
+                    <td :colspan="(pids?.length || 0) + 3" class="py-8 text-center opacity-50">
+                      No submissions found.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </template>
         </data-status-wrapper>
       </div>
