@@ -122,28 +122,17 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
     });
 
     items.push({
-      rank: 0, // Will calculate after sort
-      user_id: username, // Using username as ID since we don't have UUID here
+      rank: 0,
+      user_id: username,
       username: username,
-      real_name: username, // Fallback as real_name is missing
+      real_name: username,
       total_score: totalScore,
       max_total_score: pids.value!.length * 100,
-      is_late: false, // Defaulting to false as data is missing
+      is_late: false,
       first_ac_time: firstAcTimestamp ? dayjs.unix(firstAcTimestamp).format() : null,
       last_submission_time: lastSubmissionTimestamp ? dayjs.unix(lastSubmissionTimestamp).format() : null,
       problems: problemItems,
     });
-  });
-
-  // Sort by total score desc, then username
-  items.sort((a, b) => {
-    if (b.total_score !== a.total_score) return b.total_score - a.total_score;
-    return a.username.localeCompare(b.username);
-  });
-
-  // Assign ranks
-  items.forEach((item, index) => {
-    item.rank = index + 1;
   });
 
   return {
@@ -169,12 +158,20 @@ const sortedScoreboard = computed(() => {
   const items = [...scoreboardData.value.items];
 
   if (sortBy.value === Columns.TOTAL_SCORE_ASC) {
-    return items.sort((a, b) => a.total_score - b.total_score);
+    items.sort((a, b) => a.total_score - b.total_score);
   } else if (sortBy.value === Columns.TOTAL_SCORE_DESC) {
-    return items.sort((a, b) => b.total_score - a.total_score);
+    items.sort((a, b) => {
+      if (b.total_score !== a.total_score) return b.total_score - a.total_score;
+      return a.username.localeCompare(b.username);
+    });
   } else {
-    return items.sort((a, b) => a.username.localeCompare(b.username));
+    items.sort((a, b) => a.username.localeCompare(b.username));
   }
+
+  return items.map((item, index) => ({
+    ...item,
+    rank: index + 1,
+  }));
 });
 
 function getCellColor(problem: HomeworkScoreboardItemProblem | undefined) {
