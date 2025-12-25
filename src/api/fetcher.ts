@@ -15,7 +15,6 @@ function shouldRefreshToken(error: AxiosError) {
 
   if (status === 403) {
     const data = error.response?.data;
-    const detail = String(data?.detail ?? data?.message ?? "");
     const code = String(data?.code ?? "");
     return code === "token_not_valid";
   }
