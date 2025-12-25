@@ -10,6 +10,7 @@ import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 import api from "@/api";
 import { useTheme } from "@/stores/theme";
+import dayjs from "dayjs";
 
 const route = useRoute();
 useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
@@ -20,12 +21,39 @@ const hw = ref<Homework | null>(null);
 const hwError = ref<any>(null);
 const isHWFetching = ref(false);
 
+const submissionsMap = ref<Record<string, SubmissionListItem>>({});
+
+async function fetchSubmissions() {
+  if (!hw.value?.problem_ids) return;
+
+  const requests = hw.value.problem_ids.map(
+    (pid) =>
+      api.Submission.list({
+        problemId: String(pid),
+        course: route.params.courseId as string,
+        page_size: 1000,
+      }).then((res: any) => res.data?.results || []), // Handle response structure
+  );
+
+  try {
+    const results = await Promise.all(requests);
+    const allSubmissions = results.flat();
+
+    allSubmissions.forEach((sub: SubmissionListItem) => {
+      submissionsMap.value[sub.submissionId] = sub;
+    });
+  } catch (e) {
+    console.error("Failed to fetch submissions", e);
+  }
+}
+
 async function fetchHomework() {
   isHWFetching.value = true;
   hwError.value = null;
   try {
     const res = await api.Homework.get(route.params.id as string);
     hw.value = res;
+    await fetchSubmissions(); // Fetch submissions after getting homework details
   } catch (err) {
     hwError.value = err;
   } finally {
@@ -50,14 +78,35 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
   const statusMap = hw.value.studentStatus || {};
 
   Object.entries(statusMap).forEach(([username, problemsParams]) => {
-    const problems = problemsParams as Record<string, { score: number; problemStatus: string | null }>;
+    const problems = problemsParams as Record<
+      string,
+      { score: number; problemStatus: string | null; submissionIds?: string[] }
+    >;
 
     let totalScore = 0;
+    let firstAcTimestamp: number | null = null;
+    let lastSubmissionTimestamp: number | null = null;
 
     const problemItems: HomeworkScoreboardItemProblem[] = pids.value!.map((pid) => {
       const pData = problems[String(pid)];
       const score = pData?.score ?? 0;
       totalScore += score;
+
+      const subIds = pData?.submissionIds || [];
+
+      subIds.forEach((sid) => {
+        const sub = submissionsMap.value[sid];
+        if (sub) {
+          if (lastSubmissionTimestamp === null || sub.timestamp > lastSubmissionTimestamp) {
+            lastSubmissionTimestamp = sub.timestamp;
+          }
+          if (sub.status === 0) {
+            if (firstAcTimestamp === null || sub.timestamp < firstAcTimestamp) {
+              firstAcTimestamp = sub.timestamp;
+            }
+          }
+        }
+      });
 
       // Map status
       let status: "unsolved" | "partial" | "solved" = "unsolved";
@@ -67,30 +116,32 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
       return {
         problem_id: pid,
         best_score: score,
-        max_possible_score: 100,
+        max_possible_score: 100, // Assumption
         solve_status: status,
       };
     });
 
     items.push({
-      rank: 0,
-      user_id: username,
+      rank: 0, // Will calculate after sort
+      user_id: username, // Using username as ID since we don't have UUID here
       username: username,
-      real_name: username,
+      real_name: username, // Fallback as real_name is missing
       total_score: totalScore,
       max_total_score: pids.value!.length * 100,
-      is_late: false,
-      first_ac_time: null,
-      last_submission_time: null,
+      is_late: false, // Defaulting to false as data is missing
+      first_ac_time: firstAcTimestamp ? dayjs.unix(firstAcTimestamp).format() : null,
+      last_submission_time: lastSubmissionTimestamp ? dayjs.unix(lastSubmissionTimestamp).format() : null,
       problems: problemItems,
     });
   });
 
+  // Sort by total score desc, then username
   items.sort((a, b) => {
     if (b.total_score !== a.total_score) return b.total_score - a.total_score;
     return a.username.localeCompare(b.username);
   });
 
+  // Assign ranks
   items.forEach((item, index) => {
     item.rank = index + 1;
   });
