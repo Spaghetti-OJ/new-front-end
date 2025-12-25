@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, onBeforeUnmount } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
@@ -39,6 +39,8 @@ const errorMessage = ref("");
 const success = ref(false);
 const loading = ref(false);
 
+let redirectTimer: ReturnType<typeof setTimeout> | null = null;
+
 const handleForgotSubmit = async () => {
   if (!(await v$.value.$validate())) return;
 
@@ -76,7 +78,7 @@ const handleResetSubmit = async () => {
 
     if (res.status === "ok" || !res.status) {
       success.value = true;
-      setTimeout(() => {
+      redirectTimer = setTimeout(() => {
         router.push("/");
       }, 3000);
     } else {
@@ -98,6 +100,12 @@ const handleSubmit = () => {
     handleForgotSubmit();
   }
 };
+
+onBeforeUnmount(() => {
+  if (redirectTimer) {
+    clearTimeout(redirectTimer);
+  }
+});
 
 useTitle(computed(() => (token.value ? "Reset Password" : "Forgot Password")));
 </script>
