@@ -9,6 +9,8 @@ const ranking = ref<any[]>([]);
 const isLoading = ref(true);
 const error = ref<Error | null>(null);
 
+const getProfileLink = (username: string) => `/profile/${username}`;
+
 onMounted(async () => {
   try {
     const res = await api.Ranking.getRankingStats();
@@ -66,7 +68,7 @@ onMounted(async () => {
             <td class="flex justify-center">
               <router-link
                 v-if="item.user?.username"
-                :to="`/profile/${item.user.username}`"
+                :to="getProfileLink(item.user.username)"
                 class="avatar transition-opacity hover:opacity-80"
               >
                 <div class="mask mask-squircle h-10 w-10">
@@ -82,7 +84,7 @@ onMounted(async () => {
             <td>
               <router-link
                 v-if="item.user?.username"
-                :to="`/profile/${item.user.username}`"
+                :to="getProfileLink(item.user.username)"
                 class="hover:underline"
               >
                 {{ item.user.username }}
@@ -92,7 +94,7 @@ onMounted(async () => {
             <td>
               <router-link
                 v-if="item.user?.username"
-                :to="`/profile/${item.user.username}`"
+                :to="getProfileLink(item.user.username)"
                 class="link link-hover"
               >
                 {{ item.user?.real_name || "-" }}
