@@ -70,6 +70,8 @@ onMounted(async () => {
                 v-if="item.user?.username"
                 :to="getProfileLink(item.user.username)"
                 class="avatar transition-opacity hover:opacity-80"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
               >
                 <div class="mask mask-squircle h-10 w-10">
                   <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
@@ -86,6 +88,8 @@ onMounted(async () => {
                 v-if="item.user?.username"
                 :to="getProfileLink(item.user.username)"
                 class="hover:underline"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
               >
                 {{ item.user.username }}
               </router-link>
@@ -96,6 +100,8 @@ onMounted(async () => {
                 v-if="item.user?.username"
                 :to="getProfileLink(item.user.username)"
                 class="link link-hover"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
               >
                 {{ item.user?.real_name || "-" }}
               </router-link>
