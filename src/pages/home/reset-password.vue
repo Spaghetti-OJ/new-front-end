@@ -9,7 +9,13 @@ import api from "@/api";
 
 const route = useRoute();
 const router = useRouter();
-const token = computed(() => (route.query.token as string) ?? "");
+
+const tokenParam = computed(() => route.query.token);
+const token = computed(() => {
+  const t = tokenParam.value;
+  if (Array.isArray(t)) return t[0] || "";
+  return (t as string) || "";
+});
 
 const { t } = useI18n();
 
@@ -19,8 +25,11 @@ const form = reactive({
   confirmPassword: "",
 });
 
+const isResetMode = computed(() => !!token.value);
+const invalidTokenError = ref("");
+
 const rules = computed(() => {
-  if (token.value) {
+  if (isResetMode.value) {
     return {
       password: { required, minLength: minLength(6) },
       confirmPassword: { required, sameAs: sameAs(form.password) },
@@ -41,6 +50,23 @@ const loading = ref(false);
 
 let redirectTimer: ReturnType<typeof setTimeout> | null = null;
 
+const validateToken = () => {
+  if (tokenParam.value !== undefined) {
+    if (!token.value || token.value.trim().length === 0) {
+      invalidTokenError.value = "Invalid or missing reset token.";
+    } else {
+      invalidTokenError.value = "";
+    }
+  } else {
+    invalidTokenError.value = "";
+  }
+};
+
+import { watchEffect } from "vue";
+watchEffect(() => {
+  validateToken();
+});
+
 const handleForgotSubmit = async () => {
   if (!(await v$.value.$validate())) return;
 
@@ -50,7 +76,6 @@ const handleForgotSubmit = async () => {
   try {
     const res: any = await api.Auth.forgotPassword({ username: form.username });
     if (res.status === "ok" || !res.status) {
-      // Assuming success based on new API doc "status: ok" or just 200 OK
       success.value = true;
     } else {
       showError.value = true;
@@ -65,6 +90,7 @@ const handleForgotSubmit = async () => {
 };
 
 const handleResetSubmit = async () => {
+  if (invalidTokenError.value) return;
   if (!(await v$.value.$validate())) return;
 
   loading.value = true;
@@ -94,7 +120,7 @@ const handleResetSubmit = async () => {
 };
 
 const handleSubmit = () => {
-  if (token.value) {
+  if (isResetMode.value) {
     handleResetSubmit();
   } else {
     handleForgotSubmit();
@@ -107,30 +133,39 @@ onBeforeUnmount(() => {
   }
 });
 
-useTitle(computed(() => (token.value ? "Reset Password" : "Forgot Password")));
+useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password")));
 </script>
 
 <template>
   <div class="mx-4 flex max-w-4xl flex-col items-center justify-center gap-4 p-4 md:mx-auto">
     <h1 class="my-12 text-center text-4xl font-bold">
-      {{ token ? "Reset Password" : t("password_reset.forgot-password") }}
+      {{ isResetMode ? "Reset Password" : t("password_reset.forgot-password") }}
     </h1>
     <div class="card w-96 max-w-full bg-base-200 shadow-xl">
       <div v-if="!success" class="card-body">
         <div class="card-title flex-col">
-          <div v-if="showError" class="alert alert-error text-base">
-            {{ errorMessage }}
-            <div class="flex-none">
+          <div v-if="showError || invalidTokenError" class="alert alert-error text-base">
+            {{ invalidTokenError || errorMessage }}
+            <div class="flex-none" v-if="!invalidTokenError">
               <button @click="showError = false" class="btn btn-circle btn-ghost btn-sm">X</button>
             </div>
           </div>
-          <span class="text-base font-semibold">
-            {{ token ? "Enter your new password below." : t("password_reset.description") }}
+          <span class="text-base font-semibold" v-if="!invalidTokenError">
+            {{ isResetMode ? "Enter your new password below." : t("password_reset.description") }}
           </span>
         </div>
 
+        <div v-if="invalidTokenError">
+          <!-- Empty div or instructions to retry -->
+          <div class="text-center">
+            <button class="btn btn-primary mt-4" @click="router.push('/reset-password')">
+              Request New Link
+            </button>
+          </div>
+        </div>
+
         <!-- Forgot Password Form -->
-        <div v-if="!token" class="form-control">
+        <div v-else-if="!isResetMode" class="form-control">
           <input
             v-model="v$.username.$model"
             type="text"
@@ -176,9 +211,9 @@ useTitle(computed(() => (token.value ? "Reset Password" : "Forgot Password")));
           </div>
         </template>
 
-        <div class="card-actions mt-4 justify-center">
+        <div class="card-actions mt-4 justify-center" v-if="!invalidTokenError">
           <button class="btn btn-primary" :class="{ loading }" @click="handleSubmit">
-            {{ token ? "Reset Password" : t("password_reset.submit") }}
+            {{ isResetMode ? "Reset Password" : t("password_reset.submit") }}
           </button>
         </div>
       </div>
