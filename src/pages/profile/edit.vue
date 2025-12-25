@@ -48,7 +48,6 @@ const avatarFile = ref<File | null>(null);
 
 function onAvatarUpload(file: File) {
   avatarFile.value = file;
-  console.log("avatar upload:", file);
 }
 
 async function saveProfile() {
