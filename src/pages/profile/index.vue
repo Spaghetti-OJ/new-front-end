@@ -24,10 +24,32 @@ async function loadProfile() {
   try {
     const data = await api.Auth.getProfile();
     profile.value = data;
+    if (data && data.user_id) {
+      const results = await Promise.allSettled([
+        loadStats(data.user_id),
+        loadSubmissionActivity(data.user_id),
+      ]);
+
+      if (results[0].status === "rejected") {
+        console.warn("Failed to load user stats:", results[0].reason);
+      }
+      if (results[1].status === "rejected") {
+        console.warn("Failed to load submission activity:", results[1].reason);
+      }
+    }
   } catch (error) {
     console.error("Failed to load profile:", error);
   } finally {
     isLoadingProfile.value = false;
+  }
+}
+
+const stats = ref<UserStats | null>(null);
+
+async function loadStats(userId: string) {
+  const res = await api.Auth.getUserStats(userId);
+  if (res?.data?.user_stats) {
+    stats.value = res.data.user_stats;
   }
 }
 
@@ -49,33 +71,17 @@ async function logout() {
   }
 }
 
-const heatmapData = [
-  { date: "2025-01-01", count: 5 },
-  { date: "2025-01-02", count: 1 },
-  { date: "2025-01-03", count: 0 },
-  { date: "2025-01-04", count: 8 },
-  { date: "2025-01-05", count: 3 },
-  { date: "2025-01-06", count: 2 },
-  { date: "2025-01-07", count: 6 },
-  { date: "2025-01-08", count: 0 },
-  { date: "2025-01-09", count: 10 },
-  { date: "2025-01-10", count: 4 },
-  { date: "2025-01-11", count: 7 },
-  { date: "2025-01-12", count: 2 },
-  { date: "2025-01-13", count: 1 },
-  { date: "2025-01-14", count: 9 },
-  { date: "2025-01-15", count: 3 },
-  { date: "2025-01-16", count: 0 },
-  { date: "2025-01-17", count: 6 },
-  { date: "2025-01-18", count: 4 },
-  { date: "2025-01-19", count: 1 },
-  { date: "2025-01-20", count: 5 },
-  { date: "2025-01-21", count: 3 },
-  { date: "2025-01-22", count: 2 },
-  { date: "2025-01-23", count: 8 },
-  { date: "2025-01-24", count: 10 },
-  { date: "2025-01-25", count: 0 },
-];
+const heatmapData = ref<{ date: string; count: number }[]>([]);
+
+async function loadSubmissionActivity(userId: string) {
+  const res = await api.Auth.getSubmissionsActivity(userId);
+  if (res?.data) {
+    heatmapData.value = Object.entries(res.data).map(([date, count]) => ({
+      date,
+      count,
+    }));
+  }
+}
 
 function onAvatarAction(action: "Edit" | "Sign Out") {
   if (action === "Edit") {
@@ -172,11 +178,11 @@ async function sendVerifyEmail() {
         <div class="mt-4">
           <ProfileProgressBar
             :contributions="heatmapData"
-            :submission="204"
-            :acceptance="100"
-            :totalsolved="135"
-            :data="{ easy: 75, med: 40, hard: 20 }"
-            :beatrate="15.27"
+            :submission="stats?.total_submissions ?? 0"
+            :acceptance="stats?.accept_percent ?? 0"
+            :totalsolved="stats?.ac_problems ?? 0"
+            :data="{ easy: 0, med: 0, hard: 0 }"
+            :beatrate="0"
           />
         </div>
       </section>
