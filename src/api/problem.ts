@@ -18,7 +18,7 @@ export const Problem = {
     fetcher.put(`/problem/manage/${id}`, body, { headers: { "Content-Type": "multipart/form-data" } }),
   delete: (id: string | number) => fetcher.delete(`/problem/manage/${id}`),
 
-  initiateTestCaseUpload: (problemId: number, body: { length: number; partSize: number }) =>
+  initiateTestCaseUpload: (problemId: number, body: { length: number; part_size: number }) =>
     fetcher.post<{ upload_id: string; urls: string[] }>(
       `/problem/${problemId}/initiate-test-case-upload`,
       body,
@@ -35,4 +35,12 @@ export const Problem = {
     fetcher.post(`/problem/${problemId}/subtasks`, body),
   deleteSubtasks: (problemId: number | string, subtaskId: number | string) =>
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
+  createTestCase: (problemId: number, body: CreateTestCaseBody) =>
+    fetcher.post(`/problem/${problemId}/test-cases`, body),
+   deleteTestCase: (problemId: number, caseId: number) =>
+    fetcher.delete(`/problem/${problemId}/test-cases/${caseId}`),
+   getTestCases: (problemId: number) =>
+    fetcher.get<{ data: Array<{ id: number; subtask_id: number; idx: number; input_path: string; output_path: string; status: string }> }>(
+      `/problem/${problemId}/test-cases`,
+    ),
 };

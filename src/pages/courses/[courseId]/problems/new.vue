@@ -7,7 +7,55 @@ import { useI18n } from "vue-i18n";
 import api from "@/api";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
+import { ZipReader, BlobReader } from "@zip.js/zip.js";
+type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
+function basename(p: string) {
+  return p.split("/").pop() ?? p;
+}
+
+function parseZipFilenames(filenames: string[]) {
+  const re = /^(\d{2})(\d{2})\.(in|out)$/;
+
+  const inSet = new Set<string>();
+  const outSet = new Set<string>();
+
+  for (const f of filenames) {
+    const base = basename(f);
+    const m = base.match(re);
+    if (!m) continue;
+
+    const stem = `${m[1]}${m[2]}`; // sstt
+    if (m[3] === "in") inSet.add(stem);
+    else outSet.add(stem);
+  }
+
+  const allStems = new Set([...inSet, ...outSet]);
+  for (const stem of allStems) {
+    if (!inSet.has(stem) || !outSet.has(stem)) {
+      throw new Error(`Input/Output not matched at ${stem}`);
+    }
+  }
+
+  const pairs: Pair[] = [];
+  for (const stem of allStems) {
+    pairs.push({
+      ss: Number(stem.slice(0, 2)),
+      tt: Number(stem.slice(2, 4)),
+      inFile: `${stem}.in`,
+      outFile: `${stem}.out`,
+    });
+  }
+
+  pairs.sort((a, b) => (a.ss - b.ss) || (a.tt - b.tt));
+  return { pairs };
+}
+async function getZipFilenames(file: File): Promise<string[]> {
+  const reader = new ZipReader(new BlobReader(file));
+  const entries = await reader.getEntries();
+  await reader.close();
+  return entries.map((e) => e.filename);
+}
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
@@ -98,7 +146,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id: courseId, // 後端要 UUID
+    course_id: courseId, 
 
     difficulty: "medium" as "easy" | "medium" | "hard",
     is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
@@ -126,21 +174,43 @@ async function submit() {
     alert("Testdata not provided");
     return;
   }
+  const filenames = await getZipFilenames(testdata.value);
+  const { pairs } = parseZipFilenames(filenames);
   formElement.value.isLoading = true;
   try {
+    
     const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;
     const tasks = newProblem.value.testCaseInfo.tasks;
-    for (let i = 0; i < tasks.length; i++) {
-      const t = tasks[i];
-      await api.Problem.createSubtasks(problemId, {
-        subtask_no: i + 1,
-        weight: t.taskScore,
-        time_limit_ms: t.timeLimit,
-        memory_limit_mb: Math.ceil(t.memoryLimit), // 如果你 memoryLimit 是 KB
-      });
-    }
+
+for (let i = 0; i < tasks.length; i++) {
+  const t = tasks[i];
+
+  // 1) 建 subtask
+  const subRes = await api.Problem.createSubtasks(problemId, {
+    subtask_no: i + 1,
+    weight: t.taskScore,
+    time_limit_ms: t.timeLimit,
+    memory_limit_mb: Math.ceil(t.memoryLimit),
+  });
+  const subtaskId = subRes.data.id;
+
+  // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i
+  const subPairs = pairs.filter((p) => p.ss === i);
+
+  // 3) 逐筆建立 test case
+  for (const p of subPairs) {
+    const res=await api.Problem.createTestCase(problemId, {
+      subtask_id: subtaskId,
+      idx: p.tt + 1,         
+      input_path: p.inFile,  
+      output_path: p.outFile,
+      status: "ready",
+    });
+    console.log(res);
+  }
+}
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
