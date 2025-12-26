@@ -147,6 +147,23 @@ interface ProblemTop10RunTimeItem {
   status?: string;
 }
 
+interface Editorial {
+  id: string;
+  title: string;
+  content: string;
+  difficulty_rating?: number | string | null;
+  is_official: boolean;
+  problem_id: number;
+  author_username: string;
+  likes_count: number;
+  views_count: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  published_at: string;
+  is_liked_by_user: boolean;
+}
+
 interface ProblemTop10MemoryItem {
   id: string;
   user: string;
