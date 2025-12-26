@@ -87,7 +87,9 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
     let firstAcTimestamp: number | null = null;
     let lastSubmissionTimestamp: number | null = null;
 
-    const problemItems: HomeworkScoreboardItemProblem[] = pids.value!.map((pid) => {
+    const problemItems: Record<number, HomeworkScoreboardItemProblem> = {};
+
+    pids.value!.forEach((pid) => {
       const pData = problems[String(pid)];
       const score = pData?.score ?? 0;
       totalScore += score;
@@ -113,7 +115,7 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
       if (pData?.problemStatus === "accepted") status = "solved";
       else if (score > 0) status = "partial";
 
-      return {
+      problemItems[pid] = {
         problem_id: pid,
         best_score: score,
         max_possible_score: 100, // Assumption
@@ -242,7 +244,7 @@ function exportCSV() {
   const csvBody: string = sortedScoreboard.value
     .map((row) => {
       const problemScores = _pids.map((pid: number) => {
-        const problem = row.problems.find((p) => p.problem_id === pid);
+        const problem = row.problems[pid];
         return problem ? problem.best_score : 0;
       });
 
@@ -344,11 +346,11 @@ function exportCSV() {
                     <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
                       <div
                         class="flex h-16 w-full flex-col items-center justify-center py-2"
-                        :class="getCellColor(row.problems.find((p) => p.problem_id === pid))"
+                        :class="getCellColor(row.problems[pid])"
                       >
-                        <template v-if="row.problems.find((p) => p.problem_id === pid)">
+                        <template v-if="row.problems[pid]">
                           <div class="font-bold">
-                            {{ row.problems.find((p) => p.problem_id === pid)?.best_score }}
+                            {{ row.problems[pid]?.best_score }}
                           </div>
                           <!-- Optional: show max score if different -->
                         </template>
