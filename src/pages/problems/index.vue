@@ -117,7 +117,7 @@ async function searchProblems() {
       id: p.id,
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
-      tags: p.tags.map((t: any) => t.name),
+      tags: p.tags.map((t: any) => (typeof t === "string" ? t : t.name)),
       courseId: typeof p.course_id === "number" ? p.course_id : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
       acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
