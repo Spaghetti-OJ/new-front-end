@@ -51,6 +51,14 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
       },
       { path: null, text: "Submit" },
     ],
+    "courses-courseId-problems-id-editorial": [
+      problemsPage,
+      {
+        path: `/courses/${route.params.courseId}/problems/${route.params.id}`,
+        text: `${route.params.id}`,
+      },
+      { path: null, text: "Editorial" },
+    ],
     "courses-courseId-submissions": [{ path: null, text: "Submissions" }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: "Members" }],
