@@ -199,9 +199,12 @@ async function submit() {
     await api.Problem.modify(problemId, payload);
 
     const tcRes = await api.Problem.getTestCases(problemId);
-    for (const tc of tcRes.data ?? []) {
-      await api.Problem.deleteTestCase(problemId, tc.id);
-    }
+    const testCases = (tcRes.data as any).data || tcRes.data || [];
+    await Promise.all(
+      (Array.isArray(testCases) ? testCases : []).map((tc: any) =>
+        api.Problem.deleteTestCase(problemId, tc.id),
+      ),
+    );
 
     const subtaskRes = await api.Problem.getSubtasks(problemId);
     for (const s of subtaskRes.data ?? []) {
@@ -275,9 +278,12 @@ async function delete_() {
   try {
     const problemId = Number(route.params.id);
     const res = await api.Problem.getTestCases(Number(route.params.id));
-    for (let i = 0; i < res.data.length; i++) {
-      await api.Problem.deleteTestCase(Number(route.params.id), res.data[i].id);
-    }
+    const testCases = (res.data as any).data || res.data || [];
+    await Promise.all(
+      (Array.isArray(testCases) ? testCases : []).map((tc: any) =>
+        api.Problem.deleteTestCase(Number(route.params.id), tc.id),
+      ),
+    );
     const subtaskres = await api.Problem.getSubtasks(problemId);
     for (const subtask of subtaskres.data) {
       await api.Problem.deleteSubtasks(problemId, subtask.id);
