@@ -125,7 +125,6 @@ async function searchProblems() {
   } catch (err) {
     console.error("searchProblems error:", err);
     baseProblems.value = [];
-    window.alert("Search failed. Please try again.");
   } finally {
     isLoading.value = false;
   }
