@@ -74,6 +74,22 @@ watch(
       courseName.value = res.data.course.course;
     } catch (error) {
       console.error("Failed to fetch course info:", error);
+
+      // Fallback: If public access (cannot fetch course info), try to get course name from problem info
+      if (route.params.id) {
+        try {
+          const problemId = Number(route.params.id);
+          if (!isNaN(problemId)) {
+            const { data } = await api.Problem.getProblemInfo(problemId);
+            const course = data.courses.find((c) => String(c.id) === String(newId));
+            if (course) {
+              courseName.value = course.name;
+            }
+          }
+        } catch {
+          // Ignore
+        }
+      }
     }
   },
   { immediate: true },
