@@ -22,8 +22,7 @@ async function getSubtasks() {
 async function downloadTestCase(problemId: number) {
   const res = await api.Problem.getTestCaseUrl(problemId);
 
-  const blob = new Blob([res.data], { type: "application/zip" });
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(res.data);
 
   const a = document.createElement("a");
   a.href = url;
