@@ -31,7 +31,30 @@ async function loadProblems() {
       page_size: 1000, // Fetch all for client-side filtering
     });
 
-    problems.value = res.data;
+    const rawData = res.data ?? res;
+    const results = Array.isArray((rawData as any).results)
+      ? (rawData as any).results
+      : Array.isArray((rawData as any).items)
+      ? (rawData as any).items
+      : Array.isArray((rawData as any).data?.results)
+      ? (rawData as any).data.results
+      : Array.isArray((rawData as any).data?.items)
+      ? (rawData as any).data.items
+      : [];
+
+    const count =
+      typeof (rawData as any).count === "number"
+        ? (rawData as any).count
+        : typeof (rawData as any).data?.count === "number"
+        ? (rawData as any).data.count
+        : results.length;
+
+    problems.value = {
+      count,
+      next: (rawData as any).next ?? (rawData as any).data?.next ?? null,
+      previous: (rawData as any).previous ?? (rawData as any).data?.previous ?? null,
+      results,
+    };
   } catch (err) {
     console.error(err);
     error.value = err;
