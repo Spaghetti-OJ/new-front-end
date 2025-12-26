@@ -238,7 +238,7 @@ async function submit() {
       }
 
       const createTestCasePromises = pairs.map((p) => {
-        const subtaskNo = p.ss + 1;
+        const subtaskNo = p.ss;
         const subtaskId = subtaskIdByNo.get(subtaskNo);
         if (!subtaskId) {
           // zip 可能有 ss=03，但你 tasks 只有 2 個 => 直接報錯比較好
@@ -247,7 +247,7 @@ async function submit() {
 
         return api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt + 1,
+          idx: p.tt,
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
