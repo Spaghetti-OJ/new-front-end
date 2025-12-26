@@ -83,7 +83,12 @@ const handleForgotSubmit = async () => {
     }
   } catch (err: any) {
     showError.value = true;
-    errorMessage.value = err.response?.data?.message || t("password_reset.status.error");
+    if (err.response?.status === 429) {
+      errorMessage.value =
+        (err.response?.data as any)?.detail || "Request was throttled. Please try again later.";
+    } else {
+      errorMessage.value = err.response?.data?.message || t("password_reset.status.error");
+    }
   } finally {
     loading.value = false;
   }
@@ -99,7 +104,7 @@ const handleResetSubmit = async () => {
   try {
     const res: any = await api.Auth.resetPassword({
       token: token.value,
-      password: form.password,
+      new_password: form.password,
     });
 
     if (res.status === "ok" || !res.status) {
@@ -113,7 +118,12 @@ const handleResetSubmit = async () => {
     }
   } catch (err: any) {
     showError.value = true;
-    errorMessage.value = err.response?.data?.message || "An error occurred.";
+    if (err.response?.status === 429) {
+      errorMessage.value =
+        (err.response?.data as any)?.detail || "Request was throttled. Please try again later.";
+    } else {
+      errorMessage.value = err.response?.data?.message || "An error occurred.";
+    }
   } finally {
     loading.value = false;
   }
