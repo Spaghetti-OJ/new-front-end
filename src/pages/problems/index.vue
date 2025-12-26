@@ -49,6 +49,7 @@ async function getProblem() {
 }
 // Search and filters
 const q = ref("");
+const searchTimer = ref<number | null>(null);
 const selectedCourses = ref<number[]>([]);
 // 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
@@ -115,7 +116,8 @@ async function searchProblems() {
   try {
     const res = await api.Problem.searchGlobal(keyword);
 
-    const items = res.data.data.items ?? [];
+    const raw = (res as { data?: any }).data ?? res;
+    const items = raw?.data?.items ?? raw?.items ?? raw?.results ?? [];
     baseProblems.value = items.map((p: any) => ({
       id: p.id,
       title: p.title,
@@ -135,6 +137,23 @@ async function searchProblems() {
 onMounted(async () => {
   getProblem();
 });
+
+watch(
+  q,
+  (value) => {
+    if (searchTimer.value != null) {
+      window.clearTimeout(searchTimer.value);
+    }
+    searchTimer.value = window.setTimeout(() => {
+      if (value.trim()) {
+        searchProblems();
+      } else {
+        getProblem();
+      }
+    }, 300);
+  },
+  { flush: "post" },
+);
 </script>
 
 <template>
