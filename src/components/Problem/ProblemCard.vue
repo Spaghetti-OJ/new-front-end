@@ -49,6 +49,12 @@ const samples = computed(() => {
   }));
 });
 
+const descriptionHasHeading = computed(() =>
+  /^\s*#{1,6}\s+/m.test(props.problem.description.description || ""),
+);
+const hasInput = computed(() => Boolean(props.problem.description.input?.trim()));
+const hasOutput = computed(() => Boolean(props.problem.description.output?.trim()));
+
 onMounted(getSubtasks);
 </script>
 
@@ -135,20 +141,31 @@ onMounted(getSubtasks);
 
       <div class="card min-w-full rounded-none">
         <div class="card-body p-0">
-          <div class="card-title md:text-xl lg:text-2xl">
+          <div v-if="!descriptionHasHeading" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.desc") }}
           </div>
-          <markdown-renderer class="mb-10" :md="problem.description.description" />
+          <markdown-renderer
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.description"
+          />
 
-          <div class="card-title md:text-xl lg:text-2xl">
+          <div v-if="hasInput" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.input") }}
           </div>
-          <markdown-renderer class="mb-10" :md="problem.description.input" />
+          <markdown-renderer
+            v-if="hasInput"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.input"
+          />
 
-          <div class="card-title md:text-xl lg:text-2xl">
+          <div v-if="hasOutput" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.output") }}
           </div>
-          <markdown-renderer class="mb-10" :md="problem.description.output" />
+          <markdown-renderer
+            v-if="hasOutput"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.output"
+          />
 
           <div class="card-title md:text-xl lg:text-2xl">{{ $t("components.problem.card.ex") }}</div>
           <div class="mb-10">
@@ -183,7 +200,10 @@ onMounted(getSubtasks);
           <div class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.hint") }}
           </div>
-          <markdown-renderer class="mb-10" :md="problem.description.hint" />
+          <markdown-renderer
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.hint"
+          />
 
           <div class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.subtasks.title") }}
