@@ -172,7 +172,7 @@ onMounted(fetchEditorials);
             </select>
 
             <button v-if="canEdit" type="button" class="btn btn-success" @click="startCreate">
-              <i-uil-plus class="mr-1 h-5 w-5" /> New Editorial
+              <i-uil-plus-circle class="mr-1 h-5 w-5" /> New Editorial
             </button>
             <button
               v-if="canEdit && selectedEditorial && !isEditing"
