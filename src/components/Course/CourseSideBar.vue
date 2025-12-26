@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { UserRole, useSession } from "@/stores/session";
 import { useI18n } from "vue-i18n";
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import api from "@/api";
 
 defineProps<{
   displayType?: "side" | "tab";
@@ -40,6 +43,30 @@ const navs = [
       ]
     : []),
 ];
+
+const route = useRoute();
+const hasAccess = ref(false);
+
+watch(
+  () => route.params.courseId,
+  async (id) => {
+    if (!id) return;
+    try {
+      await api.Course.info(id as string);
+      hasAccess.value = true;
+    } catch {
+      hasAccess.value = false;
+    }
+  },
+  { immediate: true },
+);
+
+const displayedNavs = computed(() => {
+  if (hasAccess.value) {
+    return navs;
+  }
+  return navs.filter((n) => ["/problems", "/submissions"].includes(n.path));
+});
 </script>
 
 <template>
@@ -49,7 +76,7 @@ const navs = [
     class="menu menu-compact w-40 bg-base-100 p-2 lg:menu-normal"
   >
     <li
-      v-for="{ name, path } in navs"
+      v-for="{ name, path } in displayedNavs"
       :class="[
         {
           'border-l-4 border-blue-500':
@@ -63,7 +90,7 @@ const navs = [
 
   <div v-else-if="$route.params.courseId" class="scrollbar-hide w-full overflow-scroll">
     <div class="tabs mx-auto w-max">
-      <template v-for="{ name, path } in navs">
+      <template v-for="{ name, path } in displayedNavs">
         <a
           class="tab tab-bordered h-10 w-32"
           :class="{

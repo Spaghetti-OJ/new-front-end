@@ -73,7 +73,19 @@ watch(
       const res = await api.Course.info(newId);
       courseName.value = res.data.course.course;
     } catch (error) {
-      console.error("Failed to fetch course info:", error);
+      try {
+        const { data } = await api.Problem.getProblemList({
+          course_id: Number(newId),
+          page_size: 1,
+        });
+
+        if (data && data.results && data.results.length > 0) {
+          courseName.value = data.results[0].course_name;
+        }
+      } catch (err) {
+        console.warn("Failed to fetch course name via fallback:", err);
+        courseName.value = "Course";
+      }
     }
   },
   { immediate: true },
