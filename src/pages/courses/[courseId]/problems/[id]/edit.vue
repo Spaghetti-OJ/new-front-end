@@ -230,6 +230,10 @@ async function submit() {
       const filenames = await getZipFilenames(testdata.value);
       const { pairs } = parseZipFilenames(filenames);
 
+      if (pairs.length === 0) {
+        throw new Error("No valid test case files (XXYY.in/out) found in the zip archive.");
+      }
+
       const createTestCasePromises = pairs.map((p) => {
         const subtaskNo = p.ss + 1;
         const subtaskId = subtaskIdByNo.get(subtaskNo);

@@ -176,10 +176,18 @@ async function submit() {
     alert("Testdata not provided");
     return;
   }
-  const filenames = await getZipFilenames(testdata.value);
-  const { pairs } = parseZipFilenames(filenames);
   formElement.value.isLoading = true;
   try {
+    const filenames = await getZipFilenames(testdata.value);
+    const { pairs } = parseZipFilenames(filenames);
+
+    if (pairs.length === 0) {
+      throw new Error(
+        t("course.problem.new.errors.no_testcases") ||
+          "No valid test case files (XXYY.in/out) found in the zip archive.",
+      );
+    }
+
     const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;
