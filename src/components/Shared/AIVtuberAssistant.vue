@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick, computed } from "vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
@@ -32,8 +32,21 @@ const position = ref({
   x: window.innerWidth - 220,
   y: window.innerHeight - 200,
 });
+const viewport = ref({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
 
-let isDragging = false;
+const AVATAR_SIZE = 128;
+const AVATAR_TOTAL_HEIGHT = 160;
+const CHAT_WIDTH = 512;
+const CHAT_HEIGHT = 520;
+const MARGIN = 20;
+const CHAT_GAP = 16;
+
+const isDragging = ref(false);
+const hasDragged = ref(false);
+const dragStart = { x: 0, y: 0 };
 let offsetX = 0;
 let offsetY = 0;
 
@@ -43,12 +56,16 @@ let lastTime = 0;
 
 let velocityX = 0;
 let velocityY = 0;
+let resizeHandler: (() => void) | null = null;
 
 // 拖曳開始
 function startDrag(e: MouseEvent) {
   if ((e.target as HTMLElement).closest("input, button, textarea, a")) return;
 
-  isDragging = true;
+  isDragging.value = true;
+  hasDragged.value = false;
+  dragStart.x = e.clientX;
+  dragStart.y = e.clientY;
 
   // 拖曳透明度變化
   document.body.classList.add("dragging-vtuber");
@@ -68,7 +85,15 @@ function startDrag(e: MouseEvent) {
 
 // 拖曳中
 function onDrag(e: MouseEvent) {
-  if (!isDragging) return;
+  if (!isDragging.value) return;
+
+  if (!hasDragged.value) {
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    if (Math.hypot(dx, dy) > 4) {
+      hasDragged.value = true;
+    }
+  }
 
   const now = performance.now();
   const dt = now - lastTime;
@@ -84,20 +109,52 @@ function onDrag(e: MouseEvent) {
   position.value.y = e.clientY - offsetY;
 
   // 不超出邊界
-  const margin = 20;
-  const width = 140; // avatar 寬度 + chatbox 預估寬
-  const height = isOpen.value ? 520 : 180; // chat 打開更高，避免掉出底部
+  const width = AVATAR_SIZE;
+  const height = AVATAR_TOTAL_HEIGHT;
 
-  const maxX = window.innerWidth - width - margin;
-  const maxY = window.innerHeight - height - margin;
+  const maxX = viewport.value.width - width - MARGIN;
+  const maxY = viewport.value.height - height - MARGIN;
 
-  position.value.x = Math.max(margin, Math.min(maxX, position.value.x));
-  position.value.y = Math.max(margin, Math.min(maxY, position.value.y));
+  position.value.x = Math.max(MARGIN, Math.min(maxX, position.value.x));
+  position.value.x = maxX;
+  position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
 }
+
+function clampPosition() {
+  const width = AVATAR_SIZE;
+  const height = AVATAR_TOTAL_HEIGHT;
+
+  const maxX = viewport.value.width - width - MARGIN;
+  const maxY = viewport.value.height - height - MARGIN;
+
+  position.value.x = Math.max(MARGIN, Math.min(maxX, position.value.x));
+  position.value.x = maxX;
+  position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
+}
+
+const chatPosition = computed(() => {
+  const leftX = position.value.x - CHAT_WIDTH - CHAT_GAP;
+  const rightX = position.value.x + AVATAR_SIZE + CHAT_GAP;
+
+  const fitsLeft = leftX >= MARGIN;
+  const fitsRight = rightX + CHAT_WIDTH <= viewport.value.width - MARGIN;
+
+  let left = MARGIN;
+  if (fitsLeft) {
+    left = leftX;
+  } else if (fitsRight) {
+    left = rightX;
+  }
+
+  const maxTop = viewport.value.height - CHAT_HEIGHT - MARGIN;
+  const top = Math.max(MARGIN, Math.min(maxTop, position.value.y));
+
+  return { left, top };
+});
 
 // 拖曳停止 + 慣性 + 吸附邊界
 function stopDrag() {
-  isDragging = false;
+  isDragging.value = false;
 
   document.body.classList.remove("dragging-vtuber");
 
@@ -105,6 +162,12 @@ function stopDrag() {
   document.removeEventListener("mouseup", stopDrag);
 
   applyInertiaAndSnap();
+
+  if (hasDragged.value) {
+    window.setTimeout(() => {
+      hasDragged.value = false;
+    }, 0);
+  }
 }
 
 // 慣性移動 + 吸附邊界
@@ -119,9 +182,12 @@ function applyInertiaAndSnap() {
     position.value.x += velocityX * 20;
     position.value.y += velocityY * 20;
 
-    const margin = 20;
-    position.value.x = Math.max(margin, Math.min(window.innerWidth - margin - 100, position.value.x));
-    position.value.y = Math.max(margin, Math.min(window.innerHeight - margin - 100, position.value.y));
+    const inertiaMaxX = viewport.value.width - MARGIN - AVATAR_SIZE;
+    const inertiaMaxY = viewport.value.height - MARGIN - AVATAR_TOTAL_HEIGHT;
+
+    position.value.x = Math.max(MARGIN, Math.min(inertiaMaxX, position.value.x));
+    position.value.y = Math.max(MARGIN, Math.min(inertiaMaxY, position.value.y));
+    position.value.x = inertiaMaxX;
 
     if (Math.abs(velocityX) > threshold || Math.abs(velocityY) > threshold) {
       requestAnimationFrame(animate);
@@ -135,31 +201,27 @@ function applyInertiaAndSnap() {
 
 // 🔥 自動吸附邊界
 function snapToEdge() {
-  const margin = 20;
+  const width = AVATAR_SIZE;
+  const height = AVATAR_TOTAL_HEIGHT;
 
-  const width = 140;
-  const height = isOpen.value ? 520 : 180;
-
-  const maxX = window.innerWidth - width - margin;
-  const maxY = window.innerHeight - height - margin;
+  const maxX = viewport.value.width - width - MARGIN;
+  const maxY = viewport.value.height - height - MARGIN;
 
   // 邊距計算
   const x = position.value.x;
   const y = position.value.y;
 
   const left = x;
-  const right = window.innerWidth - x - width;
+  const right = viewport.value.width - x - width;
   const top = y;
-  const bottom = window.innerHeight - y - height;
+  const bottom = viewport.value.height - y - height;
 
   const minDist = Math.min(left, right, top, bottom);
 
-  if (minDist === left) {
-    position.value.x = margin;
-  } else if (minDist === right) {
+  if (minDist === right) {
     position.value.x = maxX;
   } else if (minDist === top) {
-    position.value.y = margin;
+    position.value.y = MARGIN;
   } else {
     position.value.y = maxY;
   }
@@ -168,13 +230,25 @@ function snapToEdge() {
 onMounted(() => {
   position.value = {
     x: window.innerWidth - 220,
-    y: window.innerHeight - 200,
+    y: window.innerHeight - AVATAR_TOTAL_HEIGHT - MARGIN,
   };
+  resizeHandler = () => {
+    viewport.value = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+    clampPosition();
+  };
+  window.addEventListener("resize", resizeHandler);
+  clampPosition();
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", stopDrag);
+  if (resizeHandler) {
+    window.removeEventListener("resize", resizeHandler);
+  }
 });
 
 function renderMarkdownSafe(text: string): string {
@@ -202,8 +276,13 @@ function renderMarkdownSafe(text: string): string {
 
 // ✅ 開關聊天視窗
 function toggleAssistant() {
+  if (isDragging.value || hasDragged.value) return;
   isOpen.value = !isOpen.value;
   error.value = null;
+  void nextTick(() => {
+    clampPosition();
+    snapToEdge();
+  });
 }
 
 // ✅ 靜音切換
@@ -291,12 +370,13 @@ async function askQuestion() {
 </script>
 
 <template>
-  <div class="fixed z-50" :style="{ top: position.y + 'px', left: position.x + 'px' }" @mousedown="startDrag">
+  <div class="pointer-events-none fixed inset-0 z-50">
     <!-- Chat Box -->
     <transition name="slide-left">
       <div
-        v-if="isOpen"
-        class="mr-4 w-[32rem] overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md"
+        v-if="isOpen && !isDragging"
+        class="pointer-events-auto absolute w-[32rem] overflow-hidden rounded-2xl border border-base-300 bg-base-200 text-base-content shadow-2xl backdrop-blur-md"
+        :style="{ top: chatPosition.top + 'px', left: chatPosition.left + 'px' }"
       >
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-base-300 bg-base-300 px-4 py-2">
@@ -371,19 +451,25 @@ async function askQuestion() {
 
     <!-- Avatar -->
     <div
-      class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
-      @click="toggleAssistant"
-      tabindex="0"
-      aria-label="Open AI assistant chat"
-      role="button"
-      @keyup.enter="toggleAssistant"
+      class="pointer-events-auto absolute cursor-pointer"
+      :style="{ top: position.y + 'px', left: position.x + 'px' }"
+      @mousedown="startDrag"
     >
-      <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
       <div
-        v-if="!isOpen"
-        class="absolute -right-1 -top-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
-      ></div>
-      <p class="mt-1 text-center text-xs font-medium text-indigo-400">AI Vtuber</p>
+        class="relative cursor-pointer transition-transform duration-300 hover:scale-110"
+        @click="toggleAssistant"
+        tabindex="0"
+        aria-label="Open AI assistant chat"
+        role="button"
+        @keyup.enter="toggleAssistant"
+      >
+        <img src="/vtuber-avatar.png" alt="AI Vtuber" class="h-32 w-32 rounded-full shadow-2xl" />
+        <div
+          v-if="!isOpen"
+          class="absolute -right-1 -top-1 h-4 w-4 animate-pulse rounded-full bg-green-400 ring ring-white"
+        ></div>
+        <p class="mt-1 text-center text-xs font-medium text-indigo-400">AI Vtuber</p>
+      </div>
     </div>
   </div>
 </template>
