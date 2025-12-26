@@ -17,7 +17,11 @@ async function loadProblem() {
     problem.value = res.data ?? res;
   } catch (err) {
     console.error(err);
-    error.value = err;
+    error.value =
+      (err as any).response?.data?.detail ||
+      (err as any).response?.data?.message ||
+      (err as any).message ||
+      "Failed to load problem";
   } finally {
     isLoading.value = false;
   }

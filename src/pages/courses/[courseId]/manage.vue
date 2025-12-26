@@ -38,11 +38,11 @@ async function assignTA() {
     newTaUsername.value = "";
     await fetchCourseInfo(); // Refresh list
   } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      assignTaError.value = err.response.data.message;
-    } else {
-      assignTaError.value = "Failed to assign TA.";
-    }
+    assignTaError.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to assign TA.";
   }
 }
 
@@ -56,11 +56,11 @@ async function generateCourseCode() {
     const { data } = await api.Course.generateInviteCode(courseId);
     courseCode.value = data.joinCode;
   } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message;
-    } else {
-      error.value = "Failed to generate code";
-    }
+    error.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to generate code";
   }
 }
 
@@ -92,11 +92,11 @@ function deleteCode() {
         await api.Course.deleteInviteCode(courseId, courseCode.value);
         courseCode.value = "";
       } catch (err: any) {
-        if (axios.isAxiosError(err) && err.response?.data?.message) {
-          error.value = err.response.data.message;
-        } else {
-          error.value = "Failed to delete code";
-        }
+        error.value =
+          (err.response?.data as any)?.detail ||
+          (err.response?.data as any)?.message ||
+          err.message ||
+          "Failed to delete code";
       }
     },
   };
@@ -125,14 +125,13 @@ async function submitCourseEdit() {
       newCourse: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
-    currentCourseName.value = courseForm.value.name;
     await router.replace(route.fullPath);
   } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message;
-    } else {
-      error.value = "Failed to update course";
-    }
+    error.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to update course";
   }
 }
 
@@ -143,14 +142,13 @@ function deleteCourse() {
     onConfirm: async () => {
       error.value = null;
       try {
-        await api.Course.deleteCourse({ courseId: courseId });
         router.push("/courses");
       } catch (err: any) {
-        if (axios.isAxiosError(err) && err.response?.data?.message) {
-          error.value = err.response.data.message;
-        } else {
-          error.value = "Failed to delete course";
-        }
+        error.value =
+          (err.response?.data as any)?.detail ||
+          (err.response?.data as any)?.message ||
+          err.message ||
+          "Failed to delete course";
       }
     },
   };
@@ -168,9 +166,11 @@ async function fetchCourseInfo() {
     courseCode.value = data.course.joinCode;
   } catch (err: any) {
     console.error("Failed to fetch course info:", err);
-    if (axios.isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message;
-    }
+    error.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to fetch course info.";
   }
 }
 

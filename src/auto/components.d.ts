@@ -51,6 +51,7 @@ declare module '@vue/runtime-core' {
     IUilPlus: typeof import('~icons/uil/plus')['default']
     IUilPlusCircle: typeof import('~icons/uil/plus-circle')['default']
     IUilPuzzlePiece: typeof import('~icons/uil/puzzle-piece')['default']
+    IUilSearch: typeof import('~icons/uil/search')['default']
     IUilSetting: typeof import('~icons/uil/setting')['default']
     IUilSun: typeof import('~icons/uil/sun')['default']
     IUilTimes: typeof import('~icons/uil/times')['default']

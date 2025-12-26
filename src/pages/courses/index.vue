@@ -40,12 +40,11 @@ onMounted(async () => {
       }
     }
   } catch (err: any) {
-    if (err.response?.status === 403) {
-      error.value =
-        (err.response?.data as any)?.detail || "Permission denied. Please verify your email address.";
-    } else {
-      error.value = err;
-    }
+    error.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to load courses";
   } finally {
     isLoading.value = false;
   }
@@ -67,8 +66,9 @@ const onJoinCourse = async () => {
     }
   } catch (err: any) {
     joinError.value =
-      err?.response?.data?.message ??
-      err?.response?.data?.msg ??
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
       "Failed to join course. Please check the code.";
   } finally {
     joinLoading.value = false;
