@@ -125,6 +125,7 @@ async function submitCourseEdit() {
       newCourse: courseForm.value.name,
       teacher: courseForm.value.teacher,
     });
+    currentCourseName.value = courseForm.value.name;
     await router.replace(route.fullPath);
   } catch (err: any) {
     error.value =
