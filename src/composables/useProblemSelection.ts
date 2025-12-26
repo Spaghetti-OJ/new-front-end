@@ -1,5 +1,6 @@
 import { computed, ref, onMounted } from "vue";
 import api from "@/api";
+import { toProblemList } from "@/utils/normalizeProblemList";
 
 type ProblemSelections = { value: string; text: string }[];
 export type ProblemId2Meta = Record<string, { name: string; quota: number }>;
@@ -16,7 +17,7 @@ export function useProblemSelection(courseId: string) {
         page_size: 1000,
         course_id: Number(courseId),
       });
-      problems.value = data;
+      problems.value = toProblemList(data);
     } catch (e) {
       error.value = e;
     } finally {

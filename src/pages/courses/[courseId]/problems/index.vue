@@ -7,6 +7,7 @@ import { isQuotaUnlimited, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import useInteractions from "@/composables/useInteractions";
 import api from "@/api";
 import TagList from "@/components/Shared/TagList.vue";
+import { toProblemList } from "@/utils/normalizeProblemList";
 
 const session = useSession();
 const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
@@ -26,12 +27,12 @@ async function loadProblems() {
   error.value = null;
 
   try {
-    const res = await api.Problem.getProblemList({
+    const { data } = await api.Problem.getProblemList({
       course_id: Number(route.params.courseId),
       page_size: 1000, // Fetch all for client-side filtering
     });
 
-    problems.value = res.data;
+    problems.value = toProblemList(data);
   } catch (err) {
     console.error(err);
     error.value = err;
