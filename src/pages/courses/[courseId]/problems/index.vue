@@ -83,13 +83,12 @@ async function loadProblems() {
   error.value = null;
 
   try {
-    const res = await api.Problem.getProblemList({
+    const { data } = await api.Problem.getProblemList({
       course_id: Number(route.params.courseId),
       page_size: 1000, // Fetch all for client-side filtering
     });
 
-    const rawData = (res as { data?: unknown }).data ?? res;
-    problems.value = toProblemList(rawData);
+    problems.value = toProblemList(data);
   } catch (err) {
     console.error(err);
     error.value = err;
