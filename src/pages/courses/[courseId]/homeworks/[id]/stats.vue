@@ -145,9 +145,6 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
   };
 });
 
-const isScoreboardFetching = computed(() => isHWFetching.value);
-const scoreboardError = computed(() => hwError.value);
-
 enum Columns {
   USERNAME = "username",
   TOTAL_SCORE_ASC = "totalScoreAsc",
@@ -303,7 +300,7 @@ function exportCSV() {
             </button>
             <button
               class="btn btn-primary btn-sm"
-              :class="{ loading: isScoreboardFetching }"
+              :class="{ loading: isHWFetching }"
               @click="fetchHomework"
               aria-label="Refresh scoreboard data"
             >
@@ -312,10 +309,7 @@ function exportCSV() {
           </div>
         </div>
 
-        <data-status-wrapper
-          :error="hwError || scoreboardError"
-          :is-loading="isHWFetching && !scoreboardData"
-        >
+        <data-status-wrapper :error="hwError" :is-loading="isHWFetching && !scoreboardData">
           <!-- Show loading state for initial fetch -->
           <template #loading>
             <skeleton-table :col="pids ? pids.length + 4 : 5" :row="10" />
