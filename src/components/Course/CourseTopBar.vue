@@ -73,23 +73,16 @@ watch(
       const res = await api.Course.info(newId);
       courseName.value = res.data.course.course;
     } catch (error) {
-      console.error("Failed to fetch course info:", error);
+      try {
+        const { data } = await api.Problem.getProblemList({
+          course_id: Number(newId),
+          page_size: 1,
+        });
 
-      // Fallback: If public access (cannot fetch course info), try to get course name from problem info
-      if (route.params.id) {
-        try {
-          const problemId = Number(route.params.id);
-          if (!isNaN(problemId)) {
-            const { data } = await api.Problem.getProblemInfo(problemId);
-            const course = data.courses.find((c) => String(c.id) === String(newId));
-            if (course) {
-              courseName.value = course.name;
-            }
-          }
-        } catch {
-          // Ignore
+        if (data && data.results && data.results.length > 0) {
+          courseName.value = data.results[0].course_name;
         }
-      }
+      } catch {}
     }
   },
   { immediate: true },
