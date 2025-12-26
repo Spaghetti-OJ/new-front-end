@@ -142,7 +142,8 @@ function deleteCourse() {
     onConfirm: async () => {
       error.value = null;
       try {
-        router.push("/courses");
+        await api.Course.deleteCourse({ courseId: courseId });
+        await router.push("/courses");
       } catch (err: any) {
         error.value =
           (err.response?.data as any)?.detail ||
