@@ -120,7 +120,7 @@ async function searchProblems() {
   try {
     const res = await api.Problem.searchGlobal(keyword);
 
-    const items = (res.data as any).items ?? [];
+    const items = res.data.data.items ?? [];
     baseProblems.value = items.map((p: any) => ({
       id: p.id,
       title: p.title,
