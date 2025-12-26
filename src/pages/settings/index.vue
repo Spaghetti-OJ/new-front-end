@@ -4,43 +4,62 @@ import { useStorage } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { useTitle } from "@vueuse/core";
 import { LOCAL_STORAGE_KEY } from "@/constants";
+import { useSession } from "@/stores/session";
+import api from "@/api";
+import ChangePasswordForm from "@/components/Settings/ChangePasswordForm.vue";
 
 useTitle("Settings | Normal OJ");
+
 const { t, locale } = useI18n();
+const localeInStorage = useStorage(LOCAL_STORAGE_KEY.LOCALE, "english");
+const session = useSession();
 
-const localeInStorate = useStorage(LOCAL_STORAGE_KEY.LOCALE, "english");
-
-// initialize with the one in storage
-locale.value = localeInStorate.value;
-
-// if user change the value, update the storage
+// sync locale with localStorage
+locale.value = localeInStorage.value;
 watchEffect(() => {
-  localeInStorate.value = locale.value;
+  localeInStorage.value = locale.value;
 });
 </script>
 
 <template>
-  <div class="card-container">
-    <div class="card">
-      <div class="card-body">
-        <div class="card-title">{{ t("settings.title") }}</div>
+  <div class="mx-auto w-full max-w-4xl space-y-12 p-6">
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold">Settings</h1>
 
-        <div class="my-2" />
+    <template v-if="session.isLogin">
+      <!-- Change Password Section -->
+      <section>
+        <ChangePasswordForm />
+      </section>
 
-        <div class="form-control w-full max-w-xs">
-          <label class="label">
-            <span class="label-text">Language:</span>
-          </label>
-          <select v-model="locale" class="select select-bordered">
-            <option value="english">English</option>
-            <option value="chinese">繁體中文</option>
-            <!-- <option value="taiwanese">台灣話</option> -->
-          </select>
-          <label class="label">
-            <span class="label-text-alt">{{ t("settings.selectLang") }}</span>
-          </label>
-        </div>
+      <!-- API Keys -->
+      <section>
+        <h2 class="mb-4 text-2xl font-semibold">API Keys</h2>
+
+        <router-link to="/settings/api-keys" class="btn btn-primary w-full max-w-md">
+          VIEW MY API KEY DASHBOARD
+        </router-link>
+      </section>
+    </template>
+
+    <!-- Language Selector (always visible) -->
+    <section class="pb-24">
+      <h2 class="mb-4 text-2xl font-semibold">Language</h2>
+
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Language:</span>
+        </label>
+        <select v-model="locale" class="select select-bordered">
+          <option value="english">English</option>
+          <option value="chinese">繁體中文</option>
+        </select>
+        <label class="label">
+          <span class="label-text-alt">
+            {{ t("settings.selectLang") }}
+          </span>
+        </label>
       </div>
-    </div>
+    </section>
   </div>
 </template>

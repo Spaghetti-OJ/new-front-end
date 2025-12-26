@@ -12,7 +12,7 @@ const publicPages = [
   /^\/about$/,
   /^\/announcements\/[0-9A-Fa-f]+$/,
   /^\/settings$/,
-  /^\/password_reset$/,
+  /^\/reset-password$/,
 ];
 
 router.beforeEach(async (to) => {

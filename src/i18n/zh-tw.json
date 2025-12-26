@@ -195,7 +195,6 @@
     "dispname": "顯示名稱",
     "email": "電子郵件",
     "role": "身份",
-    "userId": "使用者名稱",
     "studentId": "學號",
     "introduction": "自我介紹",
     "realName": "真實姓名",
@@ -203,6 +202,8 @@
     "heatmap": "貢獻度",
     "edit": "編輯",
     "noImage": "無頭像",
+    "save": "儲存",
+    "cancel": "取消",
     "signOut": "登出",
     "pw": {
       "change": "變更密碼",
@@ -218,7 +219,15 @@
       "submit": "送出"
     },
     "wrongPassword": "密碼錯誤",
-    "operationFailed": "操作失敗，請稍後再重試"
+    "operationFailed": "操作失敗，請稍後再試",
+    "verifyEmail": "驗證信箱",
+    "verifyEmailSuccess": "驗證信已寄出，請查收。",
+    "verifyEmailFailed": "發送驗證信失敗",
+    "emailNotSet": "請先設定電子郵件",
+    "emailAlreadyVerified": "您的電子郵件已驗證",
+    "verifyEmailSentTitle": "驗證信已發送",
+    "verifyEmailSentMessage": "我們已向您的信箱發送了一封驗證信，請查收。",
+    "close": "關閉"
   },
   "ann": {
     "id": {
@@ -261,8 +270,7 @@
       "ac": "AC 數量統計"
     },
     "loading": "載入排行榜資料中...",
-    "error": "載入排行榜資料失敗，顯示模擬資料。",
-    "mockHint": "(顯示模擬資料)"
+    "error": "載入排行榜資料失敗。"
   },
   "components": {
     "ann": {
@@ -480,6 +488,8 @@
   "errorCode": {
     "ERR001": "登入失敗：帳號或密碼錯誤。",
     "ERR002": "登入失敗：帳號尚未開通，請至 https://v1.noj.tw 驗證信箱以開通帳號。",
+    "ERR003": "註冊失敗：該使用者名稱已經被佔用。",
+    "ERR004": "註冊失敗：該電子郵箱已經被佔用。",
     "UNKNOWN": "未知的錯誤，請洽助教或管理者協助處理，或請稍後再試一次。"
   },
   "password_reset": {

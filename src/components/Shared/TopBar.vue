@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useTheme } from "@/stores/theme";
 import { useSession } from "@/stores/session";
 import { useDark, useToggle, useStorage } from "@vueuse/core";
-import logo from "@/assets/logo.svg";
 import useInteractions from "@/composables/useInteractions";
+import logo from "@/assets/logo.svg";
 
 const { isDesktop } = useInteractions();
 
@@ -26,6 +26,18 @@ const route = useRoute();
 const matchRoute = (path: string) => route.matched.some((r) => r.path === path);
 
 const session = useSession();
+
+const router = useRouter();
+const handleLogout = async () => {
+  try {
+    await api.Auth.logout({ refresh: session.refreshtoken });
+    session.logoutLocally();
+    router.push("/login");
+  } catch (error) {
+    session.logoutLocally();
+    router.push("/login");
+  }
+};
 </script>
 
 <template>
@@ -34,7 +46,6 @@ const session = useSession();
     <div class="flex items-center gap-3">
       <router-link to="/" class="flex items-center gap-2">
         <img :src="logo" alt="NOJ Logo" class="h-8 w-8" />
-        <span class="text-lg font-bold">Normal OJ</span>
       </router-link>
     </div>
 
@@ -117,6 +128,14 @@ const session = useSession();
       <button class="btn btn-ghost btn-sm text-white" @click="() => toggleDark()">
         <i-uil-sun v-if="isDark" class="h-6 w-6" />
         <i-uil-moon v-else class="h-6 w-6" />
+      </button>
+
+      <button
+        v-if="session.isLogin"
+        class="btn btn-ghost btn-sm hidden text-sm uppercase text-white hover:bg-transparent hover:text-accent sm:inline"
+        @click="handleLogout"
+      >
+        Logout
       </button>
     </div>
   </nav>

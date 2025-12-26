@@ -195,7 +195,6 @@
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
-    "userId": "User ID",
     "studentId": "Student ID",
     "introduction": "Introduction",
     "realName": "Real Name",
@@ -203,6 +202,8 @@
     "heatmap": "Heatmap",
     "edit": "Edit",
     "noImage": "No Image",
+    "save": "Save",
+    "cancel": "Cancel",
     "signOut": "Sign out",
     "pw": {
       "change": "Change Password",
@@ -218,7 +219,15 @@
       "submit": "Submit"
     },
     "wrongPassword": "Wrong Password",
-    "operationFailed": "Operation failed, please try again later"
+    "operationFailed": "Operation failed, please try again later",
+    "verifyEmail": "Verify Email",
+    "verifyEmailSuccess": "Verification email sent, please check your inbox.",
+    "verifyEmailFailed": "Failed to send verification email.",
+    "emailNotSet": "Please set an email address first.",
+    "emailAlreadyVerified": "Your email is already verified.",
+    "verifyEmailSentTitle": "Verification Email Sent",
+    "verifyEmailSentMessage": "We have sent a verification email to your inbox. Please check it.",
+    "close": "Close"
   },
   "ann": {
     "id": {
@@ -261,8 +270,7 @@
       "ac": "AC counting"
     },
     "loading": "Loading ranking data...",
-    "error": "Failed to load ranking data. Showing mock data.",
-    "mockHint": "(Showing mock data)"
+    "error": "Failed to load ranking data."
   },
   "components": {
     "ann": {
@@ -327,6 +335,7 @@
         "allowedLangs": "Allowed Languages",
         "testdata": "Testdata",
         "howToPack": "How to pack testdata",
+        "whatischecker": "What is checker",
         "dropFile": "Drop File here or Choose File to upload",
         "subtask": "Subtask {no}",
         "numOfCases": "The number of testcases",
@@ -481,6 +490,8 @@
   "errorCode": {
     "ERR001": "Login Failed: Your username/email or password is incorrect.",
     "ERR002": "Login Failed: Your account is not activated yet, please go to https://v1.noj.tw to verify your email.",
+    "ERR003": "Signup Failed: Your username is already in use.",
+    "ERR004": "Signup Failed: Your email is already in use.",
     "UNKNOWN": "Unknown Error, please contact teaching assistants or NOJ maintainers, or try again later."
   },
   "password_reset": {

@@ -1,71 +1,144 @@
-<script setup>
-import { reactive } from "vue";
+<script setup lang="ts">
+import { reactive, ref, onMounted, toRaw } from "vue";
+import { useRouter } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
 import ProfileField from "@/components/Profile/ProfileField.vue";
 import { useI18n } from "vue-i18n";
+import api from "@/api";
+
 const { t } = useI18n();
+const router = useRouter();
 
-// 這裡先假裝有 user，可以之後接 API
-const user = {
-  realName: "陳育渝",
-  username: "doggggg",
-  role: "Student",
-  email: "41247057S@gapps.ntnu.edu.tw",
-  id: "41247057S",
-  studentId: "41247057S",
-  intro: "哈囉我是資工116",
+const isLoadingProfile = ref(false);
+const loadError = ref<string | null>(null);
+const saveError = ref<string | null>(null);
+const profile = ref<UserProperties | null>(null);
+
+const form = reactive<UserProperties>({
   avatar: "",
-};
+  real_name: "",
+  username: "",
+  role: "",
+  email: "",
+  bio: "",
+  user_id: "",
+  student_id: "",
+  email_verified: false,
+});
 
-const form = reactive({ ...user });
-
-function onAvatarAction(action) {
-  if (action === "save") {
-    // 這裡之後接 API，把 form 丟出去
-    console.log("Save profile", { ...form });
-  }
-  if (action === "cancel") {
-    // 還原成原本 user
-    Object.assign(form, user);
-    console.log("Cancel edit, reset form");
+async function loadProfile() {
+  isLoadingProfile.value = true;
+  loadError.value = null;
+  try {
+    const data = await api.Auth.getProfile();
+    profile.value = data;
+    Object.assign(form, data);
+    // No manual mapping needed now as properties match
+  } catch (error: any) {
+    loadError.value =
+      (error.response?.data as any)?.detail ||
+      (error.response?.data as any)?.message ||
+      error.message ||
+      "Failed to load profile";
+  } finally {
+    isLoadingProfile.value = false;
   }
 }
 
-function onAvatarUpload(file) {
-  console.log("avatar file for upload:", file);
-  // 之後接 API，上傳成功後更新 form.avatar
+onMounted(loadProfile);
+
+const avatarFile = ref<File | null>(null);
+
+function onAvatarUpload(file: File) {
+  avatarFile.value = file;
+}
+
+async function saveProfile() {
+  saveError.value = null;
+  try {
+    const hasChanges =
+      form.email !== profile.value?.email || form.bio !== profile.value?.bio || !!avatarFile.value;
+
+    if (!hasChanges) {
+      router.push("/profile");
+      return;
+    }
+
+    let payload: Partial<UserProperties> | FormData;
+
+    if (avatarFile.value) {
+      const formData = new FormData();
+      formData.append("email", form.email);
+      formData.append("bio", form.bio);
+      formData.append("avatar", toRaw(avatarFile.value));
+      payload = formData;
+    } else {
+      payload = {
+        email: form.email,
+        bio: form.bio,
+      };
+    }
+    const updatedProfile = await api.Auth.updateProfile(payload);
+    avatarFile.value = null;
+    if (updatedProfile && profile.value) {
+      Object.assign(profile.value, updatedProfile);
+    }
+    router.push("/profile");
+  } catch (e: any) {
+    console.error(e);
+    saveError.value =
+      (e.response?.data as any)?.detail ||
+      (e.response?.data as any)?.message ||
+      e.message ||
+      "Failed to update profile";
+  }
+}
+
+function cancelEdit() {
+  if (profile.value) Object.assign(form, profile.value);
+  router.push("/profile"); // 返回
+}
+
+function onAvatarAction(action: string) {
+  if (action === "save") saveProfile();
+  else if (action === "cancel") cancelEdit();
 }
 </script>
 
 <template>
-  <ProfileLayout>
-    <!-- 左邊：頭貼，可編輯 -->
+  <ProfileLayout leftWidth="420px">
+    <!-- 左邊：頭貼 -->
     <template #left>
       <ProfileAvatarBlock
         :avatar-url="form.avatar"
         :editable-avatar="true"
         :buttons="[
-          { label: 'Save', variant: 'primary', action: 'save' },
-          { label: 'Cancel', variant: 'error', action: 'cancel' },
+          { label: t('profile.save'), variant: 'primary', action: 'save' },
+          { label: t('profile.cancel'), variant: 'error', action: 'cancel' },
         ]"
         @click="onAvatarAction"
         @upload="onAvatarUpload"
       />
+      <div v-if="loadError" class="mt-2 text-sm text-error">
+        {{ loadError }}
+      </div>
+      <div v-if="saveError" class="mt-2 text-sm text-error">
+        {{ saveError }}
+      </div>
     </template>
 
-    <!-- 右邊：可編輯資訊欄 -->
+    <!-- 右邊：可編輯資訊 -->
     <template #right>
       <section class="w-full max-w-4xl">
-        <div class="grid grid-cols-1 gap-4">
-          <ProfileField :label="t('profile.realName')" v-model="form.realName" :editable="true" />
-          <ProfileField :label="t('profile.username')" v-model="form.username" :editable="true" />
+        <div class="grid grid-cols-1 gap-4" :class="{ 'pointer-events-none opacity-50': isLoadingProfile }">
+          <ProfileField :label="t('profile.realName')" v-model="form.real_name" :editable="false" />
+          <ProfileField :label="t('profile.username')" v-model="form.username" :editable="false" />
           <ProfileField :label="t('profile.role')" v-model="form.role" :editable="false" />
           <ProfileField :label="t('profile.email')" v-model="form.email" :editable="true" type="email" />
-          <ProfileField :label="t('profile.userId')" v-model="form.id" :editable="true" />
           <ProfileField
             :label="t('profile.introduction')"
-            v-model="form.intro"
+            v-model="form.bio"
             :editable="true"
             type="textarea"
           />

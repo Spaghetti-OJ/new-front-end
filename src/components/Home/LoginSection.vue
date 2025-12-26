@@ -7,8 +7,6 @@ import { required } from "@vuelidate/validators";
 import api from "@/api";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-// @ts-ignore
-import cowsay from "cowsay2";
 
 const envMode = import.meta.env.MODE;
 const envApiBaseUrl = import.meta.env.VITE_APP_API_BASE_URL;
@@ -17,7 +15,6 @@ const route = useRoute();
 const router = useRouter();
 const session = useSession();
 const { t } = useI18n();
-
 const loginForm = reactive({
   username: "",
   password: "",
@@ -43,7 +40,23 @@ async function login() {
     const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
     console.log(tokens);
     await session.setTokens(tokens.access, tokens.refresh);
-    const redirect = (route.query.redirect as string) ?? "/";
+    let redirect = (route.query.redirect as string) ?? "/";
+
+    // Prevent open redirect: must start with / and not //
+    if (!redirect.startsWith("/") || redirect.startsWith("//")) {
+      redirect = "/";
+    }
+
+    try {
+      const redirectUrl = new URL(redirect, window.location.origin);
+      const redirectPath = redirectUrl.pathname;
+      if (redirectPath === "/login" || redirectPath.startsWith("/login/")) {
+        redirect = "/";
+      }
+    } catch {
+      redirect = "/";
+    }
+
     router.replace(redirect);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
@@ -68,7 +81,7 @@ async function login() {
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
+      <div class="card-body pt-0">
         <div v-if="session.isNotValidated" class="flex justify-center">
           <ui-spinner />
         </div>
@@ -114,7 +127,7 @@ async function login() {
               @keydown.enter="login"
             />
             <label class="label flex-row-reverse">
-              <a href="/password_reset" class="link link-hover label-text-alt">{{
+              <a href="/reset-password" class="link link-hover label-text-alt">{{
                 $t("components.loginSection.forgot")
               }}</a>
               <span
@@ -130,7 +143,6 @@ async function login() {
             </button>
           </div>
         </template>
-        <pre class="text-base-100" v-text="cowsay.say(`MODE=${envMode}; API_BASE_URL=${envApiBaseUrl}`)" />
       </div>
     </div>
   </div>

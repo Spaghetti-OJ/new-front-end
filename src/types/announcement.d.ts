@@ -4,18 +4,24 @@ interface AnnouncementForm {
   pinned: boolean;
 }
 
-interface AnnouncementCreationForm extends AnnouncementForm {
-  courseName: string;
+interface AnnouncementCreationForm {
+  title: string;
+  content: string;
+  course_id: number;
+  is_pinned?: boolean;
 }
 
-interface AnnouncementEditionForm extends AnnouncementForm {
-  annId: string;
+interface AnnouncementEditionForm {
+  annId: number;
+  title: string;
+  content: string;
+  is_pinned?: boolean;
 }
 
 interface AnnouncementPreviewForm extends AnnouncementForm {
   createTime: number;
   updateTime: number;
-  creator: Pick<UserInfo, "displayedName">;
+  creator: Pick<UserInfo, "username">;
 }
 
 interface Announcement extends AnnouncementForm {

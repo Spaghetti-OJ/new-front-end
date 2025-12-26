@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useTitle } from "@vueuse/core";
-import { fetcher } from "@/api";
+import api from "@/api";
 
 useTitle("Ranking | Normal OJ");
 
@@ -9,63 +9,19 @@ const ranking = ref<any[]>([]);
 const isLoading = ref(true);
 const error = ref<Error | null>(null);
 
-// ✅ 五筆假資料
-const mockRanking = [
-  {
-    user: {
-      username: "dog123",
-      display_name: "熱氣ㄚ狗",
-      avatar: "https://i.pravatar.cc/100?img=12",
-    },
-    ACProblem: 66,
-  },
-  {
-    user: {
-      username: "cat666",
-      display_name: "笨貓",
-      avatar: "https://i.pravatar.cc/100?img=32",
-    },
-    ACProblem: 64,
-  },
-  {
-    user: {
-      username: "lion77",
-      display_name: "師大大師",
-      avatar: "https://i.pravatar.cc/100?img=25",
-    },
-    ACProblem: 60,
-  },
-  {
-    user: {
-      username: "omuba",
-      display_name: "歐姆嘎抓",
-      avatar: "https://i.pravatar.cc/100?img=47",
-    },
-    ACProblem: 58,
-  },
-  {
-    user: {
-      username: "black87",
-      display_name: "小黑",
-      avatar: "https://i.pravatar.cc/100?img=65",
-    },
-    ACProblem: 43,
-  },
-];
+const getProfileLink = (username: string) => `/profile/${username}`;
 
 onMounted(async () => {
   try {
-    const { data } = await fetcher.get("/ranking");
-    if (data && Array.isArray(data.data)) {
-      ranking.value = data.data;
+    const res = await api.Ranking.getRankingStats();
+    if (res?.ranking && Array.isArray(res.ranking)) {
+      ranking.value = res.ranking;
     } else {
       console.warn("Using mock ranking data...");
-      ranking.value = mockRanking;
     }
   } catch (err: any) {
     console.warn("Failed to fetch /ranking, showing mock data.");
     error.value = err;
-    ranking.value = mockRanking;
   } finally {
     isLoading.value = false;
   }
@@ -101,8 +57,8 @@ onMounted(async () => {
           <tr>
             <th class="w-16 text-center">#</th>
             <th class="w-24 text-center">{{ $t("ranking.table.avatar") }}</th>
-            <th>{{ $t("ranking.table.userId") }}</th>
-            <th>{{ $t("ranking.table.displayName") }}</th>
+            <th>{{ $t("profile.username") }}</th>
+            <th>{{ $t("profile.realName") }}</th>
             <th class="text-right">{{ $t("ranking.table.ac") }}</th>
           </tr>
         </thead>
@@ -110,20 +66,51 @@ onMounted(async () => {
           <tr v-for="(item, index) in ranking" :key="item.user?.username || index" class="hover">
             <td class="text-center font-semibold">{{ index + 1 }}</td>
             <td class="flex justify-center">
-              <div class="avatar">
+              <router-link
+                v-if="item.user?.username"
+                :to="getProfileLink(item.user.username)"
+                class="avatar transition-opacity hover:opacity-80"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
+              >
+                <div class="mask mask-squircle h-10 w-10">
+                  <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
+                </div>
+              </router-link>
+              <div v-else class="avatar">
                 <div class="mask mask-squircle h-10 w-10">
                   <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
                 </div>
               </div>
             </td>
-            <td>{{ item.user?.username || "Unknown" }}</td>
-            <td>{{ item.user?.display_name || "-" }}</td>
+            <td>
+              <router-link
+                v-if="item.user?.username"
+                :to="getProfileLink(item.user.username)"
+                class="hover:underline"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
+              >
+                {{ item.user.username }}
+              </router-link>
+              <span v-else>{{ item.user?.username || "Unknown" }}</span>
+            </td>
+            <td>
+              <router-link
+                v-if="item.user?.username"
+                :to="getProfileLink(item.user.username)"
+                class="link link-hover"
+                :aria-label="`View profile of ${item.user.username}`"
+                :title="`View profile of ${item.user.username}`"
+              >
+                {{ item.user.real_name || "-" }}
+              </router-link>
+              <span v-else>{{ item.user?.real_name || "-" }}</span>
+            </td>
             <td class="text-right">{{ item.ACProblem ?? 0 }}</td>
           </tr>
         </tbody>
       </table>
-
-      <p class="mt-3 text-center text-xs opacity-50">{{ $t("ranking.mockHint") }}</p>
     </div>
   </div>
 </template>
