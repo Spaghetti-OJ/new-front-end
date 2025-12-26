@@ -4,6 +4,32 @@ import api from "@/api";
 type ProblemSelections = { value: string; text: string }[];
 export type ProblemId2Meta = Record<string, { name: string; quota: number }>;
 
+type ProblemListLike = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: ProblemItem[];
+  items?: ProblemItem[];
+  data?: {
+    count?: number;
+    next?: string | null;
+    previous?: string | null;
+    results?: ProblemItem[];
+    items?: ProblemItem[];
+  };
+};
+
+function toProblemList(raw: ProblemListLike | null | undefined): ProblemList {
+  const results = raw?.results ?? raw?.items ?? raw?.data?.results ?? raw?.data?.items ?? [];
+
+  return {
+    count: raw?.count ?? raw?.data?.count ?? results.length,
+    next: raw?.next ?? raw?.data?.next ?? null,
+    previous: raw?.previous ?? raw?.data?.previous ?? null,
+    results,
+  };
+}
+
 export function useProblemSelection(courseId: string) {
   const problems = ref<ProblemList>();
   const error = ref<unknown>(null);
@@ -16,30 +42,7 @@ export function useProblemSelection(courseId: string) {
         page_size: 1000,
         course_id: Number(courseId),
       });
-      const rawData = data ?? {};
-      const results = Array.isArray((rawData as any).results)
-        ? (rawData as any).results
-        : Array.isArray((rawData as any).items)
-        ? (rawData as any).items
-        : Array.isArray((rawData as any).data?.results)
-        ? (rawData as any).data.results
-        : Array.isArray((rawData as any).data?.items)
-        ? (rawData as any).data.items
-        : [];
-
-      const count =
-        typeof (rawData as any).count === "number"
-          ? (rawData as any).count
-          : typeof (rawData as any).data?.count === "number"
-          ? (rawData as any).data.count
-          : results.length;
-
-      problems.value = {
-        count,
-        next: (rawData as any).next ?? (rawData as any).data?.next ?? null,
-        previous: (rawData as any).previous ?? (rawData as any).data?.previous ?? null,
-        results,
-      };
+      problems.value = toProblemList(data as ProblemListLike);
     } catch (e) {
       error.value = e;
     } finally {
