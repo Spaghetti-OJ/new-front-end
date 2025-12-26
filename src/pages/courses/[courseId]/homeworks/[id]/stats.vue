@@ -180,7 +180,6 @@ function getCellColor(problem: HomeworkScoreboardItemProblem | undefined) {
   if (!problem) return "";
   if (problem.solve_status === "solved") return "bg-green-300 text-neutral";
   if (problem.solve_status === "partial") return "bg-yellow-200 text-neutral";
-  if (problem.best_score > 0) return "bg-red-200 text-neutral"; // Unsolved but has score? usually partial covers this, but just in case
   return "bg-gray-100"; // Unsolved
 }
 
