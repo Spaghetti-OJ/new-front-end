@@ -7,7 +7,12 @@ import axios from "axios";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
+
+function basename(p: string) {
+  return p.split("/").pop() ?? p;
+}
 
 function parseZipFilenames(filenames: string[]) {
   const re = /^(\d{2})(\d{2})\.(in|out)$/;
@@ -16,8 +21,10 @@ function parseZipFilenames(filenames: string[]) {
   const outSet = new Set<string>();
 
   for (const f of filenames) {
-    const m = f.match(re);
+    const base = basename(f);
+    const m = base.match(re);
     if (!m) continue;
+
     const stem = `${m[1]}${m[2]}`; // sstt
     if (m[3] === "in") inSet.add(stem);
     else outSet.add(stem);
@@ -39,6 +46,7 @@ function parseZipFilenames(filenames: string[]) {
       outFile: `${stem}.out`,
     });
   }
+
   pairs.sort((a, b) => a.ss - b.ss || a.tt - b.tt);
   return { pairs };
 }

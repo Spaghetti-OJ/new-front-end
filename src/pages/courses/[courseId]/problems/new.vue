@@ -8,6 +8,7 @@ import api from "@/api";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
 function basename(p: string) {
@@ -50,6 +51,7 @@ function parseZipFilenames(filenames: string[]) {
   pairs.sort((a, b) => a.ss - b.ss || a.tt - b.tt);
   return { pairs };
 }
+
 async function getZipFilenames(file: File): Promise<string[]> {
   const reader = new ZipReader(new BlobReader(file));
   const entries = await reader.getEntries();
