@@ -99,7 +99,7 @@ const handleResetSubmit = async () => {
   try {
     const res: any = await api.Auth.resetPassword({
       token: token.value,
-      password: form.password,
+      new_password: form.password,
     });
 
     if (res.status === "ok" || !res.status) {
