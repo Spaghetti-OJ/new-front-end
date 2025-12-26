@@ -29,7 +29,7 @@ const session = useSession();
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(pid, index) in homework.problemIds">
+      <tr v-for="(pid, index) in homework.problem_ids">
         <td>{{ index + 1 }}</td>
         <td>
           <router-link class="link" :to="`/courses/${$route.params.courseId}/problems/${pid}`">
@@ -50,8 +50,8 @@ const session = useSession();
         <td>
           {{
             (
-              homework.studentStatus[session.username] &&
-              homework.studentStatus[session.username][pid.toString()]
+              (homework.studentStatus as any)[session.username] &&
+              (homework.studentStatus as any)[session.username][pid.toString()]
             )?.score || "-"
           }}
         </td>
