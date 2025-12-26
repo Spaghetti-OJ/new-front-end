@@ -12,7 +12,8 @@ export const Problem = {
   create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
   getProblemInfo: (problemId: number) => fetcher.get<ProblemInfo>(`/problem/${problemId}`),
-  getTestCaseUrl: (problemId: number) => `${fetcher.defaults.baseURL}/problem/${problemId}/testcase`,
+  getTestCaseUrl: (problemId: number) =>
+    fetcher.get(`/problem/${problemId}/test-case`, { responseType: "blob" }),
   modify: (id: string | number, body: ProblemCreatePayload) => fetcher.put(`/problem/manage/${id}`, body),
   modifyTestdata: (id: string | number, body: FormData) =>
     fetcher.put(`/problem/manage/${id}`, body, { headers: { "Content-Type": "multipart/form-data" } }),
