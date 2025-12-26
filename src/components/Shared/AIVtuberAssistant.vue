@@ -119,7 +119,7 @@ function clampAvatarPosition() {
   const maxX = viewport.value.width - AVATAR_SIZE - MARGIN;
   const maxY = viewport.value.height - AVATAR_TOTAL_HEIGHT - MARGIN;
 
-  position.value.x = Math.max(MARGIN, Math.min(maxX, position.value.x));
+  position.value.x = maxX;
   position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
 }
 
@@ -197,26 +197,8 @@ function snapToEdge() {
   const maxX = viewport.value.width - width - MARGIN;
   const maxY = viewport.value.height - height - MARGIN;
 
-  // 邊距計算
-  const x = position.value.x;
-  const y = position.value.y;
-
-  const left = x;
-  const right = viewport.value.width - x - width;
-  const top = y;
-  const bottom = viewport.value.height - y - height;
-
-  const minDist = Math.min(left, right, top, bottom);
-
-  if (minDist === left) {
-    position.value.x = MARGIN;
-  } else if (minDist === right) {
-    position.value.x = maxX;
-  } else if (minDist === top) {
-    position.value.y = MARGIN;
-  } else {
-    position.value.y = maxY;
-  }
+  position.value.x = maxX;
+  position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
 }
 
 onMounted(() => {
