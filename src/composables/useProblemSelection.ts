@@ -19,13 +19,14 @@ type ProblemListLike = {
   };
 };
 
-function toProblemList(raw: ProblemListLike | null | undefined): ProblemList {
-  const results = raw?.results ?? raw?.items ?? raw?.data?.results ?? raw?.data?.items ?? [];
+function toProblemList(raw: unknown): ProblemList {
+  const data = (raw ?? null) as ProblemListLike | null;
+  const results = data?.results ?? data?.items ?? data?.data?.results ?? data?.data?.items ?? [];
 
   return {
-    count: raw?.count ?? raw?.data?.count ?? results.length,
-    next: raw?.next ?? raw?.data?.next ?? null,
-    previous: raw?.previous ?? raw?.data?.previous ?? null,
+    count: data?.count ?? data?.data?.count ?? results.length,
+    next: data?.next ?? data?.data?.next ?? null,
+    previous: data?.previous ?? data?.data?.previous ?? null,
     results,
   };
 }
@@ -42,7 +43,7 @@ export function useProblemSelection(courseId: string) {
         page_size: 1000,
         course_id: Number(courseId),
       });
-      problems.value = toProblemList(data as ProblemListLike);
+      problems.value = toProblemList(data);
     } catch (e) {
       error.value = e;
     } finally {

@@ -8,6 +8,33 @@ import useInteractions from "@/composables/useInteractions";
 import api from "@/api";
 import TagList from "@/components/Shared/TagList.vue";
 
+type ProblemListLike = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: ProblemItem[];
+  items?: ProblemItem[];
+  data?: {
+    count?: number;
+    next?: string | null;
+    previous?: string | null;
+    results?: ProblemItem[];
+    items?: ProblemItem[];
+  };
+};
+
+function toProblemList(raw: unknown): ProblemList {
+  const data = (raw ?? null) as ProblemListLike | null;
+  const results = data?.results ?? data?.items ?? data?.data?.results ?? data?.data?.items ?? [];
+
+  return {
+    count: data?.count ?? data?.data?.count ?? results.length,
+    next: data?.next ?? data?.data?.next ?? null,
+    previous: data?.previous ?? data?.data?.previous ?? null,
+    results,
+  };
+}
+
 const session = useSession();
 const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
 const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
@@ -31,30 +58,8 @@ async function loadProblems() {
       page_size: 1000, // Fetch all for client-side filtering
     });
 
-    const rawData = res.data ?? res;
-    const results = Array.isArray((rawData as any).results)
-      ? (rawData as any).results
-      : Array.isArray((rawData as any).items)
-      ? (rawData as any).items
-      : Array.isArray((rawData as any).data?.results)
-      ? (rawData as any).data.results
-      : Array.isArray((rawData as any).data?.items)
-      ? (rawData as any).data.items
-      : [];
-
-    const count =
-      typeof (rawData as any).count === "number"
-        ? (rawData as any).count
-        : typeof (rawData as any).data?.count === "number"
-        ? (rawData as any).data.count
-        : results.length;
-
-    problems.value = {
-      count,
-      next: (rawData as any).next ?? (rawData as any).data?.next ?? null,
-      previous: (rawData as any).previous ?? (rawData as any).data?.previous ?? null,
-      results,
-    };
+    const rawData = (res as { data?: unknown }).data ?? res;
+    problems.value = toProblemList(rawData);
   } catch (err) {
     console.error(err);
     error.value = err;
