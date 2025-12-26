@@ -254,8 +254,13 @@ function renderMarkdownSafe(text: string): string {
 }
 
 // ✅ 開關聊天視窗
-function toggleAssistant() {
-  if (isDragging.value || hasDragged.value) return;
+function toggleAssistant(event?: Event) {
+  if (
+    (event instanceof MouseEvent || event instanceof PointerEvent) &&
+    (isDragging.value || hasDragged.value)
+  ) {
+    return;
+  }
   isOpen.value = !isOpen.value;
   error.value = null;
   void nextTick(() => {
