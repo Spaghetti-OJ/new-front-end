@@ -36,7 +36,7 @@ async function getProblem() {
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
       tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
-      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseId: p.course_id ? Number(p.course_id) : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
       acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0,
     }));
@@ -60,10 +60,13 @@ const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p)
 const allCourses = computed(() => {
   const map = new Map<number, string>();
   baseProblems.value.forEach((p) => {
-    map.set(p.courseId, p.courseName);
+    if (p.courseId !== -1) {
+      map.set(p.courseId, p.courseName);
+    }
   });
   return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
 });
+
 const allDiffs = [
   { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
   { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
@@ -118,7 +121,7 @@ async function searchProblems() {
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
       tags: p.tags.map((t: any) => (typeof t === "string" ? t : t.name)),
-      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseId: p.course_id ? Number(p.course_id) : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
       acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
     }));
@@ -129,7 +132,7 @@ async function searchProblems() {
     isLoading.value = false;
   }
 }
-onMounted(() => {
+onMounted(async () => {
   getProblem();
 });
 </script>
