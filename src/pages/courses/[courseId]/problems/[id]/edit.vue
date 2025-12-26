@@ -39,7 +39,7 @@ function parseZipFilenames(filenames: string[]) {
       outFile: `${stem}.out`,
     });
   }
-  pairs.sort((a, b) => (a.ss - b.ss) || (a.tt - b.tt));
+  pairs.sort((a, b) => a.ss - b.ss || a.tt - b.tt);
   return { pairs };
 }
 
@@ -64,7 +64,7 @@ async function getManage() {
   try {
     isFetching.value = true;
     const problemId = Number(route.params.id);
-   
+
     const { data: problemData } = await api.Problem.getManageData(problemId);
     const { data: subtasks } = await api.Problem.getSubtasks(problemId);
     const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
@@ -157,7 +157,7 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id:String(route.params.courseId), // 後端要 UUID
+    course_id: String(route.params.courseId), // 後端要 UUID
 
     difficulty: "medium" as "easy" | "medium" | "hard",
     is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
@@ -190,15 +190,13 @@ async function submit() {
     const payload = mapProblemFormToPayload(edittingProblem.value);
     await api.Problem.modify(problemId, payload);
 
-
     const tcRes = await api.Problem.getTestCases(problemId);
-    for (const tc of (tcRes.data ?? [])) {
+    for (const tc of tcRes.data ?? []) {
       await api.Problem.deleteTestCase(problemId, tc.id);
     }
 
-
     const subtaskRes = await api.Problem.getSubtasks(problemId);
-    for (const s of (subtaskRes.data ?? [])) {
+    for (const s of subtaskRes.data ?? []) {
       await api.Problem.deleteSubtasks(problemId, s.id);
     }
 
@@ -217,13 +215,12 @@ async function submit() {
       subtaskIdByNo.set(i + 1, created.data.id);
     }
 
-  
     if (testdata.value) {
       const filenames = await getZipFilenames(testdata.value);
       const { pairs } = parseZipFilenames(filenames);
 
       for (const p of pairs) {
-        const subtaskNo = p.ss + 1;         
+        const subtaskNo = p.ss + 1;
         const subtaskId = subtaskIdByNo.get(subtaskNo);
         if (!subtaskId) {
           // zip 可能有 ss=03，但你 tasks 只有 2 個 => 直接報錯比較好
@@ -232,7 +229,7 @@ async function submit() {
 
         await api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt+1,            
+          idx: p.tt + 1,
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
@@ -267,9 +264,9 @@ async function delete_() {
   if (!confirm("Are u sure?")) return;
   try {
     const problemId = Number(route.params.id);
-    const res= await api.Problem.getTestCases(Number(route.params.id));
-    for(let i = 0; i < res.data.length; i++){
-      await api.Problem.deleteTestCase(Number(route.params.id),res.data[i].id);
+    const res = await api.Problem.getTestCases(Number(route.params.id));
+    for (let i = 0; i < res.data.length; i++) {
+      await api.Problem.deleteTestCase(Number(route.params.id), res.data[i].id);
     }
     const subtaskres = await api.Problem.getSubtasks(problemId);
     for (const subtask of subtaskres.data) {

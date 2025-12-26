@@ -38,10 +38,17 @@ export const Problem = {
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
   createTestCase: (problemId: number, body: CreateTestCaseBody) =>
     fetcher.post(`/problem/${problemId}/test-cases`, body),
-   deleteTestCase: (problemId: number, caseId: number) =>
+  deleteTestCase: (problemId: number, caseId: number) =>
     fetcher.delete(`/problem/${problemId}/test-cases/${caseId}`),
-   getTestCases: (problemId: number) =>
-    fetcher.get<{ data: Array<{ id: number; subtask_id: number; idx: number; input_path: string; output_path: string; status: string }> }>(
-      `/problem/${problemId}/test-cases`,
-    ),
+  getTestCases: (problemId: number) =>
+    fetcher.get<{
+      data: Array<{
+        id: number;
+        subtask_id: number;
+        idx: number;
+        input_path: string;
+        output_path: string;
+        status: string;
+      }>;
+    }>(`/problem/${problemId}/test-cases`),
 };

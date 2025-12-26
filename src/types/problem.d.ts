@@ -114,11 +114,11 @@ interface ProblemForm {
   allowedDomains: string[];
 }
 interface CreateTestCaseBody {
-  subtask_id: number; 
+  subtask_id: number;
   idx: number;
-  input_path: string;   
-  output_path: string; 
-  status?: "ready"; 
+  input_path: string;
+  output_path: string;
+  status?: "ready";
 }
 interface ProblemCreatePayload {
   title: string;

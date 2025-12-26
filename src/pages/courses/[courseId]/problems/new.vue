@@ -47,7 +47,7 @@ function parseZipFilenames(filenames: string[]) {
     });
   }
 
-  pairs.sort((a, b) => (a.ss - b.ss) || (a.tt - b.tt));
+  pairs.sort((a, b) => a.ss - b.ss || a.tt - b.tt);
   return { pairs };
 }
 async function getZipFilenames(file: File): Promise<string[]> {
@@ -146,7 +146,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id: courseId, 
+    course_id: courseId,
 
     difficulty: "medium" as "easy" | "medium" | "hard",
     is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
@@ -178,39 +178,38 @@ async function submit() {
   const { pairs } = parseZipFilenames(filenames);
   formElement.value.isLoading = true;
   try {
-    
     const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;
     const tasks = newProblem.value.testCaseInfo.tasks;
 
-for (let i = 0; i < tasks.length; i++) {
-  const t = tasks[i];
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
 
-  // 1) 建 subtask
-  const subRes = await api.Problem.createSubtasks(problemId, {
-    subtask_no: i + 1,
-    weight: t.taskScore,
-    time_limit_ms: t.timeLimit,
-    memory_limit_mb: Math.ceil(t.memoryLimit),
-  });
-  const subtaskId = subRes.data.id;
+      // 1) 建 subtask
+      const subRes = await api.Problem.createSubtasks(problemId, {
+        subtask_no: i + 1,
+        weight: t.taskScore,
+        time_limit_ms: t.timeLimit,
+        memory_limit_mb: Math.ceil(t.memoryLimit),
+      });
+      const subtaskId = subRes.data.id;
 
-  // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i
-  const subPairs = pairs.filter((p) => p.ss === i);
+      // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i
+      const subPairs = pairs.filter((p) => p.ss === i);
 
-  // 3) 逐筆建立 test case
-  for (const p of subPairs) {
-    const res=await api.Problem.createTestCase(problemId, {
-      subtask_id: subtaskId,
-      idx: p.tt + 1,         
-      input_path: p.inFile,  
-      output_path: p.outFile,
-      status: "ready",
-    });
-    console.log(res);
-  }
-}
+      // 3) 逐筆建立 test case
+      for (const p of subPairs) {
+        const res = await api.Problem.createTestCase(problemId, {
+          subtask_id: subtaskId,
+          idx: p.tt + 1,
+          input_path: p.inFile,
+          output_path: p.outFile,
+          status: "ready",
+        });
+        console.log(res);
+      }
+    }
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
