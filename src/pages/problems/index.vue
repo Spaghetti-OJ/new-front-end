@@ -54,12 +54,6 @@ const selectedCourses = ref<number[]>([]);
 const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
 
-watch(q, (newVal) => {
-  if (!newVal) {
-    getProblem();
-  }
-});
-
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
 const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
 
