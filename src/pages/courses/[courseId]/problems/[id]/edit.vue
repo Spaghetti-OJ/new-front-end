@@ -219,7 +219,7 @@ async function submit() {
       const filenames = await getZipFilenames(testdata.value);
       const { pairs } = parseZipFilenames(filenames);
 
-      for (const p of pairs) {
+      const createTestCasePromises = pairs.map((p) => {
         const subtaskNo = p.ss + 1;
         const subtaskId = subtaskIdByNo.get(subtaskNo);
         if (!subtaskId) {
@@ -227,14 +227,16 @@ async function submit() {
           throw new Error(`Zip refers to subtask ss=${p.ss} but subtask_no=${subtaskNo} not found`);
         }
 
-        await api.Problem.createTestCase(problemId, {
+        return api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
           idx: p.tt + 1,
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
         });
-      }
+      });
+
+      await Promise.all(createTestCasePromises);
 
       // F) 最後才上傳 zip（題目層級 zip）
       const fd = new FormData();
