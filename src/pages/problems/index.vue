@@ -141,7 +141,7 @@ onMounted(async () => {
 watch(
   q,
   (value) => {
-    if (searchTimer.value != null) {
+    if (searchTimer.value !== null) {
       window.clearTimeout(searchTimer.value);
     }
     searchTimer.value = window.setTimeout(() => {
