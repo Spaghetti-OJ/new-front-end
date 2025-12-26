@@ -41,14 +41,14 @@ export const Problem = {
   deleteTestCase: (problemId: number, caseId: number) =>
     fetcher.delete(`/problem/${problemId}/test-cases/${caseId}`),
   getTestCases: (problemId: number) =>
-    fetcher.get<
-      Array<{
+    fetcher.get<{
+      data: Array<{
         id: number;
         subtask_id: number;
         idx: number;
         input_path: string;
         output_path: string;
         status: string;
-      }>
-    >(`/problem/${problemId}/test-cases`),
+      }>;
+    }>(`/problem/${problemId}/test-cases`),
 };
