@@ -24,7 +24,7 @@ async function loadProfile() {
   try {
     const data = await api.Auth.getProfile();
     profile.value = data;
-    if (data && data.user_id) {
+    if (data && data.user_id && data.email_verified) {
       const results = await Promise.allSettled([
         loadStats(data.user_id),
         loadSubmissionActivity(data.user_id),
@@ -177,6 +177,7 @@ async function sendVerifyEmail() {
         </div>
         <div class="mt-4">
           <ProfileProgressBar
+            v-if="profile.email_verified"
             :contributions="heatmapData"
             :submission="stats?.total_submissions ?? 0"
             :acceptance="stats?.accept_percent ?? 0"
