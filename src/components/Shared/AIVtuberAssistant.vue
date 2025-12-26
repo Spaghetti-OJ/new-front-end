@@ -43,6 +43,10 @@ const CHAT_WIDTH = 512;
 const CHAT_HEIGHT = 520;
 const MARGIN = 20;
 const CHAT_GAP = 16;
+const INERTIA_VELOCITY_MULTIPLIER = 20;
+const INERTIA_FRICTION = 0.95;
+const INERTIA_THRESHOLD = 0.05;
+const DRAG_THRESHOLD = 4;
 
 const isDragging = ref(false);
 const hasDragged = ref(false);
@@ -90,7 +94,7 @@ function onDrag(e: MouseEvent) {
   if (!hasDragged.value) {
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
-    if (Math.hypot(dx, dy) > 4) {
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
       hasDragged.value = true;
     }
   }
@@ -108,28 +112,19 @@ function onDrag(e: MouseEvent) {
   position.value.x = e.clientX - offsetX;
   position.value.y = e.clientY - offsetY;
 
-  // 不超出邊界
-  const width = AVATAR_SIZE;
-  const height = AVATAR_TOTAL_HEIGHT;
+  clampAvatarPosition();
+}
 
-  const maxX = viewport.value.width - width - MARGIN;
-  const maxY = viewport.value.height - height - MARGIN;
+function clampAvatarPosition() {
+  const maxX = viewport.value.width - AVATAR_SIZE - MARGIN;
+  const maxY = viewport.value.height - AVATAR_TOTAL_HEIGHT - MARGIN;
 
   position.value.x = Math.max(MARGIN, Math.min(maxX, position.value.x));
-  position.value.x = maxX;
   position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
 }
 
 function clampPosition() {
-  const width = AVATAR_SIZE;
-  const height = AVATAR_TOTAL_HEIGHT;
-
-  const maxX = viewport.value.width - width - MARGIN;
-  const maxY = viewport.value.height - height - MARGIN;
-
-  position.value.x = Math.max(MARGIN, Math.min(maxX, position.value.x));
-  position.value.x = maxX;
-  position.value.y = Math.max(MARGIN, Math.min(maxY, position.value.y));
+  clampAvatarPosition();
 }
 
 const chatPosition = computed(() => {
@@ -172,22 +167,17 @@ function stopDrag() {
 
 // 慣性移動 + 吸附邊界
 function applyInertiaAndSnap() {
-  let friction = 0.95;
-  let threshold = 0.05;
+  let friction = INERTIA_FRICTION;
+  let threshold = INERTIA_THRESHOLD;
 
   function animate() {
     velocityX *= friction;
     velocityY *= friction;
 
-    position.value.x += velocityX * 20;
-    position.value.y += velocityY * 20;
+    position.value.x += velocityX * INERTIA_VELOCITY_MULTIPLIER;
+    position.value.y += velocityY * INERTIA_VELOCITY_MULTIPLIER;
 
-    const inertiaMaxX = viewport.value.width - MARGIN - AVATAR_SIZE;
-    const inertiaMaxY = viewport.value.height - MARGIN - AVATAR_TOTAL_HEIGHT;
-
-    position.value.x = Math.max(MARGIN, Math.min(inertiaMaxX, position.value.x));
-    position.value.y = Math.max(MARGIN, Math.min(inertiaMaxY, position.value.y));
-    position.value.x = inertiaMaxX;
+    clampAvatarPosition();
 
     if (Math.abs(velocityX) > threshold || Math.abs(velocityY) > threshold) {
       requestAnimationFrame(animate);
@@ -218,7 +208,9 @@ function snapToEdge() {
 
   const minDist = Math.min(left, right, top, bottom);
 
-  if (minDist === right) {
+  if (minDist === left) {
+    position.value.x = MARGIN;
+  } else if (minDist === right) {
     position.value.x = maxX;
   } else if (minDist === top) {
     position.value.y = MARGIN;
