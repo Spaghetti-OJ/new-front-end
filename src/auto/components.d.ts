@@ -36,6 +36,8 @@ declare module '@vue/runtime-core' {
     IUilFileUploadAlt: typeof import('~icons/uil/file-upload-alt')['default']
     IUilFolderDownload: typeof import('~icons/uil/folder-download')['default']
     IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
+    IUilLeftArrowToLeft: typeof import('~icons/uil/left-arrow-to-left')['default']
+    IUilLink: typeof import('~icons/uil/link')['default']
     IUilMinus: typeof import('~icons/uil/minus')['default']
     IUilMonitor: typeof import('~icons/uil/monitor')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']
