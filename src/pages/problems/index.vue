@@ -120,7 +120,7 @@ async function searchProblems() {
       tags: p.tags.map((t: any) => t.name),
       courseId: typeof p.course_id === "number" ? p.course_id : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: Number(p.acceptance_rate) / 100, // "50.00" -> 0.5
+      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
     }));
   } catch (err) {
     console.error("searchProblems error:", err);
