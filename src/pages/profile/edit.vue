@@ -36,7 +36,11 @@ async function loadProfile() {
     Object.assign(form, data);
     // No manual mapping needed now as properties match
   } catch (error: any) {
-    loadError.value = error?.message || "Failed to load profile";
+    loadError.value =
+      (error.response?.data as any)?.detail ||
+      (error.response?.data as any)?.message ||
+      error.message ||
+      "Failed to load profile";
   } finally {
     isLoadingProfile.value = false;
   }
@@ -83,14 +87,11 @@ async function saveProfile() {
     router.push("/profile");
   } catch (e: any) {
     console.error(e);
-    if (e.response && e.response.data) {
-      const errorDetail = e.response.data.data || e.response.data;
-      // Format error details for display
-      saveError.value =
-        typeof errorDetail === "object" ? Object.values(errorDetail).flat().join(", ") : String(errorDetail);
-    } else {
-      saveError.value = "Failed to update profile";
-    }
+    saveError.value =
+      (e.response?.data as any)?.detail ||
+      (e.response?.data as any)?.message ||
+      e.message ||
+      "Failed to update profile";
   }
 }
 

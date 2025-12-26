@@ -6,7 +6,60 @@ import api from "@/api";
 import axios from "axios";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
+import { ZipReader, BlobReader } from "@zip.js/zip.js";
 
+type Pair = { ss: number; tt: number; inFile: string; outFile: string };
+
+function basename(path: string): string {
+  const slashIndex = path.lastIndexOf("/");
+  const backslashIndex = path.lastIndexOf("\\");
+  const index = Math.max(slashIndex, backslashIndex);
+  return index === -1 ? path : path.slice(index + 1);
+}
+
+function parseZipFilenames(filenames: string[]) {
+  const re = /^(\d{2})(\d{2})\.(in|out)$/;
+
+  const inSet = new Set<string>();
+  const outSet = new Set<string>();
+
+  for (const f of filenames) {
+    const base = basename(f);
+    const m = base.match(re);
+    if (!m) continue;
+
+    const stem = `${m[1]}${m[2]}`; // sstt
+    if (m[3] === "in") inSet.add(stem);
+    else outSet.add(stem);
+  }
+
+  const allStems = new Set([...inSet, ...outSet]);
+  for (const stem of allStems) {
+    if (!inSet.has(stem) || !outSet.has(stem)) {
+      throw new Error(`Input/Output not matched at ${stem}`);
+    }
+  }
+
+  const pairs: Pair[] = [];
+  for (const stem of allStems) {
+    pairs.push({
+      ss: Number(stem.slice(0, 2)),
+      tt: Number(stem.slice(2, 4)),
+      inFile: `${stem}.in`,
+      outFile: `${stem}.out`,
+    });
+  }
+
+  pairs.sort((a, b) => a.ss - b.ss || a.tt - b.tt);
+  return { pairs };
+}
+
+async function getZipFilenames(file: File): Promise<string[]> {
+  const reader = new ZipReader(new BlobReader(file));
+  const entries = await reader.getEntries();
+  await reader.close();
+  return entries.map((e) => e.filename);
+}
 const route = useRoute();
 const router = useRouter();
 useTitle(`Edit Problem - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
@@ -22,6 +75,7 @@ async function getManage() {
   try {
     isFetching.value = true;
     const problemId = Number(route.params.id);
+
     const { data: problemData } = await api.Problem.getManageData(problemId);
     const { data: subtasks } = await api.Problem.getSubtasks(problemId);
     const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
@@ -114,7 +168,7 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
   return {
     title: p.problemName,
     description: p.description.description,
-    course_id: courseId, // 後端要 UUID
+    course_id: String(route.params.courseId), // 後端要 UUID
 
     difficulty: "medium" as "easy" | "medium" | "hard",
     is_public: (p.status === 0 ? "public" : "hidden") as "public" | "hidden" | "course",
@@ -140,42 +194,86 @@ async function submit() {
   if (!edittingProblem.value || !formElement.value) return;
 
   formElement.value.isLoading = true;
+
   try {
+    const problemId = Number(route.params.id);
+
     const payload = mapProblemFormToPayload(edittingProblem.value);
-    await api.Problem.modify(route.params.id as string, payload);
-    const tasks = edittingProblem.value.testCaseInfo.tasks;
-    const subtaskres = await api.Problem.getSubtasks(Number(route.params.id));
-    for (const subtask of subtaskres.data) {
-      await api.Problem.deleteSubtasks(Number(route.params.id), subtask.id);
+    await api.Problem.modify(problemId, payload);
+
+    const tcRes = await api.Problem.getTestCases(problemId);
+    const testCases = (tcRes.data as any).data || tcRes.data || [];
+    await Promise.all(
+      (Array.isArray(testCases) ? testCases : []).map((tc: any) =>
+        api.Problem.deleteTestCase(problemId, tc.id),
+      ),
+    );
+
+    const subtaskRes = await api.Problem.getSubtasks(problemId);
+    for (const s of subtaskRes.data ?? []) {
+      await api.Problem.deleteSubtasks(problemId, s.id);
     }
+
+    const tasks = edittingProblem.value.testCaseInfo.tasks;
+    const subtaskIdByNo = new Map<number, number>();
+
     for (let i = 0; i < tasks.length; i++) {
       const t = tasks[i];
-
-      await api.Problem.createSubtasks(Number(route.params.id), {
+      const created = await api.Problem.createSubtasks(problemId, {
         subtask_no: i + 1,
         weight: t.taskScore,
         time_limit_ms: t.timeLimit,
         memory_limit_mb: Math.ceil(t.memoryLimit),
       });
+
+      subtaskIdByNo.set(i + 1, created.data.id);
     }
+
     if (testdata.value) {
-      const testdataForm = new FormData();
-      testdataForm.append("case", testdata.value);
-      await api.Problem.modifyTestdata(Number(route.params.id), testdataForm);
+      const filenames = await getZipFilenames(testdata.value);
+      const { pairs } = parseZipFilenames(filenames);
+
+      if (pairs.length === 0) {
+        throw new Error("No valid test case files (XXYY.in/out) found in the zip archive.");
+      }
+
+      const createTestCasePromises = pairs.map((p) => {
+        const subtaskNo = p.ss;
+        const subtaskId = subtaskIdByNo.get(subtaskNo);
+        if (!subtaskId) {
+          // zip 可能有 ss=03，但你 tasks 只有 2 個 => 直接報錯比較好
+          throw new Error(`Zip refers to subtask ss=${p.ss} but subtask_no=${subtaskNo} not found`);
+        }
+
+        return api.Problem.createTestCase(problemId, {
+          subtask_id: subtaskId,
+          idx: p.tt,
+          input_path: p.inFile,
+          output_path: p.outFile,
+          status: "ready",
+        });
+      });
+
+      await Promise.all(createTestCasePromises);
+
+      // F) 最後才上傳 zip（題目層級 zip）
+      const fd = new FormData();
+      fd.append("case", testdata.value);
+      await api.Problem.modifyTestdata(problemId, fd);
     }
-    router.push(`/courses/${route.params.courseId}/problems/${route.params.id}`);
+
+    router.push(`/courses/${route.params.courseId}/problems/${problemId}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
     } else {
-      formElement.value.errorMsg = "Unknown error occurred :(";
+      formElement.value.errorMsg = error instanceof Error ? error.message : "Unknown error occurred :(";
     }
     throw error;
   } finally {
     formElement.value.isLoading = false;
   }
 }
-
 async function discard() {
   if (!confirm("Are u sure?")) return;
   router.push(`/courses/${route.params.courseId}/problems`);
@@ -186,6 +284,13 @@ async function delete_() {
   if (!confirm("Are u sure?")) return;
   try {
     const problemId = Number(route.params.id);
+    const res = await api.Problem.getTestCases(Number(route.params.id));
+    const testCases = (res.data as any).data || res.data || [];
+    await Promise.all(
+      (Array.isArray(testCases) ? testCases : []).map((tc: any) =>
+        api.Problem.deleteTestCase(Number(route.params.id), tc.id),
+      ),
+    );
     const subtaskres = await api.Problem.getSubtasks(problemId);
     for (const subtask of subtaskres.data) {
       await api.Problem.deleteSubtasks(problemId, subtask.id);

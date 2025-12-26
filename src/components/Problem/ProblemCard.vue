@@ -19,8 +19,17 @@ async function getSubtasks() {
   const res = (await api.Problem.getSubtasks(Number(route.params.id))).data;
   subtasks.value = res;
 }
-function downloadTestCase(problemId: number) {
-  window.location.assign(api.Problem.getTestCaseUrl(problemId));
+async function downloadTestCase(problemId: number) {
+  const res = await api.Problem.getTestCaseUrl(problemId);
+
+  const url = URL.createObjectURL(res.data);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `problem-${problemId}-testcases.zip`;
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
 
 const samples = computed(() => {

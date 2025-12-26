@@ -47,11 +47,11 @@ async function submit() {
 
     router.push(`/courses/${route.params.courseId}/announcements/${annId}`);
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      formElement.value.errorMsg = error.response.data.message;
-    } else {
-      formElement.value.errorMsg = "Unknown error occurred :(";
-    }
+    formElement.value.errorMsg =
+      (error as any).response?.data?.detail ||
+      (error as any).response?.data?.message ||
+      (error as any).message ||
+      "Unknown error occurred :(";
     throw error;
   } finally {
     formElement.value.isLoading = false;
