@@ -11,8 +11,11 @@ import { ZipReader, BlobReader } from "@zip.js/zip.js";
 
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
-function basename(p: string) {
-  return p.split("/").pop() ?? p;
+function basename(path: string): string {
+  const slashIndex = path.lastIndexOf("/");
+  const backslashIndex = path.lastIndexOf("\\");
+  const index = Math.max(slashIndex, backslashIndex);
+  return index === -1 ? path : path.slice(index + 1);
 }
 
 function parseZipFilenames(filenames: string[]) {
