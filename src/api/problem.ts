@@ -1,7 +1,8 @@
 import { fetcher } from "./fetcher";
 
 export const Problem = {
-  getProblemList: () => fetcher.get<ProblemList>("/search/problems"),
+  getProblemList: (params?: { page_size?: number; course_id?: number | string; [key: string]: any }) =>
+    fetcher.get<ProblemList>("/search/problems", { params }),
   getManageData: (problemId: string | number) => fetcher.get(`/problem/manage/${problemId}`),
   create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
