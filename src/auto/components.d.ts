@@ -22,6 +22,7 @@ declare module '@vue/runtime-core' {
     HomeworkProblems: typeof import('./../components/Homework/HomeworkProblems.vue')['default']
     IUilAngleDoubleDown: typeof import('~icons/uil/angle-double-down')['default']
     IUilAngleDown: typeof import('~icons/uil/angle-down')['default']
+    IUilBan: typeof import('~icons/uil/ban')['default']
     IUilBolt: typeof import('~icons/uil/bolt')['default']
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
     IUilCheck: typeof import('~icons/uil/check')['default']

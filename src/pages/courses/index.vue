@@ -40,7 +40,12 @@ onMounted(async () => {
       }
     }
   } catch (err: any) {
-    error.value = err;
+    if (err.response?.status === 403) {
+      error.value =
+        (err.response?.data as any)?.detail || "Permission denied. Please verify your email address.";
+    } else {
+      error.value = err;
+    }
   } finally {
     isLoading.value = false;
   }
