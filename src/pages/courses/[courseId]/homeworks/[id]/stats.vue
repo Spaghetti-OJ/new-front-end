@@ -150,8 +150,8 @@ const scoreboardError = computed(() => hwError.value);
 
 enum Columns {
   USERNAME = "username",
-  TOTAL_SCORE_ASC = "total score ascending",
-  TOTAL_SCORE_DESC = "total score descending",
+  TOTAL_SCORE_ASC = "totalScoreAsc",
+  TOTAL_SCORE_DESC = "totalScoreDesc",
 }
 const sortBy = ref<Columns>(Columns.TOTAL_SCORE_DESC);
 
