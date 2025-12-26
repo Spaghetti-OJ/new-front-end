@@ -28,6 +28,8 @@ export const Course = {
   getSummary: () => fetcher.get<CourseSummary>("/course/summary/"),
   getScoreBoard: (courseId: string | number, params: { pids: string; start?: number; end?: number }) =>
     fetcher.get<ScoreBoardResponse>(`/course/${courseId}/scoreboard/`, { params }),
+  assignTA: (courseId: string | number, body: { username: string }) =>
+    fetcher.post<{ message: string; status_code: number }>(`/course/${courseId}/assign-ta/`, body),
 };
 
 export const Announcement = {

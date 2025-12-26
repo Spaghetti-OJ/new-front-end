@@ -7,7 +7,20 @@ type ServerErrorHandler = (error: unknown) => unknown;
 let tokenProvider: TokenProvider | null = null;
 let refreshProvider: RefreshProvider | null = null;
 let serverErrorHandler: ServerErrorHandler | null = null;
+function shouldRefreshToken(error: AxiosError) {
+  const status = error.response?.status;
+  if (!status) return false;
 
+  if (status === 401) return true;
+
+  if (status === 403) {
+    const data = error.response?.data;
+    const code = String(data?.code ?? "");
+    return code === "token_not_valid";
+  }
+
+  return false;
+}
 export const setTokenProvider = (provider: TokenProvider | null) => {
   tokenProvider = provider;
 };
@@ -57,7 +70,7 @@ fetcher.interceptors.response.use(
     if (error?.response?.status && error?.response?.status >= 500 && serverErrorHandler) {
       void serverErrorHandler(error);
     }
-    if (error?.response?.status !== 401 || original?._retry) {
+    if (!shouldRefreshToken(error) || original?._retry) {
       return Promise.reject(error);
     }
     if (!refreshProvider) {

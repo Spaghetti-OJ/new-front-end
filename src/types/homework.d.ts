@@ -17,7 +17,9 @@ interface HomeworkEditionForm extends HomeworkForm {
 type HomeworkStudentStatus = {
   [username: string]: {
     [pid: string]: {
+      problemStatus: string | null;
       score: number;
+      submissionIds: string[];
     };
   };
 };
@@ -36,7 +38,7 @@ interface HomeworkListItem {
   name: string;
   start: number | null;
   end: number | null;
-  problemIds: number[];
+  problem_ids: number[];
   markdown: string;
   studentStatus: string;
 }
