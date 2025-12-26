@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
@@ -24,8 +24,14 @@ async function getProblem() {
   try {
     const res = await api.Problem.getProblemList();
 
-    // 從 results 拿陣列
-    const list = Array.isArray(res.data.items) ? res.data.items : [];
+    const rawData = res.data || {};
+    const list = Array.isArray(rawData.results)
+      ? rawData.results
+      : Array.isArray((res as any).results)
+      ? (res as any).results
+      : Array.isArray((rawData as any).items)
+      ? (rawData as any).items
+      : [];
 
     baseProblems.value = list.map((p: any) => ({
       id: p.id,
@@ -34,7 +40,7 @@ async function getProblem() {
       tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
       courseId: typeof p.course_id === "number" ? p.course_id : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,
+      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0,
     }));
   } catch (err) {
     console.error("getProblem error:", err);
@@ -49,6 +55,12 @@ const selectedCourses = ref<number[]>([]);
 // 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
+
+watch(q, (newVal) => {
+  if (!newVal) {
+    getProblem();
+  }
+});
 
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
 const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
@@ -108,12 +120,12 @@ async function searchProblems() {
   try {
     const res = await api.Problem.searchGlobal(keyword);
 
-    const items = res.data.items ?? [];
-    baseProblems.value = items.map((p) => ({
+    const items = (res.data as any).items ?? [];
+    baseProblems.value = items.map((p: any) => ({
       id: p.id,
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
-      tags: p.tags.map((t) => t.name),
+      tags: p.tags.map((t: any) => t.name),
       courseId: typeof p.course_id === "number" ? p.course_id : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
       acceptance: Number(p.acceptance_rate) / 100, // "50.00" -> 0.5
