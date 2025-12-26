@@ -127,7 +127,7 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
       rank: 0,
       user_id: username,
       username: username,
-      real_name: username,
+      real_name: "",
       total_score: totalScore,
       max_total_score: pids.value!.length * 100,
       is_late: false,
