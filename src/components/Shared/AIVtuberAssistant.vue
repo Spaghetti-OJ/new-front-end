@@ -164,9 +164,9 @@ function stopDrag() {
   applyInertiaAndSnap();
 
   if (hasDragged.value) {
-    window.setTimeout(() => {
+    void nextTick(() => {
       hasDragged.value = false;
-    }, 0);
+    });
   }
 }
 
