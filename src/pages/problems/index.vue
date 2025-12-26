@@ -25,12 +25,10 @@ async function getProblem() {
     const res = await api.Problem.getProblemList();
 
     const rawData = res.data || {};
-    const list = Array.isArray(rawData.results)
-      ? rawData.results
-      : Array.isArray((res as any).results)
-      ? (res as any).results
-      : Array.isArray((rawData as any).items)
+    const list = Array.isArray((rawData as any).items)
       ? (rawData as any).items
+      : Array.isArray(rawData.results)
+      ? rawData.results
       : [];
 
     baseProblems.value = list.map((p: any) => ({
