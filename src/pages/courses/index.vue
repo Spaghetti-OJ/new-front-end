@@ -98,7 +98,7 @@ function getSummary(courseName: string) {
       <div class="card-title justify-between">
         {{ $t("courses.index.list") }}
         <router-link
-          v-if="rolesCanCreateCourse.includes(session.role)"
+          v-if="rolesCanCreateCourse.includes(session.role) && session.email_verified"
           class="btn btn-success"
           to="/courses/new"
         >

@@ -14,7 +14,7 @@ const courseId = Number(route.params.courseId);
 
 // Permission
 const canEditCourse = computed(() => {
-  return session.isAdmin || session.role === UserRole.Teacher;
+  return (session.isAdmin || session.role === UserRole.Teacher) && session.email_verified;
 });
 
 // Course Form (replace with API later)
