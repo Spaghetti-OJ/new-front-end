@@ -85,9 +85,16 @@ const handleForgotSubmit = async () => {
     showError.value = true;
     if (err.response?.status === 429) {
       errorMessage.value =
-        (err.response?.data as any)?.detail || "Request was throttled. Please try again later.";
+        (err.response?.data as any)?.detail ||
+        (err.response?.data as any)?.message ||
+        err.message ||
+        "Request was throttled. Please try again later.";
     } else {
-      errorMessage.value = err.response?.data?.message || t("password_reset.status.error");
+      errorMessage.value =
+        (err.response?.data as any)?.detail ||
+        (err.response?.data as any)?.message ||
+        err.message ||
+        t("password_reset.status.error");
     }
   } finally {
     loading.value = false;
@@ -120,9 +127,16 @@ const handleResetSubmit = async () => {
     showError.value = true;
     if (err.response?.status === 429) {
       errorMessage.value =
-        (err.response?.data as any)?.detail || "Request was throttled. Please try again later.";
+        (err.response?.data as any)?.detail ||
+        (err.response?.data as any)?.message ||
+        err.message ||
+        "Request was throttled. Please try again later.";
     } else {
-      errorMessage.value = err.response?.data?.message || "An error occurred.";
+      errorMessage.value =
+        (err.response?.data as any)?.detail ||
+        (err.response?.data as any)?.message ||
+        err.message ||
+        "An error occurred.";
     }
   } finally {
     loading.value = false;

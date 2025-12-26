@@ -27,10 +27,14 @@ const homeworks = computed(() => {
 
 onMounted(async () => {
   try {
-    const { data } = await api.Homework.list(route.params.courseId as string);
-    homeworksData.value = data;
+    const res = await api.Homework.list(route.params.courseId as string);
+    homeworksData.value = res;
   } catch (e) {
-    error.value = e;
+    error.value =
+      (e as any).response?.data?.detail ||
+      (e as any).response?.data?.message ||
+      (e as any).message ||
+      "Failed to load homeworks";
   } finally {
     isLoading.value = false;
   }

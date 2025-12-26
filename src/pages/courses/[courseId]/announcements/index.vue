@@ -25,7 +25,11 @@ onMounted(async () => {
     announcements.value = res.data ?? (res as any);
   } catch (e) {
     console.error(e);
-    error.value = e;
+    error.value =
+      (e as any).response?.data?.detail ||
+      (e as any).response?.data?.message ||
+      (e as any).message ||
+      "Failed to load announcements";
   } finally {
     isLoading.value = false;
   }

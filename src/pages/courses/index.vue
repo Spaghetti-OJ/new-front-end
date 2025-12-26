@@ -40,7 +40,11 @@ onMounted(async () => {
       }
     }
   } catch (err: any) {
-    error.value = err;
+    error.value =
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
+      "Failed to load courses";
   } finally {
     isLoading.value = false;
   }
@@ -62,8 +66,9 @@ const onJoinCourse = async () => {
     }
   } catch (err: any) {
     joinError.value =
-      err?.response?.data?.message ??
-      err?.response?.data?.msg ??
+      (err.response?.data as any)?.detail ||
+      (err.response?.data as any)?.message ||
+      err.message ||
       "Failed to join course. Please check the code.";
   } finally {
     joinLoading.value = false;
@@ -93,7 +98,7 @@ function getSummary(courseName: string) {
       <div class="card-title justify-between">
         {{ $t("courses.index.list") }}
         <router-link
-          v-if="rolesCanCreateCourse.includes(session.role)"
+          v-if="rolesCanCreateCourse.includes(session.role) && session.email_verified"
           class="btn btn-success"
           to="/courses/new"
         >

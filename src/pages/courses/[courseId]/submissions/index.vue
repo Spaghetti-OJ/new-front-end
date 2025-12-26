@@ -72,7 +72,11 @@ const execute = async () => {
     const res = await api.Submission.list(getSubmissionsQuery.value);
     data.value = (res as any).data ?? res;
   } catch (e) {
-    error.value = e;
+    error.value =
+      (e as any).response?.data?.detail ||
+      (e as any).response?.data?.message ||
+      (e as any).message ||
+      "Failed to load submissions";
   } finally {
     isLoading.value = false;
   }

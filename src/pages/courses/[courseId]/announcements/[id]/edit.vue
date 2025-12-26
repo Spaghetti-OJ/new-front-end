@@ -45,7 +45,11 @@ onMounted(async () => {
     }
   } catch (e) {
     console.error("[FETCH announcement error]", e);
-    fetchError.value = e;
+    fetchError.value =
+      (e as any).response?.data?.detail ||
+      (e as any).response?.data?.message ||
+      (e as any).message ||
+      "Failed to load announcement";
   } finally {
     isFetching.value = false;
   }
@@ -86,11 +90,11 @@ async function submit() {
     router.push(`/courses/${route.params.courseId}/announcements/${route.params.id}`);
   } catch (error) {
     console.error("[UPDATE announcement error]", error);
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      formElement.value.errorMsg = error.response.data.message;
-    } else {
-      formElement.value.errorMsg = "Unknown error occurred :(";
-    }
+    formElement.value.errorMsg =
+      (error as any).response?.data?.detail ||
+      (error as any).response?.data?.message ||
+      (error as any).message ||
+      "Unknown error occurred :(";
     throw error;
   } finally {
     formElement.value.isLoading = false;
@@ -110,11 +114,11 @@ async function delete_() {
     router.push(`/courses/${route.params.courseId}/announcements`);
   } catch (error) {
     console.error("[DELETE announcement error]", error);
-    if (axios.isAxiosError(error) && error.response?.data?.message) {
-      formElement.value.errorMsg = error.response.data.message;
-    } else {
-      formElement.value.errorMsg = "Unknown error occurred :(";
-    }
+    formElement.value.errorMsg =
+      (error as any).response?.data?.detail ||
+      (error as any).response?.data?.message ||
+      (error as any).message ||
+      "Unknown error occurred :(";
     throw error;
   } finally {
     formElement.value.isLoading = false;
