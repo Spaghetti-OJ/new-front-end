@@ -82,7 +82,10 @@ watch(
         if (data && data.results && data.results.length > 0) {
           courseName.value = data.results[0].course_name;
         }
-      } catch {}
+      } catch (err) {
+        console.warn("Failed to fetch course name via fallback:", err);
+        courseName.value = "Course";
+      }
     }
   },
   { immediate: true },
