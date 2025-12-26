@@ -99,6 +99,12 @@ onMounted(getSubtasks);
             </router-link>
             <router-link
               class="btn md:btn-md lg:btn-lg"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/editorial`"
+            >
+              <i-uil-book-open class="lg:h-5 lg:w-5" /> Editorial
+            </router-link>
+            <router-link
+              class="btn md:btn-md lg:btn-lg"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/stats`"
             >
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}

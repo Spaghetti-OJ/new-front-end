@@ -9,7 +9,7 @@ import { fetcher } from "@/api";
 const route = useRoute();
 const { t } = useI18n();
 
-useTitle(`Solution - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
+useTitle(`Editorial - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
 const {
   data: problem,
@@ -26,8 +26,8 @@ const toggleLike = () => {
   likes.value += isLiked.value ? 1 : -1;
 };
 
-const solutionContent = computed(
-  () => (problem.value as any)?.solution || "There isn't any solution for this problem.",
+const editorialContent = computed(
+  () => (problem.value as any)?.solution || "There isn't any editorial for this problem.",
 );
 </script>
 
@@ -37,7 +37,7 @@ const solutionContent = computed(
       <div class="card-body">
         <!-- 上方：標題 + 愛心 -->
         <div class="flex items-center justify-between">
-          <div class="card-title md:text-2xl lg:text-3xl">Solution for Problem #{{ $route.params.id }}</div>
+          <div class="card-title md:text-2xl lg:text-3xl">Editorial for Problem #{{ $route.params.id }}</div>
 
           <button type="button" class="btn btn-ghost gap-2" @click="toggleLike">
             <span class="text-2xl leading-none">
@@ -47,7 +47,7 @@ const solutionContent = computed(
           </button>
         </div>
 
-        <!-- 內容: Solution -->
+        <!-- 內容: Editorial -->
         <div class="mt-6">
           <template v-if="isLoading">
             <div class="flex justify-center py-10">
@@ -65,7 +65,7 @@ const solutionContent = computed(
           </template>
 
           <template v-else-if="problem">
-            <markdown-renderer class="prose max-w-none" :md="solutionContent" />
+            <markdown-renderer class="prose max-w-none" :md="editorialContent" />
           </template>
         </div>
       </div>
