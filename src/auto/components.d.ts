@@ -40,6 +40,7 @@ declare module '@vue/runtime-core' {
     IUilFolderDownload: typeof import('~icons/uil/folder-download')['default']
     IUilGithub: typeof import('~icons/uil/github')['default']
     IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
+    IUilLeftArrowToLeft: typeof import('~icons/uil/left-arrow-to-left')['default']
     IUilLink: typeof import('~icons/uil/link')['default']
     IUilMinus: typeof import('~icons/uil/minus')['default']
     IUilMonitor: typeof import('~icons/uil/monitor')['default']

@@ -343,7 +343,7 @@ function exportCSV() {
                     </td>
                     <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
                       <div
-                        class="flex h-16 h-full w-full flex-col items-center justify-center py-2"
+                        class="flex h-16 w-full flex-col items-center justify-center py-2"
                         :class="getCellColor(row.problems.find((p) => p.problem_id === pid))"
                       >
                         <template v-if="row.problems.find((p) => p.problem_id === pid)">
