@@ -102,8 +102,13 @@ function onDrag(e: MouseEvent) {
   const now = performance.now();
   const dt = now - lastTime;
 
-  velocityX = (e.clientX - lastX) / dt;
-  velocityY = (e.clientY - lastY) / dt;
+  if (dt > 0) {
+    velocityX = (e.clientX - lastX) / dt;
+    velocityY = (e.clientY - lastY) / dt;
+  } else {
+    velocityX = 0;
+    velocityY = 0;
+  }
 
   lastX = e.clientX;
   lastY = e.clientY;
