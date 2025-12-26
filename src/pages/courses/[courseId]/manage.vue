@@ -21,10 +21,30 @@ const canEditCourse = computed(() => {
 const courseForm = ref({
   name: "",
   teacher: "",
-  tas: "",
 });
 const currentCourseName = ref("");
 useTitle(computed(() => `Manage ${currentCourseName.value || courseId} | Normal OJ`));
+
+const currentTAs = ref<string[]>([]);
+const newTaUsername = ref("");
+const assignTaError = ref<string | null>(null);
+const assignTaSuccess = ref<string | null>(null);
+
+async function assignTA() {
+  if (!newTaUsername.value) return;
+  assignTaError.value = null;
+  try {
+    await api.Course.assignTA(courseId, { username: newTaUsername.value });
+    newTaUsername.value = "";
+    await fetchCourseInfo(); // Refresh list
+  } catch (err: any) {
+    if (axios.isAxiosError(err) && err.response?.data?.message) {
+      assignTaError.value = err.response.data.message;
+    } else {
+      assignTaError.value = "Failed to assign TA.";
+    }
+  }
+}
 
 // Course Code
 const courseCode = ref("");
@@ -142,8 +162,8 @@ async function fetchCourseInfo() {
     courseForm.value = {
       name: data.course.course,
       teacher: data.teacher.username,
-      tas: data.TAs.map((ta) => ta.username).join(", "),
     };
+    currentTAs.value = data.TAs.map((ta) => ta.username);
     currentCourseName.value = data.course.course;
     courseCode.value = data.course.joinCode;
   } catch (err: any) {
@@ -230,22 +250,46 @@ onMounted(() => {
                   placeholder="Teacher username"
                 />
               </div>
+            </div>
 
-              <!-- Teacher Assistants -->
-              <div class="form-control w-full md:col-span-2">
-                <label class="label">
-                  <span class="label-text">Teacher Assistants</span>
-                </label>
-                <input
-                  v-model="courseForm.tas"
-                  type="text"
-                  class="input input-bordered w-full"
-                  placeholder="TA usernames (comma separated)"
-                />
+            <!-- TAs Management -->
+            <div class="mt-8">
+              <div class="card-title text-base">Current Teacher Assistants</div>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <div v-for="ta in currentTAs" :key="ta" class="badge badge-lg">
+                  {{ ta }}
+                </div>
+                <div v-if="currentTAs.length === 0" class="text-sm opacity-50">No TAs assigned yet.</div>
+              </div>
+
+              <div class="divider my-4" />
+
+              <div class="card-title text-base">Add Teacher Assistant</div>
+              <div class="mt-2 flex items-end gap-2">
+                <div class="form-control w-full max-w-xs">
+                  <label class="label">
+                    <span class="label-text">Username</span>
+                  </label>
+                  <input
+                    v-model="newTaUsername"
+                    type="text"
+                    class="input input-bordered w-full"
+                    placeholder="Enter student username"
+                  />
+                </div>
+                <button class="btn btn-primary" @click="assignTA" :disabled="!newTaUsername">
+                  Assign TA
+                </button>
+              </div>
+              <div v-if="assignTaError" class="mt-2 text-sm text-error">
+                {{ assignTaError }}
+              </div>
+              <div v-if="assignTaSuccess" class="mt-2 text-sm text-success">
+                {{ assignTaSuccess }}
               </div>
             </div>
 
-            <div class="mt-8 flex gap-4">
+            <div class="mt-12 flex gap-4">
               <button class="btn btn-success" @click="submitCourseEdit">Submit</button>
               <button class="btn btn-outline btn-error" @click="deleteCourse">Delete Course</button>
             </div>

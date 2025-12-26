@@ -35,10 +35,10 @@ const STATUS_CLASS = {
 const state = computed(() => {
   const { start, end } = props.homework;
   const now = Date.now();
-  if (now < start * 1000) {
+  if (now < (start ?? 0) * 1000) {
     return STATUS_LABEL.NOT_START;
   }
-  if (now > end * 1000) {
+  if (now > (end ?? 0) * 1000) {
     return STATUS_LABEL.OVER;
   }
   return STATUS_LABEL.RUNNING;
@@ -53,7 +53,7 @@ const state = computed(() => {
           {{ homework.name }}
           <div :class="['badge', STATUS_CLASS[state]]">{{ state }}</div>
         </div>
-        <due-countdown v-if="state === STATUS_LABEL.RUNNING" class="mt-2" :due="homework.end" />
+        <due-countdown v-if="state === STATUS_LABEL.RUNNING" class="mt-2" :due="homework.end ?? 0" />
       </div>
 
       <div class="flex flex-wrap lg:flex-nowrap lg:gap-x-8">
@@ -69,18 +69,18 @@ const state = computed(() => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ formatTime(homework.start) }}</td>
-                  <td>{{ formatTime(homework.end) }}</td>
+                  <td>{{ formatTime(homework.start ?? 0) }}</td>
+                  <td>{{ formatTime(homework.end ?? 0) }}</td>
                 </tr>
               </tbody>
             </table>
             <div v-else class="flex flex-wrap text-sm">
               <div>
-                <span>{{ formatTime(homework.start) }}</span>
+                <span>{{ formatTime(homework.start ?? 0) }}</span>
               </div>
               ~
               <div>
-                <span>{{ formatTime(homework.end) }}</span>
+                <span>{{ formatTime(homework.end ?? 0) }}</span>
               </div>
             </div>
           </div>
@@ -91,18 +91,17 @@ const state = computed(() => {
           <homework-problems v-if="isDesktop" :homework="homework" :problems="problems" />
           <div v-else class="w-full py-1">
             <div class="flex w-full flex-wrap justify-center gap-1 sm:justify-start">
-              <template v-for="pid in homework.problemIds">
+              <template v-for="pid in homework.problem_ids">
                 <problem-info-card
                   class="w-full sm:w-72"
                   :name="problems[pid.toString()]?.name || '-'"
                   :id="pid"
                   :quota="problems[pid.toString()]?.quota || '-'"
-                  :score="
-                    (
-                      homework.studentStatus[session.username] &&
-                      homework.studentStatus[session.username][pid.toString()]
-                    )?.score || '-'
-                  "
+                  :score="(
+                    (homework.studentStatus as any)[session.username] &&
+                    (homework.studentStatus as any)[session.username][pid.toString()]
+                  )?.score || '-'
+                    "
                   :show-stats="session.isAdmin"
                   :show-copycat="session.isAdmin"
                 />
