@@ -96,6 +96,12 @@ async function submit() {
     if (!newMembers.value) return;
     await api.Course.importCSV(route.params.courseId as string, newMembers.value, forceUpdate.value);
     await loadMembers();
+    isOpen.value = false;
+    newMembers.value = null;
+    newMembersCSVString.value = "";
+    previewCSV.value = {};
+    forceUpdate.value = false;
+    errorMsg.value = "";
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       errorMsg.value = error.response.data.message;
