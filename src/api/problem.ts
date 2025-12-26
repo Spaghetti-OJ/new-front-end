@@ -1,13 +1,11 @@
 import { fetcher } from "./fetcher";
 
 export const Problem = {
-  getProblemList: (query?: {
-    difficulty?: string;
-    is_public?: string;
-    course_id?: number;
-    page?: number;
+  getProblemList: (params?: {
     page_size?: number;
-  }) => fetcher.get<ProblemList>("/problem/", { params: query }),
+    course_id?: number | string;
+    [key: string]: string | number | boolean | undefined;
+  }) => fetcher.get<ProblemList>("/search/problems", { params }),
   getManageData: (problemId: string | number) => fetcher.get(`/problem/manage/${problemId}`),
   create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
@@ -36,6 +34,8 @@ export const Problem = {
     fetcher.post(`/problem/${problemId}/subtasks`, body),
   deleteSubtasks: (problemId: number | string, subtaskId: number | string) =>
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
+
+  searchGlobal: (q: string) => fetcher.get<SearchProblemResponse>("/search/", { params: { q } }),
   createTestCase: (problemId: number, body: CreateTestCaseBody) =>
     fetcher.post(`/problem/${problemId}/test-cases`, body),
   deleteTestCase: (problemId: number, caseId: number) =>

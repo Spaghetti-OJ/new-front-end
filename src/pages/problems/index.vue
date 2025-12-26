@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
@@ -24,17 +24,21 @@ async function getProblem() {
   try {
     const res = await api.Problem.getProblemList();
 
-    // 從 results 拿陣列
-    const list = Array.isArray(res.data.results) ? res.data.results : [];
+    const rawData = res.data || {};
+    const list = Array.isArray((rawData as any).items)
+      ? (rawData as any).items
+      : Array.isArray(rawData.results)
+      ? rawData.results
+      : [];
 
     baseProblems.value = list.map((p: any) => ({
       id: p.id,
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
       tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
-      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseId: p.course_id ? Number(p.course_id) : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: typeof p.acceptance === "number" ? p.acceptance : 0,
+      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0,
     }));
   } catch (err) {
     console.error("getProblem error:", err);
@@ -56,10 +60,13 @@ const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p)
 const allCourses = computed(() => {
   const map = new Map<number, string>();
   baseProblems.value.forEach((p) => {
-    map.set(p.courseId, p.courseName);
+    if (p.courseId !== -1) {
+      map.set(p.courseId, p.courseName);
+    }
   });
   return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
 });
+
 const allDiffs = [
   { value: DIFFICULTY.EASY, labelKey: "problems.difficulty.easy" },
   { value: DIFFICULTY.MEDIUM, labelKey: "problems.difficulty.medium" },
@@ -96,8 +103,36 @@ function resetFilters() {
   selectedTags.value = [];
   selectedDifficulties.value = [];
 }
+async function searchProblems() {
+  const keyword = q.value.trim();
+  if (!keyword) {
+    // 你要：空字串 Enter 就回到原本列表
+    await getProblem();
+    return;
+  }
 
-onMounted(() => {
+  isLoading.value = true;
+  try {
+    const res = await api.Problem.searchGlobal(keyword);
+
+    const items = res.data.data.items ?? [];
+    baseProblems.value = items.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      difficulty: p.difficulty as Problem["difficulty"],
+      tags: p.tags.map((t: any) => (typeof t === "string" ? t : t.name)),
+      courseId: p.course_id ? Number(p.course_id) : -1,
+      courseName: typeof p.course_name === "string" ? p.course_name : "-",
+      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
+    }));
+  } catch (err) {
+    console.error("searchProblems error:", err);
+    baseProblems.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+}
+onMounted(async () => {
   getProblem();
 });
 </script>
@@ -116,6 +151,7 @@ onMounted(() => {
             type="text"
             class="grow bg-transparent outline-none"
             :placeholder="$t('problems.search.placeholder')"
+            @keyup.enter="searchProblems"
           />
           <i class="i-uil-search" />
         </label>
