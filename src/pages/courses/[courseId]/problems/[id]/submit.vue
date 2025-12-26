@@ -83,15 +83,57 @@ async function runTest() {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
 
-  if (!testForm.input) {
-    testForm.isError = true;
-    testForm.output = t("course.problem.submit.err.input") || "Input is required to run the test.";
-    return;
-  }
-
   try {
     testForm.isLoading = true;
-    testForm.output = " 這裡顯示測試結果（接上後端 API 後，請把這段改成真正的結果）";
+    const submitRes = await api.Submission.submitCustomTest(Number(route.params.id), {
+      language: Number(form.lang),
+      source_code: form.code,
+      stdin: testForm.input || undefined,
+    });
+
+    const testId = submitRes.data?.test_id;
+    if (!testId) {
+      throw new Error("Missing test id from custom test response.");
+    }
+
+    const maxAttempts = 20;
+    const delayMs = 1000;
+    let result: CustomTestResultData | null = null;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      const res = await api.Submission.getCustomTestResult(testId);
+      result = res.data;
+
+      if (result?.status && result.status !== "pending") {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+
+    if (!result) {
+      throw new Error("Empty custom test result.");
+    }
+
+    if (result.status === "pending") {
+      testForm.output = "Test is still running. Please try again in a moment.";
+      return;
+    }
+
+    const outputParts = [
+      `Status: ${result.status}`,
+      result.message ? `Message: ${result.message}` : "",
+      `Time: ${result.time}s`,
+      `Memory: ${result.memory}KB`,
+      "",
+      "Stdout:",
+      result.stdout || "(empty)",
+      "",
+      "Stderr:",
+      result.stderr || "(empty)",
+    ].filter(Boolean);
+
+    testForm.output = outputParts.join("\n");
   } catch (e) {
     testForm.isError = true;
     testForm.output = "Test failed. Please try again.";

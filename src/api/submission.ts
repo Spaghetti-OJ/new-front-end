@@ -18,4 +18,8 @@ export const Submission = {
   getCode: (id: string) =>
     fetcher.get<{ source_code: string; language_type: number }>(`/submission/${id}/code/`),
   list: (params: SubmissionListQuery) => fetcher.get<GetSubmissionListResponse>("/submission/", { params }),
+  submitCustomTest: (problemId: number, payload: CustomTestSubmitPayload) =>
+    fetcher.post<CustomTestSubmitResponse>(`/submission/${problemId}/custom-test/`, payload),
+  getCustomTestResult: (customTestId: string) =>
+    fetcher.get<CustomTestResultResponse>(`/submission/custom-test/${customTestId}/result/`),
 };
