@@ -209,7 +209,6 @@ async function submit() {
           output_path: p.outFile,
           status: "ready",
         });
-        console.log(res);
       }
     }
     const testdataForm = new FormData();
