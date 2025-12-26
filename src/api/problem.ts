@@ -7,7 +7,7 @@ export const Problem = {
     course_id?: number;
     page?: number;
     page_size?: number;
-  }) => fetcher.get<ProblemList>("/problem/", { params: query }),
+  }) => fetcher.get<ProblemList>("/search/problems"),
   getManageData: (problemId: string | number) => fetcher.get(`/problem/manage/${problemId}`),
   create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),
@@ -35,4 +35,6 @@ export const Problem = {
     fetcher.post(`/problem/${problemId}/subtasks`, body),
   deleteSubtasks: (problemId: number | string, subtaskId: number | string) =>
     fetcher.delete(`/problem/${problemId}/subtasks/${subtaskId}`),
+
+  searchGlobal: (q: string) => fetcher.get<SearchProblemResponse>("/search/", { params: { q } }),
 };

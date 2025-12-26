@@ -192,3 +192,17 @@ type LlmMode = "" | "LLM_INPUT_ONLY" | "LLM_DIRECT";
 interface GeneratePayload {
   llmMode: LlmMode;
 }
+interface SearchProblemItem {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  course_id: number;
+  course_name: string;
+  acceptance_rate: string; // "50.00"
+  tags: { id: number; name: string; usage_count: number }[];
+}
+interface SearchProblemResponse {
+  data: { items: SearchProblemItem[]; total: number };
+  message: string;
+  status: "ok" | "error";
+}

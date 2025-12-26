@@ -25,7 +25,7 @@ async function getProblem() {
     const res = await api.Problem.getProblemList();
 
     // 從 results 拿陣列
-    const list = Array.isArray(res.data.results) ? res.data.results : [];
+    const list = Array.isArray(res.data.items) ? res.data.items : [];
 
     baseProblems.value = list.map((p: any) => ({
       id: p.id,
@@ -96,7 +96,34 @@ function resetFilters() {
   selectedTags.value = [];
   selectedDifficulties.value = [];
 }
+async function searchProblems() {
+  const keyword = q.value.trim();
+  if (!keyword) {
+    // 你要：空字串 Enter 就回到原本列表
+    await getProblem();
+    return;
+  }
 
+  isLoading.value = true;
+  try {
+    const res = await api.Problem.searchGlobal(keyword);
+
+    const items = res.data.items ?? [];
+    baseProblems.value = items.map((p) => ({
+      id: p.id,
+      title: p.title,
+      difficulty: p.difficulty as Problem["difficulty"],
+      tags: p.tags.map((t) => t.name),
+      courseId: typeof p.course_id === "number" ? p.course_id : -1,
+      courseName: typeof p.course_name === "string" ? p.course_name : "-",
+      acceptance: Number(p.acceptance_rate) / 100, // "50.00" -> 0.5
+    }));
+  } catch (err) {
+    console.error("searchProblems error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+}
 onMounted(() => {
   getProblem();
 });
@@ -116,6 +143,7 @@ onMounted(() => {
             type="text"
             class="grow bg-transparent outline-none"
             :placeholder="$t('problems.search.placeholder')"
+            @keyup.enter="searchProblems"
           />
           <i class="i-uil-search" />
         </label>
