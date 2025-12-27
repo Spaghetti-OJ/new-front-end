@@ -113,6 +113,8 @@ interface ProblemInfo {
   submitCount: number;
   highScore: number;
   solution: string;
+  like_count?: number;
+  is_liked_by_user?: boolean;
 }
 
 interface ProblemForm {

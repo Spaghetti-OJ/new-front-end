@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
@@ -56,6 +56,24 @@ const hasInput = computed(() => Boolean(props.problem.description.input?.trim())
 const hasOutput = computed(() => Boolean(props.problem.description.output?.trim()));
 const hasHint = computed(() => Boolean(props.problem.description.hint?.trim()));
 
+const likes = ref(0);
+const isLiked = ref(false);
+
+watch(
+  () => props.problem,
+  (value) => {
+    likes.value = value.like_count ?? 0;
+    isLiked.value = Boolean(value.is_liked_by_user);
+  },
+  { immediate: true },
+);
+
+const toggleLike = () => {
+  isLiked.value = !isLiked.value;
+  likes.value += isLiked.value ? 1 : -1;
+  if (likes.value < 0) likes.value = 0;
+};
+
 onMounted(getSubtasks);
 </script>
 
@@ -95,6 +113,15 @@ onMounted(getSubtasks);
                 <span class="text-sm font-normal">{{ " / 100" }}</span>
               </div>
             </div>
+          </div>
+
+          <div class="mx-4 flex items-center justify-center">
+            <button type="button" class="btn btn-ghost btn-lg gap-2 px-4" @click="toggleLike">
+              <span class="text-2xl leading-none">
+                {{ isLiked ? "♥" : "♡" }}
+              </span>
+              <span class="text-lg">{{ likes }}</span>
+            </button>
           </div>
 
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">
