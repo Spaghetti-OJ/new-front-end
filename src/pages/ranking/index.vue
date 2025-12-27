@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import api from "@/api";
 
@@ -42,6 +42,10 @@ const resolveAvatarUrl = (avatar?: string | null) => {
 
   return `${origin}${normalizePath(avatar)}`;
 };
+
+const sortedRanking = computed(() =>
+  [...ranking.value].sort((a, b) => (b.ACProblem ?? 0) - (a.ACProblem ?? 0)),
+);
 
 onMounted(async () => {
   try {
@@ -95,11 +99,7 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(item, index) in [...ranking].sort((a, b) => (b.ACProblem ?? 0) - (a.ACProblem ?? 0))"
-            :key="item.user?.username || index"
-            class="hover"
-          >
+          <tr v-for="(item, index) in sortedRanking" :key="item.user?.username || index" class="hover">
             <td class="text-center font-semibold">{{ index + 1 }}</td>
             <td class="flex justify-center">
               <router-link
