@@ -43,7 +43,8 @@ const handleLogout = async () => {
 
 // Mobile menu state
 const isMobileMenuOpen = ref(false);
-const mobileMenuRef = ref(null);
+const mobileMenuRef = ref<HTMLElement | null>(null);
+const mobileMenuButtonRef = ref<HTMLElement | null>(null);
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -54,7 +55,9 @@ const closeMobileMenu = () => {
 };
 
 // Close mobile menu when clicking outside
-onClickOutside(mobileMenuRef, closeMobileMenu);
+onClickOutside(mobileMenuRef, closeMobileMenu, {
+  ignore: [mobileMenuButtonRef],
+});
 </script>
 
 <template>
@@ -162,6 +165,7 @@ onClickOutside(mobileMenuRef, closeMobileMenu);
 
       <!-- 漢堡選單按鈕 (只在 md 以下顯示) -->
       <button
+        ref="mobileMenuButtonRef"
         class="btn btn-ghost btn-sm text-white md:hidden"
         @click="toggleMobileMenu"
         aria-label="Toggle menu"
