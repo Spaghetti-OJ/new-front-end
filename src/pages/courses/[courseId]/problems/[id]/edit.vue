@@ -226,7 +226,8 @@ async function submit() {
         memory_limit_mb: Math.ceil(t.memoryLimit),
       });
 
-      subtaskIdByNo.set(i + 1, created.data.id);
+      // 使用 0-based 索引來匹配 zip 檔案中的 ss（從 00 開始）
+      subtaskIdByNo.set(i, created.data.id);
     }
 
     if (testdata.value) {
@@ -247,7 +248,7 @@ async function submit() {
 
         return api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt,
+          idx: p.tt + 1, // YY 從 01 開始（後端限制）
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",

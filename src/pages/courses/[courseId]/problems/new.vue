@@ -208,14 +208,14 @@ async function submit() {
       });
       const subtaskId = subRes.data.id;
 
-      // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i + 1 (假設 zip 為 1-based)
-      const subPairs = pairs.filter((p) => p.ss === i + 1);
+      // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i (zip 為 0-based，從 00 開始)
+      const subPairs = pairs.filter((p) => p.ss === i);
 
       // 3) 逐筆建立 test case (並行執行以提升效能)
       const createTestCasePromises = subPairs.map((p) =>
         api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt,
+          idx: p.tt + 1, // YY 從 01 開始（後端限制）
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
