@@ -223,11 +223,8 @@ async function submit() {
       );
       await Promise.all(createTestCasePromises);
     }
-    const testdataForm = new FormData();
-    testdataForm.append("case", testdata.value);
     try {
-      const test = await api.Problem.uploadTestCasesZip(problemId, testdata.value);
-      console.log(test);
+      await api.Problem.uploadTestCasesZip(problemId, testdata.value);
     } catch (error) {
       const errorMsg =
         axios.isAxiosError(error) && error.response?.data?.message

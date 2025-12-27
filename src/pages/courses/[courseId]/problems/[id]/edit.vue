@@ -257,8 +257,6 @@ async function submit() {
       await Promise.all(createTestCasePromises);
 
       // F) 最後才上傳 zip（題目層級 zip）
-      const fd = new FormData();
-      fd.append("case", testdata.value);
       await api.Problem.uploadTestCasesZip(problemId, testdata.value);
     }
 
@@ -310,7 +308,6 @@ async function delete_() {
 }
 
 function onSaveSolution() {
-  console.log("save-solution clicked:", edittingProblem.value?.solution);
   // TODO: connect solution-only API later
 }
 
