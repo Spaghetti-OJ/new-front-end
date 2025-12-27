@@ -58,7 +58,7 @@ const expiresError = ref<string | null>(null);
 const showDeleteConfirm = ref(false);
 
 // Sync dayjs locale with i18n locale
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 watch(
   locale,
   (val) => {
@@ -158,7 +158,7 @@ function openCreateModal() {
 // ===== Create API Key ===== //
 async function handleCreateKey() {
   if (!createFormName.value.trim()) {
-    createError.value = "Please enter a name.";
+    createError.value = t("settings.pleaseEnterName");
     return;
   }
   createError.value = null;
@@ -170,7 +170,7 @@ async function handleCreateKey() {
   if (createFormExpiresDate.value && createFormExpiresTime.value) {
     const expiresDate = new Date(`${createFormExpiresDate.value}T${createFormExpiresTime.value}`);
     if (expiresDate.getTime() <= now.getTime()) {
-      expiresError.value = "Expiration time must be in the future.";
+      expiresError.value = t("settings.expirationMustBeFuture");
       return;
     }
     expires = expiresDate.toISOString();
@@ -246,9 +246,9 @@ function formatDateTime(value?: string) {
   <div class="card mx-auto max-w-6xl shadow-xl">
     <div class="card-body">
       <div class="card-title justify-between">
-        <span class="text-lg font-bold">API Keys</span>
+        <span class="text-lg font-bold">{{ t("settings.apiKeys") }}</span>
         <button class="btn btn-success btn-sm font-semibold uppercase tracking-wide" @click="openCreateModal">
-          Create New Secret Key
+          {{ t("settings.createNewSecretKey") }}
         </button>
       </div>
 
@@ -258,11 +258,11 @@ function formatDateTime(value?: string) {
         <table class="table w-full">
           <thead>
             <tr>
-              <th class="text-xs font-semibold text-neutral">NAME</th>
-              <th class="text-xs font-semibold text-neutral">STATUS</th>
-              <th class="text-xs font-semibold text-neutral">USAGE</th>
-              <th class="text-xs font-semibold text-neutral">CREATED AT</th>
-              <th class="text-xs font-semibold text-neutral">EXPIRES AT</th>
+              <th class="text-xs font-semibold text-neutral">{{ t("settings.name").toUpperCase() }}</th>
+              <th class="text-xs font-semibold text-neutral">{{ t("settings.status").toUpperCase() }}</th>
+              <th class="text-xs font-semibold text-neutral">{{ t("settings.usage").toUpperCase() }}</th>
+              <th class="text-xs font-semibold text-neutral">{{ t("settings.createdAt").toUpperCase() }}</th>
+              <th class="text-xs font-semibold text-neutral">{{ t("settings.expiresAt").toUpperCase() }}</th>
               <th class="w-20"></th>
             </tr>
           </thead>
@@ -270,8 +270,10 @@ function formatDateTime(value?: string) {
             <tr v-for="key in apiKeys" :key="key.id" class="hover">
               <td class="font-medium">{{ key.name }}</td>
               <td>
-                <span v-if="key.status === 'active'" class="badge badge-success badge-outline"> Active </span>
-                <span v-else class="badge badge-ghost">Disabled</span>
+                <span v-if="key.status === 'active'" class="badge badge-success badge-outline">
+                  {{ t("settings.active") }}
+                </span>
+                <span v-else class="badge badge-ghost">{{ t("settings.disabled") }}</span>
               </td>
               <td>{{ key.usage }}</td>
               <td>{{ formatDate(key.createdAt) }}</td>
@@ -285,9 +287,9 @@ function formatDateTime(value?: string) {
 
             <tr v-if="apiKeys.length === 0">
               <td colspan="6" class="py-8 text-center text-sm text-neutral">
-                No API keys yet. Click
-                <span class="font-semibold">Create New Secret Key</span>
-                to get started.
+                {{ t("settings.noApiKeys") }}
+                <span class="font-semibold">{{ t("settings.createNewSecretKey") }}</span>
+                {{ t("settings.toGetStarted") }}
               </td>
             </tr>
           </tbody>
@@ -299,30 +301,30 @@ function formatDateTime(value?: string) {
   <!-- CREATE MODAL -->
   <div class="modal" :class="{ 'modal-open': showCreateModal }">
     <div class="modal-box max-w-xl">
-      <h3 class="mb-4 text-xl font-bold">Create API Key</h3>
+      <h3 class="mb-4 text-xl font-bold">{{ t("settings.createApiKey") }}</h3>
 
       <div class="mb-4">
         <label class="label">
-          <span class="label-text font-semibold">Name</span>
+          <span class="label-text font-semibold">{{ t("settings.name") }}</span>
         </label>
         <input
           v-model="createFormName"
           type="text"
-          placeholder="e.g. Normal OJ integration key"
+          :placeholder="t('settings.placeholderKeyName')"
           class="input input-bordered w-full"
         />
         <p v-if="createError" class="mt-1 text-sm text-error">{{ createError }}</p>
       </div>
 
       <div class="mb-4">
-        <p class="mb-2 font-semibold">Permissions</p>
+        <p class="mb-2 font-semibold">{{ t("settings.permissions") }}</p>
         <div class="overflow-x-auto rounded-2xl border bg-base-100">
           <table class="table w-full">
             <thead>
               <tr>
-                <th>Types</th>
-                <th class="text-center">Read</th>
-                <th class="text-center">Write</th>
+                <th>{{ t("settings.types") }}</th>
+                <th class="text-center">{{ t("settings.read") }}</th>
+                <th class="text-center">{{ t("settings.write") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -341,7 +343,7 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="mb-6">
-        <p class="mb-2 font-semibold">Expiration Date</p>
+        <p class="mb-2 font-semibold">{{ t("settings.expirationDate") }}</p>
         <div class="flex gap-3">
           <input v-model="createFormExpiresDate" type="date" class="input input-bordered w-full" />
           <input v-model="createFormExpiresTime" type="time" class="input input-bordered w-full" />
@@ -350,8 +352,8 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="modal-action justify-between">
-        <button class="btn btn-ghost" @click="showCreateModal = false">Close</button>
-        <button class="btn btn-success" @click="handleCreateKey">Create</button>
+        <button class="btn btn-ghost" @click="showCreateModal = false">{{ t("settings.close") }}</button>
+        <button class="btn btn-success" @click="handleCreateKey">{{ t("settings.create") }}</button>
       </div>
     </div>
   </div>
@@ -362,29 +364,29 @@ function formatDateTime(value?: string) {
   <!-- GENERATED KEY MODAL -->
   <div class="modal" :class="{ 'modal-open': showGeneratedModal }">
     <div class="modal-box max-w-lg">
-      <h3 class="mb-3 text-xl font-bold">New API Key</h3>
-      <p class="mb-3 text-sm text-warning">This key will only be shown once. Please store it safely.</p>
+      <h3 class="mb-3 text-xl font-bold">{{ t("settings.newApiKey") }}</h3>
+      <p class="mb-3 text-sm text-warning">{{ t("settings.keyShownOnce") }}</p>
 
       <div class="mb-4 flex items-center justify-between rounded-xl bg-base-200 px-4 py-3">
         <code class="mr-3 break-all text-sm">{{ generatedKey }}</code>
         <button class="btn btn-outline btn-sm gap-2" @click="copyGeneratedKey">
           <template v-if="copyState === 'copied'">
             <i-uil-check class="h-4 w-4" />
-            <span>Copied</span>
+            <span>{{ t("settings.copied") }}</span>
           </template>
           <template v-else-if="copyState === 'error'">
             <i-uil-exclamation-circle class="h-4 w-4" />
-            <span>Retry</span>
+            <span>{{ t("settings.retry") }}</span>
           </template>
           <template v-else>
             <i-uil-copy class="h-4 w-4" />
-            <span>Copy</span>
+            <span>{{ t("settings.copy") }}</span>
           </template>
         </button>
       </div>
 
       <div class="modal-action justify-end">
-        <button class="btn" @click="closeGeneratedModal">I have stored it</button>
+        <button class="btn" @click="closeGeneratedModal">{{ t("settings.iHaveStoredIt") }}</button>
       </div>
     </div>
   </div>
@@ -394,33 +396,33 @@ function formatDateTime(value?: string) {
   <!-- DETAIL MODAL -->
   <div class="modal" :class="{ 'modal-open': showDetailModal }">
     <div class="modal-box max-w-xl">
-      <h3 class="mb-4 text-xl font-bold">API Key Details</h3>
+      <h3 class="mb-4 text-xl font-bold">{{ t("settings.apiKeyDetails") }}</h3>
 
       <div v-if="selectedKey">
         <div class="mb-3">
-          <p class="text-xs text-neutral">Name</p>
+          <p class="text-xs text-neutral">{{ t("settings.name") }}</p>
           <p class="font-semibold">{{ selectedKey.name }}</p>
         </div>
 
         <div class="mb-3 flex gap-8">
           <div>
-            <p class="text-xs text-neutral">Status</p>
+            <p class="text-xs text-neutral">{{ t("settings.status") }}</p>
             <p class="font-semibold">{{ selectedKey.status }}</p>
           </div>
           <div>
-            <p class="text-xs text-neutral">Usage</p>
+            <p class="text-xs text-neutral">{{ t("settings.usage") }}</p>
             <p class="font-semibold">{{ selectedKey.usage }}</p>
           </div>
         </div>
 
-        <p class="mb-2 font-semibold">Permissions</p>
+        <p class="mb-2 font-semibold">{{ t("settings.permissions") }}</p>
         <div class="mb-6 overflow-x-auto rounded-2xl border bg-base-100">
           <table class="table w-full">
             <thead>
               <tr>
-                <th>Types</th>
-                <th class="text-center">Read</th>
-                <th class="text-center">Create</th>
+                <th>{{ t("settings.types") }}</th>
+                <th class="text-center">{{ t("settings.read") }}</th>
+                <th class="text-center">{{ t("settings.create") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -439,8 +441,8 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="modal-action justify-between">
-        <button class="btn btn-outline btn-error" @click="showDeleteConfirm = true">Delete</button>
-        <button class="btn" @click="closeDetailModal">Close</button>
+        <button class="btn btn-outline btn-error" @click="showDeleteConfirm = true">{{ t("settings.delete") }}</button>
+        <button class="btn" @click="closeDetailModal">{{ t("settings.close") }}</button>
       </div>
     </div>
   </div>
@@ -450,14 +452,14 @@ function formatDateTime(value?: string) {
   <!-- Delete confirmation modal -->
   <div class="modal" :class="{ 'modal-open': showDeleteConfirm }">
     <div class="modal-box max-w-sm">
-      <h3 class="text-lg font-bold">Delete API Key</h3>
+      <h3 class="text-lg font-bold">{{ t("settings.deleteApiKey") }}</h3>
       <p class="mt-3 text-sm">
-        Are you sure you want to delete
+        {{ t("settings.areYouSureDelete") }}
         <span class="font-semibold">"{{ selectedKey?.name }}"</span>?
       </p>
       <div class="modal-action">
-        <button class="btn btn-ghost" @click="showDeleteConfirm = false">Cancel</button>
-        <button class="btn btn-error" @click="confirmDeleteSelected">Delete</button>
+        <button class="btn btn-ghost" @click="showDeleteConfirm = false">{{ t("settings.cancel") }}</button>
+        <button class="btn btn-error" @click="confirmDeleteSelected">{{ t("settings.delete") }}</button>
       </div>
     </div>
   </div>

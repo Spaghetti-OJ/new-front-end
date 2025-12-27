@@ -24,7 +24,7 @@ watchEffect(() => {
 <template>
   <div class="mx-auto w-full max-w-4xl space-y-12 p-6">
     <!-- Page Title -->
-    <h1 class="text-3xl font-bold">Settings</h1>
+    <h1 class="text-3xl font-bold">{{ t("settings.title") }}</h1>
 
     <template v-if="session.isLogin">
       <!-- Change Password Section -->
@@ -34,21 +34,21 @@ watchEffect(() => {
 
       <!-- API Keys -->
       <section>
-        <h2 class="mb-4 text-2xl font-semibold">API Keys</h2>
+        <h2 class="mb-4 text-2xl font-semibold">{{ t("settings.apiKeys") }}</h2>
 
         <router-link to="/settings/api-keys" class="btn btn-primary w-full max-w-md">
-          VIEW MY API KEY DASHBOARD
+          {{ t("settings.viewMyApiKeyDashboard") }}
         </router-link>
       </section>
     </template>
 
     <!-- Language Selector (always visible) -->
     <section class="pb-24">
-      <h2 class="mb-4 text-2xl font-semibold">Language</h2>
+      <h2 class="mb-4 text-2xl font-semibold">{{ t("settings.language") }}</h2>
 
       <div class="form-control w-full max-w-xs">
         <label class="label">
-          <span class="label-text">Language:</span>
+          <span class="label-text">{{ t("settings.languageLabel") }}</span>
         </label>
         <select v-model="locale" class="select select-bordered">
           <option value="english">English</option>

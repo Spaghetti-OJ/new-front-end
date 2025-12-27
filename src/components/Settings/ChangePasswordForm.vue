@@ -2,7 +2,11 @@
 import { reactive, toRef } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, sameAs, helpers } from "@vuelidate/validators";
+import { useI18n } from "vue-i18n";
 import api from "@/api";
+
+const { t } = useI18n();
+
 const form = reactive({
   newPassword: "",
   confirmPassword: "",
@@ -18,7 +22,7 @@ const rules = {
   newPassword: { required },
   confirmPassword: {
     required,
-    sameAsNew: helpers.withMessage("Passwords do not match", sameAs(toRef(form, "newPassword"))),
+    sameAsNew: helpers.withMessage(() => t("settings.passwordsDoNotMatch"), sameAs(toRef(form, "newPassword"))),
   },
   currentPassword: { required },
 };
@@ -55,62 +59,62 @@ async function submit() {
 
 <template>
   <div class="max-w-xl space-y-6">
-    <h2 class="text-2xl font-semibold">Change Password</h2>
+    <h2 class="text-2xl font-semibold">{{ t("settings.changePassword") }}</h2>
     <!-- Current Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">Current Password</span>
+        <span class="label-text">{{ t("settings.currentPassword") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.currentPassword.$model"
         class="input input-bordered"
-        placeholder="current password"
+        :placeholder="t('profile.pw.placeholder.current')"
         :class="v$.currentPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.currentPassword.$error">
-        <span class="label-text-alt text-error">Required</span>
+        <span class="label-text-alt text-error">{{ t("settings.required") }}</span>
       </label>
     </div>
 
     <!-- New Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">New Password</span>
+        <span class="label-text">{{ t("settings.newPassword") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.newPassword.$model"
         class="input input-bordered"
-        placeholder="new password"
+        :placeholder="t('profile.pw.placeholder.new')"
         :class="v$.newPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.newPassword.$error">
-        <span class="label-text-alt text-error">Required</span>
+        <span class="label-text-alt text-error">{{ t("settings.required") }}</span>
       </label>
     </div>
 
     <!-- Confirm New Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">Confirm New Password</span>
+        <span class="label-text">{{ t("settings.confirmNewPassword") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.confirmPassword.$model"
         class="input input-bordered"
-        placeholder="new password again"
+        :placeholder="t('profile.pw.placeholder.again')"
         :class="v$.confirmPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.confirmPassword.$error">
         <span class="label-text-alt text-error">
-          {{ v$.confirmPassword.required.$invalid ? "Required" : "Passwords do not match" }}
+          {{ v$.confirmPassword.required.$invalid ? t("settings.required") : t("settings.passwordsDoNotMatch") }}
         </span>
       </label>
     </div>
 
     <!-- Submit Button -->
-    <button class="btn btn-primary mt-4 w-full" @click="submit">SUBMIT</button>
+    <button class="btn btn-primary mt-4 w-full" @click="submit">{{ t("settings.submit") }}</button>
     <div class="alert alert-error shadow-lg" v-if="form.errorMsg">
       <div>
         <i-uil-times-circle />
@@ -120,7 +124,7 @@ async function submit() {
     <div class="alert alert-success shadow-lg" v-if="form.success">
       <div>
         <i-uil-times-circle />
-        <span>Password changed successfully.</span>
+        <span>{{ t("settings.passwordChangedSuccessfully") }}</span>
       </div>
     </div>
   </div>
