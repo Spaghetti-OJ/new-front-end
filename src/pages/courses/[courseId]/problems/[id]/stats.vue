@@ -193,18 +193,8 @@ const barOption = computed(() => ({
             <div class="my-4" />
 
             <div class="flex">
-              <v-chart
-                class="mx-auto h-[400px]"
-                :theme="theme.isDark ? 'dark' : ''"
-                :option="pieOption"
-                autoresize
-              />
-              <v-chart
-                class="mx-auto h-[400px]"
-                :theme="theme.isDark ? 'dark' : ''"
-                :option="barOption"
-                autoresize
-              />
+              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="pieOption" autoresize />
+              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="barOption" autoresize />
             </div>
           </template>
         </data-status-wrapper>
@@ -228,7 +218,7 @@ const barOption = computed(() => ({
           <tbody>
             <tr v-for="(subm, index) in top10RunTime" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user }}</td>
+              <td>{{ subm.username }}</td>
               <td>{{ subm.execution_time }} ms</td>
               <td>{{ subm.score }}</td>
             </tr>
@@ -254,7 +244,7 @@ const barOption = computed(() => ({
           <tbody>
             <tr v-for="(subm, index) in top10MemoryUsage" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user }}</td>
+              <td>{{ subm.username }}</td>
               <td>{{ subm.memory_usage }} KB</td>
               <td>{{ subm.score }}</td>
             </tr>
