@@ -33,6 +33,7 @@ interface ProblemItem {
   sample_input: string;
   sample_output: string;
   hint: string;
+  submit_count: number;
   subtask_description: string;
   supported_languages: string[];
   creator_id: string;
