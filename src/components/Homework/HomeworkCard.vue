@@ -76,27 +76,24 @@ function getProblemMeta(pid: number) {
   );
 }
 
+function hasDataField<T>(value: unknown): value is { data: T } {
+  return typeof value === "object" && value !== null && "data" in value;
+}
+
 async function fetchProblemMeta(pid: number) {
   if (requestedProblemIds.value.has(pid)) return;
   requestedProblemIds.value.add(pid);
   try {
     const res = await api.Problem.getProblemInfo(pid);
-    const data = (res as any).data ?? res;
-    const name = data?.problemName || data?.title || data?.name || `#${pid}`;
-    const quota =
-      typeof data?.quota === "number"
-        ? data.quota
-        : typeof data?.total_quota === "number"
-        ? data.total_quota
-        : null;
-    const highScore = typeof data?.highScore === "number" ? data.highScore : data?.high_score;
+    const data = hasDataField<ProblemInfo>(res) ? res.data : res;
+    const name = data?.problemName || `#${pid}`;
+    const quota = typeof data?.quota === "number" ? data.quota : null;
+    const highScore = typeof data?.highScore === "number" ? data.highScore : undefined;
     fetchedProblemMeta.value = {
       ...fetchedProblemMeta.value,
       [pid.toString()]: { name, quota, highScore },
     };
-  } catch {
-    // Keep fallback values on error.
-  }
+  } catch {}
 }
 
 async function fetchMissingProblems(pids: number[]) {
