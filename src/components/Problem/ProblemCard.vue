@@ -177,7 +177,7 @@ onMounted(() => {
               type="button"
               class="btn btn-ghost btn-lg gap-2 px-4"
               :class="{ loading: isLiking }"
-              :disabled="isLiking"
+              :disabled="isLiking || session.isNotLogin"
               @click="toggleLike"
             >
               <span class="text-2xl leading-none">
