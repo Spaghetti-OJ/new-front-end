@@ -249,13 +249,6 @@ onMounted(async () => {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 確保文字不會溢出 */
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* 排名徽章動畫 - keep in sync with Tailwind's md breakpoint (default 768px). */
 @media (max-width: 768px) {
   .ranking-card-body {
