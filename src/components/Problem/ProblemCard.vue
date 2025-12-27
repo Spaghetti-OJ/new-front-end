@@ -54,6 +54,7 @@ const descriptionHasHeading = computed(() =>
 );
 const hasInput = computed(() => Boolean(props.problem.description.input?.trim()));
 const hasOutput = computed(() => Boolean(props.problem.description.output?.trim()));
+const hasHint = computed(() => Boolean(props.problem.description.hint?.trim()));
 
 onMounted(getSubtasks);
 </script>
@@ -197,10 +198,11 @@ onMounted(getSubtasks);
             </table>
           </div>
 
-          <div class="card-title md:text-xl lg:text-2xl">
+          <div v-if="hasHint" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.hint") }}
           </div>
           <markdown-renderer
+            v-if="hasHint"
             class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
             :md="problem.description.hint"
           />
