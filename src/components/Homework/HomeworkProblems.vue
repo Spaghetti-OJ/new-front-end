@@ -95,7 +95,7 @@ function getProblemMeta(pid: number) {
         <td>
           <ui-spinner v-if="!getProblemMeta(pid)" />
           <span
-            v-else-if="getProblemMeta(pid) && isQuotaUnlimited(getProblemMeta(pid)!.quota as number)"
+            v-else-if="getProblemMeta(pid) && getProblemMeta(pid)!.quota != null && isQuotaUnlimited(getProblemMeta(pid)!.quota)"
             class="text-sm"
           >
             {{ $t("components.problem.card.unlimited") }}

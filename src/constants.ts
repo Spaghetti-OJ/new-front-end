@@ -73,7 +73,7 @@ export const LOCAL_STORAGE_KEY = {
 };
 
 export const UNLIMITED_QUOTA = -1;
-export function isQuotaUnlimited(quota: number): boolean {
+export function isQuotaUnlimited(quota: number | null | undefined): boolean {
   return quota === UNLIMITED_QUOTA;
 }
 
