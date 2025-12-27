@@ -12,23 +12,13 @@ const error = ref<Error | null>(null);
 const getProfileLink = (username: string) => `/profile/${username}`;
 const fallbackAvatar = "https://i.pravatar.cc/100";
 
+const normalizePath = (path: string) => {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return normalized.startsWith("/avatars/") ? `/media${normalized}` : normalized;
+};
+
 const normalizeAvatar = (avatar?: string | null) => {
   if (!avatar) return fallbackAvatar;
-
-  const normalizePath = (path: string) => {
-    const normalized = path.startsWith("/") ? path : `/${path}`;
-    return normalized.startsWith("/avatars/") ? `/media${normalized}` : normalized;
-  };
-
-  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
-    try {
-      const parsed = new URL(avatar);
-      parsed.pathname = normalizePath(parsed.pathname);
-      return parsed.toString();
-    } catch {
-      return avatar;
-    }
-  }
 
   const mediaBase = import.meta.env.VITE_APP_MEDIA_BASE_URL || import.meta.env.VITE_APP_API_BASE_URL;
   let origin = window.location.origin;
@@ -37,6 +27,18 @@ const normalizeAvatar = (avatar?: string | null) => {
       origin = new URL(mediaBase, window.location.origin).origin;
     } catch {
       origin = window.location.origin;
+    }
+  }
+
+  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+    try {
+      const parsed = new URL(avatar);
+      if (parsed.origin === origin) {
+        parsed.pathname = normalizePath(parsed.pathname);
+      }
+      return parsed.toString();
+    } catch {
+      return avatar;
     }
   }
 
