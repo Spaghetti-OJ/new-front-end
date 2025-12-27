@@ -107,7 +107,6 @@ async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error">
 }
 
 async function ensureReport() {
-  
   if (isBusy.value) return;
   isBusy.value = true;
   try {
@@ -146,9 +145,7 @@ onBeforeUnmount(() => {
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title md:text-2xl lg:text-3xl">
-          Copycat of problem #{{ $route.params.id }}
-        </div>
+        <div class="card-title md:text-2xl lg:text-3xl">Copycat of problem #{{ $route.params.id }}</div>
 
         <div v-if="courseError" class="alert alert-error shadow-lg">
           <div>
@@ -161,9 +158,7 @@ onBeforeUnmount(() => {
         <div v-if="reportError" class="alert alert-warning shadow-lg">
           <div class="flex w-full items-center justify-between">
             <span>{{ reportError }}</span>
-            <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">
-              Try again
-            </button>
+            <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">Try again</button>
           </div>
         </div>
 
@@ -172,9 +167,7 @@ onBeforeUnmount(() => {
           <div v-if="status === 'failed'" class="alert alert-error shadow-lg">
             <div class="flex w-full items-center justify-between">
               <span>生成失敗：{{ errMsg }}</span>
-              <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">
-                Retry
-              </button>
+              <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">Retry</button>
             </div>
           </div>
 
@@ -197,9 +190,9 @@ onBeforeUnmount(() => {
               <i-uil-file-upload-alt class="mr-1 h-5 w-5" />
               Click me to generate report
             </button>
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
