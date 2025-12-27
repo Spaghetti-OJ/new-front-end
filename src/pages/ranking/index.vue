@@ -10,6 +10,38 @@ const isLoading = ref(true);
 const error = ref<Error | null>(null);
 
 const getProfileLink = (username: string) => `/profile/${username}`;
+const fallbackAvatar = "https://i.pravatar.cc/100";
+
+const resolveAvatarUrl = (avatar?: string | null) => {
+  if (!avatar) return fallbackAvatar;
+
+  const normalizePath = (path: string) => {
+    const normalized = path.startsWith("/") ? path : `/${path}`;
+    return normalized.startsWith("/avatars/") ? `/media${normalized}` : normalized;
+  };
+
+  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+    try {
+      const parsed = new URL(avatar);
+      parsed.pathname = normalizePath(parsed.pathname);
+      return parsed.toString();
+    } catch {
+      return avatar;
+    }
+  }
+
+  const mediaBase = import.meta.env.VITE_APP_MEDIA_BASE_URL || import.meta.env.VITE_APP_API_BASE_URL;
+  let origin = window.location.origin;
+  if (typeof mediaBase === "string" && mediaBase.length > 0) {
+    try {
+      origin = new URL(mediaBase, window.location.origin).origin;
+    } catch {
+      origin = window.location.origin;
+    }
+  }
+
+  return `${origin}${normalizePath(avatar)}`;
+};
 
 onMounted(async () => {
   try {
@@ -74,12 +106,12 @@ onMounted(async () => {
                 :title="`View profile of ${item.user.username}`"
               >
                 <div class="mask mask-squircle h-10 w-10">
-                  <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
+                  <img :src="resolveAvatarUrl(item.user?.avatar)" alt="user avatar" />
                 </div>
               </router-link>
               <div v-else class="avatar">
                 <div class="mask mask-squircle h-10 w-10">
-                  <img :src="item.user?.avatar || 'https://i.pravatar.cc/100'" alt="user avatar" />
+                  <img :src="resolveAvatarUrl(item.user?.avatar)" alt="user avatar" />
                 </div>
               </div>
             </td>
