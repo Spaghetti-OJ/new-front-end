@@ -85,6 +85,26 @@ interface SubmissionInfo {
   tasks?: Task[];
 }
 
+interface SubmissionCaseOutput {
+  submission_id: string;
+  task_no: number;
+  case_no: number;
+  status: string;
+  score: number;
+  max_score: number;
+  execution_time: number | null;
+  memory_usage: number | null;
+  output: string;
+  error_message: string;
+  judge_message: string;
+}
+
+interface SubmissionCaseOutputResponse {
+  data: SubmissionCaseOutput;
+  message: string;
+  status: string;
+}
+
 interface SubmissionListFilter {
   problemId?: string;
   status?: string;

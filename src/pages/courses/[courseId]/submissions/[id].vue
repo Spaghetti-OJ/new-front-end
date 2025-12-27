@@ -39,6 +39,39 @@ const execute = async () => {
       }
     }
     submission.value = raw;
+    if (raw?.problemId) {
+      await loadProblemCases(raw.problemId);
+    }
+
+    // Polyfill tasks if missing from submission detail but we have problem structure
+    if ((!raw.tasks || raw.tasks.length === 0) && Object.keys(subtaskCaseIds.value).length > 0) {
+      const tasks: any[] = [];
+      const sortedSubtasks = Object.keys(subtaskCaseIds.value)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+      sortedSubtasks.forEach((subtaskNo) => {
+        tasks.push({
+          status: raw.status,
+          execTime: 0,
+          memoryUsage: 0,
+          score: 0,
+          cases: subtaskCaseIds.value[subtaskNo].map(() => ({
+            status: raw.status,
+            execTime: 0,
+            memoryUsage: 0,
+          })),
+        });
+      });
+      raw.tasks = tasks;
+      submission.value = { ...raw };
+    }
+
+    if (raw?.tasks?.length && !isOutputsPrefetched.value) {
+      isOutputsPrefetched.value = true;
+      await Promise.all(raw.tasks.map((task: Task, index: number) => loadTaskOutputs(index, task)));
+      // expandTasks.value = raw.tasks.map(() => true); // Do not auto-expand
+    }
 
     try {
       const codeRes = await api.Submission.getCode(route.params.id as string);
@@ -81,6 +114,95 @@ const { pause, isActive } = useIntervalFn(() => {
 }, 2000);
 
 const expandTasks = ref<boolean[]>([]);
+const caseOutputs = ref<Record<string, SubmissionCaseOutput | null>>({});
+const caseOutputErrors = ref<Record<string, string>>({});
+const caseOutputLoading = ref<Record<string, boolean>>({});
+const subtaskCaseIds = ref<Record<number, number[]>>({});
+const isProblemCasesLoaded = ref(false);
+const isOutputsPrefetched = ref(false);
+
+function getCaseKey(taskNo: number, caseNo: number) {
+  return `${taskNo}-${caseNo}`;
+}
+
+function resolveTaskNo(taskIndex: number) {
+  if (subtaskCaseIds.value[taskIndex]?.length) return taskIndex;
+  if (subtaskCaseIds.value[taskIndex + 1]?.length) return taskIndex + 1;
+  return taskIndex;
+}
+
+function getCaseIdsForTask(taskIndex: number, task: Task) {
+  const taskNo = resolveTaskNo(taskIndex);
+  const fromProblem = subtaskCaseIds.value[taskNo];
+  if (fromProblem?.length) return fromProblem;
+  if (task.cases?.length) return task.cases.map((_case, idx) => idx);
+  return [];
+}
+
+function getFallbackCase(task: Task, caseNo: number) {
+  return task.cases?.[caseNo];
+}
+
+async function fetchCaseOutput(taskNo: number, caseNo: number) {
+  const key = getCaseKey(taskNo, caseNo);
+  if (caseOutputLoading.value[key] || caseOutputs.value[key]) return;
+  caseOutputLoading.value[key] = true;
+  caseOutputErrors.value[key] = "";
+  try {
+    const res = await api.Submission.getOutput(route.params.id as string, taskNo, caseNo);
+    const data = (res as any).data?.data ?? (res as any).data ?? res;
+    caseOutputs.value[key] = (data as SubmissionCaseOutput) || null;
+  } catch (err: any) {
+    caseOutputErrors.value[key] = err?.response?.data?.message || err?.message || "Failed to load output.";
+  } finally {
+    caseOutputLoading.value[key] = false;
+  }
+}
+
+async function loadProblemCases(problemId: number) {
+  if (isProblemCasesLoaded.value) return;
+  try {
+    const [subtasksRes, casesRes] = await Promise.all([
+      api.Problem.getSubtasks(problemId),
+      api.Problem.getTestCases(problemId),
+    ]);
+    const subtasks = (subtasksRes as any).data ?? subtasksRes ?? [];
+    const cases = (casesRes as any).data?.data ?? (casesRes as any).data ?? [];
+    const subtaskNoById = new Map<number, number>();
+    subtasks.forEach((s: any) => {
+      if (typeof s.id === "number" && typeof s.subtask_no === "number") {
+        subtaskNoById.set(s.id, s.subtask_no);
+      }
+    });
+
+    const grouped: Record<number, number[]> = {};
+    cases.forEach((c: any) => {
+      const subtaskNo = subtaskNoById.get(c.subtask_id);
+      if (subtaskNo == null || typeof c.idx !== "number") return;
+      if (!grouped[subtaskNo]) grouped[subtaskNo] = [];
+      grouped[subtaskNo].push(c.idx);
+    });
+    Object.values(grouped).forEach((list) => list.sort((a, b) => a - b));
+    subtaskCaseIds.value = grouped;
+    isProblemCasesLoaded.value = true;
+  } catch (err) {
+    console.warn("Failed to load problem test cases", err);
+  }
+}
+
+async function loadTaskOutputs(taskIndex: number, task: Task) {
+  const taskNo = resolveTaskNo(taskIndex);
+  const caseIds = getCaseIdsForTask(taskIndex, task);
+  if (!caseIds.length) return;
+  await Promise.all(caseIds.map((caseNo) => fetchCaseOutput(taskNo, caseNo)));
+}
+
+function toggleTask(taskIndex: number, task: Task) {
+  expandTasks.value[taskIndex] = !expandTasks.value[taskIndex];
+  if (expandTasks.value[taskIndex]) {
+    void loadTaskOutputs(taskIndex, task);
+  }
+}
 watchEffect(() => {
   if (submission.value != null) {
     const tasks = (submission.value as any).tasks;
@@ -115,6 +237,52 @@ async function rejudge() {
   } finally {
     isRejudgeLoading.value = false;
   }
+}
+
+function getTaskStats(taskIndex: number, task: Task) {
+  const taskNo = resolveTaskNo(taskIndex);
+  const caseIds = getCaseIdsForTask(taskIndex, task);
+
+  let totalTime = 0;
+  let maxMemory = 0;
+  let totalScore = 0;
+  let hasOutput = false;
+
+  for (const caseNo of caseIds) {
+    const key = getCaseKey(taskNo, caseNo);
+    const output = caseOutputs.value[key];
+    if (output) {
+      hasOutput = true;
+      totalTime += output.execution_time ?? 0;
+      maxMemory = Math.max(maxMemory, output.memory_usage ?? 0);
+      totalScore += output.score ?? 0;
+    } else {
+      // Try fallback to task.cases
+      const fallback = getFallbackCase(task, caseNo);
+      if (fallback) {
+        totalTime += fallback.execTime ?? 0;
+        maxMemory = Math.max(maxMemory, fallback.memoryUsage ?? 0);
+        // Fallback cases usually don't have score in this context, but if they did:
+        // totalScore += fallback.score ?? 0;
+      }
+    }
+  }
+
+  // If we found any detailed outputs, return the calculated stats
+  if (hasOutput) {
+    return {
+      execTime: totalTime,
+      memoryUsage: maxMemory,
+      score: totalScore,
+    };
+  }
+
+  // Otherwise return the original task stats
+  return {
+    execTime: task.execTime,
+    memoryUsage: task.memoryUsage,
+    score: task.score,
+  };
 }
 </script>
 
@@ -212,11 +380,13 @@ async function rejudge() {
             <div class="card-title md:text-xl lg:text-2xl">{{ $t("course.submission.detail.title") }}</div>
             <div class="my-1" />
             <skeleton-table v-if="!submission" :col="5" :row="5" />
-            <div v-else-if="isActive" class="flex items-center">
+
+            <div v-if="isActive" class="mb-4 flex items-center">
               <ui-spinner class="mr-3 h-6 w-6" /> {{ $t("course.submission.detail.desc") }}
             </div>
+
             <table
-              v-else-if="submission.tasks"
+              v-if="submission?.tasks"
               class="table table-compact w-full"
               v-for="(task, taskIndex) in submission.tasks"
             >
@@ -233,32 +403,60 @@ async function rejudge() {
                 <tr>
                   <td>{{ $t("course.submission.detail.overall") }}</td>
                   <td><judge-status :status="task.status" /></td>
-                  <td>{{ task.execTime }} ms</td>
-                  <td>{{ task.memoryUsage }} KB</td>
-                  <td>{{ task.score }}</td>
+                  <td>{{ getTaskStats(taskIndex, task).execTime }} ms</td>
+                  <td>{{ getTaskStats(taskIndex, task).memoryUsage }} KB</td>
+                  <td>{{ getTaskStats(taskIndex, task).score }}</td>
                 </tr>
                 <tr>
                   <td colspan="5">
-                    <div
-                      class="btn btn-ghost btn-sm btn-block gap-x-3"
-                      @click="expandTasks[taskIndex] = !expandTasks[taskIndex]"
-                    >
+                    <div class="btn btn-ghost btn-sm btn-block gap-x-3" @click="toggleTask(taskIndex, task)">
                       <i-uil-angle-down v-if="!expandTasks[taskIndex]" />
                       <i-uil-angle-up v-else />
-                      {{
-                        expandTasks[taskIndex]
-                          ? $t("course.submission.detail.result.hide")
-                          : $t("course.submission.detail.result.show")
-                      }}
+                      {{ expandTasks[taskIndex] ? "HIDE ALL RESULTS" : "SHOW ALL RESULTS" }}
                     </div>
                   </td>
                 </tr>
-                <tr v-show="expandTasks[taskIndex]" v-for="(_case, caseIndex) in task.cases">
-                  <td>{{ taskIndex }}-{{ caseIndex }}</td>
-                  <td><judge-status :status="_case.status" /></td>
-                  <td>{{ _case.execTime }} ms</td>
-                  <td>{{ _case.memoryUsage }} KB</td>
-                  <td>-</td>
+                <tr v-show="expandTasks[taskIndex]" v-for="caseNo in getCaseIdsForTask(taskIndex, task)">
+                  <td>{{ resolveTaskNo(taskIndex) }}-{{ caseNo }}</td>
+                  <td>
+                    <span v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.status">
+                      {{ caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]!.status }}
+                    </span>
+                    <judge-status
+                      v-else-if="getFallbackCase(task, caseNo)"
+                      :status="getFallbackCase(task, caseNo)!.status"
+                    />
+                    <span v-else>-</span>
+                  </td>
+                  <td>
+                    {{
+                      caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.execution_time ??
+                      getFallbackCase(task, caseNo)?.execTime ??
+                      "-"
+                    }}
+                    <span
+                      v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.execution_time != null"
+                    >
+                      ms
+                    </span>
+                    <span v-else-if="getFallbackCase(task, caseNo)?.execTime != null"> ms</span>
+                  </td>
+                  <td>
+                    {{
+                      caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.memory_usage ??
+                      getFallbackCase(task, caseNo)?.memoryUsage ??
+                      "-"
+                    }}
+                    <span
+                      v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.memory_usage != null"
+                    >
+                      KB
+                    </span>
+                    <span v-else-if="getFallbackCase(task, caseNo)?.memoryUsage != null"> KB</span>
+                  </td>
+                  <td>
+                    {{ caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.score ?? "-" }}
+                  </td>
                 </tr>
               </tbody>
             </table>
