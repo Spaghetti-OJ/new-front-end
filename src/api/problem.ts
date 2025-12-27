@@ -51,4 +51,24 @@ export const Problem = {
         status: string;
       }>;
     }>(`/problem/${problemId}/test-cases`),
+  like: (problemId: number) =>
+    fetcher.post<{ data: { likes_count: number }; message: string; status: string }>(
+      `/problem/${problemId}/like`,
+    ),
+  unlike: (problemId: number) =>
+    fetcher.delete<{ data: { likes_count: number }; message: string; status: string }>(
+      `/problem/${problemId}/like`,
+    ),
+  getLikes: (problemId: number) =>
+    fetcher.get<{ data: { likes_count: number }; message: string; status: string }>(
+      `/problem/${problemId}/likes`,
+    ),
+  listLiked: () => fetcher.get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`),
+  uploadTestCasesZip: (problemId: number, file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return fetcher.post(`/problem/${problemId}/test-cases/upload-zip`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
 };
