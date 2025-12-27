@@ -146,6 +146,7 @@ onMounted(getSubtasks);
             {{ $t("components.problem.card.desc") }}
           </div>
           <markdown-renderer
+            v-if="problem.description.description"
             class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
             :md="problem.description.description"
           />
