@@ -1,16 +1,30 @@
-<script setup>
+<script setup lang="ts">
 import { CalendarHeatmap } from "vue3-calendar-heatmap";
 import "vue3-calendar-heatmap/dist/style.css";
 import { useI18n } from "vue-i18n";
+import { useTheme } from "@/stores/theme";
+
 const { t } = useI18n();
-const props = defineProps({
-  contributions: { type: Array, default: () => [] },
-  submission: { type: Number, default: 0 },
-  acceptance: { type: Number, default: 0 },
-  totalsolved: { type: Number, default: 0 },
-  data: { type: Object, default: () => ({ easy: 0, med: 0, hard: 0 }) },
-  beatrate: { type: Number, default: 0 },
-});
+const theme = useTheme();
+
+const props = withDefaults(
+  defineProps<{
+    contributions?: HeatmapValue[];
+    submission?: number;
+    acceptance?: number;
+    totalsolved?: number;
+    data?: DifficultyStats;
+    beatrate?: number;
+  }>(),
+  {
+    contributions: () => [],
+    submission: 0,
+    acceptance: 0,
+    totalsolved: 0,
+    data: () => ({ easy: 0, med: 0, hard: 0 }),
+    beatrate: 0,
+  },
+);
 </script>
 
 <template>
@@ -21,69 +35,85 @@ const props = defineProps({
     </label>
 
     <!-- 外框-->
-    <section class="flex w-full flex-col gap-4 rounded-xl border-base-300 bg-base-200 px-4 py-4">
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)]">
-        <!-- 左欄 -->
-        <div class="flex flex-col gap-4">
-          <!-- Heatmap -->
-          <div class="rounded-xl border-base-300 bg-base-100 p-3">
-            <div class="mb-2 text-base font-semibold text-base-content">{{ t("profile.heatmap") }}</div>
-            <CalendarHeatmap :values="contributions" :end-date="new Date()" :max="10" :tooltip="true" />
+    <section class="flex w-full flex-col gap-4 rounded-xl bg-base-200 px-4 py-4">
+      <!-- Heatmap -->
+      <div class="rounded-xl border-base-300 bg-base-100 p-3">
+        <div class="mb-2 text-base font-semibold text-base-content">{{ t("profile.heatmap") }}</div>
+        <CalendarHeatmap
+          :values="contributions"
+          :end-date="new Date()"
+          :max="10"
+          :tooltip="true"
+          :dark-mode="theme.isDark"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <!-- Submission -->
+        <div class="flex items-center gap-3 rounded-2xl bg-base-100 px-4 py-3">
+          <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
+            <i-uil-upload class="h-5 w-5" />
           </div>
-
-          <!-- 小卡 -->
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div class="flex h-28 flex-col items-end justify-between rounded-[18px] bg-base-100 px-4 py-3">
-              <div class="self-start text-base font-semibold text-base-content">Submission</div>
-              <div class="text-6xl font-semibold leading-none text-[#B4A9DA]">
-                {{ submission }}
-              </div>
-            </div>
-
-            <div class="flex h-28 flex-col items-end justify-between rounded-[18px] bg-base-100 px-4 py-3">
-              <div class="self-start text-base font-semibold text-base-content">Acceptance</div>
-              <div class="text-6xl font-semibold leading-none text-[#E6BDBD]">
-                {{ acceptance }}<span class="text-3xl">%</span>
-              </div>
-            </div>
+          <div class="flex min-w-0 flex-col">
+            <span class="text-xs text-base-content/70">Submissions</span>
+            <span class="text-2xl font-bold leading-none text-base-content">{{ submission }}</span>
           </div>
         </div>
 
-        <!-- 右欄 -->
-        <div class="flex flex-col gap-3 rounded-[18px] bg-base-100 px-5 py-4 text-base font-semibold">
-          <div class="text-base-content">Total Solved</div>
-          <div class="flex items-end gap-3">
-            <div class="text-5xl leading-none text-[#90B8E0]">
-              {{ totalsolved }}
+        <!-- Acceptance -->
+        <div class="flex items-center gap-3 rounded-2xl bg-base-100 px-4 py-3">
+          <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
+            <i-uil-check-circle class="h-5 w-5" />
+          </div>
+          <div class="flex min-w-0 flex-col">
+            <span class="text-xs text-base-content/70">Acceptance</span>
+            <span class="text-2xl font-bold leading-none text-base-content"> {{ acceptance }}% </span>
+          </div>
+        </div>
+
+        <!-- Total Solved -->
+        <div class="flex items-center justify-between gap-3 rounded-2xl bg-base-100 px-4 py-3">
+          <!-- 左：Icon + Solved -->
+          <div class="flex items-center gap-3">
+            <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
+              <i-uil-puzzle-piece class="h-5 w-5" />
             </div>
-            <div class="text-base-content">Problems</div>
+            <div class="flex flex-col">
+              <span class="text-xs text-base-content/70">Solved</span>
+              <span class="text-2xl font-bold leading-none text-base-content">
+                {{ totalsolved }}
+              </span>
+            </div>
           </div>
 
-          <div class="mt-3 flex items-end gap-4">
-            <!-- 左側：三個標籤 -->
-            <div class="flex flex-col gap-3">
-              <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#60A047]"
-              >
-                Easy <span>{{ data.easy }}</span>
-              </span>
-              <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E9A11C]"
-              >
-                Med. <span>{{ data.med }}</span>
-              </span>
-              <span
-                class="flex w-24 items-center justify-between gap-2 rounded-lg bg-base-200 px-2 py-1 text-[#E46319]"
-              >
-                Hard <span>{{ data.hard }}</span>
-              </span>
-            </div>
+          <!-- 右：Easy / Med / Hard -->
+          <div class="flex flex-wrap gap-1 text-xs">
+            <span
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]"
+            >
+              E {{ data.easy }}
+            </span>
+            <span
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#E9A11C]"
+            >
+              M {{ data.med }}
+            </span>
+            <span
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#E46319]"
+            >
+              H {{ data.hard }}
+            </span>
+          </div>
+        </div>
 
-            <!-- 右側：Beats -->
-            <div class="text-left text-base-content">
-              <div>Beats</div>
-              <div class="text-xl">{{ beatrate }}%</div>
-            </div>
+        <!-- Beats -->
+        <div class="flex items-center gap-3 rounded-2xl bg-base-100 px-4 py-3">
+          <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
+            <i-uil-chart-line class="h-5 w-5" />
+          </div>
+          <div class="flex min-w-0 flex-col">
+            <span class="text-xs text-base-content/70">Beats</span>
+            <span class="text-2xl font-bold leading-none text-base-content">{{ beatrate }}%</span>
           </div>
         </div>
       </div>
