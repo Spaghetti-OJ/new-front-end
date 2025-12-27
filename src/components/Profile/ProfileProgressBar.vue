@@ -55,7 +55,7 @@ const props = withDefaults(
             <i-uil-upload class="h-5 w-5" />
           </div>
           <div class="flex min-w-0 flex-col">
-            <span class="text-xs text-base-content/70">Submits</span>
+            <span class="text-xs text-base-content/70">Submissions</span>
             <span class="text-2xl font-bold leading-none text-base-content">{{ submission }}</span>
           </div>
         </div>
