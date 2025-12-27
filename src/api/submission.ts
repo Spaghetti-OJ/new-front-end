@@ -17,5 +17,8 @@ export const Submission = {
   getDetail: (id: string) => fetcher.get<SubmissionInfo>(`/submission/${id}/`),
   getCode: (id: string) =>
     fetcher.get<{ source_code: string; language_type: number }>(`/submission/${id}/code/`),
-  list: (params: SubmissionListQuery) => fetcher.get<GetSubmissionListResponse>("/submission/", { params }),
+  list: (params: SubmissionListQuery) =>
+    fetcher
+      .get<GetSubmissionListResponse>("/submission/", { params })
+      .then((res) => (res as unknown as { data: { results: SubmissionList; count: number } }).data),
 };
