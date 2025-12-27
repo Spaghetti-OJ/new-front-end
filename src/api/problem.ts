@@ -64,4 +64,29 @@ export const Problem = {
       `/problem/${problemId}/likes`,
     ),
   listLiked: () => fetcher.get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`),
+  uploadTestCasesZip: (problemId: number, file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return fetcher.post(`/problem/${problemId}/test-cases/upload-zip`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+
+  getEditorials: (problemId: number | string) =>
+    fetcher.get<Editorial[]>(`/editorials/problem/${problemId}/solution/`),
+
+  createEditorial: (problemId: number | string, data: { content: string }) =>
+    fetcher.post<Editorial>(`/editorials/problem/${problemId}/solution/`, data),
+
+  updateEditorial: (problemId: number | string, editorialId: string, data: { content: string }) =>
+    fetcher.put<Editorial>(`/editorials/problem/${problemId}/solution/${editorialId}/`, data),
+
+  deleteEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/`),
+
+  likeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.post(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
+
+  unlikeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
 };

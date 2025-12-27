@@ -412,11 +412,11 @@
     "loginSection": {
       "welcome": "Welcome back, {user}",
       "signin": "Sign in",
-      "loginFailed": "Login Failed: Your username/email or password is incorrect",
-      "username": "Username / Email",
+      "loginFailed": "Login Failed: Your username or password is incorrect",
+      "username": "Username",
       "pw": "Password",
       "placeholder": {
-        "username": "username or email",
+        "username": "username",
         "pw": "password"
       },
       "forgot": "Forgot password?",
