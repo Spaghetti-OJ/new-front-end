@@ -120,6 +120,7 @@ const caseOutputLoading = ref<Record<string, boolean>>({});
 const subtaskCaseIds = ref<Record<number, number[]>>({});
 const isProblemCasesLoaded = ref(false);
 const isOutputsPrefetched = ref(false);
+const problemCasesError = ref<string | null>(null);
 
 function getCaseKey(taskNo: number, caseNo: number) {
   return `${taskNo}-${caseNo}`;
@@ -161,6 +162,7 @@ async function fetchCaseOutput(taskNo: number, caseNo: number) {
 
 async function loadProblemCases(problemId: number) {
   if (isProblemCasesLoaded.value) return;
+  problemCasesError.value = null;
   try {
     const [subtasksRes, casesRes] = await Promise.all([
       api.Problem.getSubtasks(problemId),
@@ -187,6 +189,7 @@ async function loadProblemCases(problemId: number) {
     isProblemCasesLoaded.value = true;
   } catch (err) {
     console.warn("Failed to load problem test cases", err);
+    problemCasesError.value = "Failed to load problem structure for outputs.";
   }
 }
 
@@ -438,6 +441,11 @@ function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
             </div>
 
             <div class="my-4" />
+
+            <div v-if="problemCasesError" class="alert alert-warning mb-3 shadow-lg">
+              <i-uil-exclamation-circle class="h-5 w-5" />
+              <span>{{ problemCasesError }}</span>
+            </div>
 
             <div class="card-title md:text-xl lg:text-2xl">{{ $t("course.submission.detail.title") }}</div>
             <div class="my-1" />
