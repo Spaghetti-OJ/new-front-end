@@ -25,16 +25,19 @@ interface Task {
 }
 
 interface SubmissionListItem {
-  languageType: number;
-  lastSend: number;
-  memoryUsage: number;
-  problemId: number;
-  runTime: number;
-  score: number;
-  status: SubmissionStatusCodes;
   submissionId: string;
-  timestamp: number;
-  user: UserInfo;
+  problemId: number;
+  user: {
+    id: string;
+    username: string;
+    real_name: string; // Added real_name
+  };
+  status: number | string;
+  score: number;
+  runTime: number;
+  memoryUsage: number;
+  languageType: number | string;
+  timestamp: string;
   ipAddr: string;
 }
 
@@ -46,10 +49,12 @@ interface Submission extends SubmissionListItem {
 }
 
 interface GetSubmissionListResponse {
-  submissions?: SubmissionList; // Legacy support
-  submissionCount?: number; // Legacy support
-  results?: SubmissionList;
-  count?: number;
+  data: {
+    results: SubmissionList;
+    count: number;
+  };
+  message: string;
+  status: string;
 }
 
 interface SubmissionListQuery {
@@ -57,10 +62,11 @@ interface SubmissionListQuery {
   page_size?: number;
   offset?: number;
   count?: number;
-  course?: string;
-  problemId?: string;
+  count?: number;
+  course_id?: string;
+  problem_id?: string;
   status?: string;
-  languageType?: string;
+  language_type?: string;
   username?: string;
 }
 
