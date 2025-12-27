@@ -258,3 +258,17 @@ interface SearchProblemResponse {
   message: string;
   status: "ok" | "error";
 }
+
+interface CopycatReport {
+  id: number;
+  status: "pending" | "success" | "failed";
+  moss_url: string | null;
+  created_at: string;
+  error_message: string;
+}
+
+interface CopycatResp {
+  data: CopycatReport | null;
+  message: string;
+  status: "ok" | "error";
+}
