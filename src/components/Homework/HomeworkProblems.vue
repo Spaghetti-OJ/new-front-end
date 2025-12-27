@@ -1,21 +1,69 @@
 <script setup lang="ts">
 import { useSession } from "@/stores/session";
 import { useI18n } from "vue-i18n";
+import { computed } from "vue";
 import type { ProblemId2Meta } from "@/composables/useProblemSelection";
 import { isQuotaUnlimited } from "@/constants";
 
 interface Props {
   homework: HomeworkListItem | HomeworkPreviewForm;
-  problems: ProblemId2Meta;
+  problems?: ProblemId2Meta;
   hasStaffAccess?: boolean;
+  problemMetaOverride?: Record<string, { name: string; quota: number | null; highScore?: number }>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   hasStaffAccess: false,
+  problems: () => ({}),
+  problemMetaOverride: () => ({}),
 });
 
 const { t } = useI18n();
 const session = useSession();
+
+const problemIds = computed<number[]>(() => {
+  const ids = (props.homework as any).problem_ids ?? (props.homework as any).problemIds;
+  if (Array.isArray(ids) && ids.length) return ids;
+  const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+  if (!Array.isArray(fallback)) return [];
+  return fallback
+    .map((p: any) => (typeof p === "number" ? p : p?.id))
+    .filter((id: any) => typeof id === "number");
+});
+
+const problemMetaById = computed<Record<string, { name: string; quota: number | null; highScore?: number }>>(
+  () => {
+    const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+    if (!Array.isArray(fallback)) return {};
+    const entries = fallback
+      .map((p: any) => {
+        const id = typeof p === "number" ? p : p?.id;
+        if (typeof id !== "number") return null;
+        const name = p?.title || p?.name || `#${id}`;
+        const quota = typeof p?.total_quota === "number" ? p.total_quota : p?.quota ?? null;
+        const highScore = typeof p?.highScore === "number" ? p.highScore : p?.high_score;
+        return [id.toString(), { name, quota, highScore }] as const;
+      })
+      .filter(
+        (
+          entry,
+        ): entry is readonly [
+          string,
+          { name: string; quota: number | null; highScore: number | undefined },
+        ] => entry !== null,
+      );
+
+    return Object.fromEntries(entries);
+  },
+);
+
+function getProblemMeta(pid: number) {
+  return (
+    props.problemMetaOverride[pid.toString()] ||
+    problemMetaById.value[pid.toString()] ||
+    props.problems[pid.toString()]
+  );
+}
 </script>
 
 <template>
@@ -32,7 +80,7 @@ const session = useSession();
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(pid, index) in homework.problem_ids">
+      <tr v-for="(pid, index) in problemIds" :key="pid">
         <td>{{ index + 1 }}</td>
         <td>
           <router-link class="link" :to="`/courses/${$route.params.courseId}/problems/${pid}`">
@@ -40,23 +88,21 @@ const session = useSession();
           </router-link>
         </td>
         <td>
-          <ui-spinner v-if="!problems[pid.toString()]" />
-          <span v-else>{{ problems[pid.toString()].name }}</span>
+          <ui-spinner v-if="!getProblemMeta(pid)" />
+          <span v-else>{{ getProblemMeta(pid)?.name || `#${pid}` }}</span>
         </td>
         <td>
-          <ui-spinner v-if="!problems[pid.toString()]" />
-          <span v-else-if="isQuotaUnlimited(problems[pid.toString()].quota)" class="text-sm">{{
-            $t("components.problem.card.unlimited")
-          }}</span>
-          <span v-else>{{ problems[pid.toString()].quota }}</span>
+          <ui-spinner v-if="!getProblemMeta(pid)" />
+          <span
+            v-else-if="getProblemMeta(pid) && isQuotaUnlimited(getProblemMeta(pid)!.quota as number)"
+            class="text-sm"
+          >
+            {{ $t("components.problem.card.unlimited") }}
+          </span>
+          <span v-else>{{ getProblemMeta(pid)?.quota ?? "-" }}</span>
         </td>
         <td>
-          {{
-            (
-              (homework.studentStatus as any)[session.username] &&
-              (homework.studentStatus as any)[session.username][pid.toString()]
-            )?.score || "-"
-          }}
+          {{ getProblemMeta(pid)?.highScore ?? "-" }}
         </td>
         <td>
           <div class="tooltip" data-tip="Stats">

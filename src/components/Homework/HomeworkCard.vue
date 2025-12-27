@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
 import { useI18n } from "vue-i18n";
 import useInteractions from "@/composables/useInteractions";
+import api from "@/api";
 
 import type { ProblemId2Meta } from "@/composables/useProblemSelection";
 
@@ -13,17 +14,104 @@ const { isDesktop } = useInteractions();
 
 interface Props {
   homework: HomeworkListItem | HomeworkPreviewForm;
-  problems: ProblemId2Meta;
   preview?: boolean;
+  problems?: ProblemId2Meta;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   preview: false,
+  problems: () => ({}),
 });
 
 const session = useSession();
 const route = useRoute();
 const hasStaffAccess = computed(() => session.hasCourseAccess(route.params.courseId as string));
+const fetchedProblemMeta = ref<Record<string, { name: string; quota: number | null; highScore?: number }>>(
+  {},
+);
+const requestedProblemIds = ref<Set<number>>(new Set());
+
+const problemIds = computed<number[]>(() => {
+  const ids = (props.homework as any).problem_ids ?? (props.homework as any).problemIds;
+  if (Array.isArray(ids) && ids.length) return ids;
+  const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+  if (!Array.isArray(fallback)) return [];
+  return fallback
+    .map((p: any) => (typeof p === "number" ? p : p?.id))
+    .filter((id: any) => typeof id === "number");
+});
+
+const problemMetaById = computed<Record<string, { name: string; quota: number | null; highScore?: number }>>(
+  () => {
+    const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+    if (!Array.isArray(fallback)) return {};
+    const entries = fallback
+      .map((p: any) => {
+        const id = typeof p === "number" ? p : p?.id;
+        if (typeof id !== "number") return null;
+        const name = p?.title || p?.name || `#${id}`;
+        const quota = typeof p?.total_quota === "number" ? p.total_quota : p?.quota ?? null;
+        const highScore = typeof p?.highScore === "number" ? p.highScore : p?.high_score;
+        return [id.toString(), { name, quota, highScore }] as const;
+      })
+      .filter(
+        (
+          entry,
+        ): entry is readonly [
+          string,
+          { name: string; quota: number | null; highScore: number | undefined },
+        ] => entry !== null,
+      );
+
+    return Object.fromEntries(entries);
+  },
+);
+
+function getProblemMeta(pid: number) {
+  return (
+    fetchedProblemMeta.value[pid.toString()] ||
+    problemMetaById.value[pid.toString()] ||
+    props.problems[pid.toString()]
+  );
+}
+
+async function fetchProblemMeta(pid: number) {
+  if (requestedProblemIds.value.has(pid)) return;
+  requestedProblemIds.value.add(pid);
+  try {
+    const res = await api.Problem.getProblemInfo(pid);
+    const data = (res as any).data ?? res;
+    const name = data?.problemName || data?.title || data?.name || `#${pid}`;
+    const quota =
+      typeof data?.quota === "number"
+        ? data.quota
+        : typeof data?.total_quota === "number"
+        ? data.total_quota
+        : null;
+    const highScore = typeof data?.highScore === "number" ? data.highScore : data?.high_score;
+    fetchedProblemMeta.value = {
+      ...fetchedProblemMeta.value,
+      [pid.toString()]: { name, quota, highScore },
+    };
+  } catch {
+    // Keep fallback values on error.
+  }
+}
+
+async function fetchMissingProblems(pids: number[]) {
+  const tasks = pids.filter((pid) => !getProblemMeta(pid)).map((pid) => fetchProblemMeta(pid));
+  if (tasks.length) {
+    await Promise.all(tasks);
+  }
+}
+
+watch(
+  problemIds,
+  (pids) => {
+    void fetchMissingProblems(pids);
+  },
+  { immediate: true },
+);
 const STATUS_LABEL = {
   RUNNING: t("components.hw.card.statusLabel.running"),
   NOT_START: t("components.hw.card.statusLabel.notStart"),
@@ -96,20 +184,17 @@ const state = computed(() => {
             :homework="homework"
             :problems="problems"
             :has-staff-access="hasStaffAccess"
+            :problem-meta-override="fetchedProblemMeta"
           />
           <div v-else class="w-full py-1">
             <div class="flex w-full flex-wrap justify-center gap-1 sm:justify-start">
-              <template v-for="pid in homework.problem_ids">
+              <template v-for="pid in problemIds" :key="pid">
                 <problem-info-card
                   class="w-full sm:w-72"
-                  :name="problems[pid.toString()]?.name || '-'"
+                  :name="getProblemMeta(pid)?.name || `#${pid}`"
                   :id="pid"
-                  :quota="problems[pid.toString()]?.quota || '-'"
-                  :score="(
-                    (homework.studentStatus as any)[session.username] &&
-                    (homework.studentStatus as any)[session.username][pid.toString()]
-                  )?.score || '-'
-                    "
+                  :quota="getProblemMeta(pid)?.quota ?? '-'"
+                  :score="getProblemMeta(pid)?.highScore ?? '-'"
                   :show-stats="hasStaffAccess"
                   :show-copycat="hasStaffAccess"
                 />
