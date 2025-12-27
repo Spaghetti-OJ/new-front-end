@@ -165,60 +165,15 @@ onMounted(async () => {
             :key="item.user?.username || index"
             class="card bg-base-200 shadow-sm transition-shadow hover:shadow-md"
           >
-            <router-link
-              v-if="item.user?.username"
-              :to="getProfileLink(item.user.username)"
-              class="group card-body cursor-pointer p-4"
-              :aria-label="`View profile of ${item.user.username}`"
+            <component
+              :is="item.user?.username ? 'router-link' : 'div'"
+              v-bind="item.user?.username ? { to: getProfileLink(item.user.username) } : {}"
+              :class="[
+                'card-body p-4',
+                item.user?.username ? 'group cursor-pointer' : 'cursor-default opacity-80',
+              ]"
+              :aria-label="item.user?.username ? `View profile of ${item.user.username}` : undefined"
             >
-              <div class="flex items-center gap-4">
-                <!-- 排名徽章 -->
-                <div class="flex-shrink-0">
-                  <div
-                    :class="[
-                      'flex h-12 w-12 items-center justify-center rounded-full font-bold',
-                      index === 0 && 'bg-yellow-500 text-yellow-900',
-                      index === 1 && 'bg-gray-400 text-gray-900',
-                      index === 2 && 'bg-orange-600 text-orange-100',
-                      index > 2 && 'bg-base-300 text-base-content',
-                    ]"
-                  >
-                    <span class="text-lg">{{ index + 1 }}</span>
-                  </div>
-                </div>
-
-                <!-- 頭像 -->
-                <div class="avatar flex-shrink-0">
-                  <div class="mask mask-squircle h-14 w-14">
-                    <img :src="item._avatarUrl" alt="user avatar" />
-                  </div>
-                </div>
-
-                <!-- 用戶資訊 -->
-                <div class="min-w-0 flex-1">
-                  <div class="truncate text-base font-semibold">
-                    {{ item.user.username || "Unknown" }}
-                  </div>
-                  <div class="truncate text-sm opacity-70">
-                    {{ item.user.real_name || "-" }}
-                  </div>
-                </div>
-
-                <!-- AC 數量 -->
-                <div class="flex-shrink-0 text-right">
-                  <div class="text-xs opacity-70">AC</div>
-                  <div class="text-2xl font-bold text-success">
-                    {{ item.ACProblem ?? 0 }}
-                  </div>
-                </div>
-
-                <!-- Click indicator -->
-                <div class="flex items-center text-sm opacity-50 transition-opacity group-hover:opacity-90">
-                  <i-uil-angle-right />
-                </div>
-              </div>
-            </router-link>
-            <div v-else class="card-body cursor-default p-4 opacity-80">
               <div class="flex items-center gap-4">
                 <!-- 排名徽章 -->
                 <div class="flex-shrink-0">
@@ -259,8 +214,16 @@ onMounted(async () => {
                     {{ item.ACProblem ?? 0 }}
                   </div>
                 </div>
+
+                <!-- Click indicator -->
+                <div
+                  v-if="item.user?.username"
+                  class="flex items-center text-sm opacity-50 transition-opacity group-hover:opacity-90"
+                >
+                  <i-uil-angle-right />
+                </div>
               </div>
-            </div>
+            </component>
           </div>
         </div>
       </div>
