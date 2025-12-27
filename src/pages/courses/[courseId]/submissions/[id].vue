@@ -137,6 +137,7 @@ function getCaseKey(taskNo: number, caseNo: number) {
 }
 
 function resolveTaskNo(taskIndex: number) {
+  // subtaskCaseIds may be keyed by 0-based or 1-based subtask_no depending on backend.
   if (subtaskCaseIds.value[taskIndex]?.length) return taskIndex;
   if (subtaskCaseIds.value[taskIndex + 1]?.length) return taskIndex + 1;
   return taskIndex;
