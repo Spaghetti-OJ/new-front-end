@@ -21,6 +21,7 @@ const { t } = useI18n();
 
 const form = reactive({
   username: "",
+  email: "",
   password: "",
   confirmPassword: "",
 });
@@ -37,6 +38,7 @@ const rules = computed(() => {
   } else {
     return {
       username: { required },
+      email: { required },
     };
   }
 });
@@ -74,7 +76,7 @@ const handleForgotSubmit = async () => {
   showError.value = false;
 
   try {
-    const res: any = await api.Auth.forgotPassword({ username: form.username });
+    const res: any = await api.Auth.forgotPassword({ username: form.username, email: form.email });
     if (res.status === "ok" || !res.status) {
       success.value = true;
     } else {
@@ -191,14 +193,25 @@ useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password
         <!-- Forgot Password Form -->
         <div v-else-if="!isResetMode" class="form-control">
           <input
-            v-model="v$.username.$model"
+            v-model="form.username"
             type="text"
             name="username"
-            :placeholder="$t('auth.username')"
-            :class="['input input-bordered', v$.username.$error && 'input-error']"
+            :placeholder="$t('username')"
+            :class="['input input-bordered', v$.username?.$error && 'input-error']"
           />
-          <label class="label" v-show="v$.username.$error">
-            <span class="label-text-alt text-error" v-text="v$.username.$errors[0]?.$message" />
+          <label class="label" v-show="v$.username?.$error">
+            <span class="label-text-alt text-error" v-text="v$.username?.$errors[0]?.$message" />
+          </label>
+          <input
+            v-model="form.email"
+            type="email"
+            name="email"
+            :placeholder="$t('password_reset.email')"
+            class="input input-bordered mt-3"
+            :class="v$.email?.$error && 'input-error'"
+          />
+          <label class="label" v-show="v$.email?.$error">
+            <span class="label-text-alt text-error" v-text="v$.email?.$errors[0]?.$message" />
           </label>
         </div>
 
@@ -209,13 +222,13 @@ useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password
               <span class="label-text">New Password</span>
             </label>
             <input
-              v-model="v$.password.$model"
+              v-model="form.password"
               type="password"
               placeholder="New Password"
-              :class="['input input-bordered', v$.password.$error && 'input-error']"
+              :class="['input input-bordered', v$.password?.$error && 'input-error']"
             />
-            <label class="label" v-show="v$.password.$error">
-              <span class="label-text-alt text-error" v-text="v$.password.$errors[0]?.$message" />
+            <label class="label" v-show="v$.password?.$error">
+              <span class="label-text-alt text-error" v-text="v$.password?.$errors[0]?.$message" />
             </label>
           </div>
 
@@ -224,13 +237,13 @@ useTitle(computed(() => (isResetMode.value ? "Reset Password" : "Forgot Password
               <span class="label-text">Confirm Password</span>
             </label>
             <input
-              v-model="v$.confirmPassword.$model"
+              v-model="form.confirmPassword"
               type="password"
               placeholder="Confirm Password"
-              :class="['input input-bordered', v$.confirmPassword.$error && 'input-error']"
+              :class="['input input-bordered', v$.confirmPassword?.$error && 'input-error']"
             />
-            <label class="label" v-show="v$.confirmPassword.$error">
-              <span class="label-text-alt text-error" v-text="v$.confirmPassword.$errors[0]?.$message" />
+            <label class="label" v-show="v$.confirmPassword?.$error">
+              <span class="label-text-alt text-error" v-text="v$.confirmPassword?.$errors[0]?.$message" />
             </label>
           </div>
         </template>
