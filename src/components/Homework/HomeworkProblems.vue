@@ -7,9 +7,12 @@ import { isQuotaUnlimited } from "@/constants";
 interface Props {
   homework: HomeworkListItem | HomeworkPreviewForm;
   problems: ProblemId2Meta;
+  hasStaffAccess?: boolean;
 }
 
-defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  hasStaffAccess: false,
+});
 
 const { t } = useI18n();
 const session = useSession();
@@ -25,7 +28,7 @@ const session = useSession();
         <th>{{ t("components.hw.card.problems.quota") }}</th>
         <th>{{ t("components.hw.card.problems.score") }}</th>
         <th>{{ t("components.hw.card.problems.stats") }}</th>
-        <th v-if="session.isAdmin">{{ t("components.hw.card.problems.copycat") }}</th>
+        <th v-if="props.hasStaffAccess">{{ t("components.hw.card.problems.copycat") }}</th>
       </tr>
     </thead>
     <tbody>
@@ -65,7 +68,7 @@ const session = useSession();
             </router-link>
           </div>
         </td>
-        <td v-if="session.isAdmin">
+        <td v-if="props.hasStaffAccess">
           <div class="tooltip" data-tip="Copycat">
             <router-link
               class="btn btn-ghost btn-xs"

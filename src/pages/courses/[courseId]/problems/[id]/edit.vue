@@ -226,7 +226,7 @@ async function submit() {
         memory_limit_mb: Math.ceil(t.memoryLimit),
       });
 
-      subtaskIdByNo.set(i + 1, created.data.id);
+      subtaskIdByNo.set(i, created.data.id);
     }
 
     if (testdata.value) {
@@ -247,7 +247,7 @@ async function submit() {
 
         return api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt,
+          idx: p.tt + 1, // YY 從 01 開始（後端限制）
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
@@ -257,9 +257,7 @@ async function submit() {
       await Promise.all(createTestCasePromises);
 
       // F) 最後才上傳 zip（題目層級 zip）
-      const fd = new FormData();
-      fd.append("case", testdata.value);
-      await api.Problem.modifyTestdata(problemId, fd);
+      await api.Problem.uploadTestCasesZip(problemId, testdata.value);
     }
 
     router.push(`/courses/${route.params.courseId}/problems/${problemId}`);
@@ -310,7 +308,6 @@ async function delete_() {
 }
 
 function onSaveSolution() {
-  console.log("save-solution clicked:", edittingProblem.value?.solution);
   // TODO: connect solution-only API later
 }
 
