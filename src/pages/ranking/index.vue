@@ -163,7 +163,7 @@ onMounted(async () => {
           <div
             v-for="(item, index) in sortedRanking"
             :key="item.user?.username || index"
-            class="card bg-base-200 shadow-sm transition-shadow hover:shadow-md"
+            class="ranking-card card bg-base-200 shadow-sm transition-shadow hover:shadow-md"
           >
             <component
               :is="item.user?.username ? 'router-link' : 'div'"
@@ -244,7 +244,7 @@ onMounted(async () => {
 }
 
 /* 手機版卡片 hover 效果 */
-.card:hover {
+.ranking-card:hover {
   transform: translateY(-2px);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
