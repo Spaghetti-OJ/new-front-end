@@ -25,17 +25,25 @@ onMounted(async () => {
     user.value = profile;
 
     if (profile && profile.user_id) {
-      const [statsResp, activityResp] = await Promise.all([
+      const [statsRes, activityRes] = await Promise.allSettled([
         api.Auth.getUserStats(profile.user_id),
         api.Auth.getSubmissionsActivity(profile.user_id),
       ]);
 
-      if (statsResp && statsResp.data && statsResp.data.user_stats) {
-        userStats.value = statsResp.data.user_stats;
+      if (statsRes.status === "fulfilled") {
+        if (statsRes.value && statsRes.value.data && statsRes.value.data.user_stats) {
+          userStats.value = statsRes.value.data.user_stats;
+        }
+      } else {
+        console.warn("Failed to fetch user stats:", statsRes.reason);
       }
 
-      if (activityResp && activityResp.data) {
-        submissionActivity.value = activityResp.data;
+      if (activityRes.status === "fulfilled") {
+        if (activityRes.value && activityRes.value.data) {
+          submissionActivity.value = activityRes.value.data;
+        }
+      } else {
+        console.warn("Failed to fetch submission activity:", activityRes.reason);
       }
     }
   } catch (err: any) {
