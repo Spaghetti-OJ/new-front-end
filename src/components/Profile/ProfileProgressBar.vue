@@ -47,9 +47,7 @@ const props = defineProps({
           </div>
           <div class="flex min-w-0 flex-col">
             <span class="text-xs text-base-content/70">Acceptance</span>
-            <span class="text-2xl font-bold leading-none text-base-content">
-              {{ acceptance }}%
-            </span>
+            <span class="text-2xl font-bold leading-none text-base-content"> {{ acceptance }}% </span>
           </div>
         </div>
 
@@ -70,19 +68,25 @@ const props = defineProps({
 
           <!-- 右：Easy / Med / Hard -->
           <div class="flex flex-wrap gap-1 text-xs">
-            <span class="inline-flex min-w-[2.5rem] items-center justify-left rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]">
+            <span
+              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]"
+            >
               E {{ data.easy }}
             </span>
-            <span class="inline-flex min-w-[2.5rem] items-center justify-left rounded-lg bg-base-200 px-2 py-0.5 text-[#E9A11C]">
+            <span
+              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#E9A11C]"
+            >
               M {{ data.med }}
             </span>
-            <span class="inline-flex min-w-[2.5rem] items-center justify-left rounded-lg bg-base-200 px-2 py-0.5 text-[#E46319]">
+            <span
+              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#E46319]"
+            >
               H {{ data.hard }}
             </span>
           </div>
         </div>
 
-            <!-- Beats -->
+        <!-- Beats -->
         <div class="flex items-center gap-3 rounded-2xl bg-base-100 px-4 py-3">
           <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
             <i-uil-chart-line class="h-5 w-5" />
