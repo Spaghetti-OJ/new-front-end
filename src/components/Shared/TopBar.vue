@@ -155,7 +155,11 @@ onClickOutside(mobileMenuRef, closeMobileMenu, {
       </div>
 
       <!-- 夜間模式切換 (所有螢幕都顯示) -->
-      <button class="btn btn-ghost btn-sm text-white" @click="() => toggleDark()">
+      <button
+        class="btn btn-ghost btn-sm text-white"
+        @click="() => toggleDark()"
+        aria-label="Toggle dark mode"
+      >
         <i-uil-sun v-if="isDark" class="h-6 w-6" />
         <i-uil-moon v-else class="h-6 w-6" />
       </button>
