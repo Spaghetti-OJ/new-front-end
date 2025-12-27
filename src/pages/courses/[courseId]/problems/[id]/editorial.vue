@@ -234,7 +234,7 @@ onMounted(fetchEditorials);
           <template v-else-if="error">
             <div class="mt-4 flex items-center gap-2 text-sm text-error">
               <i-uil-times-circle />
-              <span>{{ t("course.problem.solution.err.load") }}</span>
+              <span>{{ t("course.problem.editorial.err.load") }}</span>
             </div>
           </template>
 
