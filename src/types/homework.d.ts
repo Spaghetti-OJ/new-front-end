@@ -43,6 +43,26 @@ interface HomeworkListItem {
   studentStatus: string;
 }
 
+type HomeworkProblemMetaItem = {
+  id: number;
+  title?: string;
+  name?: string;
+  total_quota?: number;
+  quota?: number;
+  highScore?: number;
+  high_score?: number;
+};
+
+type HomeworkProblemListItem = number | HomeworkProblemMetaItem;
+
+type HomeworkProblemListFields = {
+  problemIds?: number[];
+  problems?: HomeworkProblemListItem[];
+  problem_list?: HomeworkProblemListItem[];
+};
+
+type HomeworkProblemListPayload = (HomeworkListItem | HomeworkPreviewForm) & HomeworkProblemListFields;
+
 interface GetHomeworksResponse {
   items: HomeworkListItem[];
 }

@@ -13,7 +13,7 @@ const { t } = useI18n();
 const { isDesktop } = useInteractions();
 
 interface Props {
-  homework: HomeworkListItem | HomeworkPreviewForm;
+  homework: HomeworkProblemListPayload;
   preview?: boolean;
   problems?: ProblemId2Meta;
 }
@@ -32,26 +32,27 @@ const fetchedProblemMeta = ref<Record<string, { name: string; quota: number | nu
 const requestedProblemIds = ref<Set<number>>(new Set());
 
 const problemIds = computed<number[]>(() => {
-  const ids = (props.homework as any).problem_ids ?? (props.homework as any).problemIds;
+  const ids = props.homework.problem_ids ?? props.homework.problemIds;
   if (Array.isArray(ids) && ids.length) return ids;
-  const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+  const fallback = props.homework.problems || props.homework.problem_list;
   if (!Array.isArray(fallback)) return [];
   return fallback
-    .map((p: any) => (typeof p === "number" ? p : p?.id))
-    .filter((id: any) => typeof id === "number");
+    .map((p) => (typeof p === "number" ? p : p?.id))
+    .filter((id): id is number => typeof id === "number");
 });
 
 const problemMetaById = computed<Record<string, { name: string; quota: number | null; highScore?: number }>>(
   () => {
-    const fallback = (props.homework as any).problems || (props.homework as any).problem_list;
+    const fallback = props.homework.problems || props.homework.problem_list;
     if (!Array.isArray(fallback)) return {};
     const entries = fallback
-      .map((p: any) => {
-        const id = typeof p === "number" ? p : p?.id;
+      .map((p) => {
+        const isMeta = typeof p === "object" && p !== null;
+        const id = typeof p === "number" ? p : isMeta ? p.id : undefined;
         if (typeof id !== "number") return null;
-        const name = p?.title || p?.name || `#${id}`;
-        const quota = typeof p?.total_quota === "number" ? p.total_quota : p?.quota ?? null;
-        const highScore = typeof p?.highScore === "number" ? p.highScore : p?.high_score;
+        const name = isMeta ? p.title || p.name || `#${id}` : `#${id}`;
+        const quota = isMeta ? (typeof p.total_quota === "number" ? p.total_quota : p.quota ?? null) : null;
+        const highScore = isMeta ? (typeof p.highScore === "number" ? p.highScore : p.high_score) : undefined;
         return [id.toString(), { name, quota, highScore }] as const;
       })
       .filter(
