@@ -169,7 +169,7 @@ onMounted(async () => {
               :is="item.user?.username ? 'router-link' : 'div'"
               v-bind="item.user?.username ? { to: getProfileLink(item.user.username) } : {}"
               :class="[
-                'card-body p-4',
+                'ranking-card-body card-body p-4',
                 item.user?.username ? 'group cursor-pointer' : 'cursor-default opacity-80',
               ]"
               :aria-label="item.user?.username ? `View profile of ${item.user.username}` : undefined"
@@ -258,7 +258,7 @@ onMounted(async () => {
 
 /* 排名徽章動畫 - keep in sync with Tailwind's md breakpoint (default 768px). */
 @media (max-width: 768px) {
-  .card-body {
+  .ranking-card-body {
     animation: fadeIn 0.3s ease-in-out;
   }
 }
