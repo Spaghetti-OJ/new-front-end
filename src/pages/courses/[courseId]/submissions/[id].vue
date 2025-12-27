@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, onMounted } from "vue";
+import { ref, watchEffect, onMounted, computed } from "vue";
 import { useClipboard, useIntervalFn } from "@vueuse/core";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import { useRoute, useRouter } from "vue-router";
@@ -53,13 +53,13 @@ const execute = async () => {
       sortedSubtasks.forEach((subtaskNo) => {
         tasks.push({
           status: raw.status,
-          execTime: 0,
-          memoryUsage: 0,
-          score: 0,
+          execTime: null,
+          memoryUsage: null,
+          score: null,
           cases: subtaskCaseIds.value[subtaskNo].map(() => ({
             status: raw.status,
-            execTime: 0,
-            memoryUsage: 0,
+            execTime: null,
+            memoryUsage: null,
           })),
         });
       });
@@ -243,33 +243,32 @@ function getTaskStats(taskIndex: number, task: Task) {
   const taskNo = resolveTaskNo(taskIndex);
   const caseIds = getCaseIdsForTask(taskIndex, task);
 
+  if (!caseIds.length) {
+    return {
+      execTime: task.execTime,
+      memoryUsage: task.memoryUsage,
+      score: task.score,
+    };
+  }
+
   let totalTime = 0;
   let maxMemory = 0;
   let totalScore = 0;
-  let hasOutput = false;
+  let hasAllOutputs = true;
 
   for (const caseNo of caseIds) {
     const key = getCaseKey(taskNo, caseNo);
     const output = caseOutputs.value[key];
-    if (output) {
-      hasOutput = true;
-      totalTime += output.execution_time ?? 0;
-      maxMemory = Math.max(maxMemory, output.memory_usage ?? 0);
-      totalScore += output.score ?? 0;
-    } else {
-      // Try fallback to task.cases
-      const fallback = getFallbackCase(task, caseNo);
-      if (fallback) {
-        totalTime += fallback.execTime ?? 0;
-        maxMemory = Math.max(maxMemory, fallback.memoryUsage ?? 0);
-        // Fallback cases usually don't have score in this context, but if they did:
-        // totalScore += fallback.score ?? 0;
-      }
+    if (!output) {
+      hasAllOutputs = false;
+      break;
     }
+    totalTime += output.execution_time ?? 0;
+    maxMemory = Math.max(maxMemory, output.memory_usage ?? 0);
+    totalScore += output.score ?? 0;
   }
 
-  // If we found any detailed outputs, return the calculated stats
-  if (hasOutput) {
+  if (hasAllOutputs) {
     return {
       execTime: totalTime,
       memoryUsage: maxMemory,
@@ -277,12 +276,75 @@ function getTaskStats(taskIndex: number, task: Task) {
     };
   }
 
-  // Otherwise return the original task stats
   return {
     execTime: task.execTime,
     memoryUsage: task.memoryUsage,
     score: task.score,
   };
+}
+
+const taskStatsByIndex = computed(() => {
+  if (!submission.value?.tasks) return [];
+  return submission.value.tasks.map((task, index) => getTaskStats(index, task));
+});
+
+function getTaskExecValue(taskIndex: number, task: Task) {
+  const value = taskStatsByIndex.value[taskIndex]?.execTime ?? task.execTime;
+  return value == null ? null : value;
+}
+
+function getTaskMemoryValue(taskIndex: number, task: Task) {
+  const value = taskStatsByIndex.value[taskIndex]?.memoryUsage ?? task.memoryUsage;
+  return value == null ? null : value;
+}
+
+function getTaskScoreValue(taskIndex: number, task: Task) {
+  const value = taskStatsByIndex.value[taskIndex]?.score ?? task.score;
+  return value == null ? null : value;
+}
+
+function getCaseExecValue(taskIndex: number, caseNo: number, task: Task) {
+  const key = getCaseKey(resolveTaskNo(taskIndex), caseNo);
+  const output = caseOutputs.value[key];
+  if (output?.execution_time != null) return output.execution_time;
+  const fallback = getFallbackCase(task, caseNo);
+  if (fallback?.execTime != null) return fallback.execTime;
+  return null;
+}
+
+function getCaseMemoryValue(taskIndex: number, caseNo: number, task: Task) {
+  const key = getCaseKey(resolveTaskNo(taskIndex), caseNo);
+  const output = caseOutputs.value[key];
+  if (output?.memory_usage != null) return output.memory_usage;
+  const fallback = getFallbackCase(task, caseNo);
+  if (fallback?.memoryUsage != null) return fallback.memoryUsage;
+  return null;
+}
+
+function normalizeOutputStatus(status?: string) {
+  if (!status) return null;
+  const normalized = status.toLowerCase();
+  const map: Record<string, SubmissionStatusCodes> = {
+    accepted: SUBMISSION_STATUS_CODE.ACCEPTED,
+    wrong_answer: SUBMISSION_STATUS_CODE.WRONG_ANSWER,
+    compile_error: SUBMISSION_STATUS_CODE.COMPILE_ERROR,
+    time_limit_exceeded: SUBMISSION_STATUS_CODE.TIME_LIMIT_EXCEED,
+    memory_limit_exceeded: SUBMISSION_STATUS_CODE.MEMORY_LIMIT_EXCEED,
+    runtime_error: SUBMISSION_STATUS_CODE.RUNTIME_ERROR,
+    judge_error: SUBMISSION_STATUS_CODE.JUDGE_ERROR,
+    output_limit_exceeded: SUBMISSION_STATUS_CODE.OUTPUT_LIMIT_EXCEED,
+    pending: SUBMISSION_STATUS_CODE.PENDING,
+  };
+  return map[normalized] ?? null;
+}
+
+function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
+  const key = getCaseKey(resolveTaskNo(taskIndex), caseNo);
+  const output = caseOutputs.value[key];
+  const normalized = normalizeOutputStatus(output?.status);
+  if (normalized != null) return normalized;
+  const fallback = getFallbackCase(task, caseNo);
+  return fallback?.status ?? null;
 }
 </script>
 
@@ -403,9 +465,15 @@ function getTaskStats(taskIndex: number, task: Task) {
                 <tr>
                   <td>{{ $t("course.submission.detail.overall") }}</td>
                   <td><judge-status :status="task.status" /></td>
-                  <td>{{ getTaskStats(taskIndex, task).execTime }} ms</td>
-                  <td>{{ getTaskStats(taskIndex, task).memoryUsage }} KB</td>
-                  <td>{{ getTaskStats(taskIndex, task).score }}</td>
+                  <td>
+                    {{ getTaskExecValue(taskIndex, task) ?? "-" }}
+                    <span v-if="getTaskExecValue(taskIndex, task) != null"> ms</span>
+                  </td>
+                  <td>
+                    {{ getTaskMemoryValue(taskIndex, task) ?? "-" }}
+                    <span v-if="getTaskMemoryValue(taskIndex, task) != null"> KB</span>
+                  </td>
+                  <td>{{ getTaskScoreValue(taskIndex, task) ?? "-" }}</td>
                 </tr>
                 <tr>
                   <td colspan="5">
@@ -416,12 +484,17 @@ function getTaskStats(taskIndex: number, task: Task) {
                     </div>
                   </td>
                 </tr>
-                <tr v-show="expandTasks[taskIndex]" v-for="caseNo in getCaseIdsForTask(taskIndex, task)">
+                <tr
+                  v-show="expandTasks[taskIndex]"
+                  v-for="caseNo in getCaseIdsForTask(taskIndex, task)"
+                  :key="`${resolveTaskNo(taskIndex)}-${caseNo}`"
+                >
                   <td>{{ resolveTaskNo(taskIndex) }}-{{ caseNo }}</td>
                   <td>
-                    <span v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.status">
-                      {{ caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]!.status }}
-                    </span>
+                    <judge-status
+                      v-if="getCaseStatusCode(taskIndex, caseNo, task) != null"
+                      :status="getCaseStatusCode(taskIndex, caseNo, task) as any"
+                    />
                     <judge-status
                       v-else-if="getFallbackCase(task, caseNo)"
                       :status="getFallbackCase(task, caseNo)!.status"
@@ -429,30 +502,12 @@ function getTaskStats(taskIndex: number, task: Task) {
                     <span v-else>-</span>
                   </td>
                   <td>
-                    {{
-                      caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.execution_time ??
-                      getFallbackCase(task, caseNo)?.execTime ??
-                      "-"
-                    }}
-                    <span
-                      v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.execution_time != null"
-                    >
-                      ms
-                    </span>
-                    <span v-else-if="getFallbackCase(task, caseNo)?.execTime != null"> ms</span>
+                    {{ getCaseExecValue(taskIndex, caseNo, task) ?? "-" }}
+                    <span v-if="getCaseExecValue(taskIndex, caseNo, task) != null"> ms</span>
                   </td>
                   <td>
-                    {{
-                      caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.memory_usage ??
-                      getFallbackCase(task, caseNo)?.memoryUsage ??
-                      "-"
-                    }}
-                    <span
-                      v-if="caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.memory_usage != null"
-                    >
-                      KB
-                    </span>
-                    <span v-else-if="getFallbackCase(task, caseNo)?.memoryUsage != null"> KB</span>
+                    {{ getCaseMemoryValue(taskIndex, caseNo, task) ?? "-" }}
+                    <span v-if="getCaseMemoryValue(taskIndex, caseNo, task) != null"> KB</span>
                   </td>
                   <td>
                     {{ caseOutputs[getCaseKey(resolveTaskNo(taskIndex), caseNo)]?.score ?? "-" }}
