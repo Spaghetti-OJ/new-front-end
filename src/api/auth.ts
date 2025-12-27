@@ -45,5 +45,6 @@ export const Auth = {
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),
-  getCopycatReport: (problem_id: number) => fetcher.get(`/copycat/?problem_id=${problem_id}`),
+  getCopycatReport: (problem_id: number) =>
+    fetcher.get<CopycatResp>(`/copycat/?problem_id=${problem_id}`).then((r) => r.data ?? r),
 };
