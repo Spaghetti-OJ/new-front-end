@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "Settings",
-    "selectLang": "Select your preferred language"
+    "selectLang": "Select your preferred language",
+    "change_password":{
+      "change": "Change Password",
+      "success": "Password has been successfully changed",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "current": "Current Password",
+      "placeholder": {
+        "new": "new password",
+        "again": "new password again",
+        "current": "current password"
+      },
+      "submit": "Submit",
+      "required": "Required"
+    }
   },
   "about": {
     "contributor": "Contributor",
@@ -205,19 +219,6 @@
     "save": "Save",
     "cancel": "Cancel",
     "signOut": "Sign out",
-    "pw": {
-      "change": "Change Password",
-      "success": "Password has been successfully changed",
-      "new": "New Password",
-      "confirm": "Confirm New Password",
-      "current": "Current Password",
-      "placeholder": {
-        "new": "new password",
-        "again": "new password again",
-        "current": "current password"
-      },
-      "submit": "Submit"
-    },
     "wrongPassword": "Wrong Password",
     "operationFailed": "Operation failed, please try again later",
     "verifyEmail": "Verify Email",
@@ -504,5 +505,9 @@
       "success": "Email sent, please check your inbox."
     },
     "return-home": "Return Home"
+  },
+  "api_key":{
+    "title": "API_KEY",
+    "description": "VIEW MY API KEY DASHBOARD"
   }
 }

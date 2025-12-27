@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "設定",
-    "selectLang": "選擇語言"
+    "selectLang": "選擇語言",
+    "password":{
+      "change": "變更密碼",
+      "success": "密碼已成功變更",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "current": "舊密碼",
+      "placeholder": {
+        "new": "新密碼",
+        "again": "再輸入一次新密碼",
+        "current": "舊密碼"
+      },
+      "submit": "送出",
+      "required": "需要輸入"
+    }
   },
   "about": {
     "contributor": "貢獻者",
@@ -205,19 +219,6 @@
     "save": "儲存",
     "cancel": "取消",
     "signOut": "登出",
-    "pw": {
-      "change": "變更密碼",
-      "success": "密碼已成功變更",
-      "new": "新密碼",
-      "confirm": "確認新密碼",
-      "current": "舊密碼",
-      "placeholder": {
-        "new": "新密碼",
-        "again": "再輸入一次新密碼",
-        "current": "舊密碼"
-      },
-      "submit": "送出"
-    },
     "wrongPassword": "密碼錯誤",
     "operationFailed": "操作失敗，請稍後再試",
     "verifyEmail": "驗證信箱",
@@ -502,5 +503,9 @@
       "success": "發送成功，請檢查你的電子信箱。"
     },
     "return-home": "回到首頁"
+  },
+  "api_key":{
+    "title": "API 金鑰",
+    "description": "查看 API 金鑰"
   }
 }
