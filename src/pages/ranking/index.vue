@@ -256,7 +256,7 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-/* 排名徽章動畫 */
+/* 排名徽章動畫 - keep in sync with Tailwind's md breakpoint (default 768px). */
 @media (max-width: 768px) {
   .card-body {
     animation: fadeIn 0.3s ease-in-out;
