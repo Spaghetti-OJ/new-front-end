@@ -98,17 +98,26 @@ const toggleLike = async () => {
   if (isLiking.value) return;
   isLiking.value = true;
   const problemId = Number(route.params.id);
+  const nextLiked = !isLiked.value;
   try {
     if (isLiked.value) {
       const res = await api.Problem.unlike(problemId);
-      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+      const payload = res.data ?? (res as any);
+      const count = payload?.data?.likes_count;
+      const ok = payload?.status === "200" || payload?.message === "Unliked" || res.status === 200;
       if (typeof count === "number") likes.value = count;
-      isLiked.value = false;
+      if (ok || typeof count === "number") {
+        isLiked.value = nextLiked;
+      }
     } else {
       const res = await api.Problem.like(problemId);
-      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+      const payload = res.data ?? (res as any);
+      const count = payload?.data?.likes_count;
+      const ok = payload?.status === "201" || payload?.message === "Liked" || res.status === 201;
       if (typeof count === "number") likes.value = count;
-      isLiked.value = true;
+      if (ok || typeof count === "number") {
+        isLiked.value = nextLiked;
+      }
     }
   } catch (err) {
     // Keep existing UI state on error.
