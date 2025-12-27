@@ -132,6 +132,30 @@ const deleteEditorial = async () => {
   }
 };
 
+const toggleLike = async () => {
+  if (!selectedEditorial.value) return;
+
+  const currentStatus = selectedEditorial.value.is_liked_by_user;
+  const currentCount = selectedEditorial.value.likes_count;
+  const id = selectedEditorial.value.id;
+
+  selectedEditorial.value.is_liked_by_user = !currentStatus;
+  selectedEditorial.value.likes_count = currentCount + (currentStatus ? -1 : 1);
+
+  try {
+    if (currentStatus) {
+      await api.Problem.unlikeEditorial(route.params.id as string, id);
+    } else {
+      await api.Problem.likeEditorial(route.params.id as string, id);
+    }
+  } catch (err) {
+    // Revert on error
+    selectedEditorial.value.is_liked_by_user = currentStatus;
+    selectedEditorial.value.likes_count = currentCount;
+    error.value = "Failed to update like status.";
+  }
+};
+
 const editorialContent = computed(
   () => selectedEditorial.value?.content || "There isn't any editorial for this problem.",
 );
@@ -235,6 +259,16 @@ onMounted(fetchEditorials);
               </div>
             </div>
             <div v-else>
+              <div v-if="selectedEditorial" class="mb-4 flex items-center justify-end gap-4">
+                <button
+                  class="btn btn-ghost gap-2 transition-transform active:scale-95"
+                  :class="{ 'text-error': selectedEditorial.is_liked_by_user }"
+                  @click="toggleLike"
+                >
+                  <span class="text-2xl">{{ selectedEditorial.is_liked_by_user ? "♥" : "♡" }}</span>
+                  <span>{{ selectedEditorial.likes_count }}</span>
+                </button>
+              </div>
               <markdown-renderer class="prose max-w-none" :md="editorialContent" />
               <div v-if="selectedEditorial" class="mt-4 text-xs opacity-70">
                 {{ selectedEditorial.author_username }} · {{ selectedEditorial.updated_at }}
