@@ -91,7 +91,9 @@ onMounted(async () => {
         <div v-else-if="error" class="alert alert-error shadow-lg">
           <div>
             <i-uil-times-circle />
-            <span>{{ $t("ranking.error") }}</span>
+            <span>
+              {{ (error as any).response?.data?.detail || error.message }}
+            </span>
           </div>
         </div>
 
@@ -261,6 +263,7 @@ onMounted(async () => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
