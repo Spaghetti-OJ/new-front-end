@@ -193,8 +193,18 @@ const barOption = computed(() => ({
             <div class="my-4" />
 
             <div class="flex">
-              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="pieOption" autoresize />
-              <v-chart class="mx-auto h-[400px]" :theme="theme.isDark ? 'dark' : ''" :option="barOption" autoresize />
+              <v-chart
+                class="mx-auto h-[400px]"
+                :theme="theme.isDark ? 'dark' : ''"
+                :option="pieOption"
+                autoresize
+              />
+              <v-chart
+                class="mx-auto h-[400px]"
+                :theme="theme.isDark ? 'dark' : ''"
+                :option="barOption"
+                autoresize
+              />
             </div>
           </template>
         </data-status-wrapper>

@@ -120,6 +120,14 @@ function copySubmissionLink(path: string) {
   copy(new URL(path, window.location.origin).href);
 }
 
+function getLanguageName(type: number | string): string {
+  const index = Number(type);
+  if (!isNaN(index) && index >= 0 && index < LANG.length) {
+    return LANG[index];
+  }
+  return type?.toString() || "Unknown";
+}
+
 async function downloadAllSubmissions() {
   const query: SubmissionListQuery = {
     problem_id: routeQuery.value.filter.problemId,
@@ -282,7 +290,7 @@ async function downloadAllSubmissions() {
                   <td>{{ submission.score }}</td>
                   <td>{{ submission.runTime }} ms</td>
                   <td>{{ submission.memoryUsage }} KB</td>
-                  <td>{{ LANG[Number(submission.languageType) || 0] }}</td>
+                  <td>{{ getLanguageName(submission.languageType) }}</td>
                   <td>
                     <div class="tooltip tooltip-bottom" :data-tip="formatTime(submission.timestamp)">
                       <span>{{ timeFromNow(submission.timestamp) }}</span>

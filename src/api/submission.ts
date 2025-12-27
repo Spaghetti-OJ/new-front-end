@@ -20,5 +20,5 @@ export const Submission = {
   list: (params: SubmissionListQuery) =>
     fetcher
       .get<GetSubmissionListResponse>("/submission/", { params })
-      .then((res) => (res as unknown as { data: { results: SubmissionList; count: number } }).data),
+      .then((res) => res.data as unknown as GetSubmissionListResponse["data"]),
 };
