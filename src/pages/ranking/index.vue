@@ -12,7 +12,7 @@ const error = ref<Error | null>(null);
 const getProfileLink = (username: string) => `/profile/${username}`;
 const fallbackAvatar = "https://i.pravatar.cc/100";
 
-const resolveAvatarUrl = (avatar?: string | null) => {
+const normalizeAvatar = (avatar?: string | null) => {
   if (!avatar) return fallbackAvatar;
 
   const normalizePath = (path: string) => {
@@ -44,7 +44,12 @@ const resolveAvatarUrl = (avatar?: string | null) => {
 };
 
 const sortedRanking = computed(() =>
-  [...ranking.value].sort((a, b) => (b.ACProblem ?? 0) - (a.ACProblem ?? 0)),
+  [...ranking.value]
+    .sort((a, b) => (b.ACProblem ?? 0) - (a.ACProblem ?? 0))
+    .map((item) => ({
+      ...item,
+      _avatarUrl: normalizeAvatar(item.user?.avatar),
+    })),
 );
 
 onMounted(async () => {
@@ -110,12 +115,12 @@ onMounted(async () => {
                 :title="`View profile of ${item.user.username}`"
               >
                 <div class="mask mask-squircle h-10 w-10">
-                  <img :src="resolveAvatarUrl(item.user?.avatar)" alt="user avatar" />
+                  <img :src="item._avatarUrl" alt="user avatar" />
                 </div>
               </router-link>
               <div v-else class="avatar">
                 <div class="mask mask-squircle h-10 w-10">
-                  <img :src="resolveAvatarUrl(item.user?.avatar)" alt="user avatar" />
+                  <img :src="item._avatarUrl" alt="user avatar" />
                 </div>
               </div>
             </td>
