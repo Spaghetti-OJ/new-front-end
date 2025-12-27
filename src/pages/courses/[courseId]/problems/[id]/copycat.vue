@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
-import api, { fetcher } from "@/api";
+import api from "@/api";
 import { useTitle } from "@vueuse/core";
 import axios from "axios";
 
@@ -103,7 +103,8 @@ async function ensureReport() {
       }
       return;
     }
-  } catch {
+  } catch (e) {
+    console.error("Failed to start report generation.", e);
     reportError.value = "Failed to start report generation.";
   } finally {
     isBusy.value = false;
