@@ -441,7 +441,9 @@ function formatDateTime(value?: string) {
       </div>
 
       <div class="modal-action justify-between">
-        <button class="btn btn-outline btn-error" @click="showDeleteConfirm = true">{{ t("settings.delete") }}</button>
+        <button class="btn btn-outline btn-error" @click="showDeleteConfirm = true">
+          {{ t("settings.delete") }}
+        </button>
         <button class="btn" @click="closeDetailModal">{{ t("settings.close") }}</button>
       </div>
     </div>

@@ -22,7 +22,10 @@ const rules = {
   newPassword: { required },
   confirmPassword: {
     required,
-    sameAsNew: helpers.withMessage(() => t("settings.passwordsDoNotMatch"), sameAs(toRef(form, "newPassword"))),
+    sameAsNew: helpers.withMessage(
+      () => t("settings.passwordsDoNotMatch"),
+      sameAs(toRef(form, "newPassword")),
+    ),
   },
   currentPassword: { required },
 };
@@ -108,7 +111,9 @@ async function submit() {
       />
       <label class="label" v-if="v$.confirmPassword.$error">
         <span class="label-text-alt text-error">
-          {{ v$.confirmPassword.required.$invalid ? t("settings.required") : t("settings.passwordsDoNotMatch") }}
+          {{
+            v$.confirmPassword.required.$invalid ? t("settings.required") : t("settings.passwordsDoNotMatch")
+          }}
         </span>
       </label>
     </div>
