@@ -189,7 +189,7 @@ const paginatedProblems = computed(() => {
                 :tags="p.tags"
                 :visible="p.is_public"
                 :is-admin="session.isAdmin"
-                :is-teacher="hasAccess"
+                :has-staff-access="hasAccess"
               />
             </template>
           </template>

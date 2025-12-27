@@ -12,7 +12,7 @@ const session = useSession();
 
 const courseId = Number(route.params.courseId);
 
-// Permission
+// Permission: restrict management to admin/teacher only, even if TAs have course access.
 const canEditCourse = computed(() => {
   return (
     session.hasCourseAccess(courseId) && session.email_verified && (session.isAdmin || session.isTeacher)
