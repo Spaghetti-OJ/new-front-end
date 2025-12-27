@@ -55,6 +55,7 @@ const descriptionHasHeading = computed(() =>
 const hasInput = computed(() => Boolean(props.problem.description.input?.trim()));
 const hasOutput = computed(() => Boolean(props.problem.description.output?.trim()));
 const hasHint = computed(() => Boolean(props.problem.description.hint?.trim()));
+const hasSubtask = computed(() => Boolean(props.problem.subtaskDescription?.trim()));
 
 const likes = ref(0);
 const isLiked = ref(false);
@@ -287,7 +288,24 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
+            
           </div>
+          <!--subtask description-->
+          <div v-if="problem.subtaskDescription" class="mt-4">
+                 <div class="card-title md:text-xl lg:text-2xl">Subtask Description</div>
+                 
+              <markdown-renderer
+            v-if="hasSubtask"
+            class="prose prose-lg max-w-none
+           leading-8
+           space-y-4
+           prose-p:my-3
+           prose-headings:mt-6
+           prose-headings:mb-3
+           mb-10"
+            :md="problem.subtaskDescription"
+          />
+</div>
 
           <div v-if="hasHint" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.hint") }}

@@ -53,6 +53,7 @@ const rules = {
       ),
     },
   },
+  subtaskDescription: { maxLength: maxLength(10000) },
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
@@ -60,15 +61,18 @@ const rules = {
   type: {},
   status: {},
   testCaseInfo: {
-    tasks: {
-      scoreSum: helpers.withMessage(
-        "The sum of all subtasks score should be 100",
-        (tasks: ProblemTestCase[]) => {
-          return tasks.reduce((acc: number, cur: ProblemTestCase) => acc + cur.taskScore, 0) === 100;
-        },
-      ),
-    },
+  tasks: {
+    scoreSum: helpers.withMessage(
+      "The sum of all subtasks score should be 100",
+      (tasks: ProblemTestCase[]) => {
+    
+        if (!props.testdata) return true;
+        const sum = tasks.reduce((acc, cur) => acc + (Number(cur.taskScore) || 0), 0);
+        return sum === 100;
+      },
+    ),
   },
+},
   canViewStdout: {},
   defaultCode: {},
   solution: { maxLength: maxLength(20000) },
@@ -79,7 +83,7 @@ const v$ = useVuelidate(rules, problem.value);
 
 function update(key: keyof ProblemForm, value: ProblemForm[typeof key]) {
   emits("update", key, value);
-  v$.value[key].$touch();
+  (v$.value as any)[key]?.$touch?.(); 
 }
 
 async function submit() {
@@ -336,7 +340,32 @@ const removeDomain = (d: string) => {
     </div>
 
     <ProblemDescriptionForm :v$="v$" @update="(...args) => update(...args)" />
+      <!--  Subtask description（跟 description 同層級） -->
+<div class="form-control col-span-2">
+  <label class="label flex-col items-start gap-1">
+    <span class="text-base font-semibold">Subtask description</span>
+    <span class="text-sm text-base-content/70">
+    </span>
+  </label>
 
+  <textarea
+    :class="[
+      'textarea textarea-bordered w-full',
+      (v$ as any).subtaskDescription?.$error && 'textarea-error',
+    ]"
+    :value="problem.subtaskDescription"
+    rows="4"
+    placeholder=""
+    @input="update('subtaskDescription', ($event.target as HTMLTextAreaElement).value)"
+  />
+
+  <label class="label" v-show="(v$ as any).subtaskDescription?.$error">
+    <span
+      class="label-text-alt text-error"
+      v-text="(v$ as any).subtaskDescription?.$errors?.[0]?.$message"
+    />
+  </label>
+</div>
     <div class="form-control col-span-2">
       <label class="label flex-col items-start gap-1">
         <span class="text-base font-semibold">Solution</span>

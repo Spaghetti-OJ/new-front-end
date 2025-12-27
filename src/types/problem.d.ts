@@ -115,6 +115,7 @@ interface ProblemInfo {
   solution: string;
   like_count?: number;
   is_liked_by_user?: boolean;
+  subtaskDescription: string;
 }
 
 interface ProblemForm {
@@ -141,6 +142,7 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
+  subtaskDescription: string;
   staticAnalysis: string[];
   allowedDomains: string[];
 }
