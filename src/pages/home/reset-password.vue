@@ -4,7 +4,7 @@ import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
-import { required, minLength, sameAs } from "@vuelidate/validators";
+import { required, minLength, sameAs, email } from "@vuelidate/validators";
 import api from "@/api";
 
 const route = useRoute();
@@ -38,7 +38,7 @@ const rules = computed(() => {
   } else {
     return {
       username: { required },
-      email: { required },
+      email: { required, email },
     };
   }
 });
