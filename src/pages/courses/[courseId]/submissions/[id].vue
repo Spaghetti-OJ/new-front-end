@@ -195,7 +195,14 @@ async function loadProblemCases(problemId: number) {
     const grouped: Record<number, number[]> = {};
     cases.forEach((c: any) => {
       const subtaskNo = subtaskNoById.get(c.subtask_id);
-      if (subtaskNo == null || typeof c.idx !== "number") return;
+      if (subtaskNo == null) {
+        console.warn("Submission output case skipped: unknown subtask_id", c);
+        return;
+      }
+      if (typeof c.idx !== "number") {
+        console.warn("Submission output case skipped: invalid idx", c);
+        return;
+      }
       if (!grouped[subtaskNo]) grouped[subtaskNo] = [];
       grouped[subtaskNo].push(c.idx);
     });
