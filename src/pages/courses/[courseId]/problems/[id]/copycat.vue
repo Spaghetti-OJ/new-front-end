@@ -47,8 +47,8 @@ function stopPolling() {
 async function loadCourse() {
   courseError.value = null;
   try {
-    const res = await fetcher.get(`/course/${courseId.value}/`);
-    course.value = (res as any).data ?? null; // ✅ 只拿 res.data
+    const res = await api.Course.info(courseId.value);
+    course.value = res?.data ?? null;
   } catch (e) {
     console.error("Failed to load course:", e);
     courseError.value = "Oops! Failed to load course members. Try again later.";
@@ -57,10 +57,7 @@ async function loadCourse() {
 async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error"> {
   reportError.value = null;
   try {
-    const res = await fetcher.get<CopycatResp>(`/copycat/?problem_id=${problemId.value}`);
-
-    // ✅ fetcher 已展平，所以 res 就是 CopycatResp
-    const payload = res as unknown as CopycatResp;
+    const payload = await api.Copycat.getCopycatReport(problemId.value);
 
     report.value = payload.data ?? null;
     reportMessage.value = payload.message ?? "";
