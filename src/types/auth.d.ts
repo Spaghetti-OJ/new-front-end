@@ -121,3 +121,14 @@ interface SubmissionActivityResponse {
   data: Record<string, number>;
   message: string;
 }
+
+interface HeatmapValue {
+  date: string | Date;
+  count: number;
+}
+
+interface DifficultyStats {
+  easy: number;
+  med: number;
+  hard: number;
+}

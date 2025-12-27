@@ -28,6 +28,7 @@ declare module 'vue' {
     IUilBolt: typeof import('~icons/uil/bolt')['default']
     IUilBookAlt: typeof import('~icons/uil/book-alt')['default']
     IUilBookOpen: typeof import('~icons/uil/book-open')['default']
+    IUilCalendarAlt: typeof import('~icons/uil/calendar-alt')['default']
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
     IUilCheck: typeof import('~icons/uil/check')['default']
     IUilCheckCircle: typeof import('~icons/uil/check-circle')['default']

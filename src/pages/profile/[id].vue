@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
@@ -13,12 +13,31 @@ const route = useRoute();
 const username = route.params.id as string;
 
 const user = ref<PublicUserProfile | null>(null);
+const userStats = ref<UserStats | null>(null);
+const submissionActivity = ref<Record<string, number>>({});
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    user.value = await api.Auth.getPublicProfile(username);
+    isLoading.value = true;
+    const profile = await api.Auth.getPublicProfile(username);
+    user.value = profile;
+
+    if (profile && profile.user_id) {
+      const [statsResp, activityResp] = await Promise.all([
+        api.Auth.getUserStats(profile.user_id),
+        api.Auth.getSubmissionsActivity(profile.user_id),
+      ]);
+
+      if (statsResp && statsResp.data && statsResp.data.user_stats) {
+        userStats.value = statsResp.data.user_stats;
+      }
+
+      if (activityResp && activityResp.data) {
+        submissionActivity.value = activityResp.data;
+      }
+    }
   } catch (err: any) {
     console.error("Failed to fetch public profile:", err);
     error.value =
@@ -31,33 +50,20 @@ onMounted(async () => {
   }
 });
 
-const heatmapData = [
-  { date: "2025-01-01", count: 5 },
-  { date: "2025-01-02", count: 1 },
-  { date: "2025-01-03", count: 0 },
-  { date: "2025-01-04", count: 8 },
-  { date: "2025-01-05", count: 3 },
-  { date: "2025-01-06", count: 2 },
-  { date: "2025-01-07", count: 6 },
-  { date: "2025-01-08", count: 0 },
-  { date: "2025-01-09", count: 10 },
-  { date: "2025-01-10", count: 4 },
-  { date: "2025-01-11", count: 7 },
-  { date: "2025-01-12", count: 2 },
-  { date: "2025-01-13", count: 1 },
-  { date: "2025-01-14", count: 9 },
-  { date: "2025-01-15", count: 3 },
-  { date: "2025-01-16", count: 0 },
-  { date: "2025-01-17", count: 6 },
-  { date: "2025-01-18", count: 4 },
-  { date: "2025-01-19", count: 1 },
-  { date: "2025-01-20", count: 5 },
-  { date: "2025-01-21", count: 3 },
-  { date: "2025-01-22", count: 2 },
-  { date: "2025-01-23", count: 8 },
-  { date: "2025-01-24", count: 10 },
-  { date: "2025-01-25", count: 0 },
-];
+const heatmapData = computed(() => {
+  return Object.entries(submissionActivity.value).map(([date, count]) => ({
+    date,
+    count,
+  }));
+});
+
+const difficultyStats = computed(() => {
+  return { easy: 0, med: 0, hard: 0 };
+});
+
+const beatRate = computed(() => {
+  return 0; // consistent with no data
+});
 </script>
 
 <template>
@@ -85,7 +91,7 @@ const heatmapData = [
             <section class="w-full">
               <div class="mb-4">
                 <span
-                  class="inline-flex gap-4 rounded-[8px] px-4 py-2 text-lg font-semibold"
+                  class="inline-flex gap-4 rounded-[8px] px-4 py-2 text-lg font-semibold text-black"
                   :class="{
                     'bg-[#F3C5C5] ': user.role === 'Student',
                     'bg-[#C5F3D2] ': user.role === 'Teacher',
@@ -110,11 +116,11 @@ const heatmapData = [
               <div class="mt-4">
                 <ProfileProgressBar
                   :contributions="heatmapData"
-                  :submission="204"
-                  :acceptance="100"
-                  :totalsolved="135"
-                  :data="{ easy: 75, med: 40, hard: 20 }"
-                  :beatrate="15.27"
+                  :submission="userStats?.total_submissions || 0"
+                  :acceptance="userStats?.acceptance_rate || 0"
+                  :totalsolved="userStats?.ac_problems || 0"
+                  :data="difficultyStats"
+                  :beatrate="beatRate"
                 />
               </div>
             </section>
