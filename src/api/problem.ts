@@ -78,15 +78,15 @@ export const Problem = {
   createEditorial: (problemId: number | string, data: { content: string }) =>
     fetcher.post<Editorial>(`/editorials/problem/${problemId}/solution/`, data),
 
-  updateEditorial: (problemId: number | string, solutionId: string, data: { content: string }) =>
-    fetcher.put<Editorial>(`/editorials/problem/${problemId}/solution/${solutionId}/`, data),
+  updateEditorial: (problemId: number | string, editorialId: string, data: { content: string }) =>
+    fetcher.put<Editorial>(`/editorials/problem/${problemId}/solution/${editorialId}/`, data),
 
-  deleteEditorial: (problemId: number | string, solutionId: string) =>
-    fetcher.delete(`/editorials/problem/${problemId}/solution/${solutionId}/`),
+  deleteEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/`),
 
-  likeEditorial: (problemId: number | string, solutionId: string) =>
-    fetcher.post(`/editorials/problem/${problemId}/solution/${solutionId}/like/`),
+  likeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.post(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
 
-  unlikeEditorial: (problemId: number | string, solutionId: string) =>
-    fetcher.delete(`/editorials/problem/${problemId}/solution/${solutionId}/like/`),
+  unlikeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
 };
