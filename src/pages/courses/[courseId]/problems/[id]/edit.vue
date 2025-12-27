@@ -247,7 +247,7 @@ async function submit() {
 
         return api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt+1,// YY 從 01 開始（後端限制）
+          idx: p.tt + 1, // YY 從 01 開始（後端限制）
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
