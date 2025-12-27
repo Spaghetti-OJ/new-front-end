@@ -90,27 +90,20 @@ interface PermissionRow {
 }
 
 interface UserStats {
-  user: User & {
-    id: string;
-    is_active: boolean;
-    date_joined: string;
-  };
+  user_id: string;
+  username: string;
+  total_solved: number;
   total_submissions: number;
-  ac_submissions: number;
-  ac_problems: number;
-  best_score: number;
-  average_score: number | null;
-  first_ac_time: string | null;
-  last_submission_time: string | null;
-  acceptance_rate?: number;
-  accept_percent?: number;
-  top_languages?: string[];
-  solved_problem_list?: number[];
-  difficulty_stats?: {
+  accept_percent: number;
+  difficulty: {
     easy: number;
     medium: number;
     hard: number;
   };
+  beats_percent: number;
+  solved_problem_list?: number[];
+  ac_problems?: number;
+  acceptance_rate?: number;
 }
 
 interface UserStatsResponse {

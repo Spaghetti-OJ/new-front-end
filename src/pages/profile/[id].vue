@@ -66,11 +66,11 @@ const difficultyStats = computed(() => {
 watch(userStats, async (stats) => {
   if (!stats) return;
 
-  if (stats.difficulty_stats) {
+  if (stats.difficulty) {
     diffStats.value = {
-      easy: stats.difficulty_stats.easy,
-      med: stats.difficulty_stats.medium,
-      hard: stats.difficulty_stats.hard,
+      easy: stats.difficulty.easy,
+      med: stats.difficulty.medium,
+      hard: stats.difficulty.hard,
     };
   } else if (stats.solved_problem_list && stats.solved_problem_list.length > 0) {
     try {
@@ -96,7 +96,10 @@ watch(userStats, async (stats) => {
 });
 
 const beatRate = computed(() => {
-  return 0; // consistent with no data
+  if (userStats.value && typeof userStats.value.beats_percent === "number") {
+    return userStats.value.beats_percent;
+  }
+  return 0;
 });
 </script>
 
@@ -151,8 +154,8 @@ const beatRate = computed(() => {
                 <ProfileProgressBar
                   :contributions="heatmapData"
                   :submission="userStats?.total_submissions || 0"
-                  :acceptance="userStats?.acceptance_rate || 0"
-                  :totalsolved="userStats?.ac_problems || 0"
+                  :acceptance="userStats?.accept_percent || 0"
+                  :totalsolved="userStats?.total_solved || 0"
                   :data="difficultyStats"
                   :beatrate="beatRate"
                 />
