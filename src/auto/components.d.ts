@@ -33,6 +33,7 @@ declare module 'vue' {
     IUilChartLine: typeof import('~icons/uil/chart-line')['default']
     IUilCheck: typeof import('~icons/uil/check')['default']
     IUilCheckCircle: typeof import('~icons/uil/check-circle')['default']
+    IUilCopy: typeof import('~icons/uil/copy')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
     IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
     IUilExclamationTriangle: typeof import('~icons/uil/exclamation-triangle')['default']
