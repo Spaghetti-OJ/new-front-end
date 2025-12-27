@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useSession } from "@/stores/session";
 import api from "@/api";
 import { isQuotaUnlimited } from "@/constants";
@@ -56,7 +56,96 @@ const hasInput = computed(() => Boolean(props.problem.description.input?.trim())
 const hasOutput = computed(() => Boolean(props.problem.description.output?.trim()));
 const hasHint = computed(() => Boolean(props.problem.description.hint?.trim()));
 
-onMounted(getSubtasks);
+const likes = ref(0);
+const isLiked = ref(false);
+const isLiking = ref(false);
+
+async function loadLikes() {
+  const problemId = Number(route.params.id);
+  try {
+    const res = await api.Problem.getLikes(problemId);
+    const count = res.data?.likes_count;
+    if (typeof count === "number") {
+      likes.value = count;
+    }
+  } catch (err) {
+    console.warn("Failed to load like count:", err);
+  }
+}
+
+async function loadLikedState() {
+  try {
+    const res = await api.Problem.listLiked();
+    const results = res.data?.results ?? [];
+    const problemId = Number(route.params.id);
+    isLiked.value = results.some((p: { id: number }) => p.id === problemId);
+  } catch (err) {
+    console.warn("Failed to load liked state:", err);
+  }
+}
+
+watch(
+  () => props.problem,
+  (value) => {
+    if (typeof value.like_count === "number") {
+      likes.value = value.like_count;
+    }
+    if (typeof value.is_liked_by_user === "boolean") {
+      isLiked.value = value.is_liked_by_user;
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  () => route.params.id,
+  () => {
+    likes.value = 0;
+    isLiked.value = false;
+    loadLikes();
+    loadLikedState();
+  },
+);
+
+const toggleLike = async () => {
+  if (isLiking.value) return;
+  isLiking.value = true;
+  const problemId = Number(route.params.id);
+  const nextLiked = !isLiked.value;
+  try {
+    if (isLiked.value) {
+      const res = await api.Problem.unlike(problemId);
+      const count = res.data?.likes_count;
+      const ok = res.status === "200" || res.message === "Unliked";
+      if (typeof count === "number") likes.value = count;
+      if (ok || typeof count === "number") {
+        isLiked.value = nextLiked;
+      }
+    } else {
+      const res = await api.Problem.like(problemId);
+      const count = res.data?.likes_count;
+      const ok = res.status === "201" || res.message === "Liked";
+      if (typeof count === "number") likes.value = count;
+      if (ok || typeof count === "number") {
+        isLiked.value = nextLiked;
+      }
+    }
+  } catch (err) {
+    // Keep existing UI state on error.
+  } finally {
+    isLiking.value = false;
+  }
+};
+
+onMounted(() => {
+  getSubtasks();
+  if (props.problem.like_count == null) {
+    loadLikes();
+  }
+  if (props.problem.is_liked_by_user == null) {
+    loadLikedState();
+  }
+});
 </script>
 
 <template>
@@ -95,6 +184,21 @@ onMounted(getSubtasks);
                 <span class="text-sm font-normal">{{ " / 100" }}</span>
               </div>
             </div>
+          </div>
+
+          <div v-if="!preview" class="mx-4 flex items-center justify-center">
+            <button
+              type="button"
+              class="btn btn-ghost btn-lg gap-2 px-4"
+              :class="{ loading: isLiking }"
+              :disabled="isLiking || session.isNotLogin"
+              @click="toggleLike"
+            >
+              <span class="text-2xl leading-none">
+                {{ isLiked ? "♥" : "♡" }}
+              </span>
+              <span class="text-lg">{{ likes }}</span>
+            </button>
           </div>
 
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">

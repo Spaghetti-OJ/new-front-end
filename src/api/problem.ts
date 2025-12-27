@@ -51,4 +51,22 @@ export const Problem = {
         status: string;
       }>;
     }>(`/problem/${problemId}/test-cases`),
+  like: (problemId: number) =>
+    fetcher
+      .post<{ data: { likes_count: number }; message: string; status: string }>(`/problem/${problemId}/like`)
+      .then((r) => r.data ?? r),
+  unlike: (problemId: number) =>
+    fetcher
+      .delete<{ data: { likes_count: number }; message: string; status: string }>(
+        `/problem/${problemId}/like`,
+      )
+      .then((r) => r.data ?? r),
+  getLikes: (problemId: number) =>
+    fetcher
+      .get<{ data: { likes_count: number }; message: string; status: string }>(`/problem/${problemId}/likes`)
+      .then((r) => r.data ?? r),
+  listLiked: () =>
+    fetcher
+      .get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`)
+      .then((r) => r.data ?? r),
 };
