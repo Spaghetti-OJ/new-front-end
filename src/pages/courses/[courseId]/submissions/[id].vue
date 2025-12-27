@@ -71,9 +71,14 @@ const execute = async () => {
       submission.value = { ...raw };
     }
 
-    if (raw?.tasks?.length && !isOutputsPrefetched.value) {
-      isOutputsPrefetched.value = true;
-      await Promise.all(raw.tasks.map((task: Task, index: number) => loadTaskOutputs(index, task)));
+    if (raw?.tasks?.length && !isOutputsPrefetched.value && !isOutputsPrefetching.value) {
+      isOutputsPrefetching.value = true;
+      try {
+        await Promise.all(raw.tasks.map((task: Task, index: number) => loadTaskOutputs(index, task)));
+        isOutputsPrefetched.value = true;
+      } finally {
+        isOutputsPrefetching.value = false;
+      }
       // expandTasks.value = raw.tasks.map(() => true); // Do not auto-expand
     }
 
@@ -124,6 +129,7 @@ const caseOutputLoading = ref<Record<string, boolean>>({});
 const subtaskCaseIds = ref<Record<number, number[]>>({});
 const isProblemCasesLoaded = ref(false);
 const isOutputsPrefetched = ref(false);
+const isOutputsPrefetching = ref(false);
 const problemCasesError = ref<string | null>(null);
 
 function getCaseKey(taskNo: number, caseNo: number) {
