@@ -1,94 +1,185 @@
 <script setup lang="ts">
-import { useAxios } from "@vueuse/integrations/useAxios";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 import api, { fetcher } from "@/api";
-import { useIntervalFn, useTitle } from "@vueuse/core";
-import { ref, watchEffect, computed } from "vue";
+import { useTitle } from "@vueuse/core";
+import axios from "axios";
+
+type CopycatReport = {
+  id: number;
+  status: "pending" | "success" | "failed";
+  moss_url: string | null;
+  created_at: string;
+  error_message: string;
+};
 
 type CopycatResp = {
-  data: {
-    id: number;
-    status: "pending" | "success" | "failed";
-    moss_url: string | null;
-    created_at: string;
-    error_message: string;
-  } | null;
+  data: CopycatReport | null;
   message: string;
   status: "ok" | "error";
 };
 
+type Course = any; // 你專案已有 Course 型別的話把這行拿掉，改成 import/引用你的 Course
+
 const route = useRoute();
 useTitle(`Copycat - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
-const { data: course, error: courseError } = useAxios<Course>(`/course/${route.params.courseId}`, fetcher);
+const problemId = computed(() => Number(route.params.id));
+const courseId = computed(() => String(route.params.courseId));
 
-const {
-  data: report,
-  error: reportError,
-  execute,
-} = useAxios<CopycatResp>(`/copycat/?problem_id=${route.params.id}`, fetcher, { immediate: true });
+const course = ref<Course | null>(null);
+const courseError = ref<string | null>(null);
 
-const status = computed(() => report.value?.data?.status);
-const mossUrl = computed(() => report.value?.data?.moss_url);
-const errMsg = computed(() => report.value?.data?.error_message || report.value?.message || "");
+const report = ref<CopycatReport | null>(null);
+const reportMessage = ref<string>("");
+const reportError = ref<string | null>(null);
 
-const { pause, resume, isActive } = useIntervalFn(() => execute(), 10000, { immediate: false });
+const isBusy = ref(false);
+const polling = ref(false);
 
-watchEffect(() => {
-  if (status.value === "success" || status.value === "failed") {
-    pause();
-  } else if (status.value === "pending" && !isActive.value) {
-    resume();
-  }
-});
+const status = computed(() => report.value?.status);
+const mossUrl = computed(() => report.value?.moss_url);
+const errMsg = computed(() => report.value?.error_message || reportMessage.value || "");
 
-const isReportGenerationFailed = ref(false);
-async function generateReport() {
-  isReportGenerationFailed.value = false;
+let timer: number | null = null;
+
+function startPolling() {
+  if (timer) return;
+  polling.value = true;
+  timer = window.setInterval(async () => {
+    await loadReport();
+    if (status.value === "success" || status.value === "failed") {
+      stopPolling();
+    }
+  }, 10000);
+}
+
+function stopPolling() {
+  polling.value = false;
+  if (timer) window.clearInterval(timer);
+  timer = null;
+}
+
+async function loadCourse() {
+  courseError.value = null;
   try {
-    await api.Copycat.detect({ problem_id: Number(route.params.id) });
-    await execute();
-    resume();
-  } catch {
-    isReportGenerationFailed.value = true;
+    const res = await fetcher.get(`/course/${courseId.value}/`);
+     course.value = (res as any).data ?? (res as any);
+  } catch (e) {
+    courseError.value = "Oops! Failed to load course members. Try again later.";
   }
 }
+
+async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error"> {
+  reportError.value = null;
+  try {
+    const res = await fetcher.get<CopycatResp>(`/copycat/?problem_id=${problemId.value}`);
+      
+    const payload = (res as any).data ?? (res as any);
+console.log("1221",payload);
+    report.value = payload.data ?? null;
+    reportMessage.value = payload.message ?? "";
+    return "ok";
+  } catch (e) {
+    report.value = null;
+    reportMessage.value = "";
+
+    if (axios.isAxiosError(e)) {
+      const code = e.response?.status;
+      if (code === 404) {
+        return "not_found";
+      }
+      if (code === 403) {
+        reportError.value = "403 Forbidden：你沒有權限查詢報告。";
+        return "forbidden";
+      }
+      reportError.value = e.response?.data?.message || `Request failed (${code})`;
+      return "error";
+    }
+
+    reportError.value = "Unknown error";
+    return "error";
+  }
+}
+
+async function ensureReport() {
+  if (isBusy.value) return;
+  isBusy.value = true;
+  try {
+    const getState = await loadReport();
+
+    if (getState === "ok") {
+      if (status.value === "pending") startPolling();
+      return;
+    }
+
+    if (getState === "not_found") {
+      await api.Copycat.detect({ problem_id: problemId.value });
+      await loadReport();
+      startPolling();
+      return;
+    }
+
+    // forbidden / error：不要亂 POST
+  } catch {
+    reportError.value = "Failed to start report generation.";
+  } finally {
+    isBusy.value = false;
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([loadCourse(), loadReport()]);
+  if (status.value === "pending") startPolling();
+});
+
+onBeforeUnmount(() => {
+  stopPolling();
+});
 </script>
 
 <template>
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title md:text-2xl lg:text-3xl">Copycat of problem #{{ $route.params.id }}</div>
+        <div class="card-title md:text-2xl lg:text-3xl">
+          Copycat of problem #{{ $route.params.id }}
+        </div>
 
         <div v-if="courseError" class="alert alert-error shadow-lg">
           <div>
             <i-uil-times-circle />
-            <span>Oops! Failed to load course members. Try again later.</span>
+            <span>{{ courseError }}</span>
           </div>
         </div>
 
-        <!-- 查不到任何報告（404）或其他錯 -->
+        <!-- 顯示查詢報告的錯誤（403/500/網路） -->
         <div v-if="reportError" class="alert alert-warning shadow-lg">
           <div class="flex w-full items-center justify-between">
-            <span>此題目尚未有報告，或查詢失敗。</span>
-            <button class="btn btn-sm" @click="generateReport">Generate report</button>
+            <span>{{ reportError }}</span>
+            <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">
+              Try again
+            </button>
           </div>
         </div>
 
         <div v-else>
-          <!-- 失敗 -->
+          <!-- failed -->
           <div v-if="status === 'failed'" class="alert alert-error shadow-lg">
             <div class="flex w-full items-center justify-between">
               <span>生成失敗：{{ errMsg }}</span>
-              <button class="btn btn-sm" @click="generateReport">Retry</button>
+              <button class="btn btn-sm" :class="isBusy && 'loading'" @click="ensureReport">
+                Retry
+              </button>
             </div>
           </div>
 
           <!-- pending -->
-          <div v-else-if="status === 'pending'">Report generating... (polling)</div>
+          <div v-else-if="status === 'pending'">
+            Report generating... <span v-if="polling">(polling)</span>
+          </div>
 
-          <!-- success：用 iframe 或連結 -->
+          <!-- success -->
           <div v-else-if="status === 'success' && mossUrl">
             <a class="link" :href="mossUrl" target="_blank" rel="noreferrer">Open MOSS result</a>
             <div class="mt-4">
@@ -96,15 +187,13 @@ async function generateReport() {
             </div>
           </div>
 
-          <!-- 尚未生成 + 前端按鈕 -->
+          <!-- 沒報告（404）或 report 為 null：顯示按鈕 -->
           <div v-else>
-            <button class="btn" @click="generateReport">
-              <i-uil-file-upload-alt class="mr-1 h-5 w-5" /> Click me to generate report
+            <button class="btn" :class="isBusy && 'loading'" @click="ensureReport">
+              <i-uil-file-upload-alt class="mr-1 h-5 w-5" />
+              Click me to generate report
             </button>
-          </div>
-
-          <div v-if="isReportGenerationFailed" class="mt-3 text-error">
-            Failed to start report generation.
+            </div>
           </div>
         </div>
       </div>
