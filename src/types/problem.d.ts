@@ -27,6 +27,7 @@ interface ProblemItem {
   like_count: number;
   view_count: number;
   total_quota: number;
+  highScore?: number;
   description: string;
   input_description: string;
   output_description: string;
