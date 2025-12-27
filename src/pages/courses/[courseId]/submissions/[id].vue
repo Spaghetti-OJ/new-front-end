@@ -51,16 +51,20 @@ const execute = async () => {
         .sort((a, b) => a - b);
 
       sortedSubtasks.forEach((subtaskNo) => {
+        const cases: any[] = [];
+        subtaskCaseIds.value[subtaskNo].forEach((caseNo) => {
+          cases[caseNo] = {
+            status: raw.status,
+            execTime: null,
+            memoryUsage: null,
+          };
+        });
         tasks.push({
           status: raw.status,
           execTime: null,
           memoryUsage: null,
           score: null,
-          cases: subtaskCaseIds.value[subtaskNo].map(() => ({
-            status: raw.status,
-            execTime: null,
-            memoryUsage: null,
-          })),
+          cases,
         });
       });
       raw.tasks = tasks;
