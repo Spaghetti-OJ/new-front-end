@@ -58,23 +58,74 @@ const hasHint = computed(() => Boolean(props.problem.description.hint?.trim()));
 
 const likes = ref(0);
 const isLiked = ref(false);
+const isLiking = ref(false);
+
+async function loadLikes() {
+  const problemId = Number(route.params.id);
+  try {
+    const res = await api.Problem.getLikes(problemId);
+    const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+    if (typeof count === "number") {
+      likes.value = count;
+    }
+  } catch {}
+}
+
+async function loadLikedState() {
+  try {
+    const res = await api.Problem.listLiked();
+    const data = res.data?.data ?? (res as any).data;
+    const results = data?.results ?? [];
+    const problemId = Number(route.params.id);
+    isLiked.value = results.some((p: { id: number }) => p.id === problemId);
+  } catch {}
+}
 
 watch(
   () => props.problem,
   (value) => {
-    likes.value = value.like_count ?? 0;
-    isLiked.value = Boolean(value.is_liked_by_user);
+    if (typeof value.like_count === "number") {
+      likes.value = value.like_count;
+    }
+    if (typeof value.is_liked_by_user === "boolean") {
+      isLiked.value = value.is_liked_by_user;
+    }
   },
   { immediate: true },
 );
 
-const toggleLike = () => {
-  isLiked.value = !isLiked.value;
-  likes.value += isLiked.value ? 1 : -1;
-  if (likes.value < 0) likes.value = 0;
+const toggleLike = async () => {
+  if (isLiking.value) return;
+  isLiking.value = true;
+  const problemId = Number(route.params.id);
+  try {
+    if (isLiked.value) {
+      const res = await api.Problem.unlike(problemId);
+      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+      if (typeof count === "number") likes.value = count;
+      isLiked.value = false;
+    } else {
+      const res = await api.Problem.like(problemId);
+      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+      if (typeof count === "number") likes.value = count;
+      isLiked.value = true;
+    }
+  } catch (err) {
+    // Keep existing UI state on error.
+  } finally {
+    isLiking.value = false;
+  }
 };
 
-onMounted(getSubtasks);
+onMounted(() => {
+  getSubtasks();
+  if (props.problem.like_count == null) {
+    loadLikes();
+  }
+  if (props.problem.is_liked_by_user == null) {
+    loadLikedState();
+  }
+});
 </script>
 
 <template>
@@ -116,7 +167,13 @@ onMounted(getSubtasks);
           </div>
 
           <div class="mx-4 flex items-center justify-center">
-            <button type="button" class="btn btn-ghost btn-lg gap-2 px-4" @click="toggleLike">
+            <button
+              type="button"
+              class="btn btn-ghost btn-lg gap-2 px-4"
+              :class="{ loading: isLiking }"
+              :disabled="isLiking"
+              @click="toggleLike"
+            >
               <span class="text-2xl leading-none">
                 {{ isLiked ? "♥" : "♡" }}
               </span>
