@@ -97,6 +97,16 @@ watch(
   { immediate: true },
 );
 
+watch(
+  () => route.params.id,
+  () => {
+    likes.value = 0;
+    isLiked.value = false;
+    loadLikes();
+    loadLikedState();
+  },
+);
+
 const toggleLike = async () => {
   if (isLiking.value) return;
   isLiking.value = true;
