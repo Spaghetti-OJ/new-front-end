@@ -410,11 +410,11 @@
     "loginSection": {
       "welcome": "歡迎回來，{user}",
       "signin": "登入",
-      "loginFailed": "登入失敗：帳號 / 電子郵件地址或是密碼輸入錯誤",
-      "username": "帳號 / 電子郵件地址",
+      "loginFailed": "登入失敗：帳號或是密碼輸入錯誤",
+      "username": "帳號",
       "pw": "密碼",
       "placeholder": {
-        "username": "帳號 / 電子郵件地址",
+        "username": "帳號",
         "pw": "密碼"
       },
       "forgot": "忘記密碼?",
