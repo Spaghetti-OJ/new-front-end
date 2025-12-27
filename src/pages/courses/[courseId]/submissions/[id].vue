@@ -500,6 +500,14 @@ function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
                       :status="getFallbackCase(task, caseNo)!.status"
                     />
                     <span v-else>-</span>
+                    <span
+                      v-if="caseOutputErrors[getCaseKey(resolveTaskNo(taskIndex), caseNo)]"
+                      class="ml-2 inline-flex items-center text-xs text-warning"
+                      :title="caseOutputErrors[getCaseKey(resolveTaskNo(taskIndex), caseNo)]"
+                    >
+                      <i-uil-exclamation-circle class="mr-1 h-4 w-4" />
+                      Failed to load output
+                    </span>
                   </td>
                   <td>
                     {{ getCaseExecValue(taskIndex, caseNo, task) ?? "-" }}
