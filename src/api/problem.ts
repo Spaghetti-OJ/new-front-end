@@ -71,4 +71,22 @@ export const Problem = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+
+  getEditorials: (problemId: number | string) =>
+    fetcher.get<Editorial[]>(`/editorials/problem/${problemId}/solution/`),
+
+  createEditorial: (problemId: number | string, data: { content: string }) =>
+    fetcher.post<Editorial>(`/editorials/problem/${problemId}/solution/`, data),
+
+  updateEditorial: (problemId: number | string, editorialId: string, data: { content: string }) =>
+    fetcher.put<Editorial>(`/editorials/problem/${problemId}/solution/${editorialId}/`, data),
+
+  deleteEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/`),
+
+  likeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.post(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
+
+  unlikeEditorial: (problemId: number | string, editorialId: string) =>
+    fetcher.delete(`/editorials/problem/${problemId}/solution/${editorialId}/like/`),
 };

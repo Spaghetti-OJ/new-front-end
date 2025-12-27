@@ -178,6 +178,21 @@ interface ProblemTop10RunTimeItem {
   status?: string;
 }
 
+interface Editorial {
+  id: string;
+  problem_id: number;
+  content: string;
+  author_username: string;
+  author: string; // UUID
+  likes_count: number;
+  views_count: number;
+  status: string;
+  is_liked_by_user: boolean;
+  created_at: string;
+  updated_at: string;
+  published_at: string;
+}
+
 interface ProblemTop10MemoryItem {
   id: string;
   user: string;

@@ -4,8 +4,7 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 export {}
 
-/* prettier-ignore */
-declare module 'vue' {
+declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
@@ -44,11 +43,15 @@ declare module 'vue' {
     IUilFolderDownload: typeof import('~icons/uil/folder-download')['default']
     IUilGithub: typeof import('~icons/uil/github')['default']
     IUilHeart: typeof import('~icons/uil/heart')['default']
+    IUilHeart: typeof import('~icons/uil/heart')['default']
     IUilHome: typeof import('~icons/uil/home')['default']
     IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
     IUilLink: typeof import('~icons/uil/link')['default']
     IUilMonitor: typeof import('~icons/uil/monitor')['default']
+    IUilMinus: typeof import('~icons/uil/minus')['default']
+    IUilMonitor: typeof import('~icons/uil/monitor')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']
+    IUilPlus: typeof import('~icons/uil/plus')['default']
     IUilPlusCircle: typeof import('~icons/uil/plus-circle')['default']
     IUilPuzzlePiece: typeof import('~icons/uil/puzzle-piece')['default']
     IUilSetting: typeof import('~icons/uil/setting')['default']
