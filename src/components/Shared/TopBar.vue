@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect } from "vue";
+import { ref, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTheme } from "@/stores/theme";
 import { useSession } from "@/stores/session";
 import { useDark, useToggle, useStorage } from "@vueuse/core";
 import { onClickOutside } from "@vueuse/core";
-import useInteractions from "@/composables/useInteractions";
 import api from "@/api";
 import logo from "@/assets/logo.svg";
-
-const { isDesktop } = useInteractions();
 
 const isDark = useDark({
   selector: "html",
@@ -320,21 +317,9 @@ onClickOutside(mobileMenuRef, closeMobileMenu, {
   transition: color 0.2s, text-decoration 0.2s;
 }
 
-/* 確保手機選單在正確的層級 */
-.navbar {
-  position: relative;
-  z-index: 40;
-}
-
 /* 手機選單項目的 hover 效果 */
 .navbar a:hover,
 .navbar button:hover {
   transition: background-color 0.2s ease;
-}
-
-/* 平滑的過渡效果 */
-.transition {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
