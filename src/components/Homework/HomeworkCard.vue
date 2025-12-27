@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const session = useSession();
+const hasStaffAccess = computed(() => session.isAdmin || session.isTeacher);
 const STATUS_LABEL = {
   RUNNING: t("components.hw.card.statusLabel.running"),
   NOT_START: t("components.hw.card.statusLabel.notStart"),
@@ -102,8 +103,8 @@ const state = computed(() => {
                     (homework.studentStatus as any)[session.username][pid.toString()]
                   )?.score || '-'
                     "
-                  :show-stats="session.isAdmin"
-                  :show-copycat="session.isAdmin"
+                  :show-stats="hasStaffAccess"
+                  :show-copycat="hasStaffAccess"
                 />
               </template>
             </div>
@@ -118,7 +119,7 @@ const state = computed(() => {
         </div>
       </div>
 
-      <div v-if="homework.id && !preview && session.isAdmin" class="card-actions justify-end">
+      <div v-if="homework.id && !preview && hasStaffAccess" class="card-actions justify-end">
         <router-link
           class="btn mr-3"
           :to="`/courses/${$route.params.courseId}/homeworks/${homework.id}/edit`"
