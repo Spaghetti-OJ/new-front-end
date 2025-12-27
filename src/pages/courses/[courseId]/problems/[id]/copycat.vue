@@ -99,11 +99,12 @@ async function ensureReport() {
 
     if (getState === "not_found") {
       await api.Copycat.detect({ problem_id: problemId.value });
-      await loadReport();
-      startPolling();
+      const secondState = await loadReport();
+      if (secondState === "ok" && status.value === "pending") {
+        startPolling();
+      }
       return;
     }
-    // forbidden / error：不要亂 POST
   } catch {
     reportError.value = "Failed to start report generation.";
   } finally {
