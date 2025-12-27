@@ -68,7 +68,9 @@ async function loadLikes() {
     if (typeof count === "number") {
       likes.value = count;
     }
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to load like count:", err);
+  }
 }
 
 async function loadLikedState() {
@@ -77,7 +79,9 @@ async function loadLikedState() {
     const results = res.data?.results ?? [];
     const problemId = Number(route.params.id);
     isLiked.value = results.some((p: { id: number }) => p.id === problemId);
-  } catch {}
+  } catch (err) {
+    console.warn("Failed to load liked state:", err);
+  }
 }
 
 watch(
