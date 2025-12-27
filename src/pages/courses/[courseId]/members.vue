@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/api";
 import { useTitle } from "@vueuse/core";
-import { useSession, UserRole } from "@/stores/session";
+import { useSession } from "@/stores/session";
 import axios from "axios";
 
 const route = useRoute();
@@ -64,9 +64,7 @@ onMounted(() => {
   void loadMembers();
 });
 
-const rolesCanCreateCourse = [UserRole.Admin, UserRole.Teacher];
-const rolesCanRemove = [UserRole.Admin, UserRole.Teacher];
-const canRemove = computed(() => rolesCanRemove.includes(session.role));
+const canManageMembers = computed(() => session.hasCourseAccess(route.params.courseId as string));
 
 const isOpen = ref(false);
 const newMembers = ref<File | null>();
@@ -167,7 +165,7 @@ async function addByUsername() {
           <div class="flex-1" />
 
           <div class="flex items-center gap-2">
-            <label v-if="rolesCanCreateCourse.includes(session.role)" for="my-modal" class="btn btn-success">
+            <label v-if="canManageMembers" for="my-modal" class="btn btn-success">
               <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.members.new") }}
             </label>
           </div>
@@ -191,7 +189,7 @@ async function addByUsername() {
               <option :value="MemberTableColumn.ROLE">Role</option>
             </select>
           </div>
-          <div v-if="rolesCanCreateCourse.includes(session.role)" class="form-control w-full max-w-xs">
+          <div v-if="canManageMembers" class="form-control w-full max-w-xs">
             <label class="label">
               <span class="label-text">Add by username</span>
             </label>
@@ -211,7 +209,7 @@ async function addByUsername() {
                 Add
               </button>
               <button
-                v-if="canRemove"
+                v-if="canManageMembers"
                 class="flex h-10 w-10 items-center justify-center self-center border-none bg-transparent p-0 pl-2 shadow-none"
                 :class="removeLoading && 'loading'"
                 :disabled="!selectedUsernames.length"
@@ -227,13 +225,13 @@ async function addByUsername() {
         </div>
         <data-status-wrapper :error="error" :is-loading="isLoading">
           <template #loading>
-            <skeleton-table :col="canRemove ? 4 : 3" :row="5" />
+            <skeleton-table :col="canManageMembers ? 4 : 3" :row="5" />
           </template>
           <template #data>
             <table class="table w-full">
               <thead>
                 <tr>
-                  <th v-if="canRemove"></th>
+                  <th v-if="canManageMembers"></th>
                   <th>username</th>
                   <th>real name</th>
                   <th>role</th>
@@ -241,7 +239,7 @@ async function addByUsername() {
               </thead>
               <tbody>
                 <tr v-for="{ username, real_name, role } in members" :key="username" class="hover">
-                  <td v-if="canRemove">
+                  <td v-if="canManageMembers">
                     <template v-if="role === 'student'">
                       <input
                         type="checkbox"

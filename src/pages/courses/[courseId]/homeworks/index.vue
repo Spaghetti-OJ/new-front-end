@@ -48,7 +48,7 @@ onMounted(async () => {
         <div class="card-title mb-4 justify-between">
           {{ $t("course.hw.index.title") }}
           <router-link
-            v-if="session.isAdmin || session.isTeacher"
+            v-if="session.hasCourseAccess(route.params.courseId as string)"
             class="btn btn-success"
             :to="`/courses/${$route.params.courseId}/homeworks/new`"
           >
