@@ -95,7 +95,11 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in ranking" :key="item.user?.username || index" class="hover">
+          <tr
+            v-for="(item, index) in [...ranking].sort((a, b) => (b.ACProblem ?? 0) - (a.ACProblem ?? 0))"
+            :key="item.user?.username || index"
+            class="hover"
+          >
             <td class="text-center font-semibold">{{ index + 1 }}</td>
             <td class="flex justify-center">
               <router-link
