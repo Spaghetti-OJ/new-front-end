@@ -159,7 +159,7 @@ onMounted(async () => {
         </div>
 
         <!-- 手機版：卡片式佈局 (只在 md 以下顯示) -->
-        <div v-else class="space-y-3 md:hidden">
+        <div v-if="!isLoading && !error" class="space-y-3 md:hidden">
           <div
             v-for="(item, index) in sortedRanking"
             :key="item.user?.username || index"
