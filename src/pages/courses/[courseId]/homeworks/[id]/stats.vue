@@ -29,10 +29,10 @@ async function fetchSubmissions() {
   const requests = hw.value.problem_ids.map(
     (pid) =>
       api.Submission.list({
-        problemId: String(pid),
-        course: route.params.courseId as string,
+        problem_id: String(pid),
+        course_id: route.params.courseId as string,
         page_size: 1000,
-      }).then((res: any) => res.data?.results || []), // Handle response structure
+      }).then((res) => res.results || []), // Handle response structure
   );
 
   try {
@@ -99,12 +99,13 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
       subIds.forEach((sid) => {
         const sub = submissionsMap.value[sid];
         if (sub) {
-          if (lastSubmissionTimestamp === null || sub.timestamp > lastSubmissionTimestamp) {
-            lastSubmissionTimestamp = sub.timestamp;
+          const ts = dayjs(sub.timestamp).unix();
+          if (lastSubmissionTimestamp === null || ts > lastSubmissionTimestamp) {
+            lastSubmissionTimestamp = ts;
           }
-          if (sub.status === 0) {
-            if (firstAcTimestamp === null || sub.timestamp < firstAcTimestamp) {
-              firstAcTimestamp = sub.timestamp;
+          if (Number(sub.status) === 0) {
+            if (firstAcTimestamp === null || ts < firstAcTimestamp) {
+              firstAcTimestamp = ts;
             }
           }
         }
