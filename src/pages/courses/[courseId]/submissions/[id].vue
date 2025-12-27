@@ -146,7 +146,12 @@ function getCaseIdsForTask(taskIndex: number, task: Task) {
   const taskNo = resolveTaskNo(taskIndex);
   const fromProblem = subtaskCaseIds.value[taskNo];
   if (fromProblem?.length) return fromProblem;
-  if (task.cases?.length) return task.cases.map((_case, idx) => idx);
+  if (task.cases?.length) {
+    return Object.keys(task.cases)
+      .map((key) => Number(key))
+      .filter((value) => Number.isInteger(value))
+      .sort((a, b) => a - b);
+  }
   return [];
 }
 
