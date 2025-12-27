@@ -67,7 +67,7 @@ onClickOutside(mobileMenuRef, closeMobileMenu, {
     </div>
 
     <!-- 中間：桌面版導航連結 (隱藏在 md 以下) -->
-    <div class="ml-8 hidden items-center gap-6 lg:flex lg:gap-8">
+    <div class="ml-8 hidden items-center gap-6 md:flex md:gap-8">
       <router-link :class="['hover:text-accent', matchRoute('/') && 'font-semibold underline']" to="/">
         {{ $t("components.topBar.home") || "Home" }}
       </router-link>
