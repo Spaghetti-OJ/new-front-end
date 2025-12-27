@@ -168,7 +168,7 @@ onMounted(async () => {
             <router-link
               v-if="item.user?.username"
               :to="getProfileLink(item.user.username)"
-              class="card-body p-4"
+              class="group card-body cursor-pointer p-4"
               :aria-label="`View profile of ${item.user.username}`"
             >
               <div class="flex items-center gap-4">
@@ -211,9 +211,14 @@ onMounted(async () => {
                     {{ item.ACProblem ?? 0 }}
                   </div>
                 </div>
+
+                <!-- Click indicator -->
+                <div class="flex items-center text-sm opacity-50 transition-opacity group-hover:opacity-90">
+                  <i-uil-angle-right />
+                </div>
               </div>
             </router-link>
-            <div v-else class="card-body p-4">
+            <div v-else class="card-body cursor-default p-4 opacity-80">
               <div class="flex items-center gap-4">
                 <!-- 排名徽章 -->
                 <div class="flex-shrink-0">
