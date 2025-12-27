@@ -89,7 +89,12 @@ const state = computed(() => {
 
         <div class="mb-8 w-full lg:flex-[3_1_0%]">
           <div class="card-title">{{ t("components.hw.card.problems.text") }}</div>
-          <homework-problems v-if="isDesktop" :homework="homework" :problems="problems" />
+          <homework-problems
+            v-if="isDesktop"
+            :homework="homework"
+            :problems="problems"
+            :has-staff-access="hasStaffAccess"
+          />
           <div v-else class="w-full py-1">
             <div class="flex w-full flex-wrap justify-center gap-1 sm:justify-start">
               <template v-for="pid in homework.problem_ids">
