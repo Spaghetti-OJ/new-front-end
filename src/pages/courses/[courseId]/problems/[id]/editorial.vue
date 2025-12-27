@@ -172,7 +172,11 @@ onMounted(fetchEditorials);
           <div class="card-title md:text-2xl lg:text-3xl">Editorial for Problem #{{ $route.params.id }}</div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <select v-if="editorials.length > 1" v-model="selectedId" class="select select-bordered select-sm">
+            <select
+              v-if="editorials.length > 1"
+              v-model="selectedId"
+              class="select select-bordered select-sm"
+            >
               <option v-for="item in editorials" :key="item.id" :value="item.id">
                 Editorial by {{ item.author_username }}
               </option>
@@ -181,12 +185,20 @@ onMounted(fetchEditorials);
             <button v-if="canEdit" type="button" class="btn btn-success" @click="startCreate">
               <i-uil-plus-circle class="mr-1 h-5 w-5" /> New Editorial
             </button>
-            <button v-if="canEdit && selectedEditorial && !isEditing" type="button" class="btn btn-outline"
-              @click="startEdit">
+            <button
+              v-if="canEdit && selectedEditorial && !isEditing"
+              type="button"
+              class="btn btn-outline"
+              @click="startEdit"
+            >
               <i-uil-edit class="mr-1 h-5 w-5" /> Edit
             </button>
-            <button v-if="canEdit && selectedEditorial && !isEditing" type="button" class="btn btn-ghost text-error"
-              @click="showDeleteConfirm = true">
+            <button
+              v-if="canEdit && selectedEditorial && !isEditing"
+              type="button"
+              class="btn btn-ghost text-error"
+              @click="showDeleteConfirm = true"
+            >
               <i-uil-trash-alt class="mr-1 h-5 w-5" /> Delete
             </button>
           </div>
@@ -194,7 +206,9 @@ onMounted(fetchEditorials);
 
         <div v-if="showDeleteConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
           <div class="absolute inset-0 bg-black/30" @click="showDeleteConfirm = false"></div>
-          <div class="relative w-[22rem] max-w-[90vw] rounded-2xl border border-base-300 bg-base-200 p-4 shadow-xl">
+          <div
+            class="relative w-[22rem] max-w-[90vw] rounded-2xl border border-base-300 bg-base-200 p-4 shadow-xl"
+          >
             <div class="flex items-center gap-2 text-base font-semibold text-error">
               <i-uil-exclamation-triangle />
               <span>Delete this editorial?</span>
@@ -231,8 +245,11 @@ onMounted(fetchEditorials);
                   <label class="label">
                     <span class="label-text font-semibold">Content</span>
                   </label>
-                  <textarea v-model="draft.content" class="textarea textarea-bordered min-h-[300px] w-full"
-                    placeholder="題解內容" />
+                  <textarea
+                    v-model="draft.content"
+                    class="textarea textarea-bordered min-h-[300px] w-full"
+                    placeholder="題解內容"
+                  />
                 </div>
               </div>
               <div v-if="formError" class="mt-3 text-sm text-error">{{ formError }}</div>
@@ -243,8 +260,11 @@ onMounted(fetchEditorials);
             </div>
             <div v-else>
               <div v-if="selectedEditorial" class="mb-4 flex items-center justify-end gap-4">
-                <button class="btn btn-ghost gap-2 transition-transform active:scale-95"
-                  :class="{ 'text-error': selectedEditorial.is_liked_by_user }" @click="toggleLike">
+                <button
+                  class="btn btn-ghost gap-2 transition-transform active:scale-95"
+                  :class="{ 'text-error': selectedEditorial.is_liked_by_user }"
+                  @click="toggleLike"
+                >
                   <span class="text-2xl">{{ selectedEditorial.is_liked_by_user ? "♥" : "♡" }}</span>
                   <span>{{ selectedEditorial.likes_count }}</span>
                 </button>

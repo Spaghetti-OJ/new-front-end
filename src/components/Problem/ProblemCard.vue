@@ -68,7 +68,7 @@ async function loadLikes() {
     if (typeof count === "number") {
       likes.value = count;
     }
-  } catch { }
+  } catch {}
 }
 
 async function loadLikedState() {
@@ -78,7 +78,7 @@ async function loadLikedState() {
     const results = data?.results ?? [];
     const problemId = Number(route.params.id);
     isLiked.value = results.some((p: { id: number }) => p.id === problemId);
-  } catch { }
+  } catch {}
 }
 
 watch(
@@ -139,7 +139,7 @@ onMounted(() => {
           <div class="flex">
             <span class="badge badge-info mr-1" v-for="tag in problem.tags" :key="tag.id">{{
               tag.name
-              }}</span>
+            }}</span>
           </div>
         </div>
 
@@ -167,8 +167,13 @@ onMounted(() => {
           </div>
 
           <div class="mx-4 flex items-center justify-center">
-            <button type="button" class="btn btn-ghost btn-lg gap-2 px-4" :class="{ loading: isLiking }"
-              :disabled="isLiking" @click="toggleLike">
+            <button
+              type="button"
+              class="btn btn-ghost btn-lg gap-2 px-4"
+              :class="{ loading: isLiking }"
+              :disabled="isLiking"
+              @click="toggleLike"
+            >
               <span class="text-2xl leading-none">
                 {{ isLiked ? "♥" : "♡" }}
               </span>
@@ -177,31 +182,46 @@ onMounted(() => {
           </div>
 
           <div class="ml-3 flex flex-wrap place-items-center gap-x-3" v-if="!preview">
-            <router-link class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/submit`">
+            <router-link
+              class="btn md:btn-md lg:btn-lg"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/submit`"
+            >
               <i-uil-file-upload-alt class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.submit") }}
             </router-link>
-            <router-link class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/editorial`">
+            <router-link
+              class="btn md:btn-md lg:btn-lg"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/editorial`"
+            >
               <i-uil-book-open class="lg:h-5 lg:w-5" /> Editorial
             </router-link>
-            <router-link class="btn md:btn-md lg:btn-lg"
-              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/stats`">
+            <router-link
+              class="btn md:btn-md lg:btn-lg"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/stats`"
+            >
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
-            <router-link v-if="session.hasCourseAccess(route.params.courseId as string)"
-              :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']" data-tip="Copycat"
-              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`">
+            <router-link
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
+              :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
+              data-tip="Copycat"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`"
+            >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
-            <router-link v-if="session.hasCourseAccess(route.params.courseId as string)"
-              class="btn btn-circle btn-ghost btn-sm" data-tip="Edit"
-              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`">
+            <router-link
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
+              class="btn btn-circle btn-ghost btn-sm"
+              data-tip="Edit"
+              :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`"
+            >
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
-            <button v-if="session.hasCourseAccess(route.params.courseId as string)"
-              :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']" data-tip="Download test case"
-              @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))">
+            <button
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
+              :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
+              data-tip="Download test case"
+              @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"
+            >
               <i-uil-folder-download class="lg:h-5 lg:w-5" />
             </button>
           </div>
@@ -215,20 +235,29 @@ onMounted(() => {
           <div v-if="!descriptionHasHeading" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.desc") }}
           </div>
-          <markdown-renderer v-if="problem.description.description"
-            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl" :md="problem.description.description" />
+          <markdown-renderer
+            v-if="problem.description.description"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.description"
+          />
 
           <div v-if="hasInput" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.input") }}
           </div>
-          <markdown-renderer v-if="hasInput" class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
-            :md="problem.description.input" />
+          <markdown-renderer
+            v-if="hasInput"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.input"
+          />
 
           <div v-if="hasOutput" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.output") }}
           </div>
-          <markdown-renderer v-if="hasOutput" class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
-            :md="problem.description.output" />
+          <markdown-renderer
+            v-if="hasOutput"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.output"
+          />
 
           <div class="card-title md:text-xl lg:text-2xl">{{ $t("components.problem.card.ex") }}</div>
           <div class="mb-10">
@@ -247,13 +276,13 @@ onMounted(() => {
                     <sample-code-block v-if="sample.input" :code="sample.input"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
-                      }}</span>
+                    }}</span>
                   </td>
                   <td class="align-top">
                     <sample-code-block v-if="sample.output" :code="sample.output"></sample-code-block>
                     <span v-else class="italic opacity-70">{{
                       $t("components.problem.card.noContent")
-                      }}</span>
+                    }}</span>
                   </td>
                 </tr>
               </tbody>
@@ -263,8 +292,11 @@ onMounted(() => {
           <div v-if="hasHint" class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.hint") }}
           </div>
-          <markdown-renderer v-if="hasHint" class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
-            :md="problem.description.hint" />
+          <markdown-renderer
+            v-if="hasHint"
+            class="prose prose-lg mb-10 max-w-none prose-headings:text-2xl"
+            :md="problem.description.hint"
+          />
 
           <div class="card-title md:text-xl lg:text-2xl">
             {{ $t("components.problem.card.subtasks.title") }}
@@ -279,7 +311,10 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subtasks || []" :key="subtask_no">
+              <tr
+                v-for="{ memory_limit_mb, time_limit_ms, weight, subtask_no } in subtasks || []"
+                :key="subtask_no"
+              >
                 <td>{{ subtask_no }}</td>
                 <td>{{ time_limit_ms }} ms</td>
                 <td>{{ memory_limit_mb }} KB</td>

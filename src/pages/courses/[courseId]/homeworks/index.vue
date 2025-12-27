@@ -47,8 +47,11 @@ onMounted(async () => {
       <div class="card-body">
         <div class="card-title mb-4 justify-between">
           {{ $t("course.hw.index.title") }}
-          <router-link v-if="session.hasCourseAccess(route.params.courseId as string)" class="btn btn-success"
-            :to="`/courses/${$route.params.courseId}/homeworks/new`">
+          <router-link
+            v-if="session.hasCourseAccess(route.params.courseId as string)"
+            class="btn btn-success"
+            :to="`/courses/${$route.params.courseId}/homeworks/new`"
+          >
             <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.hw.index.new") }}
           </router-link>
         </div>
@@ -57,8 +60,13 @@ onMounted(async () => {
             <skeleton-card />
           </template>
           <template #data>
-            <homework-card v-for="homework in homeworks" :key="homework.id" :homework="homework"
-              :problems="problemId2Meta" class="mb-2" />
+            <homework-card
+              v-for="homework in homeworks"
+              :key="homework.id"
+              :homework="homework"
+              :problems="problemId2Meta"
+              class="mb-2"
+            />
           </template>
         </data-status-wrapper>
       </div>

@@ -14,7 +14,9 @@ const courseId = Number(route.params.courseId);
 
 // Permission
 const canEditCourse = computed(() => {
-  return session.hasCourseAccess(courseId) && session.email_verified;
+  return (
+    session.hasCourseAccess(courseId) && session.email_verified && (session.isAdmin || session.isTeacher)
+  );
 });
 
 // Course Form (replace with API later)
@@ -71,7 +73,7 @@ const deleteConfirm = ref<{
 }>({
   show: false,
   target: "course",
-  onConfirm: async () => { },
+  onConfirm: async () => {},
 });
 
 useEventListener(window, "keydown", (e) => {
@@ -232,8 +234,12 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Course Name</span>
                 </label>
-                <input v-model="courseForm.name" type="text" class="input input-bordered w-full"
-                  placeholder="Course name" />
+                <input
+                  v-model="courseForm.name"
+                  type="text"
+                  class="input input-bordered w-full"
+                  placeholder="Course name"
+                />
               </div>
 
               <!-- Teacher -->
@@ -241,8 +247,12 @@ onMounted(() => {
                 <label class="label">
                   <span class="label-text">Teacher</span>
                 </label>
-                <input v-model="courseForm.teacher" type="text" class="input input-bordered w-full"
-                  placeholder="Teacher username" />
+                <input
+                  v-model="courseForm.teacher"
+                  type="text"
+                  class="input input-bordered w-full"
+                  placeholder="Teacher username"
+                />
               </div>
             </div>
 
@@ -264,8 +274,12 @@ onMounted(() => {
                   <label class="label">
                     <span class="label-text">Username</span>
                   </label>
-                  <input v-model="newTaUsername" type="text" class="input input-bordered w-full"
-                    placeholder="Enter student username" />
+                  <input
+                    v-model="newTaUsername"
+                    type="text"
+                    class="input input-bordered w-full"
+                    placeholder="Enter student username"
+                  />
                 </div>
                 <button class="btn btn-primary" @click="assignTA" :disabled="!newTaUsername">
                   Assign TA
@@ -297,54 +311,62 @@ onMounted(() => {
               <i-uil-copy v-else class="h-5 w-5" />
             </button>
 
-            <button v-if="courseCode" class="btn btn-circle btn-ghost btn-sm text-error" @click="deleteCode"
-              aria-label="Delete invite code">
+            <button
+              v-if="courseCode"
+              class="btn btn-circle btn-ghost btn-sm text-error"
+              @click="deleteCode"
+              aria-label="Delete invite code"
+            >
               <i-uil-trash-alt class="h-5 w-5" />
             </button>
           </div>
 
-          <div class="divider my-8" />
+          <template v-if="canEditCourse">
+            <div class="divider my-8" />
 
-          <!-- Scoreboard -->
-          <div class="mb-4 flex items-center gap-2 text-lg font-semibold">
-            <i-uil-trophy class="h-6 w-6" /> Scoreboard
-          </div>
+            <!-- Scoreboard -->
+            <div class="mb-4 flex items-center gap-2 text-lg font-semibold">
+              <i-uil-trophy class="h-6 w-6" /> Scoreboard
+            </div>
 
-          <div class="overflow-x-auto" v-if="scoreboardData">
-            <table class="table w-full">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>User</th>
-                  <th>Total Score</th>
-                  <th v-for="pid in scoreboardData.problemIds" :key="pid">
-                    {{ pid }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(student, index) in scoreboardData.students" :key="student.userId" class="hover">
-                  <th>{{ index + 1 }}</th>
-                  <td>
-                    <div class="font-bold">{{ student.realName }}</div>
-                    <div>{{ student.username }}</div>
-                  </td>
-                  <td class="font-bold text-primary">{{ student.totalScore }}</td>
-                  <td v-for="pid in scoreboardData.problemIds" :key="pid">
-                    <span :class="{
-                      'font-bold text-success': student.scores[pid] === 100,
-                      'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
-                      'text-error': student.scores[pid] === 0,
-                      'text-base-content opacity-30': student.scores[pid] === undefined,
-                    }">
-                      {{ student.scores[pid] !== undefined ? student.scores[pid] : "-" }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div v-else class="py-4 text-center opacity-50">Loading scoreboard or no data...</div>
+            <div class="overflow-x-auto" v-if="scoreboardData">
+              <table class="table w-full">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th>Total Score</th>
+                    <th v-for="pid in scoreboardData.problemIds" :key="pid">
+                      {{ pid }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(student, index) in scoreboardData.students" :key="student.userId" class="hover">
+                    <th>{{ index + 1 }}</th>
+                    <td>
+                      <div class="font-bold">{{ student.realName }}</div>
+                      <div>{{ student.username }}</div>
+                    </td>
+                    <td class="font-bold text-primary">{{ student.totalScore }}</td>
+                    <td v-for="pid in scoreboardData.problemIds" :key="pid">
+                      <span
+                        :class="{
+                          'font-bold text-success': student.scores[pid] === 100,
+                          'text-warning': student.scores[pid] < 100 && student.scores[pid] > 0,
+                          'text-error': student.scores[pid] === 0,
+                          'text-base-content opacity-30': student.scores[pid] === undefined,
+                        }"
+                      >
+                        {{ student.scores[pid] !== undefined ? student.scores[pid] : "-" }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else class="py-4 text-center opacity-50">Loading scoreboard or no data...</div>
+          </template>
         </div>
       </div>
     </div>
@@ -366,10 +388,13 @@ onMounted(() => {
         </p>
         <div class="modal-action">
           <button class="btn" @click="deleteConfirm.show = false">Cancel</button>
-          <button class="btn btn-error" @click="
-            deleteConfirm.onConfirm();
-          deleteConfirm.show = false;
-          ">
+          <button
+            class="btn btn-error"
+            @click="
+              deleteConfirm.onConfirm();
+              deleteConfirm.show = false;
+            "
+          >
             Delete
           </button>
         </div>

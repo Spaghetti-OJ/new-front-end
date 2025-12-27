@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
 import { useI18n } from "vue-i18n";
@@ -21,7 +22,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const session = useSession();
-const hasStaffAccess = computed(() => session.isAdmin || session.isTeacher);
+const route = useRoute();
+const hasStaffAccess = computed(() => session.hasCourseAccess(route.params.courseId as string));
 const STATUS_LABEL = {
   RUNNING: t("components.hw.card.statusLabel.running"),
   NOT_START: t("components.hw.card.statusLabel.notStart"),
