@@ -43,11 +43,8 @@ const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
       <div class="card-body">
         <div class="card-title justify-between">
           {{ $t("course.ann.index.title") }}
-          <router-link
-            v-if="rolesCanCreateAnnouncement.includes(session.role)"
-            class="btn btn-success"
-            :to="`/courses/${$route.params.courseId}/announcements/new`"
-          >
+          <router-link v-if="session.hasCourseAccess(route.params.courseId as string)" class="btn btn-success"
+            :to="`/courses/${$route.params.courseId}/announcements/new`">
             <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.ann.index.new") }}
           </router-link>
         </div>
@@ -71,21 +68,17 @@ const rolesCanCreateAnnouncement = [UserRole.Admin, UserRole.Teacher];
               <tbody>
                 <tr v-for="{ title, creator, createTime, annId } in announcements" :key="annId" class="hover">
                   <td>
-                    <router-link
-                      :to="`/courses/${$route.params.courseId}/announcements/${annId}`"
-                      class="link link-hover"
-                    >
+                    <router-link :to="`/courses/${$route.params.courseId}/announcements/${annId}`"
+                      class="link link-hover">
                       {{ title }}
                     </router-link>
                   </td>
                   <td>{{ creator.username }}</td>
                   <td>{{ formatTime(createTime) }}</td>
-                  <td v-if="rolesCanCreateAnnouncement.includes(session.role)">
+                  <td v-if="session.hasCourseAccess(route.params.courseId as string)">
                     <div class="tooltip" data-tip="Edit">
-                      <router-link
-                        class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/${$route.params.courseId}/announcements/${annId}/edit`"
-                      >
+                      <router-link class="btn btn-circle btn-ghost btn-sm"
+                        :to="`/courses/${$route.params.courseId}/announcements/${annId}/edit`">
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
                     </div>

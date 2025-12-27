@@ -44,6 +44,7 @@ interface UserProperties {
   bio: string;
   avatar: string;
   email_verified: boolean;
+  access_course: number[];
 }
 
 interface PublicUserProfile {

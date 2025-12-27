@@ -10,10 +10,10 @@ import TagList from "@/components/Shared/TagList.vue";
 import { toProblemList } from "@/utils/normalizeProblemList";
 
 const session = useSession();
-const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
-const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
 const route = useRoute();
 const router = useRouter();
+
+const hasAccess = computed(() => session.hasCourseAccess(route.params.courseId as string));
 
 const { isDesktop } = useInteractions();
 
@@ -79,11 +79,8 @@ const paginatedProblems = computed(() => {
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 class="card-title">{{ $t("course.problems.text") }}</h2>
           <div class="flex gap-2">
-            <router-link
-              v-if="rolesCanCreateProblem.includes(session.role)"
-              class="btn btn-success"
-              :to="`/courses/${$route.params.courseId}/problems/new`"
-            >
+            <router-link v-if="hasAccess" class="btn btn-success"
+              :to="`/courses/${$route.params.courseId}/problems/new`">
               <i-uil-plus-circle class="mr-1 lg:h-5 lg:w-5" /> {{ $t("course.problems.new") }}
             </router-link>
           </div>
@@ -103,7 +100,7 @@ const paginatedProblems = computed(() => {
                 <tr>
                   <th>{{ $t("course.problems.id") }}</th>
                   <th>{{ $t("course.problems.name") }}</th>
-                  <th v-if="rolesCanReadProblemStatus.includes(session.role)">
+                  <th v-if="hasAccess">
                     {{ $t("course.problems.status") }}
                   </th>
                   <th>{{ $t("course.problems.tags") }}</th>
@@ -115,24 +112,19 @@ const paginatedProblems = computed(() => {
                 <tr v-for="p in paginatedProblems" :key="p.id" class="hover">
                   <td class="h-px">
                     <div class="flex h-full items-center gap-2">
-                      <span
-                        class="h-3 w-3 shrink-0 rounded-full"
-                        :class="DIFFICULTY_COLOR_CLASS[p.difficulty]"
-                      />
+                      <span class="h-3 w-3 shrink-0 rounded-full" :class="DIFFICULTY_COLOR_CLASS[p.difficulty]" />
                       <router-link :to="`/courses/${$route.params.courseId}/problems/${p.id}`" class="link">
                         #{{ p.id }}
                       </router-link>
                     </div>
                   </td>
                   <td>
-                    <router-link
-                      :to="`/courses/${$route.params.courseId}/problems/${p.id}`"
-                      class="link link-hover font-medium"
-                    >
+                    <router-link :to="`/courses/${$route.params.courseId}/problems/${p.id}`"
+                      class="link link-hover font-medium">
                       {{ p.title }}
                     </router-link>
                   </td>
-                  <td v-if="rolesCanReadProblemStatus.includes(session.role)">
+                  <td v-if="hasAccess">
                     <span class="badge ml-1">{{ p.is_public }}</span>
                   </td>
                   <td>
@@ -148,28 +140,20 @@ const paginatedProblems = computed(() => {
                   </td>
                   <td>
                     <div class="tooltip" data-tip="Stats">
-                      <router-link
-                        class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/stats`"
-                      >
+                      <router-link class="btn btn-circle btn-ghost btn-sm mr-1"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/stats`">
                         <i-uil-chart-line class="lg:h-5 lg:w-5" />
                       </router-link>
                     </div>
                     <div class="tooltip" data-tip="Copycat">
-                      <router-link
-                        v-if="rolesCanReadProblemStatus.includes(session.role)"
-                        class="btn btn-circle btn-ghost btn-sm mr-1"
-                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/copycat`"
-                      >
+                      <router-link v-if="hasAccess" class="btn btn-circle btn-ghost btn-sm mr-1"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/copycat`">
                         <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
                       </router-link>
                     </div>
                     <div class="tooltip" data-tip="Edit">
-                      <router-link
-                        v-if="rolesCanReadProblemStatus.includes(session.role)"
-                        class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/edit`"
-                      >
+                      <router-link v-if="hasAccess" class="btn btn-circle btn-ghost btn-sm"
+                        :to="`/courses/${$route.params.courseId}/problems/${p.id}/edit`">
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
                     </div>
@@ -180,17 +164,9 @@ const paginatedProblems = computed(() => {
 
             <!-- Mobile View -->
             <template v-else v-for="p in paginatedProblems" :key="p.id">
-              <problem-info
-                :id="p.id"
-                :problem-name="p.title"
-                :unlimited-quota="isQuotaUnlimited(p.total_quota)"
-                :quota-limit="p.total_quota"
-                :quota-remaining="p.total_quota - p.total_submissions"
-                :tags="p.tags"
-                :visible="p.is_public"
-                :is-admin="session.isAdmin"
-                :is-teacher="session.isTeacher"
-              />
+              <problem-info :id="p.id" :problem-name="p.title" :unlimited-quota="isQuotaUnlimited(p.total_quota)"
+                :quota-limit="p.total_quota" :quota-remaining="p.total_quota - p.total_submissions" :tags="p.tags"
+                :visible="p.is_public" :is-admin="session.isAdmin" :is-teacher="hasAccess" />
             </template>
           </template>
         </data-status-wrapper>
