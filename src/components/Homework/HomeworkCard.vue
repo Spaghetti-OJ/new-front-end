@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const session = useSession();
+const hasStaffAccess = computed(() => session.isAdmin || session.isTeacher);
 const STATUS_LABEL = {
   RUNNING: t("components.hw.card.statusLabel.running"),
   NOT_START: t("components.hw.card.statusLabel.notStart"),
@@ -88,7 +89,12 @@ const state = computed(() => {
 
         <div class="mb-8 w-full lg:flex-[3_1_0%]">
           <div class="card-title">{{ t("components.hw.card.problems.text") }}</div>
-          <homework-problems v-if="isDesktop" :homework="homework" :problems="problems" />
+          <homework-problems
+            v-if="isDesktop"
+            :homework="homework"
+            :problems="problems"
+            :has-staff-access="hasStaffAccess"
+          />
           <div v-else class="w-full py-1">
             <div class="flex w-full flex-wrap justify-center gap-1 sm:justify-start">
               <template v-for="pid in homework.problem_ids">
@@ -102,8 +108,8 @@ const state = computed(() => {
                     (homework.studentStatus as any)[session.username][pid.toString()]
                   )?.score || '-'
                     "
-                  :show-stats="session.isAdmin"
-                  :show-copycat="session.isAdmin"
+                  :show-stats="hasStaffAccess"
+                  :show-copycat="hasStaffAccess"
                 />
               </template>
             </div>
@@ -118,7 +124,7 @@ const state = computed(() => {
         </div>
       </div>
 
-      <div v-if="homework.id && !preview && session.isAdmin" class="card-actions justify-end">
+      <div v-if="homework.id && !preview && hasStaffAccess" class="card-actions justify-end">
         <router-link
           class="btn mr-3"
           :to="`/courses/${$route.params.courseId}/homeworks/${homework.id}/edit`"
