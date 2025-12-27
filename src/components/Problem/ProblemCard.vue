@@ -64,24 +64,21 @@ async function loadLikes() {
   const problemId = Number(route.params.id);
   try {
     const res = await api.Problem.getLikes(problemId);
-    const count = res.data?.likes_count;
+    const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
     if (typeof count === "number") {
       likes.value = count;
     }
-  } catch (err) {
-    console.warn("Failed to load like count:", err);
-  }
+  } catch {}
 }
 
 async function loadLikedState() {
   try {
     const res = await api.Problem.listLiked();
-    const results = res.data?.results ?? [];
+    const data = res.data?.data ?? (res as any).data;
+    const results = data?.results ?? [];
     const problemId = Number(route.params.id);
     isLiked.value = results.some((p: { id: number }) => p.id === problemId);
-  } catch (err) {
-    console.warn("Failed to load liked state:", err);
-  }
+  } catch {}
 }
 
 watch(
@@ -97,38 +94,21 @@ watch(
   { immediate: true },
 );
 
-watch(
-  () => route.params.id,
-  () => {
-    likes.value = 0;
-    isLiked.value = false;
-    loadLikes();
-    loadLikedState();
-  },
-);
-
 const toggleLike = async () => {
   if (isLiking.value) return;
   isLiking.value = true;
   const problemId = Number(route.params.id);
-  const nextLiked = !isLiked.value;
   try {
     if (isLiked.value) {
       const res = await api.Problem.unlike(problemId);
-      const count = res.data?.likes_count;
-      const ok = res.status === "200" || res.message === "Unliked";
+      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
       if (typeof count === "number") likes.value = count;
-      if (ok || typeof count === "number") {
-        isLiked.value = nextLiked;
-      }
+      isLiked.value = false;
     } else {
       const res = await api.Problem.like(problemId);
-      const count = res.data?.likes_count;
-      const ok = res.status === "201" || res.message === "Liked";
+      const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
       if (typeof count === "number") likes.value = count;
-      if (ok || typeof count === "number") {
-        isLiked.value = nextLiked;
-      }
+      isLiked.value = true;
     }
   } catch (err) {
     // Keep existing UI state on error.
@@ -186,12 +166,12 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="!preview" class="mx-4 flex items-center justify-center">
+          <div class="mx-4 flex items-center justify-center">
             <button
               type="button"
               class="btn btn-ghost btn-lg gap-2 px-4"
               :class="{ loading: isLiking }"
-              :disabled="isLiking || session.isNotLogin"
+              :disabled="isLiking"
               @click="toggleLike"
             >
               <span class="text-2xl leading-none">
