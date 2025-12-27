@@ -201,7 +201,7 @@ async function submit() {
 
       // 1) 建 subtask
       const subRes = await api.Problem.createSubtasks(problemId, {
-        subtask_no: i + 1,
+        subtask_no: i +1,
         weight: t.taskScore,
         time_limit_ms: t.timeLimit,
         memory_limit_mb: Math.ceil(t.memoryLimit),
@@ -209,13 +209,13 @@ async function submit() {
       const subtaskId = subRes.data.id;
 
       // 2) 找出 zip 內屬於這個 subtask 的測資：ss == i + 1 (假設 zip 為 1-based)
-      const subPairs = pairs.filter((p) => p.ss === i + 1);
+      const subPairs = pairs.filter((p) => p.ss === i );
 
       // 3) 逐筆建立 test case (並行執行以提升效能)
       const createTestCasePromises = subPairs.map((p) =>
         api.Problem.createTestCase(problemId, {
           subtask_id: subtaskId,
-          idx: p.tt,
+          idx: p.tt+1,
           input_path: p.inFile,
           output_path: p.outFile,
           status: "ready",
@@ -226,7 +226,8 @@ async function submit() {
     const testdataForm = new FormData();
     testdataForm.append("case", testdata.value);
     try {
-      await api.Problem.modifyTestdata(problemId, testdataForm);
+      const test=await api.Problem.uploadTestCasesZip(problemId, testdata.value);
+      console.log(test);
     } catch (error) {
       const errorMsg =
         axios.isAxiosError(error) && error.response?.data?.message

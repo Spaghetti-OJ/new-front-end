@@ -64,4 +64,11 @@ export const Problem = {
       `/problem/${problemId}/likes`,
     ),
   listLiked: () => fetcher.get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`),
+  uploadTestCasesZip: (problemId: number, file: File) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  return fetcher.post(`/problem/${problemId}/test-cases/upload-zip`, fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+},
 };
