@@ -5,28 +5,6 @@ import api, { fetcher } from "@/api";
 import { useTitle } from "@vueuse/core";
 import axios from "axios";
 
-type CopycatReport = {
-  id: number;
-  status: "pending" | "success" | "failed";
-  moss_url: string | null;
-  created_at: string;
-  error_message: string;
-};
-
-type CopycatResp = {
-  data: {
-    id: number;
-    status: "pending" | "success" | "failed";
-    moss_url: string | null;
-    created_at: string;
-    error_message: string;
-  } | null;
-  message: string;
-  status: "ok" | "error";
-};
-
-type Course = any; // 你專案已有 Course 型別的話把這行拿掉，改成 import/引用你的 Course
-
 const route = useRoute();
 useTitle(`Copycat - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 
