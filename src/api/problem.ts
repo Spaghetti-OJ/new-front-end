@@ -52,16 +52,21 @@ export const Problem = {
       }>;
     }>(`/problem/${problemId}/test-cases`),
   like: (problemId: number) =>
-    fetcher.post<{ data: { likes_count: number }; message: string; status: string }>(
-      `/problem/${problemId}/like`,
-    ),
+    fetcher
+      .post<{ data: { likes_count: number }; message: string; status: string }>(`/problem/${problemId}/like`)
+      .then((r) => r.data ?? r),
   unlike: (problemId: number) =>
-    fetcher.delete<{ data: { likes_count: number }; message: string; status: string }>(
-      `/problem/${problemId}/like`,
-    ),
+    fetcher
+      .delete<{ data: { likes_count: number }; message: string; status: string }>(
+        `/problem/${problemId}/like`,
+      )
+      .then((r) => r.data ?? r),
   getLikes: (problemId: number) =>
-    fetcher.get<{ data: { likes_count: number }; message: string; status: string }>(
-      `/problem/${problemId}/likes`,
-    ),
-  listLiked: () => fetcher.get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`),
+    fetcher
+      .get<{ data: { likes_count: number }; message: string; status: string }>(`/problem/${problemId}/likes`)
+      .then((r) => r.data ?? r),
+  listLiked: () =>
+    fetcher
+      .get<{ data: ProblemList; message: string; status: string }>(`/problem/liked`)
+      .then((r) => r.data ?? r),
 };

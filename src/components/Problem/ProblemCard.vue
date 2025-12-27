@@ -64,7 +64,7 @@ async function loadLikes() {
   const problemId = Number(route.params.id);
   try {
     const res = await api.Problem.getLikes(problemId);
-    const count = res.data?.data?.likes_count ?? (res as any).data?.likes_count;
+    const count = res.data?.likes_count;
     if (typeof count === "number") {
       likes.value = count;
     }
@@ -74,8 +74,7 @@ async function loadLikes() {
 async function loadLikedState() {
   try {
     const res = await api.Problem.listLiked();
-    const data = res.data?.data ?? (res as any).data;
-    const results = data?.results ?? [];
+    const results = res.data?.results ?? [];
     const problemId = Number(route.params.id);
     isLiked.value = results.some((p: { id: number }) => p.id === problemId);
   } catch {}
@@ -102,18 +101,16 @@ const toggleLike = async () => {
   try {
     if (isLiked.value) {
       const res = await api.Problem.unlike(problemId);
-      const payload = res.data ?? (res as any);
-      const count = payload?.data?.likes_count;
-      const ok = payload?.status === "200" || payload?.message === "Unliked" || res.status === 200;
+      const count = res.data?.likes_count;
+      const ok = res.status === "200" || res.message === "Unliked";
       if (typeof count === "number") likes.value = count;
       if (ok || typeof count === "number") {
         isLiked.value = nextLiked;
       }
     } else {
       const res = await api.Problem.like(problemId);
-      const payload = res.data ?? (res as any);
-      const count = payload?.data?.likes_count;
-      const ok = payload?.status === "201" || payload?.message === "Liked" || res.status === 201;
+      const count = res.data?.likes_count;
+      const ok = res.status === "201" || res.message === "Liked";
       if (typeof count === "number") likes.value = count;
       if (ok || typeof count === "number") {
         isLiked.value = nextLiked;
