@@ -89,17 +89,17 @@ const props = withDefaults(
           <!-- 右：Easy / Med / Hard -->
           <div class="flex flex-wrap gap-1 text-xs">
             <span
-              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]"
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]"
             >
               E {{ data.easy }}
             </span>
             <span
-              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#E9A11C]"
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#E9A11C]"
             >
               M {{ data.med }}
             </span>
             <span
-              class="justify-left inline-flex min-w-[2.5rem] items-center rounded-lg bg-base-200 px-2 py-0.5 text-[#E46319]"
+              class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#E46319]"
             >
               H {{ data.hard }}
             </span>
