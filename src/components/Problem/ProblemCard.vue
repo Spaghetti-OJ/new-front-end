@@ -172,7 +172,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="mx-4 flex items-center justify-center">
+          <div v-if="!preview" class="mx-4 flex items-center justify-center">
             <button
               type="button"
               class="btn btn-ghost btn-lg gap-2 px-4"
