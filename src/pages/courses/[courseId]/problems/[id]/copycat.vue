@@ -97,7 +97,9 @@ async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error">
         reportError.value = "403 Forbidden：你沒有權限查詢報告。";
         return "forbidden";
       }
-      reportError.value = (e.response?.data as any)?.message || `Request failed (${code})`;
+
+      const errorData = e.response?.data as { message?: string } | undefined;
+      reportError.value = errorData?.message || `Request failed (${code})`;
       return "error";
     }
 
