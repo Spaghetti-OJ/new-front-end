@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import ProfileLayout from "@/components/Profile/ProfileLayout.vue";
 import ProfileAvatarBlock from "@/components/Profile/ProfileAvatarBlock.vue";
@@ -57,8 +57,42 @@ const heatmapData = computed(() => {
   }));
 });
 
+const diffStats = ref({ easy: 0, med: 0, hard: 0 });
+
 const difficultyStats = computed(() => {
-  return { easy: 0, med: 0, hard: 0 };
+  return diffStats.value;
+});
+
+watch(userStats, async (stats) => {
+  if (!stats) return;
+
+  if (stats.difficulty_stats) {
+    diffStats.value = {
+      easy: stats.difficulty_stats.easy,
+      med: stats.difficulty_stats.medium,
+      hard: stats.difficulty_stats.hard,
+    };
+  } else if (stats.solved_problem_list && stats.solved_problem_list.length > 0) {
+    try {
+      const res = await api.Problem.getProblemList({ page_size: 2000 });
+      if (res && res.data && res.data.results) {
+        const solvedSet = new Set(stats.solved_problem_list);
+        let e = 0,
+          m = 0,
+          h = 0;
+        res.data.results.forEach((p: ProblemItem) => {
+          if (solvedSet.has(p.id)) {
+            if (p.difficulty === "easy") e++;
+            else if (p.difficulty === "medium") m++;
+            else if (p.difficulty === "hard") h++;
+          }
+        });
+        diffStats.value = { easy: e, med: m, hard: h };
+      }
+    } catch (e) {
+      console.error("Failed to fetch problems for stats", e);
+    }
+  }
 });
 
 const beatRate = computed(() => {

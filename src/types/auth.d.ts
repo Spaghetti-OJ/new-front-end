@@ -106,6 +106,11 @@ interface UserStats {
   accept_percent?: number;
   top_languages?: string[];
   solved_problem_list?: number[];
+  difficulty_stats?: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
 }
 
 interface UserStatsResponse {
