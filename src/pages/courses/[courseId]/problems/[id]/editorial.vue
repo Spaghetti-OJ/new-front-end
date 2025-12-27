@@ -3,7 +3,7 @@ import { ref, computed, reactive, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useTitle } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
-import { fetcher } from "@/api";
+import api from "@/api";
 import { useSession } from "@/stores/session";
 
 const route = useRoute();
@@ -22,10 +22,7 @@ const showDeleteConfirm = ref(false);
 const formError = ref<string | null>(null);
 
 const draft = reactive({
-  title: "",
   content: "",
-  difficulty_rating: "",
-  is_official: false,
 });
 
 const canEdit = computed(() => session.isAdmin || session.isTeacher);
@@ -39,7 +36,7 @@ async function fetchEditorials() {
   isLoading.value = true;
   error.value = null;
   try {
-    const res = await fetcher.get<Editorial[]>(`/editorials/problem/${route.params.id}/solution/`);
+    const res = await api.Problem.getEditorials(route.params.id as string);
     const list = Array.isArray(res.data) ? res.data : Array.isArray(res) ? (res as Editorial[]) : [];
     editorials.value = list;
     if (!selectedId.value && list.length > 0) {
@@ -58,23 +55,14 @@ async function fetchEditorials() {
 
 const startEdit = () => {
   if (!selectedEditorial.value) return;
-  draft.title = selectedEditorial.value.title;
   draft.content = selectedEditorial.value.content;
-  draft.difficulty_rating =
-    selectedEditorial.value.difficulty_rating != null
-      ? String(selectedEditorial.value.difficulty_rating)
-      : "";
-  draft.is_official = selectedEditorial.value.is_official;
   isCreating.value = false;
   isEditing.value = true;
   formError.value = null;
 };
 
 const startCreate = () => {
-  draft.title = "";
   draft.content = "";
-  draft.difficulty_rating = "";
-  draft.is_official = false;
   isCreating.value = true;
   isEditing.value = true;
   formError.value = null;
@@ -87,30 +75,28 @@ const cancelEdit = () => {
 };
 
 const saveEditorial = async () => {
-  if (!draft.title.trim() || !draft.content.trim()) {
-    formError.value = "Title and content are required.";
+  if (!draft.content.trim()) {
+    formError.value = "Content is required.";
     return;
   }
 
   const payload = {
-    title: draft.title.trim(),
     content: draft.content,
-    difficulty_rating: draft.difficulty_rating ? Number(draft.difficulty_rating) : undefined,
-    is_official: draft.is_official,
   };
 
   try {
     formError.value = null;
     if (isCreating.value) {
-      const res = await fetcher.post<Editorial>(`/editorials/problem/${route.params.id}/solution/`, payload);
+      const res = await api.Problem.createEditorial(route.params.id as string, payload);
       const created = res.data ?? res;
       await fetchEditorials();
       if (created?.id) {
         selectedId.value = created.id;
       }
     } else if (selectedEditorial.value) {
-      const res = await fetcher.put<Editorial>(
-        `/editorials/problem/${route.params.id}/solution/${selectedEditorial.value.id}/`,
+      const res = await api.Problem.updateEditorial(
+        route.params.id as string,
+        selectedEditorial.value.id,
         payload,
       );
       const updated = res.data ?? res;
@@ -133,7 +119,7 @@ const saveEditorial = async () => {
 const deleteEditorial = async () => {
   if (!selectedEditorial.value) return;
   try {
-    await fetcher.delete(`/editorials/problem/${route.params.id}/solution/${selectedEditorial.value.id}/`);
+    await api.Problem.deleteEditorial(route.params.id as string, selectedEditorial.value.id);
     selectedId.value = null;
     await fetchEditorials();
     showDeleteConfirm.value = false;
@@ -157,7 +143,7 @@ onMounted(fetchEditorials);
   <div class="card-container">
     <div class="card min-w-full">
       <div class="card-body">
-        <!-- 上方：標題 + 愛心 -->
+        <!-- 上方：標題 + Option -->
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="card-title md:text-2xl lg:text-3xl">Editorial for Problem #{{ $route.params.id }}</div>
 
@@ -168,7 +154,7 @@ onMounted(fetchEditorials);
               class="select select-bordered select-sm"
             >
               <option v-for="item in editorials" :key="item.id" :value="item.id">
-                {{ item.is_official ? "⭐ " : "" }}{{ item.title }}
+                Editorial by {{ item.author_username }}
               </option>
             </select>
 
@@ -233,17 +219,6 @@ onMounted(fetchEditorials);
               <div class="space-y-5">
                 <div class="form-control">
                   <label class="label">
-                    <span class="label-text font-semibold">Title</span>
-                  </label>
-                  <input
-                    v-model="draft.title"
-                    class="input input-bordered w-full"
-                    placeholder="題解標題"
-                    maxlength="255"
-                  />
-                </div>
-                <div class="form-control">
-                  <label class="label">
                     <span class="label-text font-semibold">Content</span>
                   </label>
                   <textarea
@@ -251,26 +226,6 @@ onMounted(fetchEditorials);
                     class="textarea textarea-bordered min-h-[300px] w-full"
                     placeholder="題解內容"
                   />
-                </div>
-                <div class="flex flex-wrap items-end gap-4">
-                  <div class="form-control w-40">
-                    <label class="label">
-                      <span class="label-text font-semibold">Difficulty Rating</span>
-                    </label>
-                    <input
-                      v-model="draft.difficulty_rating"
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="5"
-                      class="input input-bordered input-sm w-full"
-                      placeholder="3.5"
-                    />
-                  </div>
-                  <label class="flex items-center gap-2 text-sm">
-                    <input v-model="draft.is_official" type="checkbox" class="checkbox checkbox-sm" />
-                    <span class="font-semibold">Official</span>
-                  </label>
                 </div>
               </div>
               <div v-if="formError" class="mt-3 text-sm text-error">{{ formError }}</div>
