@@ -49,7 +49,8 @@ async function loadCourse() {
   try {
     const res = await fetcher.get(`/course/${courseId.value}/`);
     course.value = (res as any).data ?? null; // ✅ 只拿 res.data
-  } catch {
+  } catch (e) {
+    console.error("Failed to load course:", e);
     courseError.value = "Oops! Failed to load course members. Try again later.";
   }
 }
