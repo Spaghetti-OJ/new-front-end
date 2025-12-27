@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, onBeforeUnmount } from "vue";
 import { useTitle } from "@vueuse/core";
 import { DIFFICULTY, DIFFICULTY_COLOR_CLASS } from "@/constants";
 import TagList from "@/components/Shared/TagList.vue";
@@ -16,6 +16,16 @@ type Problem = {
   acceptance: number;
 };
 
+function extractProblemList(raw: ProblemListResponseLike | null | undefined): RawProblemItem[] {
+  if (!raw) return [];
+  return raw.items ?? raw.results ?? raw.data?.items ?? raw.data?.results ?? [];
+}
+
+function extractSearchItems(raw: ProblemSearchResponseLike | null | undefined): RawProblemItem[] {
+  if (!raw) return [];
+  return raw.data?.items ?? raw.items ?? raw.results ?? [];
+}
+
 const isLoading = ref(true);
 const baseProblems = ref<Problem[]>([]);
 
@@ -24,21 +34,17 @@ async function getProblem() {
   try {
     const res = await api.Problem.getProblemList();
 
-    const rawData = res.data || {};
-    const list = Array.isArray((rawData as any).items)
-      ? (rawData as any).items
-      : Array.isArray(rawData.results)
-      ? rawData.results
-      : [];
+    const rawData = (res as { data?: ProblemListResponseLike }).data ?? (res as ProblemListResponseLike);
+    const list = extractProblemList(rawData);
 
-    baseProblems.value = list.map((p: any) => ({
+    baseProblems.value = list.map((p) => ({
       id: p.id,
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
-      tags: Array.isArray(p.tags) ? p.tags.map((t: any) => (typeof t === "string" ? t : t.name)) : [],
-      courseId: p.course_id ? Number(p.course_id) : -1,
+      tags: Array.isArray(p.tags) ? p.tags.map((t) => (typeof t === "string" ? t : t.name)) : [],
+      courseId: p.course_id != null ? Number(p.course_id) : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0,
+      acceptance: p.acceptance_rate != null ? Number(p.acceptance_rate) / 100 : 0,
     }));
   } catch (err) {
     console.error("getProblem error:", err);
@@ -49,6 +55,7 @@ async function getProblem() {
 }
 // Search and filters
 const q = ref("");
+const searchTimer = ref<number | null>(null);
 const selectedCourses = ref<number[]>([]);
 // 改成純字串，不使用 ProblemTag
 const selectedTags = ref<string[]>([]);
@@ -115,15 +122,16 @@ async function searchProblems() {
   try {
     const res = await api.Problem.searchGlobal(keyword);
 
-    const items = res.data.data.items ?? [];
-    baseProblems.value = items.map((p: any) => ({
+    const raw = (res as { data?: ProblemSearchResponseLike }).data ?? (res as ProblemSearchResponseLike);
+    const items = extractSearchItems(raw);
+    baseProblems.value = items.map((p) => ({
       id: p.id,
       title: p.title,
       difficulty: p.difficulty as Problem["difficulty"],
-      tags: p.tags.map((t: any) => (typeof t === "string" ? t : t.name)),
-      courseId: p.course_id ? Number(p.course_id) : -1,
+      tags: Array.isArray(p.tags) ? p.tags.map((t) => (typeof t === "string" ? t : t.name)) : [],
+      courseId: p.course_id != null ? Number(p.course_id) : -1,
       courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: p.acceptance_rate ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
+      acceptance: p.acceptance_rate != null ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
     }));
   } catch (err) {
     console.error("searchProblems error:", err);
@@ -134,6 +142,29 @@ async function searchProblems() {
 }
 onMounted(async () => {
   getProblem();
+});
+
+watch(
+  q,
+  (value) => {
+    if (searchTimer.value !== null) {
+      window.clearTimeout(searchTimer.value);
+    }
+    searchTimer.value = window.setTimeout(() => {
+      if (value.trim()) {
+        searchProblems();
+      } else {
+        getProblem();
+      }
+    }, 300);
+  },
+  { flush: "post" },
+);
+
+onBeforeUnmount(() => {
+  if (searchTimer.value != null) {
+    window.clearTimeout(searchTimer.value);
+  }
 });
 </script>
 

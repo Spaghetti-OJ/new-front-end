@@ -50,6 +50,35 @@ interface ProblemList {
   results: ProblemItem[];
 }
 
+type ProblemTagLike = string | { name: string };
+
+interface RawProblemItem {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  tags?: ProblemTagLike[];
+  course_id?: number | string | null;
+  course_name?: string | null;
+  acceptance_rate?: number | string | null;
+}
+
+interface ProblemListResponseLike {
+  items?: RawProblemItem[];
+  results?: RawProblemItem[];
+  data?: {
+    items?: RawProblemItem[];
+    results?: RawProblemItem[];
+  };
+}
+
+interface ProblemSearchResponseLike {
+  data?: {
+    items?: RawProblemItem[];
+  };
+  items?: RawProblemItem[];
+  results?: RawProblemItem[];
+}
+
 interface ProblemTestCase {
   taskScore: number;
   caseCount: number;
