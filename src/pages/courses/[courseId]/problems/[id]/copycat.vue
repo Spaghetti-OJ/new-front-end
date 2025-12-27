@@ -14,7 +14,13 @@ type CopycatReport = {
 };
 
 type CopycatResp = {
-  data: CopycatReport | null;
+  data: {
+    id: number;
+    status: "pending" | "success" | "failed";
+    moss_url: string | null;
+    created_at: string;
+    error_message: string;
+  } | null;
   message: string;
   status: "ok" | "error";
 };
@@ -64,19 +70,19 @@ async function loadCourse() {
   courseError.value = null;
   try {
     const res = await fetcher.get(`/course/${courseId.value}/`);
-     course.value = (res as any).data ?? (res as any);
-  } catch (e) {
+    course.value = (res as any).data ?? null; // ✅ 只拿 res.data
+  } catch {
     courseError.value = "Oops! Failed to load course members. Try again later.";
   }
 }
-
 async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error"> {
   reportError.value = null;
   try {
     const res = await fetcher.get<CopycatResp>(`/copycat/?problem_id=${problemId.value}`);
-      
-    const payload = (res as any).data ?? (res as any);
-console.log("1221",payload);
+
+    // ✅ fetcher 已展平，所以 res 就是 CopycatResp
+    const payload = res as unknown as CopycatResp;
+
     report.value = payload.data ?? null;
     reportMessage.value = payload.message ?? "";
     return "ok";
@@ -86,14 +92,12 @@ console.log("1221",payload);
 
     if (axios.isAxiosError(e)) {
       const code = e.response?.status;
-      if (code === 404) {
-        return "not_found";
-      }
+      if (code === 404) return "not_found";
       if (code === 403) {
         reportError.value = "403 Forbidden：你沒有權限查詢報告。";
         return "forbidden";
       }
-      reportError.value = e.response?.data?.message || `Request failed (${code})`;
+      reportError.value = (e.response?.data as any)?.message || `Request failed (${code})`;
       return "error";
     }
 
@@ -103,6 +107,7 @@ console.log("1221",payload);
 }
 
 async function ensureReport() {
+  
   if (isBusy.value) return;
   isBusy.value = true;
   try {
@@ -119,7 +124,6 @@ async function ensureReport() {
       startPolling();
       return;
     }
-
     // forbidden / error：不要亂 POST
   } catch {
     reportError.value = "Failed to start report generation.";
