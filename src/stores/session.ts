@@ -28,6 +28,7 @@ export const useSession = defineStore("session", {
     email_verified: false,
     token: localStorage.getItem(ACCESS_KEY) || "",
     refreshtoken: localStorage.getItem(REFRESH_KEY) || "",
+    access_course: [] as number[],
   }),
   getters: {
     isAdmin(state) {
@@ -45,6 +46,11 @@ export const useSession = defineStore("session", {
     isLogin(state) {
       return state.state === SessionState.IsLogin;
     },
+    hasCourseAccess: (state) => (courseId: number | string) => {
+      if (state.role === UserRole.Admin) return true;
+      const id = typeof courseId === "string" ? parseInt(courseId, 10) : courseId;
+      return !isNaN(id) && state.access_course.includes(id);
+    },
   },
   actions: {
     async validateSession() {
@@ -61,12 +67,13 @@ export const useSession = defineStore("session", {
       }
       try {
         const me = await api.Auth.getSession();
-        const { user_id, username, role, email, email_verified } = me;
+        const { user_id, username, role, email, email_verified, access_course } = me;
         this.user_id = user_id;
         this.username = username;
         this.role = role as UserRole;
         this.email = email;
         this.email_verified = email_verified;
+        this.access_course = access_course || [];
         this.state = SessionState.IsLogin;
       } catch (error) {
         this.logoutLocally();
@@ -98,6 +105,7 @@ export const useSession = defineStore("session", {
       this.username = "";
       this.role = UserRole.Guest;
       this.email = "";
+      this.access_course = [];
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
     },

@@ -25,7 +25,7 @@ const draft = reactive({
   content: "",
 });
 
-const canEdit = computed(() => session.isAdmin || session.isTeacher);
+const canEdit = computed(() => session.hasCourseAccess(route.params.courseId as string));
 
 const selectedEditorial = computed(() => {
   if (!selectedId.value) return null;
