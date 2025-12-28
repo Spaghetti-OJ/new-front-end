@@ -202,7 +202,7 @@ onMounted(() => {
               <i-uil-chart-line class="lg:h-5 lg:w-5" /> {{ $t("components.problem.card.stats") }}
             </router-link>
             <router-link
-              v-if="session.isAdmin || session.isTeacher"
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Copycat"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`"
@@ -210,7 +210,7 @@ onMounted(() => {
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
             </router-link>
             <router-link
-              v-if="session.isAdmin || session.isTeacher"
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
               class="btn btn-circle btn-ghost btn-sm"
               data-tip="Edit"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`"
@@ -218,7 +218,7 @@ onMounted(() => {
               <i-uil-edit class="lg:h-5 lg:w-5" />
             </router-link>
             <button
-              v-if="session.isAdmin || session.isTeacher"
+              v-if="session.hasCourseAccess(route.params.courseId as string)"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
               data-tip="Download test case"
               @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"

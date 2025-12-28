@@ -55,13 +55,16 @@ function mutateFilter(newFilter: Partial<SubmissionListFilter>) {
   });
 }
 const getSubmissionsQuery = computed<SubmissionListQuery>(() => ({
-  ...routeQuery.value.filter,
+  problem_id: routeQuery.value.filter.problemId,
+  status: routeQuery.value.filter.status,
+  language_type: routeQuery.value.filter.languageType,
+  username: routeQuery.value.filter.username,
   page: routeQuery.value.page,
   page_size: 10,
-  course: route.params.courseId as string,
+  course_id: route.params.courseId as string,
 }));
 
-const data = ref<GetSubmissionListResponse | null>(null);
+const data = ref<{ results: SubmissionList; count: number } | null>(null);
 const isLoading = ref(false);
 const error = ref<any>(null);
 
@@ -70,7 +73,7 @@ const execute = async () => {
   error.value = null;
   try {
     const res = await api.Submission.list(getSubmissionsQuery.value);
-    data.value = (res as any).data ?? res;
+    data.value = res;
   } catch (e) {
     error.value =
       (e as any).response?.data?.detail ||
@@ -90,8 +93,8 @@ watch(
   { immediate: true, deep: true },
 );
 
-const submissions = computed(() => data.value?.results || data.value?.submissions || []); // Check for 'results' as per user prompt
-const submissionCount = computed(() => data.value?.count || data.value?.submissionCount || 0); // Check for 'count'
+const submissions = computed(() => data.value?.results || []);
+const submissionCount = computed(() => data.value?.count || 0);
 const maxPage = computed(() => {
   return submissionCount.value ? Math.ceil(submissionCount.value / 10) : 1;
 });
@@ -117,12 +120,23 @@ function copySubmissionLink(path: string) {
   copy(new URL(path, window.location.origin).href);
 }
 
+function getLanguageName(type: number | string): string {
+  const index = Number(type);
+  if (!isNaN(index) && index >= 0 && index < LANG.length) {
+    return LANG[index];
+  }
+  return type?.toString() || "Unknown";
+}
+
 async function downloadAllSubmissions() {
   const query: SubmissionListQuery = {
-    ...routeQuery.value.filter,
+    problem_id: routeQuery.value.filter.problemId,
+    status: routeQuery.value.filter.status,
+    language_type: routeQuery.value.filter.languageType,
+    username: routeQuery.value.filter.username,
     offset: 0,
     count: submissionCount.value ?? 0,
-    course: route.params.courseId as string,
+    course_id: route.params.courseId as string,
   };
   const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
   const url = `/submission?${qs}`;
@@ -276,7 +290,7 @@ async function downloadAllSubmissions() {
                   <td>{{ submission.score }}</td>
                   <td>{{ submission.runTime }} ms</td>
                   <td>{{ submission.memoryUsage }} KB</td>
-                  <td>{{ LANG[submission.languageType] }}</td>
+                  <td>{{ getLanguageName(submission.languageType) }}</td>
                   <td>
                     <div class="tooltip tooltip-bottom" :data-tip="formatTime(submission.timestamp)">
                       <span>{{ timeFromNow(submission.timestamp) }}</span>
