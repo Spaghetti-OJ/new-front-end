@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useSession } from "@/stores/session";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
@@ -21,6 +21,7 @@ const loginForm = reactive({
   isLoading: false,
   errorMsg: "",
 });
+const showPassword = ref(false);
 const rules = {
   username: { required },
   password: { required },
@@ -118,14 +119,25 @@ async function login() {
             <label class="label">
               <span class="label-text">{{ $t("components.loginSection.pw") }}</span>
             </label>
-            <input
-              v-model="v$.password.$model"
-              type="password"
-              name="password"
-              :placeholder="$t('components.loginSection.placeholder.pw')"
-              :class="['input input-bordered', v$.password.$error && 'input-error']"
-              @keydown.enter="login"
-            />
+            <div class="relative">
+              <input
+                v-model="v$.password.$model"
+                :type="showPassword ? 'text' : 'password'"
+                name="password"
+                :placeholder="$t('components.loginSection.placeholder.pw')"
+                :class="['input input-bordered w-full pr-12', v$.password.$error && 'input-error']"
+                @keydown.enter="login"
+              />
+              <button
+                type="button"
+                class="btn btn-ghost btn-xs absolute inset-y-0 right-2 h-full min-h-0 px-2 hover:bg-transparent"
+                @click="showPassword = !showPassword"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <i-uil-eye-slash v-if="showPassword" class="h-4 w-4" />
+                <i-uil-eye v-else class="h-4 w-4" />
+              </button>
+            </div>
             <label class="label flex-row-reverse">
               <a href="/reset-password" class="link link-hover label-text-alt">{{
                 $t("components.loginSection.forgot")

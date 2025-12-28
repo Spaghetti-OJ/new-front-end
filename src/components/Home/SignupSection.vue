@@ -18,6 +18,8 @@ const signupForm = reactive({
   errorMsg: "",
 });
 const isLoading = ref(false);
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 const session = useSession();
 const { t } = useI18n();
 const rules = {
@@ -108,7 +110,7 @@ async function signup() {
           <input
             v-model="v$.username.$model"
             type="text"
-            :placeholder="$t('profile.username')"
+            :placeholder="t('profile.username-placeholder')"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
@@ -125,7 +127,7 @@ async function signup() {
           <input
             v-model="v$.email.$model"
             type="email"
-            :placeholder="$t('profile.email')"
+            :placeholder="t('profile.email')"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
@@ -144,7 +146,7 @@ async function signup() {
           <input
             v-model="v$.realname.$model"
             type="text"
-            :placeholder="$t('profile.realName')"
+            :placeholder="t('profile.realName')"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
@@ -161,7 +163,7 @@ async function signup() {
           <input
             v-model="v$.studentID.$model"
             type="text"
-            :placeholder="$t('profile.studentId')"
+            :placeholder="t('profile.studentId')"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
@@ -175,7 +177,7 @@ async function signup() {
           <input
             v-model="v$.password.$model"
             type="password"
-            :placeholder="$t('profile.password')"
+            :placeholder="t('profile.password')"
             class="input input-bordered"
             :class="v$.password.$error && 'input-error'"
           />
@@ -192,7 +194,7 @@ async function signup() {
           <input
             v-model="v$.confirmPassword.$model"
             type="password"
-            :placeholder="$t('profile.confirm')"
+            :placeholder="t('profile.confirm')"
             class="input input-bordered"
             :class="v$.confirmPassword.$error && 'input-error'"
           />

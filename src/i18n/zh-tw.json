@@ -214,6 +214,7 @@
       }
     },
     "username": "帳號",
+    "username-placeholder": "帳號名 (無法再次修改)",
     "dispname": "顯示名稱",
     "email": "電子郵件",
     "role": "身份",
@@ -416,7 +417,8 @@
       "hw": "作業",
       "problems": "題目",
       "submissions": "繳交狀態",
-      "members": "成員"
+      "members": "成員",
+      "manage": "管理"
     },
     "systemAnn": {
       "ann": "公告",

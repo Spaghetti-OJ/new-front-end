@@ -214,6 +214,7 @@
       }
     },
     "username": "Username",
+    "username-placeholder": "username (cannot be changed after confirmation)",
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
@@ -417,7 +418,8 @@
       "hw": "Homeworks",
       "problems": "Problems",
       "submissions": "Submissions",
-      "members": "Members"
+      "members": "Members",
+      "manage": "Manage"
     },
     "systemAnn": {
       "ann": "Announcements",
