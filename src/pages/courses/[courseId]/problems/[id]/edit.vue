@@ -7,6 +7,7 @@ import axios from "axios";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+import Manage from "../../manage.vue";
 
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
@@ -115,9 +116,10 @@ async function getManage() {
       },
       canViewStdout: true,
       defaultCode: "",
-      staticAnalysis: [],
+      staticAnalysis: problemData.static_analysis_rules ?? [],
       solution: "",
       allowedDomains: [],
+      forbidFunctions: problemData.forbidden_functions ?? [],
     };
   } catch (err) {
     fetchError.value = err;
@@ -183,6 +185,8 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
     hint: emptyToNull(p.description.hint),
 
     subtask_description: null,
+    static_analysis_rules: p.staticAnalysis ?? [],
+    forbidden_functions: p.forbidFunctions ?? [],
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
