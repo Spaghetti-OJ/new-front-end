@@ -3,6 +3,7 @@ import { ref, watch, inject, Ref, watchEffect, onMounted, onBeforeUnmount, compu
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
 // TODO: handling error when `problem` or `problem.value` is undefined
@@ -54,6 +55,15 @@ const rules = {
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
+  solutionLanguage: {
+    validWhenSolutionProvided: helpers.withMessage(
+      "Please select a valid solution language.",
+      (value: number) => {
+        const solution = problem.value.solution?.trim() ?? "";
+        return solution.length === 0 || solutionLanguageValues.includes(Number(value));
+      },
+    ),
+  },
   quota: { required, minValue: minValue(-1) },
   type: {},
   status: {},
@@ -177,6 +187,10 @@ const staticAnalysisOptions = [
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
+const solutionLanguageValues = LANGUAGE_OPTIONS.map(({ value }) => value);
+const solutionLanguageOptions = computed(() =>
+  LANGUAGE_OPTIONS.filter((lang) => (problem.value.allowedLanguage & lang.mask) !== 0),
+);
 const staticAnalysisSummary = computed(() => {
   const picked = problem.value.staticAnalysis?.filter(Boolean) ?? [];
   return picked.length ? picked.join(", ") : "Select analysis rules";
@@ -341,9 +355,23 @@ const removeDomain = (d: string) => {
           Please upload the correct solution for student reference.<!--待修改-->
         </span>
       </label>
+       <div class="form-control w-1/2">
+        <label class="label">
+          <span class="label-text">Solution Language</span>
+        </label>
+        <select
+          class="select select-bordered w-full"
+          :value="problem.solutionLanguage"
+          @input="update('solutionLanguage', Number(($event.target as HTMLSelectElement).value))"
+        >
+          <option v-for="{ value, text } in solutionLanguageOptions" :key="value" :value="value">
+            {{ text }}
+          </option>
+        </select>
+      </div>
 
       <!-- 用 code-editor 輸入 -->
-      <div class="w-1/2">
+      <div class="mt-4 w-1/2">
         <!-- 內層：左右排，底部對齊 -->
         <div class="flex items-end gap-4">
           <!-- Editor -->

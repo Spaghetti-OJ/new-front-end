@@ -142,9 +142,9 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
-  solution_code_language:string;
   staticAnalysis: string[];
   allowedDomains: string[];
+  solutionLanguage: number;
 }
 interface CreateTestCaseBody {
   subtask_id: number;
@@ -171,7 +171,6 @@ interface ProblemCreatePayload {
   tags: number[];
   allowed_domains?: string[];
   solution_code?:string;
-  solution_code_language?:string;
 }
 
 interface ProblemTop10RunTimeItem {
