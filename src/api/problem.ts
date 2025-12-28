@@ -5,7 +5,7 @@ export const Problem = {
     page_size?: number;
     course_id?: number | string;
     [key: string]: string | number | boolean | undefined;
-  }) => fetcher.get<ProblemList>("/search/problems", { params }),
+  }) => fetcher.get<ProblemList>("/problem/", { params }),
   getManageData: (problemId: string | number) => fetcher.get(`/problem/manage/${problemId}`),
   create: (body: ProblemCreatePayload) => fetcher.post("/problem/manage", body),
   getProblemStat: (problemId: number) => fetcher.get<ProblemStats>(`/problem/${problemId}/stats`),

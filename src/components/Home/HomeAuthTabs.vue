@@ -52,7 +52,7 @@ function onTabKeydown(event, currentTab) {
           @click="activeTab = 'signin'"
           @keydown="onTabKeydown($event, 'signin')"
         >
-          Sign In
+          {{ $t("components.loginSection.signin") }}
         </button>
 
         <button
@@ -69,7 +69,7 @@ function onTabKeydown(event, currentTab) {
           @click="activeTab = 'signup'"
           @keydown="onTabKeydown($event, 'signup')"
         >
-          Sign Up
+          {{ $t("components.loginSection.signup") }}
         </button>
       </div>
 

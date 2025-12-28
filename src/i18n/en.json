@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "Settings",
-    "selectLang": "Select your preferred language"
+    "selectLang": "Select your preferred language",
+    "password": {
+      "change": "Change Password",
+      "success": "Password has been successfully changed",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "current": "Current Password",
+      "placeholder": {
+        "new": "new password",
+        "again": "new password again",
+        "current": "current password"
+      },
+      "submit": "Submit",
+      "required": "Required"
+    }
   },
   "about": {
     "contributor": "Contributor",
@@ -12,6 +26,37 @@
     "swe2019": "Red Team of Software Engineering 2019 Fall"
   },
   "course": {
+    "manage": {
+      "title": "Manage Course",
+      "editCourse": "Edit Course",
+      "courseName": "Course Name",
+      "courseNamePlaceholder": "Enter course name",
+      "teacher": "Teacher",
+      "teacherPlaceholder": "Enter teacher username",
+      "currentTAs": "Current Teacher Assistants",
+      "noTAsAssigned": "No TAs assigned yet.",
+      "addTA": "Add Teacher Assistant",
+      "username": "Username",
+      "enterStudentUsername": "Enter student username",
+      "assignTA": "Assign TA",
+      "submit": "Submit",
+      "deleteCourse": "Delete Course",
+      "generateCourseCode": "Generate course code",
+      "scoreboard": "Scoreboard",
+      "rank": "Rank",
+      "user": "User",
+      "totalScore": "Total Score",
+      "loadingScoreboard": "Loading scoreboard or no data...",
+      "confirmDelete": "Confirm Delete",
+      "course": "Course",
+      "inviteCode": "Invite Code",
+      "areYouSureDelete": "Are you sure you want to delete this",
+      "courseSmall": "course",
+      "inviteCodeSmall": "invite code",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
     "ann": {
       "index": {
         "title": "Announcements",
@@ -182,16 +227,26 @@
       "teacherField": "Teacher",
       "submit": "Submit",
       "unknown-error-occurred": "Unknown error occurred :("
+    },
+    "join": "Join",
+    "joinmsg": "Join with course code",
+    "admin": {
+      "students": "Students",
+      "homeworks": "Homeworks",
+      "submits": "submits",
+      "problems": "Problems"
     }
   },
   "profile": {
     "title": "Profile",
+    "required": "Required",
     "rules": {
       "confirmPassword": {
         "sameAsRef": "Password does not match."
       }
     },
     "username": "Username",
+    "username-placeholder": "username (cannot be changed after confirmation)",
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
@@ -200,24 +255,17 @@
     "realName": "Real Name",
     "progressBar": "Progress Bar",
     "heatmap": "Heatmap",
+    "submission": "Submission Count",
+    "acceptance": "Acceptance",
+    "solved": "Solved",
+    "beats": "Beats",
     "edit": "Edit",
     "noImage": "No Image",
     "save": "Save",
     "cancel": "Cancel",
     "signOut": "Sign out",
-    "pw": {
-      "change": "Change Password",
-      "success": "Password has been successfully changed",
-      "new": "New Password",
-      "confirm": "Confirm New Password",
-      "current": "Current Password",
-      "placeholder": {
-        "new": "new password",
-        "again": "new password again",
-        "current": "current password"
-      },
-      "submit": "Submit"
-    },
+    "password": "Password",
+    "confirm": "Confirm Password",
     "wrongPassword": "Wrong Password",
     "operationFailed": "Operation failed, please try again later",
     "verifyEmail": "Verify Email",
@@ -402,7 +450,8 @@
       "hw": "Homeworks",
       "problems": "Problems",
       "submissions": "Submissions",
-      "members": "Members"
+      "members": "Members",
+      "manage": "Manage"
     },
     "systemAnn": {
       "ann": "Announcements",
@@ -411,7 +460,8 @@
     },
     "loginSection": {
       "welcome": "Welcome back, {user}",
-      "signin": "Sign in",
+      "signin": "Sign In",
+      "signup": "Sign Up",
       "loginFailed": "Login Failed: Your username or password is incorrect",
       "username": "Username",
       "pw": "Password",
@@ -430,7 +480,8 @@
       "profile": "Profile",
       "ranking": "Ranking",
       "problems": "Problems",
-      "settings": "Settings"
+      "settings": "Settings",
+      "logout": "Logout"
     },
     "dueCountdown": {
       "days": "days",
@@ -504,5 +555,9 @@
       "success": "Email sent, please check your inbox."
     },
     "return-home": "Return Home"
+  },
+  "api_key": {
+    "title": "API_KEY",
+    "description": "VIEW MY API KEY DASHBOARD"
   }
 }

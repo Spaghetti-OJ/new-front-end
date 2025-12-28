@@ -3,6 +3,7 @@ import { ref, watch, inject, Ref, watchEffect, onMounted, onBeforeUnmount, compu
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+import { LANGUAGE_OPTIONS } from "@/constants";
 
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
@@ -34,7 +35,35 @@ const emits = defineEmits<{
   (e: "generate", payload: GeneratePayload): void;
   (e: "update:checker", value: File | null): void;
 }>();
+const hasForbidFunctions = computed(() => (problem.value.staticAnalysis ?? []).includes("forbid-functions"));
 
+const forbidFnInput = ref(""); // 輸入框用
+const forbidFnError = ref("");
+const fnNameRegex = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+function addForbidFunction() {
+  const v = forbidFnInput.value.trim();
+  if (!v) return;
+
+  if (!fnNameRegex.test(v)) {
+    forbidFnError.value = "Invalid function name (e.g., foo, my_func, printf)";
+    return;
+  }
+
+  forbidFnError.value = "";
+  const cur = problem.value.forbidFunctions ?? [];
+  if (!cur.includes(v)) update("forbidFunctions", [...cur, v]);
+
+  forbidFnInput.value = "";
+}
+
+function removeForbidFunction(name: string) {
+  const cur = problem.value.forbidFunctions ?? [];
+  update(
+    "forbidFunctions",
+    cur.filter((x) => x !== name),
+  );
+}
 const rules = {
   problemName: { required, maxLength: maxLength(64) },
   description: {
@@ -53,9 +82,19 @@ const rules = {
       ),
     },
   },
+  subtaskDescription: { maxLength: maxLength(10000) },
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
+  solutionLanguage: {
+    validWhenSolutionProvided: helpers.withMessage(
+      "Please select a valid solution language.",
+      (value: number) => {
+        const solution = problem.value.solution?.trim() ?? "";
+        return solution.length === 0 || solutionLanguageValues.includes(Number(value));
+      },
+    ),
+  },
   quota: { required, minValue: minValue(-1) },
   type: {},
   status: {},
@@ -64,7 +103,16 @@ const rules = {
       scoreSum: helpers.withMessage(
         "The sum of all subtasks score should be 100",
         (tasks: ProblemTestCase[]) => {
-          return tasks.reduce((acc: number, cur: ProblemTestCase) => acc + cur.taskScore, 0) === 100;
+          // Allow edits when no meaningful scores are set, but enforce 100 once scores exist
+          const scoredTasks = tasks.filter((cur) => {
+            const value = Number(cur.taskScore);
+            return !Number.isNaN(value);
+          });
+          if (scoredTasks.length === 0) {
+            return true;
+          }
+          const sum = scoredTasks.reduce((acc, cur) => acc + Number(cur.taskScore), 0);
+          return sum === 100;
         },
       ),
     },
@@ -74,6 +122,15 @@ const rules = {
   solution: { maxLength: maxLength(20000) },
   staticAnalysis: {},
   allowedDomains: {},
+  forbidFunctions: {
+    requiredWhenEnabled: helpers.withMessage(
+      "Please provide at least one forbidden function.",
+      (v: string[]) => {
+        const enabled = (problem.value.staticAnalysis ?? []).includes("forbid-functions");
+        return !enabled || (Array.isArray(v) && v.length > 0);
+      },
+    ),
+  },
 };
 const v$ = useVuelidate(rules, problem.value);
 
@@ -176,10 +233,15 @@ function updateSubtask(index: number, newTask: ProblemTestCase) {
 }
 
 const staticAnalysisOptions = [
-  { label: "diff", value: "diff" },
+  { label: "forbid-functions", value: "forbid-functions" },
+  { label: "forbid-stl", value: "forbid-stl" },
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
+const solutionLanguageValues = LANGUAGE_OPTIONS.map(({ value }) => value);
+const solutionLanguageOptions = computed(() =>
+  LANGUAGE_OPTIONS.filter((lang) => (problem.value.allowedLanguage & lang.mask) !== 0),
+);
 const staticAnalysisSummary = computed(() => {
   const picked = problem.value.staticAnalysis?.filter(Boolean) ?? [];
   return picked.length ? picked.join(", ") : "Select analysis rules";
@@ -336,7 +398,31 @@ const removeDomain = (d: string) => {
     </div>
 
     <ProblemDescriptionForm :v$="v$" @update="(...args) => update(...args)" />
+    <!--  Subtask description（跟 description 同層級） -->
+    <div class="form-control col-span-2">
+      <label class="label flex-col items-start gap-1">
+        <span class="text-base font-semibold">Subtask description</span>
+        <span class="text-sm text-base-content/70"> </span>
+      </label>
 
+      <textarea
+        :class="[
+      'textarea textarea-bordered w-full',
+      (v$ as any).subtaskDescription?.$error && 'textarea-error',
+    ]"
+        :value="problem.subtaskDescription"
+        rows="4"
+        placeholder=""
+        @input="update('subtaskDescription', ($event.target as HTMLTextAreaElement).value)"
+      />
+
+      <label class="label" v-show="(v$ as any).subtaskDescription?.$error">
+        <span
+          class="label-text-alt text-error"
+          v-text="(v$ as any).subtaskDescription?.$errors?.[0]?.$message"
+        />
+      </label>
+    </div>
     <div class="form-control col-span-2">
       <label class="label flex-col items-start gap-1">
         <span class="text-base font-semibold">Solution</span>
@@ -345,8 +431,23 @@ const removeDomain = (d: string) => {
         </span>
       </label>
 
+      <div class="form-control w-1/2">
+        <label class="label">
+          <span class="label-text">Solution Language</span>
+        </label>
+        <select
+          class="select select-bordered w-full"
+          :value="problem.solutionLanguage"
+          @input="update('solutionLanguage', Number(($event.target as HTMLSelectElement).value))"
+        >
+          <option v-for="{ value, text } in solutionLanguageOptions" :key="value" :value="value">
+            {{ text }}
+          </option>
+        </select>
+      </div>
+
       <!-- 用 code-editor 輸入 -->
-      <div class="w-1/2">
+      <div class="mt-4 w-1/2">
         <!-- 內層：左右排，底部對齊 -->
         <div class="flex items-end gap-4">
           <!-- Editor -->
@@ -511,7 +612,7 @@ const removeDomain = (d: string) => {
                   </div>
 
                   <div class="form-control w-full">
-                    <label class="label"><span class="label-text">Memory Limit (KB)</span></label>
+                    <label class="label"><span class="label-text">Memory Limit (MB)</span></label>
                     <input class="input input-bordered w-full" :value="task.memoryLimit" readonly />
                   </div>
 
@@ -630,6 +731,52 @@ const removeDomain = (d: string) => {
               </label>
             </div>
           </details>
+        </div>
+        <!-- 勾選 forbid-functions 才顯示 -->
+        <div v-if="hasForbidFunctions" class="form-control mt-4 w-1/2">
+          <label class="label">
+            <span class="label-text font-semibold">Forbidden functions</span>
+          </label>
+
+          <!-- 已新增的 function -->
+          <div v-if="problem.forbidFunctions?.length" class="mt-2 flex flex-wrap gap-2">
+            <div
+              v-for="fn in problem.forbidFunctions"
+              :key="fn"
+              class="flex items-center gap-1 rounded-md border border-base-300 bg-base-100 px-3 py-1 text-sm"
+            >
+              <span>{{ fn }}</span>
+              <button type="button" class="btn btn-ghost btn-xs" @click="removeForbidFunction(fn)">
+                <i-uil-times />
+              </button>
+            </div>
+          </div>
+
+          <!-- 輸入 -->
+          <div class="mt-2 flex flex-col gap-1">
+            <div class="flex gap-3">
+              <input
+                v-model="forbidFnInput"
+                type="text"
+                :class="['input input-bordered w-full', forbidFnError && 'input-error']"
+                placeholder="e.g., scanf"
+                @keydown.enter.prevent="addForbidFunction"
+                @input="forbidFnError = ''"
+              />
+              <button
+                type="button"
+                :class="['btn btn-success', !forbidFnInput.trim() && 'btn-disabled']"
+                @click="addForbidFunction"
+              >
+                ADD
+              </button>
+            </div>
+            <span v-if="forbidFnError" class="text-xs text-error">{{ forbidFnError }}</span>
+            <span v-if="v$.forbidFunctions.$error" class="text-xs text-error">
+              {{ v$.forbidFunctions.$errors[0]?.$message }}
+            </span>
+            <span class="text-xs opacity-60">Only function name allowed (letters, digits, underscore).</span>
+          </div>
         </div>
 
         <div class="form-control mt-2 w-1/2">

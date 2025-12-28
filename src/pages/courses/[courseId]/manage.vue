@@ -2,9 +2,12 @@
 import { ref, computed, onMounted } from "vue";
 import { useTitle, useEventListener } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useSession, UserRole } from "@/stores/session";
 import api from "@/api";
 import axios from "axios";
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -214,7 +217,9 @@ onMounted(() => {
     <div class="card-container">
       <div class="card min-w-full">
         <div class="card-body">
-          <div class="card-title mb-6">Manage Course – {{ currentCourseName || courseId }}</div>
+          <div class="card-title mb-6">
+            {{ t("course.manage.title") }} – {{ currentCourseName || courseId }}
+          </div>
 
           <!-- Error Alert -->
           <div v-if="error" class="alert alert-error mb-4 shadow-lg">
@@ -226,63 +231,65 @@ onMounted(() => {
           <!-- Edit Course (Teacher/Admin only) -->
           <template v-if="canEditCourse">
             <div class="flex items-center gap-2 text-lg font-semibold">
-              <i-uil-edit class="h-6 w-6" /> Edit Course
+              <i-uil-edit class="h-6 w-6" /> {{ t("course.manage.editCourse") }}
             </div>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <!-- Course Name -->
               <div class="form-control w-full">
                 <label class="label">
-                  <span class="label-text">Course Name</span>
+                  <span class="label-text">{{ t("course.manage.courseName") }}</span>
                 </label>
                 <input
                   v-model="courseForm.name"
                   type="text"
                   class="input input-bordered w-full"
-                  placeholder="Course name"
+                  :placeholder="t('course.manage.courseNamePlaceholder')"
                 />
               </div>
 
               <!-- Teacher -->
               <div class="form-control w-full">
                 <label class="label">
-                  <span class="label-text">Teacher</span>
+                  <span class="label-text">{{ t("course.manage.teacher") }}</span>
                 </label>
                 <input
                   v-model="courseForm.teacher"
                   type="text"
                   class="input input-bordered w-full"
-                  placeholder="Teacher username"
+                  :placeholder="t('course.manage.teacherPlaceholder')"
                 />
               </div>
             </div>
 
             <!-- TAs Management -->
             <div class="mt-8">
-              <div class="card-title text-base">Current Teacher Assistants</div>
+              <div class="card-title text-base">{{ t("course.manage.currentTAs") }}</div>
               <div class="mt-2 flex flex-wrap gap-2">
                 <div v-for="ta in currentTAs" :key="ta" class="badge badge-lg">
                   {{ ta }}
                 </div>
-                <div v-if="currentTAs.length === 0" class="text-sm opacity-50">No TAs assigned yet.</div>
+                <div v-if="currentTAs.length === 0" class="text-sm opacity-50">
+                  {{ t("course.manage.noTAsAssigned") }}
+                </div>
               </div>
 
               <div class="divider my-4" />
 
-              <div class="card-title text-base">Add Teacher Assistant</div>
+              <div class="card-title text-base">{{ t("course.manage.addTA") }}</div>
               <div class="mt-2 flex items-end gap-2">
                 <div class="form-control w-full max-w-xs">
                   <label class="label">
-                    <span class="label-text">Username</span>
+                    <span class="label-text">{{ t("course.manage.username") }}</span>
                   </label>
                   <input
                     v-model="newTaUsername"
                     type="text"
                     class="input input-bordered w-full"
-                    placeholder="Enter student username"
+                    :placeholder="t('course.manage.enterStudentUsername')"
                   />
                 </div>
                 <button class="btn btn-primary" @click="assignTA" :disabled="!newTaUsername">
-                  Assign TA
+                  {{ t("course.manage.assignTA") }}
                 </button>
               </div>
               <div v-if="assignTaError" class="mt-2 text-sm text-error">
@@ -294,13 +301,19 @@ onMounted(() => {
             </div>
 
             <div class="mt-12 flex gap-4">
-              <button class="btn btn-success" @click="submitCourseEdit">Submit</button>
-              <button class="btn btn-outline btn-error" @click="deleteCourse">Delete Course</button>
+              <button class="btn btn-success" @click="submitCourseEdit">
+                {{ t("course.manage.submit") }}
+              </button>
+              <button class="btn btn-outline btn-error" @click="deleteCourse">
+                {{ t("course.manage.deleteCourse") }}
+              </button>
             </div>
           </template>
 
           <div class="mt-6 flex items-center gap-4">
-            <button class="btn btn-success btn-sm" @click="generateCourseCode">Generate course code</button>
+            <button class="btn btn-success btn-sm" @click="generateCourseCode">
+              {{ t("course.manage.generateCourseCode") }}
+            </button>
 
             <span class="font-mono text-lg font-bold tracking-wider">
               {{ courseCode || "—" }}
@@ -326,16 +339,16 @@ onMounted(() => {
 
             <!-- Scoreboard -->
             <div class="mb-4 flex items-center gap-2 text-lg font-semibold">
-              <i-uil-trophy class="h-6 w-6" /> Scoreboard
+              <i-uil-trophy class="h-6 w-6" /> {{ t("course.manage.scoreboard") }}
             </div>
 
             <div class="overflow-x-auto" v-if="scoreboardData">
               <table class="table w-full">
                 <thead>
                   <tr>
-                    <th>Rank</th>
-                    <th>User</th>
-                    <th>Total Score</th>
+                    <th>{{ t("course.manage.rank") }}</th>
+                    <th>{{ t("course.manage.user") }}</th>
+                    <th>{{ t("course.manage.totalScore") }}</th>
                     <th v-for="pid in scoreboardData.problemIds" :key="pid">
                       {{ pid }}
                     </th>
@@ -365,7 +378,7 @@ onMounted(() => {
                 </tbody>
               </table>
             </div>
-            <div v-else class="py-4 text-center opacity-50">Loading scoreboard or no data...</div>
+            <div v-else class="py-4 text-center opacity-50">{{ t("course.manage.loadingScoreboard") }}</div>
           </template>
         </div>
       </div>
@@ -376,18 +389,22 @@ onMounted(() => {
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-box">
         <h3 class="text-lg font-bold" id="modal-title">
-          Confirm Delete
-          {{ deleteConfirm.target === "course" ? "Course" : "Invite Code" }}
+          {{ t("course.manage.confirmDelete") }}
+          {{ deleteConfirm.target === "course" ? t("course.manage.course") : t("course.manage.inviteCode") }}
         </h3>
         <p class="py-4">
-          Are you sure you want to delete this
-          {{ deleteConfirm.target === "course" ? "course" : "invite code" }}?
+          {{ t("course.manage.areYouSureDelete") }}
+          {{
+            deleteConfirm.target === "course"
+              ? t("course.manage.courseSmall")
+              : t("course.manage.inviteCodeSmall")
+          }}?
           <span v-if="deleteConfirm.target === 'course'" class="font-bold text-error">
-            This action cannot be undone.
+            {{ t("course.manage.cannotUndo") }}
           </span>
         </p>
         <div class="modal-action">
-          <button class="btn" @click="deleteConfirm.show = false">Cancel</button>
+          <button class="btn" @click="deleteConfirm.show = false">{{ t("course.manage.cancel") }}</button>
           <button
             class="btn btn-error"
             @click="
@@ -395,7 +412,7 @@ onMounted(() => {
               deleteConfirm.show = false;
             "
           >
-            Delete
+            {{ t("course.manage.delete") }}
           </button>
         </div>
       </div>

@@ -58,9 +58,8 @@ async function loadReport(): Promise<"ok" | "not_found" | "forbidden" | "error">
   reportError.value = null;
   try {
     const payload = await api.Copycat.getCopycatReport(problemId.value);
-
-    report.value = payload.data ?? null;
-    reportMessage.value = payload.message ?? "";
+    report.value = payload ?? null;
+    reportMessage.value = payload?.message ?? "";
     return "ok";
   } catch (e) {
     report.value = null;

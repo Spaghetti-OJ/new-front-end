@@ -31,14 +31,14 @@ const props = withDefaults(
   <div class="flex w-full flex-col gap-1">
     <!-- Label -->
     <label class="ml-1 text-xs font-semibold tracking-wide text-base-content/80">
-      {{ t("profile.progressBar") }}
+      {{ $t("profile.progressBar") }}
     </label>
 
     <!-- 外框-->
     <section class="flex w-full flex-col gap-4 rounded-xl bg-base-200 px-4 py-4">
       <!-- Heatmap -->
       <div class="rounded-xl border-base-300 bg-base-100 p-3">
-        <div class="mb-2 text-base font-semibold text-base-content">{{ t("profile.heatmap") }}</div>
+        <div class="mb-2 text-base font-semibold text-base-content">{{ $t("profile.heatmap") }}</div>
         <CalendarHeatmap
           :values="contributions"
           :end-date="new Date()"
@@ -55,7 +55,7 @@ const props = withDefaults(
             <i-uil-upload class="h-5 w-5" />
           </div>
           <div class="flex min-w-0 flex-col">
-            <span class="text-xs text-base-content/70">Submissions</span>
+            <span class="text-xs text-base-content/70">{{ $t("profile.submission") }}</span>
             <span class="text-2xl font-bold leading-none text-base-content">{{ submission }}</span>
           </div>
         </div>
@@ -66,20 +66,20 @@ const props = withDefaults(
             <i-uil-check-circle class="h-5 w-5" />
           </div>
           <div class="flex min-w-0 flex-col">
-            <span class="text-xs text-base-content/70">Acceptance</span>
+            <span class="text-xs text-base-content/70">{{ $t("profile.acceptance") }}</span>
             <span class="text-2xl font-bold leading-none text-base-content"> {{ acceptance }}% </span>
           </div>
         </div>
 
         <!-- Total Solved -->
-        <div class="flex items-center justify-between gap-3 rounded-2xl bg-base-100 px-4 py-3">
+        <div class="grid grid-cols-[1fr_auto] items-center gap-3 rounded-2xl bg-base-100 px-4 py-3">
           <!-- 左：Icon + Solved -->
           <div class="flex items-center gap-3">
             <div class="rounded-lg bg-base-200 p-3 text-base-content/70">
               <i-uil-puzzle-piece class="h-5 w-5" />
             </div>
             <div class="flex flex-col">
-              <span class="text-xs text-base-content/70">Solved</span>
+              <span class="text-xs text-base-content/70">{{ $t("profile.solved") }}</span>
               <span class="text-2xl font-bold leading-none text-base-content">
                 {{ totalsolved }}
               </span>
@@ -87,7 +87,7 @@ const props = withDefaults(
           </div>
 
           <!-- 右：Easy / Med / Hard -->
-          <div class="flex flex-wrap gap-1 text-xs">
+          <div class="flex flex-col items-end gap-1 text-xs">
             <span
               class="inline-flex min-w-[2.5rem] items-center justify-start rounded-lg bg-base-200 px-2 py-0.5 text-[#60A047]"
             >
@@ -112,7 +112,7 @@ const props = withDefaults(
             <i-uil-chart-line class="h-5 w-5" />
           </div>
           <div class="flex min-w-0 flex-col">
-            <span class="text-xs text-base-content/70">Beats</span>
+            <span class="text-xs text-base-content/70">{{ $t("profile.beats") }}</span>
             <span class="text-2xl font-bold leading-none text-base-content">{{ beatrate }}%</span>
           </div>
         </div>

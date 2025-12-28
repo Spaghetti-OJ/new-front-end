@@ -123,10 +123,10 @@ function getSummary(courseName: string) {
             v-model="joinCode"
             type="text"
             class="input input-bordered input-sm w-52 md:w-64"
-            placeholder="Join with course code"
+            :placeholder="$t('courses.joinmsg')"
           />
           <button type="submit" class="btn btn-success btn-sm min-w-[4rem]" :disabled="joinLoading">
-            <span v-if="!joinLoading">Join</span>
+            <span v-if="!joinLoading">{{ $t("courses.join") }}</span>
             <span v-else class="loading-spinner loading-xs loading" />
           </button>
         </form>
@@ -198,7 +198,7 @@ function getSummary(courseName: string) {
                         <i-uil-users-alt class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">Students</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.students") }}</span>
                         <span class="text-lg font-bold leading-none">{{ getSummary(course).userCount }}</span>
                       </div>
                     </div>
@@ -208,7 +208,7 @@ function getSummary(courseName: string) {
                         <i-uil-file-alt class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">Homeworks</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.homeworks") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).homeworkCount
                         }}</span>
@@ -220,7 +220,7 @@ function getSummary(courseName: string) {
                         <i-uil-upload class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">Submits</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.submits") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).submissionCount
                         }}</span>
@@ -232,7 +232,7 @@ function getSummary(courseName: string) {
                         <i-uil-puzzle-piece class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">Problems</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.problems") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).problemCount
                         }}</span>

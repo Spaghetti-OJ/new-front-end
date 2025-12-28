@@ -142,9 +142,7 @@ const paginatedProblems = computed(() => {
                     <template v-if="isQuotaUnlimited(p.total_quota)">
                       <span class="text-sm">{{ $t("components.problem.card.unlimited") }}</span>
                     </template>
-                    <template v-else>
-                      {{ p.total_quota - p.total_submissions }} / {{ p.total_quota }}
-                    </template>
+                    <template v-else> {{ p.total_quota - p.submit_count }} / {{ p.total_quota }} </template>
                   </td>
                   <td>
                     <div class="tooltip" data-tip="Stats">

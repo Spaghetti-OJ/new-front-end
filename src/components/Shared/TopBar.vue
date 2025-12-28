@@ -150,7 +150,7 @@ onClickOutside(mobileMenuRef, closeMobileMenu, {
           class="btn btn-ghost btn-sm text-sm uppercase text-white hover:bg-transparent hover:text-accent"
           @click="handleLogout"
         >
-          Logout
+          {{ $t("components.topBar.logout") || "Logout" }}
         </button>
       </div>
 

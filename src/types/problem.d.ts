@@ -34,6 +34,7 @@ interface ProblemItem {
   sample_input: string;
   sample_output: string;
   hint: string;
+  submit_count: number;
   subtask_description: string;
   supported_languages: string[];
   creator_id: string;
@@ -116,6 +117,7 @@ interface ProblemInfo {
   solution: string;
   like_count?: number;
   is_liked_by_user?: boolean;
+  subtaskDescription: string;
 }
 
 interface ProblemForm {
@@ -142,8 +144,11 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
+  solutionLanguage: number;
+  subtaskDescription: string;
   staticAnalysis: string[];
   allowedDomains: string[];
+  forbidFunctions: string[];
 }
 interface CreateTestCaseBody {
   subtask_id: number;
@@ -169,6 +174,8 @@ interface ProblemCreatePayload {
   supported_languages?: string[];
   tags: number[];
   allowed_domains?: string[];
+  static_analysis_rules?: string[];
+  forbidden_functions?: string[];
 }
 
 interface ProblemTop10RunTimeItem {
