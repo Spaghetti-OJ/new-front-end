@@ -106,7 +106,7 @@ async function signup() {
           <input
             v-model="v$.username.$model"
             type="text"
-            placeholder="username"
+            placeholder="username (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
@@ -121,7 +121,7 @@ async function signup() {
           <input
             v-model="v$.email.$model"
             type="email"
-            placeholder="email"
+            placeholder="email (must be valid and receivable)"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
@@ -138,7 +138,7 @@ async function signup() {
           <input
             v-model="v$.realname.$model"
             type="text"
-            placeholder="your full name"
+            placeholder="your full name (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
@@ -153,7 +153,7 @@ async function signup() {
           <input
             v-model="v$.studentID.$model"
             type="text"
-            placeholder="student ID"
+            placeholder="student ID (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
