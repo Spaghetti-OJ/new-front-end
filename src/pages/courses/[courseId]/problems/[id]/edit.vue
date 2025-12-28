@@ -144,6 +144,8 @@ const testdata = ref<File | null>(null);
 const checker = ref<File | null>(null);
 
 const openPreview = ref<boolean>(false);
+const showDiscardConfirm = ref(false);
+const showDeleteConfirm = ref(false);
 const mockProblemMeta = {
   id: 0,
   owner: { id: "0", username: "mock", real_name: "Mock User" },
@@ -284,13 +286,19 @@ async function submit() {
   }
 }
 async function discard() {
-  if (!confirm(t("course.problem.edit.confirmDiscard"))) return;
+  showDiscardConfirm.value = true;
+}
+async function confirmDiscard() {
+  showDiscardConfirm.value = false;
   router.push(`/courses/${route.params.courseId}/problems`);
 }
 async function delete_() {
+  showDeleteConfirm.value = true;
+}
+async function confirmDelete() {
+  showDeleteConfirm.value = false;
   if (!formElement.value) return;
   formElement.value.isLoading = true;
-  if (!confirm(t("course.problem.edit.confirmDelete"))) return;
   try {
     const problemId = Number(route.params.id);
     const res = await api.Problem.getTestCases(Number(route.params.id));
@@ -479,4 +487,36 @@ async function onGenerate(payload: GeneratePayload) {
       </div>
     </div>
   </div>
+
+  <div class="modal" :class="{ 'modal-open': showDiscardConfirm }">
+    <div class="modal-box max-w-sm">
+      <h3 class="text-lg font-bold">{{ t("course.problem.edit.discardChanges") }}</h3>
+      <p class="mt-3 text-sm">{{ t("course.problem.edit.confirmDiscard") }}</p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" @click="showDiscardConfirm = false">
+          {{ t("course.problem.edit.cancel") }}
+        </button>
+        <button class="btn btn-warning" @click="confirmDiscard">
+          {{ t("course.problem.edit.discardChanges") }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showDiscardConfirm" class="modal-backdrop" @click="showDiscardConfirm = false" />
+
+  <div class="modal" :class="{ 'modal-open': showDeleteConfirm }">
+    <div class="modal-box max-w-sm">
+      <h3 class="text-lg font-bold">{{ t("course.problem.edit.delete") }}</h3>
+      <p class="mt-3 text-sm">{{ t("course.problem.edit.confirmDelete") }}</p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" @click="showDeleteConfirm = false">
+          {{ t("course.problem.edit.cancel") }}
+        </button>
+        <button class="btn btn-error" :class="formElement?.isLoading && 'loading'" @click="confirmDelete">
+          {{ t("course.problem.edit.delete") }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showDeleteConfirm" class="modal-backdrop" @click="showDeleteConfirm = false" />
 </template>
