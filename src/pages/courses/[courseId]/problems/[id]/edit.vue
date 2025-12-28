@@ -77,6 +77,7 @@ async function getManage() {
     const problemId = Number(route.params.id);
 
     const { data: problemData } = await api.Problem.getManageData(problemId);
+    console.log(problemData);
     const { data: subtasks } = await api.Problem.getSubtasks(problemId);
     const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
 
@@ -117,7 +118,7 @@ async function getManage() {
       canViewStdout: true,
       defaultCode: "",
       staticAnalysis: problemData.static_analysis_rules ?? [],
-      solution: "",
+      solution: problemData.solution,
       solutionLanguage: problemData.solution_language ?? 0,
       allowedDomains: [],
       forbidFunctions: problemData.forbidden_functions ?? [],
@@ -314,8 +315,11 @@ async function delete_() {
   }
 }
 
-function onSaveSolution() {
-  // TODO: connect solution-only API later
+async function onSaveSolution() {
+  await api.Problem.modify(String(route.params.id), {
+    solution_code: edittingProblem.value?.solution,
+    solution_code_language: edittingProblem.value?.solutionLanguage,
+  });
 }
 
 type GeneratedCase = {
