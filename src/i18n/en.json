@@ -214,6 +214,10 @@
     "realName": "Real Name",
     "progressBar": "Progress Bar",
     "heatmap": "Heatmap",
+    "submission": "Submission Count",
+    "acceptance": "Acceptance",
+    "solved": "Solved",
+    "beats": "Beats",
     "edit": "Edit",
     "noImage": "No Image",
     "save": "Save",
@@ -431,7 +435,8 @@
       "profile": "Profile",
       "ranking": "Ranking",
       "problems": "Problems",
-      "settings": "Settings"
+      "settings": "Settings",
+      "logout": "Logout"
     },
     "dueCountdown": {
       "days": "days",
