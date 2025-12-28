@@ -18,6 +18,8 @@ const signupForm = reactive({
   errorMsg: "",
 });
 const isLoading = ref(false);
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 const session = useSession();
 const { t } = useI18n();
 const rules = {
@@ -106,7 +108,7 @@ async function signup() {
           <input
             v-model="v$.username.$model"
             type="text"
-            :placeholder="$t('profile.username')"
+            placeholder="username (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
@@ -121,7 +123,7 @@ async function signup() {
           <input
             v-model="v$.email.$model"
             type="email"
-            :placeholder="$t('profile.email')"
+            placeholder="email"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
@@ -138,7 +140,7 @@ async function signup() {
           <input
             v-model="v$.realname.$model"
             type="text"
-            :placeholder="$t('profile.realName')"
+            placeholder="your full name"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
@@ -153,7 +155,7 @@ async function signup() {
           <input
             v-model="v$.studentID.$model"
             type="text"
-            :placeholder="$t('profile.studentId')"
+            placeholder="student ID"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
@@ -161,11 +163,11 @@ async function signup() {
 
         <!-- Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.password") }}</span></label>
+          <label class="label"><span class="label-text">Password</span></label>
           <input
             v-model="v$.password.$model"
             type="password"
-            :placeholder="$t('profile.password')"
+            placeholder="password"
             class="input input-bordered"
             :class="v$.password.$error && 'input-error'"
           />
@@ -176,11 +178,11 @@ async function signup() {
 
         <!-- Confirm Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.confirm") }}</span></label>
+          <label class="label"><span class="label-text">Confirm Password</span></label>
           <input
             v-model="v$.confirmPassword.$model"
             type="password"
-            :placeholder="$t('profile.confirm')"
+            placeholder="confirm password"
             class="input input-bordered"
             :class="v$.confirmPassword.$error && 'input-error'"
           />
