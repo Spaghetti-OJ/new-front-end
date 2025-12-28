@@ -3,7 +3,7 @@ import api from "@/api";
 import { toProblemList } from "@/utils/normalizeProblemList";
 
 type ProblemSelections = { value: string; text: string }[];
-export type ProblemId2Meta = Record<string, { name: string; quota: number }>;
+export type ProblemId2Meta = Record<string, { name: string; quota: number; highScore?: number }>;
 
 export function useProblemSelection(courseId: string) {
   const problems = ref<ProblemList>();
@@ -38,9 +38,9 @@ export function useProblemSelection(courseId: string) {
   const problemId2Meta = computed<ProblemId2Meta>(() => {
     if (!problems.value) return {};
     return Object.fromEntries(
-      problems.value.results.map(({ id, title, total_quota }) => [
+      problems.value.results.map(({ id, title, total_quota, highScore }) => [
         id.toString(),
-        { name: title, quota: total_quota },
+        { name: title, quota: total_quota, highScore },
       ]),
     );
   });

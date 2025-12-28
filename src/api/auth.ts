@@ -16,7 +16,7 @@ export const Auth = {
     fetcher.post<string>("/auth/session/revoke/", body).then((r) => r.data ?? r),
   changePassword: (body: { old_password: string; new_password: string }) =>
     fetcher.post("/auth/change-password/", body).then((r) => r.data ?? r),
-  forgotPassword: (body: { username: string }) => fetcher.post(`/auth/forgot-password/`, body),
+  forgotPassword: (body: { username: string; email: string }) => fetcher.post(`/auth/forgot-password/`, body),
   resetPassword: (body: { token: string; new_password: string }) =>
     fetcher.post("/auth/reset-password/", body),
   getSession: () => fetcher.get<UserProperties>("/auth/me/").then((r) => r.data ?? r),
@@ -45,5 +45,6 @@ export const Auth = {
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),
-  getCopycatReport: (problem_id: number) => fetcher.get(`/copycat/?problem_id=${problem_id}`),
+  getCopycatReport: (problem_id: number) =>
+    fetcher.get<CopycatResp>(`/copycat/?problem_id=${problem_id}`).then((r) => r.data ?? r),
 };

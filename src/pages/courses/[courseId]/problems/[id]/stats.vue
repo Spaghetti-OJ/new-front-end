@@ -228,7 +228,7 @@ const barOption = computed(() => ({
           <tbody>
             <tr v-for="(subm, index) in top10RunTime" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user }}</td>
+              <td>{{ subm.username }}</td>
               <td>{{ subm.execution_time }} ms</td>
               <td>{{ subm.score }}</td>
             </tr>
@@ -254,7 +254,7 @@ const barOption = computed(() => ({
           <tbody>
             <tr v-for="(subm, index) in top10MemoryUsage" :key="index">
               <td>{{ index + 1 }}</td>
-              <td>{{ subm.user }}</td>
+              <td>{{ subm.username }}</td>
               <td>{{ subm.memory_usage }} KB</td>
               <td>{{ subm.score }}</td>
             </tr>

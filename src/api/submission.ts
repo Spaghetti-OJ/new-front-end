@@ -17,7 +17,17 @@ export const Submission = {
   getDetail: (id: string) => fetcher.get<SubmissionInfo>(`/submission/${id}/`),
   getCode: (id: string) =>
     fetcher.get<{ source_code: string; language_type: number }>(`/submission/${id}/code/`),
-  list: (params: SubmissionListQuery) => fetcher.get<GetSubmissionListResponse>("/submission/", { params }),
+  getOutput: (id: string, taskNo: number, caseNo: number) => {
+    if (!Number.isInteger(taskNo) || !Number.isInteger(caseNo) || taskNo < 0 || caseNo < 0) {
+      return Promise.reject(new Error("Invalid taskNo/caseNo for submission output."));
+    }
+    const safeId = encodeURIComponent(id);
+    return fetcher.get<SubmissionCaseOutputResponse>(`/submission/${safeId}/output/${taskNo}/${caseNo}/`);
+  },
+  list: (params: SubmissionListQuery) =>
+    fetcher
+      .get<GetSubmissionListResponse>("/submission/", { params })
+      .then((res) => res.data as unknown as GetSubmissionListResponse["data"]),
   submitCustomTest: (problemId: number, payload: CustomTestSubmitPayload) =>
     fetcher.post<CustomTestSubmitResponse>(`/submission/${problemId}/custom-test/`, payload),
   getCustomTestResult: (customTestId: string) =>

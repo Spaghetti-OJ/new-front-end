@@ -8,7 +8,7 @@ interface Props {
   tags: ProblemTag[];
   visible: "hidden" | "public" | "course";
   isAdmin: boolean;
-  isTeacher: boolean;
+  hasStaffAccess: boolean;
 }
 const props = defineProps<Props>();
 </script>
@@ -43,7 +43,7 @@ const props = defineProps<Props>();
             <template v-else> {{ quotaRemaining }} / {{ quotaLimit }} </template>
           </div>
         </div>
-        <div v-if="isAdmin || isTeacher" class="stat">
+        <div v-if="isAdmin || hasStaffAccess" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-eye class="h-6 w-6" />
           </div>
@@ -52,7 +52,7 @@ const props = defineProps<Props>();
             {{ visible === "public" ? "Public" : "Hidden" }}
           </div>
         </div>
-        <div v-if="isAdmin || isTeacher" class="stat">
+        <div v-if="isAdmin || hasStaffAccess" class="stat">
           <div class="stat-figure text-base-content">
             <i-uil-monitor class="h-6 w-6" />
           </div>

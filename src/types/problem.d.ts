@@ -27,6 +27,7 @@ interface ProblemItem {
   like_count: number;
   view_count: number;
   total_quota: number;
+  highScore?: number;
   description: string;
   input_description: string;
   output_description: string;
@@ -48,6 +49,35 @@ interface ProblemList {
   next: string | null;
   previous: string | null;
   results: ProblemItem[];
+}
+
+type ProblemTagLike = string | { name: string };
+
+interface RawProblemItem {
+  id: number;
+  title: string;
+  difficulty: "easy" | "medium" | "hard";
+  tags?: ProblemTagLike[];
+  course_id?: number | string | null;
+  course_name?: string | null;
+  acceptance_rate?: number | string | null;
+}
+
+interface ProblemListResponseLike {
+  items?: RawProblemItem[];
+  results?: RawProblemItem[];
+  data?: {
+    items?: RawProblemItem[];
+    results?: RawProblemItem[];
+  };
+}
+
+interface ProblemSearchResponseLike {
+  data?: {
+    items?: RawProblemItem[];
+  };
+  items?: RawProblemItem[];
+  results?: RawProblemItem[];
 }
 
 interface ProblemTestCase {
@@ -84,6 +114,8 @@ interface ProblemInfo {
   submitCount: number;
   highScore: number;
   solution: string;
+  like_count?: number;
+  is_liked_by_user?: boolean;
 }
 
 interface ProblemForm {
@@ -142,14 +174,31 @@ interface ProblemCreatePayload {
 interface ProblemTop10RunTimeItem {
   id: string;
   user: string;
+  username: string;
   execution_time: number;
   score: number;
   status?: string;
 }
 
+interface Editorial {
+  id: string;
+  problem_id: number;
+  content: string;
+  author_username: string;
+  author: string; // UUID
+  likes_count: number;
+  views_count: number;
+  status: string;
+  is_liked_by_user: boolean;
+  created_at: string;
+  updated_at: string;
+  published_at: string;
+}
+
 interface ProblemTop10MemoryItem {
   id: string;
   user: string;
+  username: string;
   memory_usage: number;
   score: number;
   status?: string;
@@ -209,6 +258,20 @@ interface SearchProblemItem {
 }
 interface SearchProblemResponse {
   data: { items: SearchProblemItem[]; total: number };
+  message: string;
+  status: "ok" | "error";
+}
+
+interface CopycatReport {
+  id: number;
+  status: "pending" | "success" | "failed";
+  moss_url: string | null;
+  created_at: string;
+  error_message: string;
+}
+
+interface CopycatResp {
+  data: CopycatReport | null;
   message: string;
   status: "ok" | "error";
 }

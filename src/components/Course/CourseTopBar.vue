@@ -51,6 +51,14 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
       },
       { path: null, text: "Submit" },
     ],
+    "courses-courseId-problems-id-editorial": [
+      problemsPage,
+      {
+        path: `/courses/${route.params.courseId}/problems/${route.params.id}`,
+        text: `${route.params.id}`,
+      },
+      { path: null, text: "Editorial" },
+    ],
     "courses-courseId-submissions": [{ path: null, text: "Submissions" }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: "Members" }],
@@ -73,6 +81,23 @@ watch(
       const res = await api.Course.info(newId);
       courseName.value = res.data.course.course;
     } catch (error) {
+      if (route.params.id) {
+        try {
+          const res = await api.Problem.getProblemInfo(Number(route.params.id));
+          const pData = res.data ?? (res as any);
+          if (pData && pData.courses && Array.isArray(pData.courses)) {
+            const found = pData.courses.find((c: any) => String(c.id) === String(newId));
+            if (found) {
+              courseName.value = found.name;
+              return;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      // Fallback 2: Try fetching problem list (old fallback)
       try {
         const { data } = await api.Problem.getProblemList({
           course_id: Number(newId),

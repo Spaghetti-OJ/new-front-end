@@ -10,10 +10,10 @@ import TagList from "@/components/Shared/TagList.vue";
 import { toProblemList } from "@/utils/normalizeProblemList";
 
 const session = useSession();
-const rolesCanReadProblemStatus = [UserRole.Admin, UserRole.Teacher];
-const rolesCanCreateProblem = [UserRole.Admin, UserRole.Teacher];
 const route = useRoute();
 const router = useRouter();
+
+const hasAccess = computed(() => session.hasCourseAccess(route.params.courseId as string));
 
 const { isDesktop } = useInteractions();
 
@@ -80,7 +80,7 @@ const paginatedProblems = computed(() => {
           <h2 class="card-title">{{ $t("course.problems.text") }}</h2>
           <div class="flex gap-2">
             <router-link
-              v-if="rolesCanCreateProblem.includes(session.role)"
+              v-if="hasAccess"
               class="btn btn-success"
               :to="`/courses/${$route.params.courseId}/problems/new`"
             >
@@ -103,7 +103,7 @@ const paginatedProblems = computed(() => {
                 <tr>
                   <th>{{ $t("course.problems.id") }}</th>
                   <th>{{ $t("course.problems.name") }}</th>
-                  <th v-if="rolesCanReadProblemStatus.includes(session.role)">
+                  <th v-if="hasAccess">
                     {{ $t("course.problems.status") }}
                   </th>
                   <th>{{ $t("course.problems.tags") }}</th>
@@ -132,7 +132,7 @@ const paginatedProblems = computed(() => {
                       {{ p.title }}
                     </router-link>
                   </td>
-                  <td v-if="rolesCanReadProblemStatus.includes(session.role)">
+                  <td v-if="hasAccess">
                     <span class="badge ml-1">{{ p.is_public }}</span>
                   </td>
                   <td>
@@ -157,7 +157,7 @@ const paginatedProblems = computed(() => {
                     </div>
                     <div class="tooltip" data-tip="Copycat">
                       <router-link
-                        v-if="rolesCanReadProblemStatus.includes(session.role)"
+                        v-if="hasAccess"
                         class="btn btn-circle btn-ghost btn-sm mr-1"
                         :to="`/courses/${$route.params.courseId}/problems/${p.id}/copycat`"
                       >
@@ -166,7 +166,7 @@ const paginatedProblems = computed(() => {
                     </div>
                     <div class="tooltip" data-tip="Edit">
                       <router-link
-                        v-if="rolesCanReadProblemStatus.includes(session.role)"
+                        v-if="hasAccess"
                         class="btn btn-circle btn-ghost btn-sm"
                         :to="`/courses/${$route.params.courseId}/problems/${p.id}/edit`"
                       >
@@ -189,7 +189,7 @@ const paginatedProblems = computed(() => {
                 :tags="p.tags"
                 :visible="p.is_public"
                 :is-admin="session.isAdmin"
-                :is-teacher="session.isTeacher"
+                :has-staff-access="hasAccess"
               />
             </template>
           </template>
