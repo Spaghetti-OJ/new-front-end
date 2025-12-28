@@ -511,7 +511,7 @@ const removeDomain = (d: string) => {
                   </div>
 
                   <div class="form-control w-full">
-                    <label class="label"><span class="label-text">Memory Limit (KB)</span></label>
+                    <label class="label"><span class="label-text">Memory Limit (MB)</span></label>
                     <input class="input input-bordered w-full" :value="task.memoryLimit" readonly />
                   </div>
 
