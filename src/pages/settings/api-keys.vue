@@ -295,9 +295,10 @@ function formatDateTime(value?: string) {
 
             <tr v-if="apiKeys.length === 0">
               <td colspan="6" class="py-8 text-center text-sm text-base-content/60">
-                {{ t("settings.apiKeys.noKeysYet") }}
-                <span class="font-semibold">{{ t("settings.apiKeys.createNewKey") }}</span>
-                {{ t("settings.apiKeys.getStarted") }}
+                <div>{{ t("settings.apiKeys.noKeysYet") }}</div>
+                <button class="btn btn-link btn-sm mt-2 font-semibold" type="button" @click="openCreateModal">
+                  {{ t("settings.apiKeys.createNewKey") }}
+                </button>
               </td>
             </tr>
           </tbody>
