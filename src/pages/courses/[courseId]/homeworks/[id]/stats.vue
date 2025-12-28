@@ -125,7 +125,11 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
 
   const maxScorePerProblem = 100;
   const endTime = hw.value.end != null ? Number(hw.value.end) : null;
-  const itemsByUser = new Map<string, HomeworkScoreboardItem>();
+  type HomeworkScoreboardItemInternal = HomeworkScoreboardItem & {
+    _lastSubmissionTs?: number | null;
+    _firstAcTs?: number | null;
+  };
+  const itemsByUser = new Map<string, HomeworkScoreboardItemInternal>();
 
   submissions.value.forEach((sub) => {
     const userKey = sub.user?.username ?? sub.user?.id;
@@ -144,20 +148,22 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
         first_ac_time: null,
         last_submission_time: null,
         problems: {},
+        _lastSubmissionTs: null,
+        _firstAcTs: null,
       };
       itemsByUser.set(userKey, item);
     }
 
     const ts = sub.timestamp ? toUnixSeconds(sub.timestamp) : null;
     if (ts != null) {
-      const lastTs = item.last_submission_time ? toUnixSeconds(item.last_submission_time) : null;
+      const lastTs = item._lastSubmissionTs ?? null;
       if (lastTs == null || ts > lastTs) {
-        item.last_submission_time = new Date(ts * 1000).toISOString();
+        item._lastSubmissionTs = ts;
       }
       const isAccepted = Number(sub.status) === 0;
-      const firstTs = item.first_ac_time ? toUnixSeconds(item.first_ac_time) : null;
+      const firstTs = item._firstAcTs ?? null;
       if (isAccepted && (firstTs == null || ts < firstTs)) {
-        item.first_ac_time = new Date(ts * 1000).toISOString();
+        item._firstAcTs = ts;
       }
       if (endTime != null) {
         const endTimeSeconds = endTime > 1e11 ? Math.floor(endTime / 1000) : endTime;
@@ -204,6 +210,9 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
 
     return {
       ...item,
+      last_submission_time:
+        item._lastSubmissionTs != null ? new Date(item._lastSubmissionTs * 1000).toISOString() : null,
+      first_ac_time: item._firstAcTs != null ? new Date(item._firstAcTs * 1000).toISOString() : null,
       total_score: totalScore,
       max_total_score: pids.value!.length * maxScorePerProblem,
       problems,
