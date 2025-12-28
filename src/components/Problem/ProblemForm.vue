@@ -230,6 +230,9 @@ const staticAnalysisOptions = [
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
+const solutionLanguageOptions = computed(() =>
+  LANGUAGE_OPTIONS.filter((lang) => (problem.value.allowedLanguage & lang.mask) !== 0),
+);
 const staticAnalysisSummary = computed(() => {
   const picked = problem.value.staticAnalysis?.filter(Boolean) ?? [];
   return picked.length ? picked.join(", ") : "Select analysis rules";
@@ -419,16 +422,16 @@ const removeDomain = (d: string) => {
         </span>
       </label>
 
-      <div class="form-control w-full max-w-xs">
+      <div class="form-control w-1/2">
         <label class="label">
           <span class="label-text">Solution Language</span>
         </label>
         <select
-          class="select select-bordered w-full max-w-xs"
+          class="select select-bordered w-full"
           :value="problem.solutionLanguage"
           @input="update('solutionLanguage', Number(($event.target as HTMLSelectElement).value))"
         >
-          <option v-for="{ value, text } in LANGUAGE_OPTIONS" :key="value" :value="value">
+          <option v-for="{ value, text } in solutionLanguageOptions" :key="value" :value="value">
             {{ text }}
           </option>
         </select>
