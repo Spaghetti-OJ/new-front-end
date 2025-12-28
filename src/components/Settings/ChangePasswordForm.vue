@@ -55,62 +55,66 @@ async function submit() {
 
 <template>
   <div class="max-w-xl space-y-6">
-    <h2 class="text-2xl font-semibold">Change Password</h2>
+    <h2 class="text-2xl font-semibold">{{ $t("settings.password.change") }}</h2>
     <!-- Current Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">Current Password</span>
+        <span class="label-text">{{ $t("settings.password.current") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.currentPassword.$model"
         class="input input-bordered"
-        placeholder="current password"
+        :placeholder="$t('settings.password.placeholder.current')"
         :class="v$.currentPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.currentPassword.$error">
-        <span class="label-text-alt text-error">Required</span>
+        <span class="label-text-alt text-error">{{ $t("settings.password.required") }}</span>
       </label>
     </div>
 
     <!-- New Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">New Password</span>
+        <span class="label-text">{{ $t("settings.password.new") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.newPassword.$model"
         class="input input-bordered"
-        placeholder="new password"
+        :placeholder="$t('settings.password.placeholder.new')"
         :class="v$.newPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.newPassword.$error">
-        <span class="label-text-alt text-error">Required</span>
+        <span class="label-text-alt text-error">{{ $t("settings.password.required") }}</span>
       </label>
     </div>
 
     <!-- Confirm New Password -->
     <div class="form-control">
       <label class="label">
-        <span class="label-text">Confirm New Password</span>
+        <span class="label-text">{{ $t("settings.password.confirm") }}</span>
       </label>
       <input
         type="password"
         v-model="v$.confirmPassword.$model"
         class="input input-bordered"
-        placeholder="new password again"
+        :placeholder="$t('settings.password.placeholder.again')"
         :class="v$.confirmPassword.$error && 'input-error'"
       />
       <label class="label" v-if="v$.confirmPassword.$error">
         <span class="label-text-alt text-error">
-          {{ v$.confirmPassword.required.$invalid ? "Required" : "Passwords do not match" }}
+          {{
+            v$.confirmPassword.required.$invalid
+              ? $t("settings.password.required")
+              : $t("profile.wrongPassword")
+          }}
         </span>
       </label>
     </div>
 
     <!-- Submit Button -->
-    <button class="btn btn-primary mt-4 w-full" @click="submit">SUBMIT</button>
+    <button class="btn btn-primary mt-4 w-full" @click="submit">{{ $t("settings.password.submit") }}</button>
     <div class="alert alert-error shadow-lg" v-if="form.errorMsg">
       <div>
         <i-uil-times-circle />
@@ -120,7 +124,7 @@ async function submit() {
     <div class="alert alert-success shadow-lg" v-if="form.success">
       <div>
         <i-uil-times-circle />
-        <span>Password changed successfully.</span>
+        <span>{{ $t("settings.password.success") }}</span>
       </div>
     </div>
   </div>

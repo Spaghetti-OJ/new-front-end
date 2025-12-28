@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "設定",
-    "selectLang": "選擇語言"
+    "selectLang": "選擇語言",
+    "password": {
+      "change": "變更密碼",
+      "success": "密碼已成功變更",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "current": "舊密碼",
+      "placeholder": {
+        "new": "新密碼",
+        "again": "再輸入一次新密碼",
+        "current": "舊密碼"
+      },
+      "submit": "送出",
+      "required": "需要輸入"
+    }
   },
   "about": {
     "contributor": "貢獻者",
@@ -182,6 +196,14 @@
       "teacherField": "課程教師",
       "submit": "送出",
       "unknown-error-occurred": "發生未知錯誤 :("
+    },
+    "join": "加入課程",
+    "joinmsg": "以課程代碼加入",
+    "admin": {
+      "students": "學生",
+      "homeworks": "作業",
+      "submits": "提交",
+      "problems": "問題"
     }
   },
   "profile": {
@@ -192,6 +214,7 @@
       }
     },
     "username": "帳號",
+    "username-placeholder": "帳號名 (無法再次修改)",
     "dispname": "顯示名稱",
     "email": "電子郵件",
     "role": "身份",
@@ -200,24 +223,18 @@
     "realName": "真實姓名",
     "progressBar": "進度展示",
     "heatmap": "貢獻度",
+    "submission": "提交數量",
+    "acceptance": "通過率",
+    "solved": "已解題數",
+    "beats": "超越比例",
     "edit": "編輯",
     "noImage": "無頭像",
     "save": "儲存",
     "cancel": "取消",
     "signOut": "登出",
-    "pw": {
-      "change": "變更密碼",
-      "success": "密碼已成功變更",
-      "new": "新密碼",
-      "confirm": "確認新密碼",
-      "current": "舊密碼",
-      "placeholder": {
-        "new": "新密碼",
-        "again": "再輸入一次新密碼",
-        "current": "舊密碼"
-      },
-      "submit": "送出"
-    },
+    "required": "需要輸入",
+    "password": "密碼",
+    "confirm": "確認密碼",
     "wrongPassword": "密碼錯誤",
     "operationFailed": "操作失敗，請稍後再試",
     "verifyEmail": "驗證信箱",
@@ -400,7 +417,8 @@
       "hw": "作業",
       "problems": "題目",
       "submissions": "繳交狀態",
-      "members": "成員"
+      "members": "成員",
+      "manage": "管理"
     },
     "systemAnn": {
       "ann": "公告",
@@ -410,6 +428,7 @@
     "loginSection": {
       "welcome": "歡迎回來，{user}",
       "signin": "登入",
+      "signup": "註冊",
       "loginFailed": "登入失敗：帳號或是密碼輸入錯誤",
       "username": "帳號",
       "pw": "密碼",
@@ -428,7 +447,8 @@
       "profile": "個人",
       "ranking": "排名",
       "problems": "題目",
-      "settings": "設定"
+      "settings": "設定",
+      "logout": "登出"
     },
     "dueCountdown": {
       "days": "日",
@@ -502,5 +522,9 @@
       "success": "發送成功，請檢查你的電子信箱。"
     },
     "return-home": "回到首頁"
+  },
+  "api_key": {
+    "title": "API 金鑰",
+    "description": "查看 API 金鑰"
   }
 }
