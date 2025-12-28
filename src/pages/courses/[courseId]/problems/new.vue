@@ -130,7 +130,6 @@ const scrollToSection = (el: HTMLElement | null) => {
 };
 
 function onSaveSolution() {
-  // TODO: connect solution-only API later
 }
 
 async function onGenerate(payload: GeneratePayload) {
@@ -168,7 +167,8 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
     hint: emptyToNull(p.description.hint),
 
     subtask_description: emptyToNull(p.subtaskDescription),
-
+    solution_code:p.solution,
+    solution_code_language:p.solutionLanguage,
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
     allowed_domains: p.allowedDomains,
