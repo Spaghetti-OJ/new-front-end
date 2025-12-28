@@ -72,6 +72,7 @@ async function getLikedProblems() {
   } catch (err) {
     console.error("getLikedProblems error:", err);
     baseProblems.value = [];
+    fullProblems.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -152,7 +153,9 @@ async function searchProblems() {
 
     const raw = (res as { data?: ProblemSearchResponseLike }).data ?? (res as ProblemSearchResponseLike);
     const items = extractSearchItems(raw);
-    baseProblems.value = mapProblemList(items);
+    const mapped = mapProblemList(items);
+    baseProblems.value = mapped;
+    fullProblems.value = mapped;
   } catch (err) {
     console.error("searchProblems error:", err);
     baseProblems.value = [];
@@ -221,6 +224,7 @@ onBeforeUnmount(() => {
             class="grow bg-transparent outline-none"
             :placeholder="$t('problems.search.placeholder')"
             @keyup.enter="searchProblems"
+            :disabled="likedOnly"
           />
           <i class="i-uil-search" />
         </label>
