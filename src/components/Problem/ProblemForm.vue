@@ -86,7 +86,15 @@ const rules = {
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
-  solutionLanguage: {},
+  solutionLanguage: {
+    validWhenSolutionProvided: helpers.withMessage(
+      "Please select a valid solution language.",
+      (value: number) => {
+        const solution = problem.value.solution?.trim() ?? "";
+        return solution.length === 0 || solutionLanguageValues.includes(Number(value));
+      },
+    ),
+  },
   quota: { required, minValue: minValue(-1) },
   type: {},
   status: {},
@@ -230,6 +238,7 @@ const staticAnalysisOptions = [
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
+const solutionLanguageValues = LANGUAGE_OPTIONS.map(({ value }) => value);
 const solutionLanguageOptions = computed(() =>
   LANGUAGE_OPTIONS.filter((lang) => (problem.value.allowedLanguage & lang.mask) !== 0),
 );
