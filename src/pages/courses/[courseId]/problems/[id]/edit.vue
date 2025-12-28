@@ -315,10 +315,23 @@ async function delete_() {
 }
 
 async function onSaveSolution() {
-  await api.Problem.modify(String(route.params.id), {
-    solution_code: edittingProblem.value?.solution,
-    solution_code_language: edittingProblem.value?.solutionLanguage,
-  });
+  if (!formElement.value) return;
+  formElement.value.isLoading = true;
+  try {
+    await api.Problem.modify(String(route.params.id), {
+      solution_code: edittingProblem.value?.solution,
+      solution_code_language: edittingProblem.value?.solutionLanguage,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data) {
+      formElement.value.errorMsg = (error.response.data as any).detail ?? "Unknown error occurred :(";
+    } else {
+      formElement.value.errorMsg = "Unknown error occurred :(";
+    }
+    throw error;
+  } finally {
+    formElement.value.isLoading = false;
+  }
 }
 
 type GeneratedCase = {
