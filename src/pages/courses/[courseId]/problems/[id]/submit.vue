@@ -52,6 +52,12 @@ const testResultMeta = ref<{
   compileMemoryUsed: number | null;
 } | null>(null);
 
+function formatSeconds(value: number | null): string {
+  if (value == null) return "-";
+  if (value < 1) return `${Math.round(value * 1000)}ms`;
+  return `${value}s`;
+}
+
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
   lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 4)) },
@@ -295,7 +301,7 @@ onMounted(loadProblem);
                     <div>
                       <span class="font-medium text-base-content">Time Used</span>
                       <span class="ml-2">
-                        {{ testResultMeta?.timeUsed != null ? `${testResultMeta.timeUsed}s` : "-" }}
+                        {{ formatSeconds(testResultMeta?.timeUsed ?? null) }}
                       </span>
                     </div>
                     <div>
@@ -311,9 +317,7 @@ onMounted(loadProblem);
                     >
                       <span class="font-medium text-base-content">Compile Time</span>
                       <span class="ml-2">
-                        {{
-                          testResultMeta?.compileTimeUsed != null ? `${testResultMeta.compileTimeUsed}s` : "-"
-                        }}
+                        {{ formatSeconds(testResultMeta?.compileTimeUsed ?? null) }}
                       </span>
                     </div>
                     <div
