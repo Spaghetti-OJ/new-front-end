@@ -101,6 +101,7 @@ async function getManage() {
       quota: problemData.total_quota,
       type: 0, // Default or map if available
       status: problemData.is_public === "public" ? 0 : 1,
+      subtaskDescription: problemData.subtask_description || "",
       testCaseInfo: {
         language: 0,
         fillInTemplate: "",
@@ -183,10 +184,9 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
     sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
     sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
     hint: emptyToNull(p.description.hint),
-
-    subtask_description: null,
     static_analysis_rules: p.staticAnalysis ?? [],
     forbidden_functions: p.forbidFunctions ?? [],
+    subtask_description: emptyToNull(p.subtaskDescription),
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
@@ -204,7 +204,10 @@ async function submit() {
 
     const payload = mapProblemFormToPayload(edittingProblem.value);
     await api.Problem.modify(problemId, payload);
-
+    if (!testdata.value) {
+      router.push(`/courses/${route.params.courseId}/problems/${route.params.id}`);
+      return;
+    }
     const tcRes = await api.Problem.getTestCases(problemId);
     const testCases = (tcRes.data as any).data || tcRes.data || [];
     await Promise.all(
