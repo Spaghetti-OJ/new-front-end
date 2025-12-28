@@ -514,7 +514,7 @@
         },
         "testdataRule1": "Put all the input/output files in a single `.zip` file, and follow the naming rules below.",
         "testdataRule2": "Name the input file as \"sstt.in\", where \"ss\" represents the number of subtasks it belongs to, and \"tt\" represents which testcase it is in subtask.",
-        "testdataRule3": "Similarly, name the ouput file as \"sstt.out\", NOTE THAT \"ss\" & \"tt\" are zero-indexed.",
+        "testdataRule3": "Similarly, name the output file as \"sstt.out\", NOTE THAT \"ss\" & \"tt\" are zero-indexed.",
         "testdataRule4": "For example, a problem with 3 subtasks, and the number of testcases of each subtask is 3, 5, 15, respectively.",
         "testdataRule5": "The content of zip file is:",
         "gotIt": "Got it",
