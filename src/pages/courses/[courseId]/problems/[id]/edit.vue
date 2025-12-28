@@ -201,7 +201,7 @@ async function submit() {
 
     const payload = mapProblemFormToPayload(edittingProblem.value);
     await api.Problem.modify(problemId, payload);
-if (!testdata.value) {
+    if (!testdata.value) {
       router.push(`/courses/${route.params.courseId}/problems/${route.params.id}`);
       return;
     }
