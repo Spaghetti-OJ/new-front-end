@@ -28,4 +28,15 @@ export const Submission = {
     fetcher
       .get<GetSubmissionListResponse>("/submission/", { params })
       .then((res) => res.data as unknown as GetSubmissionListResponse["data"]),
+  submitCustomTest: (problemId: number, payload: CustomTestSubmitPayload): Promise<CustomTestSubmitData> =>
+    fetcher
+      .post<CustomTestSubmitResponse>(`/submission/${problemId}/custom-test/`, payload)
+      .then((res) => res.data as unknown as CustomTestSubmitData),
+  getCustomTestResult: (
+    customTestId: string,
+  ): Promise<{ statusCode: number; data: CustomTestResultData | null }> =>
+    fetcher.get<CustomTestResultResponse>(`/submission/custom-test/${customTestId}/result/`).then((res) => ({
+      statusCode: res.status,
+      data: (res.data as unknown as CustomTestResultData) ?? null,
+    })),
 };

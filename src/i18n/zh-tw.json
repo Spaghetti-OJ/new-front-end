@@ -187,7 +187,9 @@
         "err": {
           "code": "請在此貼上你的原始碼以利繳交。",
           "lang": "請選擇程式語言。",
-          "msg": "Oops! Something went wrong when submitting the code. Try again later."
+          "msg": "送出程式碼時發生錯誤，請稍後再試。",
+          "testRunning": "測試仍在進行中，請稍後再試。",
+          "testFailed": "測試失敗，請稍後再試。"
         },
         "card": {
           "title": "繳交至題號 ",

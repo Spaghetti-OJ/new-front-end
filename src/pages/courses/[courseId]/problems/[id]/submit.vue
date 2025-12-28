@@ -45,10 +45,27 @@ const testForm = reactive({
   isLoading: false,
   isError: false,
 });
+const testResultMeta = ref<{
+  timeUsed: number | null;
+  memoryUsed: number | null;
+  compileTimeUsed: number | null;
+  compileMemoryUsed: number | null;
+} | null>(null);
+
+function formatSeconds(value: number | null): string {
+  if (value == null) return "-";
+  if (value < 1) return `${Math.round(value * 1000)}ms`;
+  return `${value}s`;
+}
 
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
-  lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 3)) },
+  lang: {
+    betweenValue: helpers.withMessage(
+      t("course.problem.submit.err.lang"),
+      between(0, LANGUAGE_OPTIONS.length - 1),
+    ),
+  },
 };
 const v$ = useVuelidate(rules, form);
 
@@ -79,23 +96,68 @@ watchEffect(() => {
 async function runTest() {
   testForm.isError = false;
   testForm.output = "";
+  testResultMeta.value = null;
 
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
 
-  if (!testForm.input) {
-    testForm.isError = true;
-    testForm.output = t("course.problem.submit.err.input") || "Input is required to run the test.";
-    return;
-  }
-
   try {
     testForm.isLoading = true;
-    testForm.output = " 這裡顯示測試結果（接上後端 API 後，請把這段改成真正的結果）";
+    const submitRes = await api.Submission.submitCustomTest(Number(route.params.id), {
+      language: Number(form.lang),
+      source_code: form.code,
+      stdin: testForm.input || undefined,
+    });
+
+    const testId = submitRes.test_id;
+    if (!testId) {
+      throw new Error("Missing test id from custom test response.");
+    }
+
+    const maxAttempts = 20;
+    const delayMs = 1000;
+    const maxDelayMs = 8000;
+    let result: CustomTestResultData | null = null;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      const res = await api.Submission.getCustomTestResult(testId);
+      const attemptDelay = Math.min(delayMs * 2 ** attempt, maxDelayMs);
+
+      if (res.statusCode === 202) {
+        await new Promise((resolve) => setTimeout(resolve, attemptDelay));
+        continue;
+      }
+
+      result = res.data;
+
+      if (result?.status && result.status !== "pending") {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, attemptDelay));
+    }
+
+    if (!result) {
+      throw new Error("Empty custom test result.");
+    }
+
+    if (result.status === "pending") {
+      testForm.output = t("course.problem.submit.err.testRunning");
+      return;
+    }
+
+    testForm.output = result.stderr
+      ? `${result.stdout || ""}\n\n[stderr]\n${result.stderr}`
+      : result.stdout || "";
+    testResultMeta.value = {
+      timeUsed: result.time ?? null,
+      memoryUsed: result.memory ?? null,
+      compileTimeUsed: result.compile_info?.time_used ?? null,
+      compileMemoryUsed: result.compile_info?.memory_used ?? null,
+    };
   } catch (e) {
     testForm.isError = true;
-    testForm.output = "Test failed. Please try again.";
-    throw e;
+    testForm.output = t("course.problem.submit.err.testFailed");
   } finally {
     testForm.isLoading = false;
   }
@@ -232,13 +294,53 @@ onMounted(loadProblem);
                 <label class="label">
                   <span class="label-text font-semibold">Test output</span>
                 </label>
-                <textarea
-                  v-model="testForm.output"
-                  class="textarea textarea-bordered w-full"
-                  rows="4"
-                  readonly
-                  placeholder="按下TEST，顯示程式輸出"
-                />
+                <div class="flex flex-col gap-3">
+                  <textarea
+                    v-model="testForm.output"
+                    class="textarea textarea-bordered w-full"
+                    rows="4"
+                    readonly
+                    placeholder="按下TEST，顯示程式輸出"
+                  />
+                  <div class="flex flex-wrap items-center gap-4 text-xs text-base-content/70">
+                    <div>
+                      <span class="font-medium text-base-content">Time Used</span>
+                      <span class="ml-2">
+                        {{ formatSeconds(testResultMeta?.timeUsed ?? null) }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="font-medium text-base-content">Memory Used</span>
+                      <span class="ml-2">
+                        {{ testResultMeta?.memoryUsed != null ? `${testResultMeta.memoryUsed} MB` : "-" }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="
+                        testResultMeta?.compileTimeUsed != null || testResultMeta?.compileMemoryUsed != null
+                      "
+                    >
+                      <span class="font-medium text-base-content">Compile Time</span>
+                      <span class="ml-2">
+                        {{ formatSeconds(testResultMeta?.compileTimeUsed ?? null) }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="
+                        testResultMeta?.compileTimeUsed != null || testResultMeta?.compileMemoryUsed != null
+                      "
+                    >
+                      <span class="font-medium text-base-content">Compile Memory</span>
+                      <span class="ml-2">
+                        {{
+                          testResultMeta?.compileMemoryUsed != null
+                            ? `${testResultMeta.compileMemoryUsed} MB`
+                            : "-"
+                        }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

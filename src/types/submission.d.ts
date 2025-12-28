@@ -114,3 +114,50 @@ interface SubmissionListFilter {
   languageType?: string;
   username?: string;
 }
+
+interface CustomTestSubmitPayload {
+  language: number;
+  source_code: string;
+  stdin?: string;
+}
+
+interface CustomTestSubmitData {
+  test_id: string;
+  submission_id: string;
+  status: string;
+}
+
+interface CustomTestSubmitResponse {
+  data: CustomTestSubmitData;
+  message: string;
+  status: string;
+}
+
+interface CustomTestCompileInfo {
+  status: string;
+  message: string;
+  stdout?: string;
+  stderr?: string;
+  time_used?: number;
+  memory_used?: number;
+}
+
+interface CustomTestResultData {
+  test_id: string;
+  problem_id: number;
+  language: number;
+  status: string;
+  stdout: string;
+  stderr: string;
+  time: number;
+  memory: number;
+  message: string;
+  compile_info: CustomTestCompileInfo;
+  created_at: string;
+}
+
+interface CustomTestResultResponse {
+  data: CustomTestResultData;
+  message: string;
+  status: string;
+}
