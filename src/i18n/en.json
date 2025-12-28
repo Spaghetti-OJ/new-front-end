@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "Settings",
-    "selectLang": "Select your preferred language"
+    "selectLang": "Select your preferred language",
+    "password": {
+      "change": "Change Password",
+      "success": "Password has been successfully changed",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "current": "Current Password",
+      "placeholder": {
+        "new": "new password",
+        "again": "new password again",
+        "current": "current password"
+      },
+      "submit": "Submit",
+      "required": "Required"
+    }
   },
   "about": {
     "contributor": "Contributor",
@@ -182,16 +196,26 @@
       "teacherField": "Teacher",
       "submit": "Submit",
       "unknown-error-occurred": "Unknown error occurred :("
+    },
+    "join": "Join",
+    "joinmsg": "Join with course code",
+    "admin": {
+      "students": "Students",
+      "homeworks": "Homeworks",
+      "submits": "submits",
+      "problems": "Problems"
     }
   },
   "profile": {
     "title": "Profile",
+    "required": "Required",
     "rules": {
       "confirmPassword": {
         "sameAsRef": "Password does not match."
       }
     },
     "username": "Username",
+    "username-placeholder": "username (cannot be changed after confirmation)",
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
@@ -200,24 +224,17 @@
     "realName": "Real Name",
     "progressBar": "Progress Bar",
     "heatmap": "Heatmap",
+    "submission": "Submission Count",
+    "acceptance": "Acceptance",
+    "solved": "Solved",
+    "beats": "Beats",
     "edit": "Edit",
     "noImage": "No Image",
     "save": "Save",
     "cancel": "Cancel",
     "signOut": "Sign out",
-    "pw": {
-      "change": "Change Password",
-      "success": "Password has been successfully changed",
-      "new": "New Password",
-      "confirm": "Confirm New Password",
-      "current": "Current Password",
-      "placeholder": {
-        "new": "new password",
-        "again": "new password again",
-        "current": "current password"
-      },
-      "submit": "Submit"
-    },
+    "password": "Password",
+    "confirm": "Confirm Password",
     "wrongPassword": "Wrong Password",
     "operationFailed": "Operation failed, please try again later",
     "verifyEmail": "Verify Email",
@@ -402,7 +419,8 @@
       "hw": "Homeworks",
       "problems": "Problems",
       "submissions": "Submissions",
-      "members": "Members"
+      "members": "Members",
+      "manage": "Manage"
     },
     "systemAnn": {
       "ann": "Announcements",
@@ -411,7 +429,8 @@
     },
     "loginSection": {
       "welcome": "Welcome back, {user}",
-      "signin": "Sign in",
+      "signin": "Sign In",
+      "signup": "Sign Up",
       "loginFailed": "Login Failed: Your username or password is incorrect",
       "username": "Username",
       "pw": "Password",
@@ -430,7 +449,8 @@
       "profile": "Profile",
       "ranking": "Ranking",
       "problems": "Problems",
-      "settings": "Settings"
+      "settings": "Settings",
+      "logout": "Logout"
     },
     "dueCountdown": {
       "days": "days",
@@ -504,5 +524,9 @@
       "success": "Email sent, please check your inbox."
     },
     "return-home": "Return Home"
+  },
+  "api_key": {
+    "title": "API_KEY",
+    "description": "VIEW MY API KEY DASHBOARD"
   }
 }
