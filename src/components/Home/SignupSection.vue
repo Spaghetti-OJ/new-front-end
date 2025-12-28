@@ -174,13 +174,24 @@ async function signup() {
           <label class="label"
             ><span class="label-text">{{ $t("profile.password") }}</span></label
           >
-          <input
-            v-model="v$.password.$model"
-            type="password"
-            :placeholder="t('profile.password')"
-            class="input input-bordered"
-            :class="v$.password.$error && 'input-error'"
-          />
+          <div class="relative">
+            <input
+              v-model="v$.password.$model"
+              :type="showPassword ? 'text' : 'password'"
+              :placeholder="t('profile.password')"
+              class="input input-bordered w-full pr-12"
+              :class="v$.password.$error && 'input-error'"
+            />
+            <button
+              type="button"
+              class="btn btn-ghost btn-xs absolute inset-y-0 right-2 h-full min-h-0 px-2 hover:bg-transparent"
+              @click="showPassword = !showPassword"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i-uil-eye-slash v-if="showPassword" class="h-4 w-4" />
+              <i-uil-eye v-else class="h-4 w-4" />
+            </button>
+          </div>
           <label class="label" v-if="v$.password.$error">
             <span class="label-text-alt text-error">{{ $t("profile.required") }}</span>
           </label>
@@ -191,13 +202,24 @@ async function signup() {
           <label class="label"
             ><span class="label-text">{{ $t("profile.confirm") }}</span></label
           >
-          <input
-            v-model="v$.confirmPassword.$model"
-            type="password"
-            :placeholder="t('profile.confirm')"
-            class="input input-bordered"
-            :class="v$.confirmPassword.$error && 'input-error'"
-          />
+          <div class="relative">
+            <input
+              v-model="v$.confirmPassword.$model"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              :placeholder="t('profile.confirm')"
+              class="input input-bordered w-full pr-12"
+              :class="v$.confirmPassword.$error && 'input-error'"
+            />
+            <button
+              type="button"
+              class="btn btn-ghost btn-xs absolute inset-y-0 right-2 h-full min-h-0 px-2 hover:bg-transparent"
+              @click="showConfirmPassword = !showConfirmPassword"
+              :aria-label="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
+            >
+              <i-uil-eye-slash v-if="showConfirmPassword" class="h-4 w-4" />
+              <i-uil-eye v-else class="h-4 w-4" />
+            </button>
+          </div>
           <label class="label" v-if="v$.confirmPassword.$error">
             <span class="label-text-alt text-error">{{ $t("profile.rules.confirmPassword.sameAsRef") }}</span>
           </label>
