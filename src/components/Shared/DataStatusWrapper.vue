@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { AxiosError } from "axios";
 
+defineOptions({ inheritAttrs: false });
+
 defineProps<{
   error?: AxiosError | string | null;
   isLoading?: boolean;

@@ -38,22 +38,69 @@ export const Auth = {
     fetcher.get<PublicUserProfile>(`/profile/${username}/`).then((r) => r.data ?? r),
   getUserStats: (userId: string) =>
     fetcher.get<UserStatsResponse>(`/stats/user/${userId}/`).then((r) => {
-      const payload = r as unknown as UserStatsResponse;
+      const envelope = normalizeEnvelope(r);
+      const data = extractUserStatsData(envelope.data) ??
+        extractUserStatsData(r) ?? { user_stats: {} as UserStats };
       return {
-        data: payload.data ?? (r as any).data,
-        message: payload.message ?? (r as any).message,
-        status: payload.status ?? (r as any).status,
+        data,
+        message: toStringOrEmpty(envelope.message),
+        status: toStringOrEmpty(envelope.status),
       };
     }),
   getSubmissionsActivity: (userId: string) =>
     fetcher.get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`).then((r) => {
-      const payload = r as unknown as SubmissionActivityResponse;
+      const envelope = normalizeEnvelope(r);
+      const data = extractSubmissionActivityData(envelope.data) ?? extractSubmissionActivityData(r) ?? {};
       return {
-        data: payload.data ?? (r as any).data,
-        message: payload.message ?? (r as any).message,
-        status: payload.status ?? (r as any).status,
+        data,
+        message: toStringOrEmpty(envelope.message),
+        status: toStringOrEmpty(envelope.status),
       };
     }),
+};
+
+type EnvelopeShape = {
+  data?: unknown;
+  message?: unknown;
+  status?: unknown;
+};
+
+const normalizeEnvelope = (value: unknown): EnvelopeShape => (isRecord(value) ? value : {});
+
+const toStringOrEmpty = (value: unknown): string => (typeof value === "string" ? value : "");
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const extractUserStatsData = (value: unknown): UserStatsResponse["data"] | null => {
+  if (!isRecord(value)) return null;
+  if ("user_stats" in value) return value as UserStatsResponse["data"];
+  if ("data" in value) {
+    const inner = (value as { data?: unknown }).data;
+    if (isRecord(inner) && "user_stats" in inner) {
+      return inner as UserStatsResponse["data"];
+    }
+  }
+  return null;
+};
+
+const extractSubmissionActivityData = (value: unknown): Record<string, number> | null => {
+  if (!isRecord(value)) return null;
+  const entries = Object.entries(value);
+  if (entries.length === 0) return {};
+  if (entries.every(([, count]) => typeof count === "number")) {
+    return value as Record<string, number>;
+  }
+  if ("data" in value) {
+    const inner = (value as { data?: unknown }).data;
+    if (isRecord(inner)) {
+      const innerEntries = Object.entries(inner);
+      if (innerEntries.every(([, count]) => typeof count === "number")) {
+        return inner as Record<string, number>;
+      }
+    }
+  }
+  return null;
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),
