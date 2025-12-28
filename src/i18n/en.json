@@ -172,6 +172,13 @@
       "sortBy": "Sort By",
       "cancel": "Cancel",
       "submit": "Submit",
+      "username": "Username",
+      "realName": "Real Name",
+      "role": "Role",
+      "addByUsername": "Add by username",
+      "usernamePlaceholder": "username",
+      "add": "Add",
+      "optional": "optional",
       "csvUploadHint": {
         "header": "Please upload a CSV file to add members. The first row (header) of the csv should contain:",
         "content": "From the second row, fill each member's data in each row",
