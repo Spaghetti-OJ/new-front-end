@@ -223,6 +223,9 @@
     "save": "儲存",
     "cancel": "取消",
     "signOut": "登出",
+    "required": "需要輸入",
+    "password": "密碼",
+    "confirm": "確認密碼",
     "wrongPassword": "密碼錯誤",
     "operationFailed": "操作失敗，請稍後再試",
     "verifyEmail": "驗證信箱",
@@ -415,6 +418,7 @@
     "loginSection": {
       "welcome": "歡迎回來，{user}",
       "signin": "登入",
+      "signup": "註冊",
       "loginFailed": "登入失敗：帳號或是密碼輸入錯誤",
       "username": "帳號",
       "pw": "密碼",

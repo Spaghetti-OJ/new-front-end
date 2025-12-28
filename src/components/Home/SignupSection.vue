@@ -93,7 +93,7 @@ async function signup() {
     <LoginSection v-if="session.isLogin" />
     <div v-else class="card min-w-full">
       <form class="card-body space-y-3 pt-0" @submit.prevent="signup">
-        <div class="card-title mb-2">Sign up</div>
+        <div class="card-title mb-2">{{ $t("components.loginSection.signup") }}</div>
         <div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
           <div>
             <i-uil-times-circle />
@@ -102,26 +102,26 @@ async function signup() {
         </div>
         <!-- Username -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Username</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.username") }}</span></label>
           <input
             v-model="v$.username.$model"
             type="text"
-            placeholder="username"
+            :placeholder="$t('profile.username')"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
           <label class="label" v-if="v$.username.$error">
-            <span class="label-text-alt text-error">Required</span>
+            <span class="label-text-alt text-error">{{ $t("profile.required") }}</span>
           </label>
         </div>
 
         <!-- Email -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Email</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.email") }}</span></label>
           <input
             v-model="v$.email.$model"
             type="email"
-            placeholder="email"
+            :placeholder="$t('profile.email')"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
@@ -134,26 +134,26 @@ async function signup() {
 
         <!-- Real Name -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Real name</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.realName") }}</span></label>
           <input
             v-model="v$.realname.$model"
             type="text"
-            placeholder="your full name"
+            :placeholder="$t('profile.realName')"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
           <label class="label" v-if="v$.realname.$error">
-            <span class="label-text-alt text-error">Required</span>
+            <span class="label-text-alt text-error">{{ $t("profile.required") }}</span>
           </label>
         </div>
 
         <!-- Student ID -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Student ID</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.studentId") }}</span></label>
           <input
             v-model="v$.studentID.$model"
             type="text"
-            placeholder="student ID"
+            :placeholder="$t('profile.studentId')"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
@@ -161,31 +161,31 @@ async function signup() {
 
         <!-- Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Password</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.password") }}</span></label>
           <input
             v-model="v$.password.$model"
             type="password"
-            placeholder="password"
+            :placeholder="$t('profile.password')"
             class="input input-bordered"
             :class="v$.password.$error && 'input-error'"
           />
           <label class="label" v-if="v$.password.$error">
-            <span class="label-text-alt text-error">Required</span>
+            <span class="label-text-alt text-error">{{ $t("profile.required") }}</span>
           </label>
         </div>
 
         <!-- Confirm Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Confirm Password</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.confirm") }}</span></label>
           <input
             v-model="v$.confirmPassword.$model"
             type="password"
-            placeholder="confirm password"
+            :placeholder="$t('profile.confirm')"
             class="input input-bordered"
             :class="v$.confirmPassword.$error && 'input-error'"
           />
           <label class="label" v-if="v$.confirmPassword.$error">
-            <span class="label-text-alt text-error">Password does not match</span>
+            <span class="label-text-alt text-error">{{ $t("profile.rules.confirmPassword.sameAsRef") }}</span>
           </label>
         </div>
 
@@ -196,7 +196,7 @@ async function signup() {
             type="submit"
             :disabled="isLoading"
           >
-            SIGN UP
+            {{ $t("components.loginSection.signup") }}
           </button>
         </div>
       </form>

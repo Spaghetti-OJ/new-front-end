@@ -223,6 +223,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "signOut": "Sign out",
+    "password": "Password",
+    "confirm": "Confirm Password",
     "wrongPassword": "Wrong Password",
     "operationFailed": "Operation failed, please try again later",
     "verifyEmail": "Verify Email",
@@ -416,7 +418,8 @@
     },
     "loginSection": {
       "welcome": "Welcome back, {user}",
-      "signin": "Sign in",
+      "signin": "Sign In",
+      "signup": "Sign Up",
       "loginFailed": "Login Failed: Your username or password is incorrect",
       "username": "Username",
       "pw": "Password",
