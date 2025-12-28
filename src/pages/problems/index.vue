@@ -216,6 +216,7 @@ onBeforeUnmount(() => {
       <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <label
+          v-if="!likedOnly"
           class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
         >
           <input
@@ -224,7 +225,6 @@ onBeforeUnmount(() => {
             class="grow bg-transparent outline-none"
             :placeholder="$t('problems.search.placeholder')"
             @keyup.enter="searchProblems"
-            :disabled="likedOnly"
           />
           <i class="i-uil-search" />
         </label>
@@ -303,7 +303,6 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-semibold opacity-70"></span>
           <button
             class="btn btn-xs gap-2"
             :class="likedOnly ? 'btn-primary' : 'btn-outline'"
