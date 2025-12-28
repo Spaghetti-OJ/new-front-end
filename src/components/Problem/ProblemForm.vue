@@ -3,6 +3,7 @@ import { ref, watch, inject, Ref, watchEffect, onMounted, onBeforeUnmount, compu
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+import { LANGUAGE_OPTIONS } from "@/constants";
 
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
@@ -85,6 +86,7 @@ const rules = {
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
+  solutionLanguage: {},
   quota: { required, minValue: minValue(-1) },
   type: {},
   status: {},
@@ -417,8 +419,23 @@ const removeDomain = (d: string) => {
         </span>
       </label>
 
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Solution Language</span>
+        </label>
+        <select
+          class="select select-bordered w-full max-w-xs"
+          :value="problem.solutionLanguage"
+          @input="update('solutionLanguage', Number(($event.target as HTMLSelectElement).value))"
+        >
+          <option v-for="{ value, text } in LANGUAGE_OPTIONS" :key="value" :value="value">
+            {{ text }}
+          </option>
+        </select>
+      </div>
+
       <!-- 用 code-editor 輸入 -->
-      <div class="w-1/2">
+      <div class="mt-4 w-1/2">
         <!-- 內層：左右排，底部對齊 -->
         <div class="flex items-end gap-4">
           <!-- Editor -->

@@ -4,7 +4,8 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 export {}
 
-declare module '@vue/runtime-core' {
+/* prettier-ignore */
+declare module 'vue' {
   export interface GlobalComponents {
     AIVtuberAssistant: typeof import('./../components/Shared/AIVtuberAssistant.vue')['default']
     AnnouncementCard: typeof import('./../components/Announcement/AnnouncementCard.vue')['default']
@@ -45,12 +46,15 @@ declare module '@vue/runtime-core' {
     IUilHeart: typeof import('~icons/uil/heart')['default']
     IUilHome: typeof import('~icons/uil/home')['default']
     IUilInfoCircle: typeof import('~icons/uil/info-circle')['default']
+    IUilLink: typeof import('~icons/uil/link')['default']
     IUilMinus: typeof import('~icons/uil/minus')['default']
     IUilMonitor: typeof import('~icons/uil/monitor')['default']
     IUilMoon: typeof import('~icons/uil/moon')['default']
     IUilPlus: typeof import('~icons/uil/plus')['default']
     IUilPlusCircle: typeof import('~icons/uil/plus-circle')['default']
     IUilPuzzlePiece: typeof import('~icons/uil/puzzle-piece')['default']
+    IUilRepeat: typeof import('~icons/uil/repeat')['default']
+    IUilSearch: typeof import('~icons/uil/search')['default']
     IUilSetting: typeof import('~icons/uil/setting')['default']
     IUilSignOutAlt: typeof import('~icons/uil/sign-out-alt')['default']
     IUilSun: typeof import('~icons/uil/sun')['default']

@@ -93,6 +93,7 @@ const newProblem = ref<ProblemForm>({
   },
   canViewStdout: false,
   solution: "",
+  solutionLanguage: 0,
   staticAnalysis: [],
   allowedDomains: [],
   forbidFunctions: [],

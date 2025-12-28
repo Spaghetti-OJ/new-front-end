@@ -118,6 +118,7 @@ async function getManage() {
       defaultCode: "",
       staticAnalysis: problemData.static_analysis_rules ?? [],
       solution: "",
+      solutionLanguage: 0,
       allowedDomains: [],
       forbidFunctions: problemData.forbidden_functions ?? [],
     };
