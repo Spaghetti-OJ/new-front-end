@@ -217,7 +217,9 @@ onMounted(() => {
     <div class="card-container">
       <div class="card min-w-full">
         <div class="card-body">
-          <div class="card-title mb-6">{{ t("course.manage.title") }} – {{ currentCourseName || courseId }}</div>
+          <div class="card-title mb-6">
+            {{ t("course.manage.title") }} – {{ currentCourseName || courseId }}
+          </div>
 
           <!-- Error Alert -->
           <div v-if="error" class="alert alert-error mb-4 shadow-lg">
@@ -266,7 +268,9 @@ onMounted(() => {
                 <div v-for="ta in currentTAs" :key="ta" class="badge badge-lg">
                   {{ ta }}
                 </div>
-                <div v-if="currentTAs.length === 0" class="text-sm opacity-50">{{ t("course.manage.noTAsAssigned") }}</div>
+                <div v-if="currentTAs.length === 0" class="text-sm opacity-50">
+                  {{ t("course.manage.noTAsAssigned") }}
+                </div>
               </div>
 
               <div class="divider my-4" />
@@ -297,13 +301,19 @@ onMounted(() => {
             </div>
 
             <div class="mt-12 flex gap-4">
-              <button class="btn btn-success" @click="submitCourseEdit">{{ t("course.manage.submit") }}</button>
-              <button class="btn btn-outline btn-error" @click="deleteCourse">{{ t("course.manage.deleteCourse") }}</button>
+              <button class="btn btn-success" @click="submitCourseEdit">
+                {{ t("course.manage.submit") }}
+              </button>
+              <button class="btn btn-outline btn-error" @click="deleteCourse">
+                {{ t("course.manage.deleteCourse") }}
+              </button>
             </div>
           </template>
 
           <div class="mt-6 flex items-center gap-4">
-            <button class="btn btn-success btn-sm" @click="generateCourseCode">{{ t("course.manage.generateCourseCode") }}</button>
+            <button class="btn btn-success btn-sm" @click="generateCourseCode">
+              {{ t("course.manage.generateCourseCode") }}
+            </button>
 
             <span class="font-mono text-lg font-bold tracking-wider">
               {{ courseCode || "—" }}
@@ -384,7 +394,11 @@ onMounted(() => {
         </h3>
         <p class="py-4">
           {{ t("course.manage.areYouSureDelete") }}
-          {{ deleteConfirm.target === "course" ? t("course.manage.courseSmall") : t("course.manage.inviteCodeSmall") }}?
+          {{
+            deleteConfirm.target === "course"
+              ? t("course.manage.courseSmall")
+              : t("course.manage.inviteCodeSmall")
+          }}?
           <span v-if="deleteConfirm.target === 'course'" class="font-bold text-error">
             {{ t("course.manage.cannotUndo") }}
           </span>
