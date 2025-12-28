@@ -117,7 +117,7 @@ async function getManage() {
       defaultCode: "",
       staticAnalysis: [],
       solution: problemData.solution_code,
-        solutionLanguage: problemData.solution_language ?? 0,
+      solutionLanguage: problemData.solution_language ?? 0,
       allowedDomains: [],
     };
   } catch (err) {
@@ -309,9 +309,12 @@ async function delete_() {
 }
 
 async function onSaveSolution() {
-  console.log("1232435465",edittingProblem);
- const res=await api.Problem.modify(String(route.params.id),{solution_code:edittingProblem.value?.solution,solution_code_language:edittingProblem.value?.solutionLanguage});
- console.log(res);
+  console.log("1232435465", edittingProblem);
+  const res = await api.Problem.modify(String(route.params.id), {
+    solution_code: edittingProblem.value?.solution,
+    solution_code_language: edittingProblem.value?.solutionLanguage,
+  });
+  console.log(res);
 }
 
 type GeneratedCase = {

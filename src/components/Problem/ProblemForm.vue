@@ -355,7 +355,7 @@ const removeDomain = (d: string) => {
           Please upload the correct solution for student reference.<!--待修改-->
         </span>
       </label>
-       <div class="form-control w-1/2">
+      <div class="form-control w-1/2">
         <label class="label">
           <span class="label-text">Solution Language</span>
         </label>
