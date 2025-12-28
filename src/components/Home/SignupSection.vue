@@ -106,13 +106,10 @@ async function signup() {
           <input
             v-model="v$.username.$model"
             type="text"
-            placeholder="username"
+            placeholder="username (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
-          <label class="label">
-            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
-          </label>
           <label class="label" v-if="v$.username.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -124,15 +121,10 @@ async function signup() {
           <input
             v-model="v$.email.$model"
             type="email"
-            placeholder="email"
+            placeholder="email (must be valid and receivable)"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
-          <label class="label">
-            <span class="label-text-alt opacity-70"
-              >Please enter a valid email address that can receive emails.</span
-            >
-          </label>
           <label class="label" v-if="v$.email.$error">
             <span class="label-text-alt text-error">
               {{ v$.email.required.$invalid ? "Required" : v$.email.email.$invalid ? "Invalid email" : "" }}
@@ -146,13 +138,10 @@ async function signup() {
           <input
             v-model="v$.realname.$model"
             type="text"
-            placeholder="your full name"
+            placeholder="your full name (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
-          <label class="label">
-            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
-          </label>
           <label class="label" v-if="v$.realname.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -164,13 +153,10 @@ async function signup() {
           <input
             v-model="v$.studentID.$model"
             type="text"
-            placeholder="student ID"
+            placeholder="student ID (cannot be changed after confirmation)"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
-          <label class="label">
-            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
-          </label>
         </div>
 
         <!-- Password -->
