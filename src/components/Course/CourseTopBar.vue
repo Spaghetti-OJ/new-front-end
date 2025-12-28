@@ -30,7 +30,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
   };
   const managePage = {
     path: `/courses/${route.params.courseId}/manage`,
-    text: t("components.courseSideBar.menage"),
+    text: t("components.courseSideBar.manage"),
   };
 
   return {
@@ -79,7 +79,7 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     "courses-courseId-submissions": [{ path: null, text: t("components.courseSideBar.submissions") }],
     "courses-courseId-submissions-id": [submissionsPage, { path: null, text: `${route.params.id}` }],
     "courses-courseId-members": [{ path: null, text: t("components.courseSideBar.members") }],
-    "courses-courseId-manage": [{ path: null, text: t("components.courseSideBar.menage") }],
+    "courses-courseId-manage": [{ path: null, text: t("components.courseSideBar.manage") }],
   };
 });
 
