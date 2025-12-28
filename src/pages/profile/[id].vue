@@ -136,7 +136,7 @@ const beatRate = computed(() => {
             <section class="w-full">
               <div class="mb-4">
                 <span
-                  class="inline-flex gap-4 rounded-[8px] px-4 py-2 text-lg font-semibold text-black"
+                  class="inline-flex gap-4 rounded-[8px] px-4 py-2 text-base font-semibold text-black"
                   :class="{
                     'bg-[#F3C5C5] ': user.role === 'Student',
                     'bg-[#C5F3D2] ': user.role === 'Teacher',
@@ -148,7 +148,7 @@ const beatRate = computed(() => {
               </div>
 
               <div class="grid grid-cols-1 gap-x-[33px] gap-y-4 md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
-                <ProfileField :label="t('profile.userId')" :model-value="user.username" :editable="false" />
+                <ProfileField :label="t('profile.username')" :model-value="user.username" :editable="false" />
                 <ProfileField
                   :label="t('profile.introduction')"
                   :model-value="user.bio"
