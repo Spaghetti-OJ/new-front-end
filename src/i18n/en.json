@@ -2,7 +2,7 @@
   "settings": {
     "title": "Settings",
     "selectLang": "Select your preferred language",
-    "change_password": {
+    "password": {
       "change": "Change Password",
       "success": "Password has been successfully changed",
       "new": "New Password",
