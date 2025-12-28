@@ -10,28 +10,33 @@ import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 import api from "@/api";
 import { useTheme } from "@/stores/theme";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
-useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
+const { t } = useI18n();
+useTitle(
+  computed(() =>
+    t("course.hw.stats.pageTitle", {
+      id: route.params.id,
+      courseId: route.params.courseId,
+    }),
+  ),
+);
 const theme = useTheme();
 use([CanvasRenderer, LabelLayout, GridComponent, TooltipComponent, BarChart]);
 
 const hw = ref<Homework | null>(null);
 const hwError = ref<any>(null);
 const isHWFetching = ref(false);
-
-const scoreboard = ref<HomeworkScoreboardData | null>(null);
+const submissions = ref<SubmissionListItem[]>([]);
 
 async function fetchHomework() {
   isHWFetching.value = true;
   hwError.value = null;
   try {
-    const [hwRes, scoreboardRes] = await Promise.all([
-      api.Homework.get(route.params.id as string),
-      api.Homework.getScoreboard(route.params.id as string),
-    ]);
+    const hwRes = await api.Homework.get(route.params.id as string);
     hw.value = hwRes;
-    scoreboard.value = scoreboardRes;
+    await fetchSubmissions();
   } catch (err) {
     hwError.value = err;
   } finally {
@@ -47,24 +52,150 @@ watch(
   { immediate: true },
 );
 
-const pids = computed(() => hw.value?.problem_ids);
+const pids = computed(() => {
+  if (!hw.value) return undefined;
+  return (
+    (hw.value as Homework & { problemIds?: number[] }).problem_ids ??
+    (hw.value as Homework & { problemIds?: number[] }).problemIds
+  );
+});
+
+function toUnixSeconds(timestamp: string): number | null {
+  const ms = Date.parse(timestamp);
+  if (Number.isNaN(ms)) return null;
+  return Math.floor(ms / 1000);
+}
+
+async function fetchSubmissionsForProblem(problemId: number, after?: number, before?: number) {
+  const results: SubmissionListItem[] = [];
+  const pageSize = 200;
+  let page = 1;
+
+  while (true) {
+    const data = await api.Submission.list({
+      problem_id: String(problemId),
+      course_id: route.params.courseId as string,
+      page,
+      page_size: pageSize,
+      ...(after != null ? { after } : {}),
+      ...(before != null ? { before } : {}),
+    });
+
+    const batch = data.results ?? [];
+    results.push(...batch);
+
+    const count = data.count ?? results.length;
+    if (results.length >= count || batch.length === 0) break;
+    page += 1;
+  }
+
+  return results;
+}
+
+async function fetchSubmissions() {
+  if (!hw.value) {
+    submissions.value = [];
+    return;
+  }
+  if (!pids.value?.length) {
+    submissions.value = [];
+    return;
+  }
+
+  const after = hw.value.start != null ? Number(hw.value.start) : undefined;
+  const before = hw.value.end != null ? Number(hw.value.end) : undefined;
+  const results = await Promise.all(pids.value.map((pid) => fetchSubmissionsForProblem(pid, after, before)));
+  submissions.value = results.flat();
+}
 
 const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
-  if (!scoreboard.value) return null;
-  const items = scoreboard.value.items.map((item) => {
-    if (!Array.isArray(item.problems)) return item;
-    const problemMap: Record<number, HomeworkScoreboardItemProblem> = {};
-    item.problems.forEach((problem) => {
-      problemMap[problem.problem_id] = problem;
+  if (!hw.value || !pids.value?.length) return null;
+
+  const maxScorePerProblem = 100;
+  const endTime = hw.value.end != null ? Number(hw.value.end) : null;
+  const itemsByUser = new Map<string, HomeworkScoreboardItem>();
+
+  submissions.value.forEach((sub) => {
+    const userId = sub.user?.id || sub.user?.username;
+    if (!userId) return;
+
+    let item = itemsByUser.get(userId);
+    if (!item) {
+      item = {
+        rank: 0,
+        user_id: userId,
+        username: sub.user.username,
+        real_name: sub.user.real_name || "",
+        total_score: 0,
+        max_total_score: pids.value!.length * maxScorePerProblem,
+        is_late: false,
+        first_ac_time: null,
+        last_submission_time: null,
+        problems: {},
+      };
+      itemsByUser.set(userId, item);
+    }
+
+    const ts = sub.timestamp ? toUnixSeconds(sub.timestamp) : null;
+    if (ts != null) {
+      const lastTs = item.last_submission_time ? toUnixSeconds(item.last_submission_time) : null;
+      if (lastTs == null || ts > lastTs) {
+        item.last_submission_time = new Date(ts * 1000).toISOString();
+      }
+      const isAccepted = Number(sub.status) === 0;
+      const firstTs = item.first_ac_time ? toUnixSeconds(item.first_ac_time) : null;
+      if (isAccepted && (firstTs == null || ts < firstTs)) {
+        item.first_ac_time = new Date(ts * 1000).toISOString();
+      }
+      if (endTime != null && ts > endTime) {
+        item.is_late = true;
+      }
+    }
+
+    const pid = sub.problemId;
+    const problems = item.problems as Record<number, HomeworkScoreboardItemProblem>;
+    const existing = problems[pid] ?? {
+      problem_id: pid,
+      best_score: 0,
+      max_possible_score: maxScorePerProblem,
+      solve_status: "unsolved" as const,
+    };
+    const score = Number(sub.score) || 0;
+    if (score > existing.best_score) {
+      existing.best_score = score;
+    }
+    problems[pid] = existing;
+  });
+
+  const items = Array.from(itemsByUser.values()).map((item) => {
+    const problems = item.problems as Record<number, HomeworkScoreboardItemProblem>;
+    let totalScore = 0;
+    pids.value!.forEach((pid) => {
+      const existing = problems[pid] ?? {
+        problem_id: pid,
+        best_score: 0,
+        max_possible_score: maxScorePerProblem,
+        solve_status: "unsolved" as const,
+      };
+      if (existing.best_score >= maxScorePerProblem) existing.solve_status = "solved";
+      else if (existing.best_score > 0) existing.solve_status = "partial";
+      else existing.solve_status = "unsolved";
+      problems[pid] = existing;
+      totalScore += existing.best_score;
     });
+
     return {
       ...item,
-      problems: problemMap,
+      total_score: totalScore,
+      max_total_score: pids.value!.length * maxScorePerProblem,
+      problems,
     };
   });
 
   return {
-    ...scoreboard.value,
+    homework_id: Number(route.params.id),
+    homework_title: hw.value.name,
+    course_id: String(route.params.courseId),
     items,
   };
 });
@@ -154,12 +285,12 @@ function exportCSV() {
   if (!sortedScoreboard.value || !pids.value) return;
   const _pids = pids.value;
   const csvHeader: string = [
-    "rank",
-    "username",
-    "real_name",
+    t("course.hw.stats.csv.rank"),
+    t("course.hw.stats.csv.username"),
+    t("course.hw.stats.csv.realName"),
     ..._pids.map(String),
-    "is_late",
-    "total_score",
+    t("course.hw.stats.csv.isLate"),
+    t("course.hw.stats.csv.totalScore"),
   ].join(",");
   const csvBody: string = sortedScoreboard.value
     .map((row) => {
@@ -173,7 +304,7 @@ function exportCSV() {
         row.username,
         row.real_name,
         ...problemScores,
-        row.is_late ? "Yes" : "No",
+        row.is_late ? t("course.hw.stats.csv.yes") : t("course.hw.stats.csv.no"),
         row.total_score,
       ].join(",");
     })
@@ -196,7 +327,7 @@ function exportCSV() {
   <div class="p-2 pb-40">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title">Stats - {{ hw && hw.name }}</div>
+        <div class="card-title">{{ t("course.hw.stats.statsTitle", { name: hw?.name ?? "-" }) }}</div>
 
         <div class="flex">
           <v-chart
@@ -208,27 +339,27 @@ function exportCSV() {
         </div>
 
         <div class="mb-4 mt-8 flex items-center justify-between">
-          <div class="card-title">Scoreboard</div>
+          <div class="card-title">{{ t("course.hw.stats.scoreboardTitle") }}</div>
           <div class="flex gap-2">
             <select
               v-model="sortBy"
               class="select select-bordered select-sm w-full max-w-xs"
-              aria-label="Sort scoreboard"
+              :aria-label="t('course.hw.stats.sort.aria')"
             >
-              <option :value="Columns.USERNAME">Sort by Username</option>
-              <option :value="Columns.TOTAL_SCORE_DESC">Sort by Score (Desc)</option>
-              <option :value="Columns.TOTAL_SCORE_ASC">Sort by Score (Asc)</option>
+              <option :value="Columns.USERNAME">{{ t("course.hw.stats.sort.username") }}</option>
+              <option :value="Columns.TOTAL_SCORE_DESC">{{ t("course.hw.stats.sort.scoreDesc") }}</option>
+              <option :value="Columns.TOTAL_SCORE_ASC">{{ t("course.hw.stats.sort.scoreAsc") }}</option>
             </select>
-            <button class="btn btn-sm" @click="exportCSV" aria-label="Export scoreboard as CSV">
-              Export CSV
+            <button class="btn btn-sm" @click="exportCSV" :aria-label="t('course.hw.stats.exportAria')">
+              {{ t("course.hw.stats.exportCsv") }}
             </button>
             <button
               class="btn btn-primary btn-sm"
               :class="{ loading: isHWFetching }"
               @click="fetchHomework"
-              aria-label="Refresh scoreboard data"
+              :aria-label="t('course.hw.stats.refreshAria')"
             >
-              Refresh
+              {{ t("course.hw.stats.refresh") }}
             </button>
           </div>
         </div>
@@ -244,10 +375,10 @@ function exportCSV() {
               <table class="table table-compact w-full">
                 <thead>
                   <tr>
-                    <th class="w-16 text-center">Rank</th>
-                    <th>User</th>
+                    <th class="w-16 text-center">{{ t("course.hw.stats.table.rank") }}</th>
+                    <th>{{ t("course.hw.stats.table.user") }}</th>
                     <th class="w-16 text-center" v-for="pid in pids" :key="pid">{{ pid }}</th>
-                    <th class="w-24 text-center">Total</th>
+                    <th class="w-24 text-center">{{ t("course.hw.stats.table.total") }}</th>
                   </tr>
                 </thead>
                 <tbody class="font-mono text-base">
@@ -257,7 +388,9 @@ function exportCSV() {
                       <div class="flex flex-col">
                         <span class="font-bold">{{ row.username }}</span>
                         <span class="text-xs opacity-70">{{ row.real_name }}</span>
-                        <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">Late</span>
+                        <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">{{
+                          t("course.hw.stats.table.late")
+                        }}</span>
                       </div>
                     </td>
                     <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
@@ -281,7 +414,7 @@ function exportCSV() {
                   </tr>
                   <tr v-if="sortedScoreboard.length === 0">
                     <td :colspan="(pids?.length || 0) + 3" class="py-8 text-center opacity-50">
-                      No submissions found.
+                      {{ t("course.hw.stats.table.empty") }}
                     </td>
                   </tr>
                 </tbody>
