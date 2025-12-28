@@ -365,14 +365,6 @@ function exportCSV() {
             <button class="btn btn-sm" @click="exportCSV" :aria-label="t('course.hw.stats.exportAria')">
               {{ t("course.hw.stats.exportCsv") }}
             </button>
-            <button
-              class="btn btn-primary btn-sm"
-              :class="{ loading: isHWFetching }"
-              @click="fetchHomework"
-              :aria-label="t('course.hw.stats.refreshAria')"
-            >
-              {{ t("course.hw.stats.refresh") }}
-            </button>
           </div>
         </div>
 

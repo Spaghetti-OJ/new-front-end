@@ -146,8 +146,6 @@
         },
         "exportCsv": "Export CSV",
         "exportAria": "Export scoreboard as CSV",
-        "refresh": "Refresh",
-        "refreshAria": "Refresh scoreboard data",
         "table": {
           "rank": "Rank",
           "user": "User",
