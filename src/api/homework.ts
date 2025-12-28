@@ -7,10 +7,6 @@ const homework = {
   delete: (id: string) => fetcher.delete(`/homework/${id}`),
   list: (courseId: string) =>
     fetcher.get<GetHomeworksResponse>(`/course/${courseId}/homework/`).then((r) => r.data),
-  getScoreboard: (homeworkId: string | number) =>
-    fetcher
-      .get<HomeworkScoreboardResponse>(`/homework/${homeworkId}/scoreboard/`)
-      .then((r) => (r.data ?? r) as unknown as HomeworkScoreboardData),
 };
 
 export const Homework = homework;

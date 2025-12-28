@@ -10,6 +10,7 @@ import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 import api from "@/api";
 import { useTheme } from "@/stores/theme";
+import dayjs from "dayjs";
 
 const route = useRoute();
 useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
@@ -20,18 +21,39 @@ const hw = ref<Homework | null>(null);
 const hwError = ref<any>(null);
 const isHWFetching = ref(false);
 
-const scoreboard = ref<HomeworkScoreboardData | null>(null);
+const submissionsMap = ref<Record<string, SubmissionListItem>>({});
+
+async function fetchSubmissions() {
+  if (!hw.value?.problem_ids) return;
+
+  const requests = hw.value.problem_ids.map(
+    (pid) =>
+      api.Submission.list({
+        problem_id: String(pid),
+        course_id: route.params.courseId as string,
+        page_size: 1000,
+      }).then((res) => res.results || []), // Handle response structure
+  );
+
+  try {
+    const results = await Promise.all(requests);
+    const allSubmissions = results.flat();
+
+    allSubmissions.forEach((sub: SubmissionListItem) => {
+      submissionsMap.value[sub.submissionId] = sub;
+    });
+  } catch (e) {
+    console.error("Failed to fetch submissions", e);
+  }
+}
 
 async function fetchHomework() {
   isHWFetching.value = true;
   hwError.value = null;
   try {
-    const [hwRes, scoreboardRes] = await Promise.all([
-      api.Homework.get(route.params.id as string),
-      api.Homework.getScoreboard(route.params.id as string),
-    ]);
-    hw.value = hwRes;
-    scoreboard.value = scoreboardRes;
+    const res = await api.Homework.get(route.params.id as string);
+    hw.value = res;
+    await fetchSubmissions(); // Fetch submissions after getting homework details
   } catch (err) {
     hwError.value = err;
   } finally {
@@ -50,21 +72,76 @@ watch(
 const pids = computed(() => hw.value?.problem_ids);
 
 const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
-  if (!scoreboard.value) return null;
-  const items = scoreboard.value.items.map((item) => {
-    if (!Array.isArray(item.problems)) return item;
-    const problemMap: Record<number, HomeworkScoreboardItemProblem> = {};
-    item.problems.forEach((problem) => {
-      problemMap[problem.problem_id] = problem;
+  if (!hw.value || !pids.value) return null;
+
+  const items: HomeworkScoreboardItem[] = [];
+  const statusMap = hw.value.studentStatus || {};
+
+  Object.entries(statusMap).forEach(([username, problemsParams]) => {
+    const problems = problemsParams as Record<
+      string,
+      { score: number; problemStatus: string | null; submissionIds?: string[] }
+    >;
+
+    let totalScore = 0;
+    let firstAcTimestamp: number | null = null;
+    let lastSubmissionTimestamp: number | null = null;
+
+    const problemItems: Record<number, HomeworkScoreboardItemProblem> = {};
+
+    pids.value!.forEach((pid) => {
+      const pData = problems[String(pid)];
+      const score = pData?.score ?? 0;
+      totalScore += score;
+
+      const subIds = pData?.submissionIds || [];
+
+      subIds.forEach((sid) => {
+        const sub = submissionsMap.value[sid];
+        if (sub) {
+          const ts = dayjs(sub.timestamp).unix();
+          if (lastSubmissionTimestamp === null || ts > lastSubmissionTimestamp) {
+            lastSubmissionTimestamp = ts;
+          }
+          if (Number(sub.status) === 0) {
+            if (firstAcTimestamp === null || ts < firstAcTimestamp) {
+              firstAcTimestamp = ts;
+            }
+          }
+        }
+      });
+
+      // Map status
+      let status: "unsolved" | "partial" | "solved" = "unsolved";
+      if (pData?.problemStatus === "accepted") status = "solved";
+      else if (score > 0) status = "partial";
+
+      problemItems[pid] = {
+        problem_id: pid,
+        best_score: score,
+        max_possible_score: 100, // Assumption
+        solve_status: status,
+      };
     });
-    return {
-      ...item,
-      problems: problemMap,
-    };
+
+    items.push({
+      rank: 0,
+      user_id: username,
+      username: username,
+      real_name: "",
+      total_score: totalScore,
+      max_total_score: pids.value!.length * 100,
+      is_late: false,
+      first_ac_time: firstAcTimestamp ? dayjs.unix(firstAcTimestamp).format() : null,
+      last_submission_time: lastSubmissionTimestamp ? dayjs.unix(lastSubmissionTimestamp).format() : null,
+      problems: problemItems,
+    });
   });
 
   return {
-    ...scoreboard.value,
+    homework_id: Number(route.params.id),
+    homework_title: hw.value.name,
+    course_id: String(route.params.courseId),
     items,
   };
 });
