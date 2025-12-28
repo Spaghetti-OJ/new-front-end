@@ -65,8 +65,15 @@ const rules = {
       scoreSum: helpers.withMessage(
         "The sum of all subtasks score should be 100",
         (tasks: ProblemTestCase[]) => {
-          if (!props.testdata) return true;
-          const sum = tasks.reduce((acc, cur) => acc + (Number(cur.taskScore) || 0), 0);
+          // Allow edits when no meaningful scores are set, but enforce 100 once scores exist
+          const scoredTasks = tasks.filter((cur) => {
+            const value = Number(cur.taskScore);
+            return !Number.isNaN(value);
+          });
+          if (scoredTasks.length === 0) {
+            return true;
+          }
+          const sum = scoredTasks.reduce((acc, cur) => acc + Number(cur.taskScore), 0);
           return sum === 100;
         },
       ),
