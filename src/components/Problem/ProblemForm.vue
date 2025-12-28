@@ -743,6 +743,9 @@ const removeDomain = (d: string) => {
               </button>
             </div>
             <span v-if="forbidFnError" class="text-xs text-error">{{ forbidFnError }}</span>
+            <span v-if="v$.forbidFunctions.$error" class="text-xs text-error">
+              {{ v$.forbidFunctions.$errors[0]?.$message }}
+            </span>
             <span class="text-xs opacity-60">Only function name allowed (letters, digits, underscore).</span>
           </div>
         </div>
