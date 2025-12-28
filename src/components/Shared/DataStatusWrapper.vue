@@ -8,19 +8,21 @@ defineProps<{
 </script>
 
 <template>
-  <slot v-if="error" name="error">
-    <div class="alert alert-error shadow-lg">
-      <div>
-        <i-uil-times-circle />
-        <div class="flex flex-col">
-          <span>{{ $t("components.dataStatusWrapper.errorMsg") }}</span>
-          <span>{{ error }}</span>
+  <div v-bind="$attrs">
+    <slot v-if="error" name="error">
+      <div class="alert alert-error shadow-lg">
+        <div>
+          <i-uil-times-circle />
+          <div class="flex flex-col">
+            <span>{{ $t("components.dataStatusWrapper.errorMsg") }}</span>
+            <span>{{ error }}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </slot>
-  <slot v-else-if="isLoading" name="loading">
-    <ui-spinner />
-  </slot>
-  <slot v-else name="data"> </slot>
+    </slot>
+    <slot v-else-if="isLoading" name="loading">
+      <ui-spinner />
+    </slot>
+    <slot v-else name="data"> </slot>
+  </div>
 </template>
