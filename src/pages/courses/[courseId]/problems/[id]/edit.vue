@@ -77,7 +77,6 @@ async function getManage() {
     const problemId = Number(route.params.id);
 
     const { data: problemData } = await api.Problem.getManageData(problemId);
-    console.log(problemData);
     const { data: subtasks } = await api.Problem.getSubtasks(problemId);
     const { data: publicInfo } = (await api.Problem.getProblemInfo(problemId)) as { data: any };
 
