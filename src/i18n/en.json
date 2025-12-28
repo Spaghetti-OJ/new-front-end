@@ -477,14 +477,40 @@
           "sample": {
             "input": "Sample Input ",
             "output": "Sample Output "
-          }
+          },
+          "appendSample": "Append new sample",
+          "removeSample": "Remove last sample"
         },
         "testdataRule1": "Put all the input/output files in a single `.zip` file, and follow the naming rules below.",
         "testdataRule2": "Name the input file as \"sstt.in\", where \"ss\" represents the number of subtasks it belongs to, and \"tt\" represents which testcase it is in subtask.",
         "testdataRule3": "Similarly, name the ouput file as \"sstt.out\", NOTE THAT \"ss\" & \"tt\" are zero-indexed.",
         "testdataRule4": "For example, a problem with 3 subtasks, and the number of testcases of each subtask is 3, 5, 15, respectively.",
         "testdataRule5": "The content of zip file is:",
-        "gotIt": "Got it"
+        "gotIt": "Got it",
+        "subtaskDescription": "Subtask description",
+        "solution": "Solution",
+        "solutionUploadHint": "Please upload the correct solution for student reference.",
+        "solutionLanguage": "Solution Language",
+        "saveSolution": "Save Solution",
+        "llmGenerateTestcase": "LLM generate testcase",
+        "uploadTestcase": "Upload testcase",
+        "checker": "Checker",
+        "whatIsChecker": "WHAT IS CHECKER",
+        "checkerHint": "If teacher do not upload checker file, system will check submission refer to teacher's testdata.",
+        "chooseFile": "Choose file",
+        "noFileChosen": "No file chosen",
+        "staticAnalysis": "Static program analysis",
+        "selectAnalysisRules": "Select analysis rules",
+        "allowNetwork": "Allow connect to network",
+        "addDomainPlaceholder": "Please add domain.",
+        "addDomain": "ADD DOMAIN",
+        "invalidFunctionName": "Invalid function name (e.g., foo, my_func, printf)",
+        "pleaseSelectSolutionLanguage": "Please select a valid solution language.",
+        "aiGenerateTestdata": "AI generate testdata",
+        "generate": "GENERATE",
+        "llmWarning": "LLM will generate test cases that refer to your solution and description. AI may generate error output. Please double-check before you publish the problem.",
+        "forbidFunctionHint": "Only function name allowed (letters, digits, underscore).",
+        "dropChecker": "Drop file here, or use the button to select file"
       },
       "card": {
         "title": "Problem #",
@@ -510,7 +536,10 @@
           "score": "Score"
         },
         "noContent": "no content",
-        "unlimited": "unlimited"
+        "unlimited": "unlimited",
+        "copycat": "Copycat",
+        "edit": "Edit",
+        "downloadTestCase": "Download test case"
       },
       "infoCard": {
         "score": "Score",

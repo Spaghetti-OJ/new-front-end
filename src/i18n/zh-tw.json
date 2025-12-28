@@ -475,14 +475,40 @@
           "sample": {
             "input": "範例輸入 ",
             "output": "範例輸出 "
-          }
+          },
+          "appendSample": "新增範例",
+          "removeSample": "移除最後一個範例"
         },
         "testdataRule1": "您需要將所有的輸入輸出檔置於一個 .zip 檔，且必須遵照以下命名規則",
         "testdataRule2": "輸入檔的檔名應為 \"sstt.in\"，其中 \"ss\" 代表是第幾個子任務，而 \"tt\" 代表是該子任務中的第幾筆測資",
         "testdataRule3": "同樣地，輸出檔的檔名應為 \"sstt.out\"，另請注意 \"ss\" 和 \"tt\" 是從零開始編號.",
         "testdataRule4": "舉例來說，一個有 3 個子任務的題目，其子任務的測資數量分別是 3, 5, 15",
         "testdataRule5": "那麼 zip 檔內應該包含這些檔案：",
-        "gotIt": "好的"
+        "gotIt": "好的",
+        "subtaskDescription": "子任務說明",
+        "solution": "解答",
+        "solutionUploadHint": "請上傳正確的解答供學生參考。",
+        "solutionLanguage": "解答語言",
+        "saveSolution": "儲存解答",
+        "llmGenerateTestcase": "LLM 產生測資",
+        "uploadTestcase": "上傳測資",
+        "checker": "檢查器",
+        "whatIsChecker": "什麼是檢查器",
+        "checkerHint": "若教師未上傳檢查器檔案，系統將依據教師的測資來檢查提交。",
+        "chooseFile": "選擇檔案",
+        "noFileChosen": "未選擇任何檔案",
+        "staticAnalysis": "靜態程式分析",
+        "selectAnalysisRules": "選擇分析規則",
+        "allowNetwork": "允許連線到網路",
+        "addDomainPlaceholder": "請新增網域。",
+        "addDomain": "新增網域",
+        "invalidFunctionName": "無效的函數名稱（例如：foo, my_func, printf）",
+        "pleaseSelectSolutionLanguage": "請選擇有效的解答語言。",
+        "aiGenerateTestdata": "AI 產生測資",
+        "generate": "產生",
+        "llmWarning": "LLM 會根據您的解答和說明產生測試案例。AI 可能產生錯誤的輸出，請在發布題目前仔細檢查。",
+        "forbidFunctionHint": "僅允許函數名稱（字母、數字、底線）。",
+        "dropChecker": "拖曳檔案至此，或透過右方按鈕選擇檔案"
       },
       "card": {
         "title": "題目編號 ",
@@ -508,7 +534,10 @@
           "score": "配分"
         },
         "noContent": "無",
-        "unlimited": "無限制"
+        "unlimited": "無限制",
+        "copycat": "抄襲偵測",
+        "edit": "編輯",
+        "downloadTestCase": "下載測資"
       },
       "infoCard": {
         "score": "得分",
