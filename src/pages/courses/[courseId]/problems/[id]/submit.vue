@@ -132,7 +132,6 @@ async function runTest() {
   } catch (e) {
     testForm.isError = true;
     testForm.output = "Test failed. Please try again.";
-    throw e;
   } finally {
     testForm.isLoading = false;
   }
@@ -287,7 +286,7 @@ onMounted(loadProblem);
                     <div>
                       <span class="font-medium text-base-content">Memory Used</span>
                       <span class="ml-2">
-                        {{ testResultMeta?.memoryUsed != null ? `${testResultMeta.memoryUsed} KB` : "-" }}
+                        {{ testResultMeta?.memoryUsed != null ? `${testResultMeta.memoryUsed} MB` : "-" }}
                       </span>
                     </div>
                   </div>
