@@ -120,7 +120,7 @@ async function getManage() {
       canViewStdout: true,
       defaultCode: "",
       staticAnalysis: problemData.static_analysis_rules ?? [],
-      solution: "",
+      solution: problemData.solution,
       solutionLanguage: problemData.solution_language ?? 0,
       allowedDomains: [],
       forbidFunctions: problemData.forbidden_functions ?? [],
@@ -318,8 +318,24 @@ async function delete_() {
   }
 }
 
-function onSaveSolution() {
-  // TODO: connect solution-only API later
+async function onSaveSolution() {
+  if (!formElement.value) return;
+  formElement.value.isLoading = true;
+  try {
+    await api.Problem.modify(String(route.params.id), {
+      solution_code: edittingProblem.value?.solution,
+      solution_code_language: edittingProblem.value?.solutionLanguage,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data) {
+      formElement.value.errorMsg = (error.response.data as any).detail ?? "Unknown error occurred :(";
+    } else {
+      formElement.value.errorMsg = "Unknown error occurred :(";
+    }
+    throw error;
+  } finally {
+    formElement.value.isLoading = false;
+  }
 }
 
 type GeneratedCase = {

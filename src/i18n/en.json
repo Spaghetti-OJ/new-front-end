@@ -362,7 +362,8 @@
     "filter": {
       "Courses": "Courses",
       "Tags": "Tags",
-      "Difficulty": "Difficulty"
+      "Difficulty": "Difficulty",
+      "liked": "Liked"
     },
     "table": {
       "id": "ID",
