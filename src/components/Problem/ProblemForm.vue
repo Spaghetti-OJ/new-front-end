@@ -82,7 +82,7 @@ const v$ = useVuelidate(rules, problem.value);
 
 function update(key: keyof ProblemForm, value: ProblemForm[typeof key]) {
   emits("update", key, value);
-  (v$.value as any)[key]?.$touch?.();
+  v$.value[key].$touch();
 }
 
 async function submit() {
