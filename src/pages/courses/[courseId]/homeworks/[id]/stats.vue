@@ -330,22 +330,15 @@ function exportCSV() {
         <div class="card-title">{{ t("course.hw.stats.statsTitle", { name: hw?.name ?? "-" }) }}</div>
 
         <div class="flex">
-          <v-chart
-            class="mx-auto h-[400px] w-full"
-            :theme="theme.isDark ? 'dark' : ''"
-            :option="barOption"
-            autoresize
-          />
+          <v-chart class="mx-auto h-[400px] w-full" :theme="theme.isDark ? 'dark' : ''" :option="barOption"
+            autoresize />
         </div>
 
         <div class="mb-4 mt-8 flex items-center justify-between">
           <div class="card-title">{{ t("course.hw.stats.scoreboardTitle") }}</div>
           <div class="flex gap-2">
-            <select
-              v-model="sortBy"
-              class="select select-bordered select-sm w-full max-w-xs"
-              :aria-label="t('course.hw.stats.sort.aria')"
-            >
+            <select v-model="sortBy" class="select select-bordered select-sm w-full max-w-xs"
+              :aria-label="t('course.hw.stats.sort.aria')">
               <option :value="Columns.USERNAME">{{ t("course.hw.stats.sort.username") }}</option>
               <option :value="Columns.TOTAL_SCORE_DESC">{{ t("course.hw.stats.sort.scoreDesc") }}</option>
               <option :value="Columns.TOTAL_SCORE_ASC">{{ t("course.hw.stats.sort.scoreAsc") }}</option>
@@ -353,12 +346,8 @@ function exportCSV() {
             <button class="btn btn-sm" @click="exportCSV" :aria-label="t('course.hw.stats.exportAria')">
               {{ t("course.hw.stats.exportCsv") }}
             </button>
-            <button
-              class="btn btn-primary btn-sm"
-              :class="{ loading: isHWFetching }"
-              @click="fetchHomework"
-              :aria-label="t('course.hw.stats.refreshAria')"
-            >
+            <button class="btn btn-primary btn-sm" :class="{ loading: isHWFetching }" @click="fetchHomework"
+              :aria-label="t('course.hw.stats.refreshAria')">
               {{ t("course.hw.stats.refresh") }}
             </button>
           </div>
@@ -390,14 +379,12 @@ function exportCSV() {
                         <span class="text-xs opacity-70">{{ row.real_name }}</span>
                         <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">{{
                           t("course.hw.stats.table.late")
-                        }}</span>
+                          }}</span>
                       </div>
                     </td>
                     <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
-                      <div
-                        class="flex h-16 w-full flex-col items-center justify-center py-2"
-                        :class="getCellColor(row.problems[pid])"
-                      >
+                      <div class="flex h-16 w-full flex-col items-center justify-center py-2"
+                        :class="getCellColor(row.problems[pid])">
                         <template v-if="row.problems[pid]">
                           <div class="font-bold">
                             {{ row.problems[pid]?.best_score }}

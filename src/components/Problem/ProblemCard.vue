@@ -193,7 +193,8 @@ onMounted(() => {
               class="btn md:btn-md lg:btn-lg"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/editorial`"
             >
-              <i-uil-book-open class="lg:h-5 lg:w-5" /> Editorial
+              <i-uil-book-open class="lg:h-5 lg:w-5" />
+              {{ $t("components.problem.card.editorial") }}
             </router-link>
             <router-link
               class="btn md:btn-md lg:btn-lg"
@@ -204,7 +205,7 @@ onMounted(() => {
             <router-link
               v-if="session.hasCourseAccess(route.params.courseId as string)"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
-              data-tip="Copycat"
+              :data-tip="$t('components.problem.card.copycat')"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/copycat`"
             >
               <i-uil-file-exclamation-alt class="lg:h-5 lg:w-5" />
@@ -212,7 +213,7 @@ onMounted(() => {
             <router-link
               v-if="session.hasCourseAccess(route.params.courseId as string)"
               class="btn btn-circle btn-ghost btn-sm"
-              data-tip="Edit"
+              :data-tip="$t('components.problem.card.edit')"
               :to="`/courses/${$route.params.courseId}/problems/${$route.params.id}/edit`"
             >
               <i-uil-edit class="lg:h-5 lg:w-5" />
@@ -220,7 +221,7 @@ onMounted(() => {
             <button
               v-if="session.hasCourseAccess(route.params.courseId as string)"
               :class="['btn tooltip tooltip-bottom btn-ghost btn-sm', 'inline-flex']"
-              data-tip="Download test case"
+              :data-tip="$t('components.problem.card.downloadTestCase')"
               @click="downloadTestCase(Number.parseInt($route.params.id as string, 10))"
             >
               <i-uil-folder-download class="lg:h-5 lg:w-5" />

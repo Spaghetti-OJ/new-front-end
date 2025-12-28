@@ -34,7 +34,6 @@ declare module 'vue' {
     IUilCopy: typeof import('~icons/uil/copy')['default']
     IUilEdit: typeof import('~icons/uil/edit')['default']
     IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
-    IUilExclamationTriangle: typeof import('~icons/uil/exclamation-triangle')['default']
     IUilEye: typeof import('~icons/uil/eye')['default']
     IUilEyeSlash: typeof import('~icons/uil/eye-slash')['default']
     IUilFacebook: typeof import('~icons/uil/facebook')['default']
