@@ -15,6 +15,60 @@
       },
       "submit": "送出",
       "required": "需要輸入"
+    },
+    "apiKeys": {
+      "title": "API 金鑰",
+      "createNewKey": "建立新的密鑰",
+      "noKeysYet": "尚未建立任何 API 金鑰。點擊",
+      "getStarted": "開始使用。",
+      "table": {
+        "name": "名稱",
+        "status": "狀態",
+        "usage": "使用次數",
+        "createdAt": "建立時間",
+        "expiresAt": "過期時間"
+      },
+      "status": {
+        "active": "啟用",
+        "disabled": "停用"
+      },
+      "createModal": {
+        "title": "建立 API 金鑰",
+        "nameLabel": "名稱",
+        "namePlaceholder": "例如：Normal OJ 整合金鑰",
+        "expirationDate": "過期日期"
+      },
+      "generatedModal": {
+        "title": "新的 API 金鑰",
+        "warning": "此金鑰僅會顯示一次，請妥善保存。",
+        "copied": "已複製",
+        "retry": "重試",
+        "copy": "複製",
+        "stored": "我已經儲存了"
+      },
+      "detailModal": {
+        "title": "API 金鑰詳情"
+      },
+      "deleteModal": {
+        "title": "刪除 API 金鑰",
+        "confirm": "您確定要刪除",
+        "question": "嗎？"
+      },
+      "permissions": {
+        "title": "權限",
+        "types": "類型",
+        "read": "讀取",
+        "write": "寫入",
+        "create": "建立",
+        "submissions": "提交記錄",
+        "courses": "課程",
+        "problems": "題目",
+        "user": "使用者"
+      },
+      "close": "關閉",
+      "create": "建立",
+      "delete": "刪除",
+      "cancel": "取消"
     }
   },
   "about": {

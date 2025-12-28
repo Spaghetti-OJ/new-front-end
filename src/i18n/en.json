@@ -15,6 +15,60 @@
       },
       "submit": "Submit",
       "required": "Required"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "createNewKey": "Create New Secret Key",
+      "noKeysYet": "No API keys yet. Click",
+      "getStarted": "to get started.",
+      "table": {
+        "name": "Name",
+        "status": "Status",
+        "usage": "Usage",
+        "createdAt": "Created At",
+        "expiresAt": "Expires At"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "createModal": {
+        "title": "Create API Key",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Normal OJ integration key",
+        "expirationDate": "Expiration Date"
+      },
+      "generatedModal": {
+        "title": "New API Key",
+        "warning": "This key will only be shown once. Please store it safely.",
+        "copied": "Copied",
+        "retry": "Retry",
+        "copy": "Copy",
+        "stored": "I have stored it"
+      },
+      "detailModal": {
+        "title": "API Key Details"
+      },
+      "deleteModal": {
+        "title": "Delete API Key",
+        "confirm": "Are you sure you want to delete",
+        "question": "?"
+      },
+      "permissions": {
+        "title": "Permissions",
+        "types": "Types",
+        "read": "Read",
+        "write": "Write",
+        "create": "Create",
+        "submissions": "Submissions",
+        "courses": "Courses",
+        "problems": "Problems",
+        "user": "User"
+      },
+      "close": "Close",
+      "create": "Create",
+      "delete": "Delete",
+      "cancel": "Cancel"
     }
   },
   "about": {

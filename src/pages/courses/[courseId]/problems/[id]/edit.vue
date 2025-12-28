@@ -275,7 +275,8 @@ async function submit() {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
     } else {
-      formElement.value.errorMsg = error instanceof Error ? error.message : t("course.problem.edit.unknownError");
+      formElement.value.errorMsg =
+        error instanceof Error ? error.message : t("course.problem.edit.unknownError");
     }
     throw error;
   } finally {
@@ -353,7 +354,10 @@ async function onGenerate(payload: GeneratePayload) {
           class="card-title sticky top-[53px] z-50 mb-3 flex h-20 items-center justify-between bg-base-100"
         >
           <div class="flex items-center gap-x-4">
-            <span> {{ t("course.problem.edit.title") }}: {{ $route.params.id }} - {{ edittingProblem?.problemName }} </span>
+            <span>
+              {{ t("course.problem.edit.title") }}: {{ $route.params.id }} -
+              {{ edittingProblem?.problemName }}
+            </span>
 
             <!-- 三顆 tab 按鈕 -->
             <div class="flex items-center gap-x-4">
