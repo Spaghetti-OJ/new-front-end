@@ -10,6 +10,10 @@ export const ROLE = ["Admin", "Teacher", "Student"];
 
 // keyof SUBMISSION_STATUS_REPR please refer to '@/types/submission.d.ts'
 export const SUBMISSION_STATUS_REPR = {
+  [-2]: {
+    label: "Queuing",
+    color: "#607d8b",
+  },
   [-1]: {
     label: "Pending",
     color: "#9e675a",
@@ -49,6 +53,7 @@ export const SUBMISSION_STATUS_REPR = {
 } as const;
 
 export const SUBMISSION_STATUS_CODE = {
+  QUEUING: -2,
   PENDING: -1,
   ACCEPTED: 0,
   WRONG_ANSWER: 1,
@@ -68,11 +73,23 @@ export const LOCAL_STORAGE_KEY = {
 };
 
 export const UNLIMITED_QUOTA = -1;
-export function isQuotaUnlimited(quota: number): boolean {
+export function isQuotaUnlimited(quota: number | null | undefined): boolean {
   return quota === UNLIMITED_QUOTA;
 }
 
 export const PROBLEM_STATUS = {
-  HIDDEN: 1,
-  VISIBLE: 0,
+  HIDDEN: "hidden",
+  VISIBLE: "public",
 };
+
+export const DIFFICULTY = {
+  EASY: "easy",
+  MEDIUM: "medium",
+  HARD: "hard",
+} as const;
+
+export const DIFFICULTY_COLOR_CLASS = {
+  [DIFFICULTY.EASY]: "bg-green-500",
+  [DIFFICULTY.MEDIUM]: "bg-yellow-500",
+  [DIFFICULTY.HARD]: "bg-red-500",
+} satisfies Record<(typeof DIFFICULTY)[keyof typeof DIFFICULTY], string>;

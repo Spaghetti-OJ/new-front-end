@@ -1,0 +1,187 @@
+<script setup lang="ts">
+import dayjs from "dayjs";
+import { ref, computed, onMounted } from "vue";
+import { useTitle } from "@vueuse/core";
+import { useRoute, useRouter } from "vue-router";
+import api from "@/api";
+import axios from "axios";
+import AnnouncementForm from "@/components/Announcement/AnnouncementForm.vue";
+
+const route = useRoute();
+const router = useRouter();
+
+useTitle(`Edit Announcement - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
+
+const formElement = ref<InstanceType<typeof AnnouncementForm>>();
+
+const announcement = ref<Announcement | null>(null);
+const edittingAnnouncement = ref<AnnouncementForm | null>(null);
+
+// 載入狀態 & 錯誤（給 data-status-wrapper 用）
+const isFetching = ref(true);
+const fetchError = ref<unknown | null>(null);
+
+// 進頁面時先把公告詳情抓回來：GET /ann/<course_id>/<ann_id>
+onMounted(async () => {
+  isFetching.value = true;
+  fetchError.value = null;
+
+  try {
+    const courseId = route.params.courseId as string;
+    const annId = route.params.id as string;
+
+    const first = await api.Announcement.getOne(courseId, annId);
+    //const first = (res.data ?? (res as any))[0] as Announcement | undefined;
+
+    if (first) {
+      const ann = first.data[0];
+      announcement.value = ann;
+      edittingAnnouncement.value = {
+        annId: ann.annId,
+        title: ann.title,
+        markdown: ann.markdown,
+        pinned: ann.pinned,
+      } as AnnouncementForm;
+    }
+  } catch (e) {
+    console.error("[FETCH announcement error]", e);
+    fetchError.value =
+      (e as any).response?.data?.detail ||
+      (e as any).response?.data?.message ||
+      (e as any).message ||
+      "Failed to load announcement";
+  } finally {
+    isFetching.value = false;
+  }
+});
+
+function update<K extends keyof AnnouncementForm>(key: K, value: AnnouncementForm[K]) {
+  if (!edittingAnnouncement.value) return;
+  edittingAnnouncement.value[key] = value;
+}
+
+const openPreview = ref<boolean>(false);
+const previewPostMockMeta = computed(() => ({
+  creator: announcement.value?.creator || { username: "Ijichi Nijika" },
+  createTime: announcement.value?.createTime || dayjs().unix(),
+  updateTime: announcement.value?.updateTime || dayjs().unix(),
+}));
+
+// 送出：PUT /ann/
+async function submit() {
+  if (!edittingAnnouncement.value || !formElement.value) return;
+
+  const form = edittingAnnouncement.value;
+
+  formElement.value.isLoading = true;
+  formElement.value.errorMsg = "";
+
+  try {
+    const body = {
+      annId: Number(form.annId ?? route.params.id), // 確保是 number
+      title: form.title,
+      // 後端文件用 context（Markdown，可改用 content），我們用 context 對齊文件
+      content: form.markdown,
+      is_pinned: form.pinned,
+    };
+
+    await api.Announcement.modify(body);
+
+    router.push(`/courses/${route.params.courseId}/announcements/${route.params.id}`);
+  } catch (error) {
+    console.error("[UPDATE announcement error]", error);
+    formElement.value.errorMsg =
+      (error as any).response?.data?.detail ||
+      (error as any).response?.data?.message ||
+      (error as any).message ||
+      "Unknown error occurred :(";
+    throw error;
+  } finally {
+    formElement.value.isLoading = false;
+  }
+}
+
+// 刪除：DELETE /ann/
+async function delete_() {
+  if (!formElement.value) return;
+  if (!confirm("Are u sure?")) return;
+
+  formElement.value.isLoading = true;
+  formElement.value.errorMsg = "";
+
+  try {
+    await api.Announcement.delete({ annId: Number(route.params.id) });
+    router.push(`/courses/${route.params.courseId}/announcements`);
+  } catch (error) {
+    console.error("[DELETE announcement error]", error);
+    formElement.value.errorMsg =
+      (error as any).response?.data?.detail ||
+      (error as any).response?.data?.message ||
+      (error as any).message ||
+      "Unknown error occurred :(";
+    throw error;
+  } finally {
+    formElement.value.isLoading = false;
+  }
+}
+
+function discard() {
+  if (!confirm("Are u sure?")) return;
+  router.push(`/courses/${route.params.courseId}/announcements`);
+}
+</script>
+
+<template>
+  <div class="card-container">
+    <div class="card min-w-full">
+      <div class="card-body">
+        <div class="card-title mb-3 flex-wrap justify-between lg:flex-nowrap">
+          Edit Announcement
+          <div class="flex gap-x-3">
+            <button
+              :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="delete_"
+            >
+              <i-uil-trash-alt class="mr-1 lg:h-5 lg:w-5" /> Delete
+            </button>
+            <button
+              :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
+              @click="discard"
+            >
+              <i-uil-times-circle class="mr-1 lg:h-5 lg:w-5" /> Discard Changes
+            </button>
+          </div>
+        </div>
+
+        <data-status-wrapper :error="fetchError" :is-loading="isFetching">
+          <template #loading>
+            <skeleton-card />
+          </template>
+          <template #data>
+            <template v-if="edittingAnnouncement">
+              <announcement-form
+                :value="edittingAnnouncement"
+                ref="formElement"
+                @update="update"
+                @submit="submit"
+              />
+
+              <div class="divider" />
+
+              <div class="card-title mb-3">
+                Preview
+                <input v-model="openPreview" type="checkbox" class="toggle" />
+              </div>
+
+              <announcement-card
+                v-show="openPreview"
+                :announcement="{ ...previewPostMockMeta, ...edittingAnnouncement }"
+                class="rounded border-2 border-slate-300"
+              />
+            </template>
+          </template>
+        </data-status-wrapper>
+      </div>
+    </div>
+  </div>
+</template>

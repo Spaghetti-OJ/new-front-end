@@ -10,13 +10,13 @@ useTitle("Home | Normal OJ");
 
 <template>
   <div
-    class="mx-auto flex max-w-7xl gap-8 overflow-y-scroll p-4"
+    class="mx-auto flex max-w-7xl gap-8 p-4"
     :class="{
       'flex-col-reverse gap-0 px-0': !isDesktop,
     }"
   >
     <system-announcements />
 
-    <login-section />
+    <HomeAuthTabs />
   </div>
 </template>

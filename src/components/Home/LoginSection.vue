@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useSession } from "@/stores/session";
 import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import api from "@/models/api";
+import api from "@/api";
 import axios from "axios";
 import { useI18n } from "vue-i18n";
-// @ts-ignore
-import cowsay from "cowsay2";
 
 const envMode = import.meta.env.MODE;
 const envApiBaseUrl = import.meta.env.VITE_APP_API_BASE_URL;
@@ -17,13 +15,13 @@ const route = useRoute();
 const router = useRouter();
 const session = useSession();
 const { t } = useI18n();
-
 const loginForm = reactive({
   username: "",
   password: "",
   isLoading: false,
   errorMsg: "",
 });
+const showPassword = ref(false);
 const rules = {
   username: { required },
   password: { required },
@@ -40,19 +38,34 @@ async function login() {
     password: loginForm.password,
   };
   try {
-    await api.Auth.login(body);
-    await session.validateSession();
-    if (route.query.redirect) {
-      router.push(route.query.redirect as string);
-    } else {
-      router.go(0);
+    const tokens = await api.Auth.login({ username: loginForm.username, password: loginForm.password });
+    console.log(tokens);
+    await session.setTokens(tokens.access, tokens.refresh);
+    let redirect = (route.query.redirect as string) ?? "/";
+
+    // Prevent open redirect: must start with / and not //
+    if (!redirect.startsWith("/") || redirect.startsWith("//")) {
+      redirect = "/";
     }
-  } catch (error) {
+
+    try {
+      const redirectUrl = new URL(redirect, window.location.origin);
+      const redirectPath = redirectUrl.pathname;
+      if (redirectPath === "/login" || redirectPath.startsWith("/login/")) {
+        redirect = "/";
+      }
+    } catch {
+      redirect = "/";
+    }
+
+    router.replace(redirect);
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
-      if (error.response?.data?.message === "Login Failed") {
+      console.log(error);
+      const status = error.response?.status;
+
+      if (status === 401) {
         loginForm.errorMsg = t("errorCode.ERR001");
-      } else if (error.response?.data?.message === "Invalid User") {
-        loginForm.errorMsg = t("errorCode.ERR002");
       } else {
         loginForm.errorMsg = t("errorCode.UNKNOWN");
       }
@@ -69,14 +82,14 @@ async function login() {
 <template>
   <div class="card-container">
     <div class="card min-w-full">
-      <div class="card-body">
+      <div class="card-body pt-0">
         <div v-if="session.isNotValidated" class="flex justify-center">
           <ui-spinner />
         </div>
         <div v-else class="card-title mb-2">
           {{
             session.isLogin
-              ? $t("components.loginSection.welcome", { user: session.displayedName })
+              ? $t("components.loginSection.welcome", { user: session.username })
               : $t("components.loginSection.signin")
           }}
         </div>
@@ -106,16 +119,27 @@ async function login() {
             <label class="label">
               <span class="label-text">{{ $t("components.loginSection.pw") }}</span>
             </label>
-            <input
-              v-model="v$.password.$model"
-              type="password"
-              name="password"
-              :placeholder="$t('components.loginSection.placeholder.pw')"
-              :class="['input input-bordered', v$.password.$error && 'input-error']"
-              @keydown.enter="login"
-            />
+            <div class="relative">
+              <input
+                v-model="v$.password.$model"
+                :type="showPassword ? 'text' : 'password'"
+                name="password"
+                :placeholder="$t('components.loginSection.placeholder.pw')"
+                :class="['input input-bordered w-full pr-12', v$.password.$error && 'input-error']"
+                @keydown.enter="login"
+              />
+              <button
+                type="button"
+                class="btn btn-ghost btn-xs absolute inset-y-0 right-2 h-full min-h-0 px-2 hover:bg-transparent"
+                @click="showPassword = !showPassword"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <i-uil-eye-slash v-if="showPassword" class="h-4 w-4" />
+                <i-uil-eye v-else class="h-4 w-4" />
+              </button>
+            </div>
             <label class="label flex-row-reverse">
-              <a href="/password_reset" class="link link-hover label-text-alt">{{
+              <a href="/reset-password" class="link link-hover label-text-alt">{{
                 $t("components.loginSection.forgot")
               }}</a>
               <span
@@ -131,7 +155,6 @@ async function login() {
             </button>
           </div>
         </template>
-        <pre class="text-base-100" v-text="cowsay.say(`MODE=${envMode}; API_BASE_URL=${envApiBaseUrl}`)" />
       </div>
     </div>
   </div>

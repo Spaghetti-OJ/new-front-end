@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "設定",
-    "selectLang": "選擇語言"
+    "selectLang": "選擇語言",
+    "password": {
+      "change": "變更密碼",
+      "success": "密碼已成功變更",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "current": "舊密碼",
+      "placeholder": {
+        "new": "新密碼",
+        "again": "再輸入一次新密碼",
+        "current": "舊密碼"
+      },
+      "submit": "送出",
+      "required": "需要輸入"
+    }
   },
   "about": {
     "contributor": "貢獻者",
@@ -12,6 +26,37 @@
     "swe2019": "2019 年秋季軟體工程「紅隊」組"
   },
   "course": {
+    "manage": {
+      "title": "管理課程",
+      "editCourse": "編輯課程",
+      "courseName": "課程名稱",
+      "courseNamePlaceholder": "請輸入課程名稱",
+      "teacher": "教師",
+      "teacherPlaceholder": "請輸入教師使用者名稱",
+      "currentTAs": "目前的助教",
+      "noTAsAssigned": "尚未指派助教。",
+      "addTA": "新增助教",
+      "username": "使用者名稱",
+      "enterStudentUsername": "輸入學生使用者名稱",
+      "assignTA": "指派助教",
+      "submit": "送出",
+      "deleteCourse": "刪除課程",
+      "generateCourseCode": "產生課程代碼",
+      "scoreboard": "計分板",
+      "rank": "排名",
+      "user": "使用者",
+      "totalScore": "總分",
+      "loadingScoreboard": "載入計分板資料中或無資料...",
+      "confirmDelete": "確認刪除",
+      "course": "課程",
+      "inviteCode": "邀請代碼",
+      "areYouSureDelete": "您確定要刪除此",
+      "courseSmall": "課程",
+      "inviteCodeSmall": "邀請代碼",
+      "cannotUndo": "此操作無法復原。",
+      "cancel": "取消",
+      "delete": "刪除"
+    },
     "ann": {
       "index": {
         "title": "公告",
@@ -182,6 +227,14 @@
       "teacherField": "課程教師",
       "submit": "送出",
       "unknown-error-occurred": "發生未知錯誤 :("
+    },
+    "join": "加入課程",
+    "joinmsg": "以課程代碼加入",
+    "admin": {
+      "students": "學生",
+      "homeworks": "作業",
+      "submits": "提交",
+      "problems": "問題"
     }
   },
   "profile": {
@@ -192,30 +245,80 @@
       }
     },
     "username": "帳號",
+    "username-placeholder": "帳號名 (無法再次修改)",
     "dispname": "顯示名稱",
     "email": "電子郵件",
-    "role": "角色",
+    "role": "身份",
+    "studentId": "學號",
+    "introduction": "自我介紹",
+    "realName": "真實姓名",
+    "progressBar": "進度展示",
+    "heatmap": "貢獻度",
+    "submission": "提交數量",
+    "acceptance": "通過率",
+    "solved": "已解題數",
+    "beats": "超越比例",
+    "edit": "編輯",
+    "noImage": "無頭像",
+    "save": "儲存",
+    "cancel": "取消",
     "signOut": "登出",
-    "pw": {
-      "change": "變更密碼",
-      "success": "密碼已成功變更",
-      "new": "新密碼",
-      "confirm": "確認新密碼",
-      "current": "舊密碼",
-      "placeholder": {
-        "new": "新密碼",
-        "again": "再輸入一次新密碼",
-        "current": "舊密碼"
-      },
-      "submit": "送出"
-    },
+    "required": "需要輸入",
+    "password": "密碼",
+    "confirm": "確認密碼",
     "wrongPassword": "密碼錯誤",
-    "operationFailed": "操作失敗，請稍後再重試"
+    "operationFailed": "操作失敗，請稍後再試",
+    "verifyEmail": "驗證信箱",
+    "verifyEmailSuccess": "驗證信已寄出，請查收。",
+    "verifyEmailFailed": "發送驗證信失敗",
+    "emailNotSet": "請先設定電子郵件",
+    "emailAlreadyVerified": "您的電子郵件已驗證",
+    "verifyEmailSentTitle": "驗證信已發送",
+    "verifyEmailSentMessage": "我們已向您的信箱發送了一封驗證信，請查收。",
+    "close": "關閉"
   },
   "ann": {
     "id": {
       "back": "返回"
     }
+  },
+  "problems": {
+    "title": "題目列表",
+    "loading": "載入題目中...",
+    "filter": {
+      "Courses": "課程",
+      "Tags": "標籤",
+      "difficulty": "難度"
+    },
+    "table": {
+      "id": "題號",
+      "name": "題名",
+      "tags": "標籤",
+      "course": "課程",
+      "ac": "AC 比率 (%)"
+    },
+    "difficulty": {
+      "easy": "簡單",
+      "medium": "中等",
+      "hard": "困難",
+      "reset": "重置"
+    },
+    "empty": "找不到題目。",
+    "search": {
+      "placeholder": "搜尋題目..."
+    }
+  },
+  "ranking": {
+    "title": "排行榜",
+    "table": {
+      "id": "#",
+      "avatar": "頭像",
+      "userId": "使用者ID",
+      "displayName": "使用者名稱",
+      "ac": "AC 數量統計"
+    },
+    "loading": "載入排行榜資料中...",
+    "error": "載入排行榜資料失敗。"
   },
   "components": {
     "ann": {
@@ -345,7 +448,8 @@
       "hw": "作業",
       "problems": "題目",
       "submissions": "繳交狀態",
-      "members": "成員"
+      "members": "成員",
+      "manage": "管理"
     },
     "systemAnn": {
       "ann": "公告",
@@ -355,22 +459,27 @@
     "loginSection": {
       "welcome": "歡迎回來，{user}",
       "signin": "登入",
-      "loginFailed": "登入失敗：帳號 / 電子郵件地址或是密碼輸入錯誤",
-      "username": "帳號 / 電子郵件地址",
+      "signup": "註冊",
+      "loginFailed": "登入失敗：帳號或是密碼輸入錯誤",
+      "username": "帳號",
       "pw": "密碼",
       "placeholder": {
-        "username": "帳號 / 電子郵件地址",
+        "username": "帳號",
         "pw": "密碼"
       },
       "forgot": "忘記密碼?",
       "button": "登入"
     },
-    "sideBar": {
+    "topBar": {
       "home": "首頁",
       "course": "課程",
       "about": "關於",
       "admin": "管理",
-      "profile": "個人"
+      "profile": "個人",
+      "ranking": "排名",
+      "problems": "題目",
+      "settings": "設定",
+      "logout": "登出"
     },
     "dueCountdown": {
       "days": "日",
@@ -383,6 +492,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! 系統發生了一些錯誤，請重新嘗試，若嘗試數次皆失敗請聯絡管理員。"
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "問我任何關於程式設計或 NOJ 的問題...",
+      "sendButton": "發送"
     }
   },
   "admin": {
@@ -426,6 +539,8 @@
   "errorCode": {
     "ERR001": "登入失敗：帳號或密碼錯誤。",
     "ERR002": "登入失敗：帳號尚未開通，請至 https://v1.noj.tw 驗證信箱以開通帳號。",
+    "ERR003": "註冊失敗：該使用者名稱已經被佔用。",
+    "ERR004": "註冊失敗：該電子郵箱已經被佔用。",
     "UNKNOWN": "未知的錯誤，請洽助教或管理者協助處理，或請稍後再試一次。"
   },
   "password_reset": {
@@ -438,5 +553,9 @@
       "success": "發送成功，請檢查你的電子信箱。"
     },
     "return-home": "回到首頁"
+  },
+  "api_key": {
+    "title": "API 金鑰",
+    "description": "查看 API 金鑰"
   }
 }

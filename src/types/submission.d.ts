@@ -25,16 +25,19 @@ interface Task {
 }
 
 interface SubmissionListItem {
-  languageType: number;
-  lastSend: number;
-  memoryUsage: number;
-  problemId: number;
-  runTime: number;
-  score: number;
-  status: SubmissionStatusCodes;
   submissionId: string;
-  timestamp: number;
-  user: UserInfo;
+  problemId: number;
+  user: {
+    id: string;
+    username: string;
+    real_name: string; // Added real_name
+  };
+  status: number | string;
+  score: number;
+  runTime: number;
+  memoryUsage: number;
+  languageType: number | string;
+  timestamp: string;
   ipAddr: string;
 }
 
@@ -46,18 +49,60 @@ interface Submission extends SubmissionListItem {
 }
 
 interface GetSubmissionListResponse {
-  submissions: SubmissionList;
-  submissionCount: number;
+  data: {
+    results: SubmissionList;
+    count: number;
+  };
+  message: string;
+  status: string;
 }
 
 interface SubmissionListQuery {
-  offset: number;
-  count: number;
-  course?: string;
-  problemId?: string;
+  page?: number;
+  page_size?: number;
+  offset?: number;
+  count?: number;
+  count?: number;
+  course_id?: string;
+  problem_id?: string;
   status?: string;
-  languageType?: string;
+  language_type?: string;
   username?: string;
+}
+
+interface SubmissionInfo {
+  submissionId: string;
+  problemId: number;
+  user: UserInfo;
+  timestamp: string;
+  lastSend: string;
+  status: string | number; // JSON example shows "0", but could be enum
+  score: number;
+  runTime: number;
+  memoryUsage: number;
+  languageType: string | number;
+  ipAddr: string;
+  tasks?: Task[];
+}
+
+interface SubmissionCaseOutput {
+  submission_id: string;
+  task_no: number;
+  case_no: number;
+  status: string;
+  score: number;
+  max_score: number;
+  execution_time: number | null;
+  memory_usage: number | null;
+  output: string;
+  error_message: string;
+  judge_message: string;
+}
+
+interface SubmissionCaseOutputResponse {
+  data: SubmissionCaseOutput;
+  message: string;
+  status: string;
 }
 
 interface SubmissionListFilter {

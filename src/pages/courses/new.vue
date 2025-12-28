@@ -2,7 +2,7 @@
 import { ref, reactive } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import api from "@/models/api";
+import api from "@/api";
 import axios from "axios";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@vuelidate/validators";
@@ -30,8 +30,8 @@ async function submit() {
 
   isLoading.value = true;
   try {
-    await api.Course.create({ ...newCourse });
-    router.push(`/courses/${newCourse.course}`);
+    const res = await api.Course.create({ ...newCourse });
+    router.push(`/courses/${res.data.course.id}`);
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       errorMsg.value = error.response.data.message;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
 import { useSession } from "@/stores/session";
 import { formatTime } from "@/utils/formatTime";
-import { useAxios } from "@vueuse/integrations/useAxios";
-import { fetcher } from "@/models/api";
+import api from "@/api";
 
 import useInteractions from "@/composables/useInteractions";
 
@@ -10,7 +10,24 @@ const { isDesktop } = useInteractions();
 
 const session = useSession();
 
-const { data: announcements, error, isLoading } = useAxios<AnnouncementList>("/ann", fetcher);
+const public_course = "1"; //add public course
+const announcements = ref<AnnouncementList>([]);
+const isLoading = ref(true);
+const error = ref<any>(null);
+
+onMounted(async () => {
+  isLoading.value = true;
+  error.value = null;
+  try {
+    const res = await api.Announcement.getAnnouncement(public_course);
+    announcements.value = (res as any).data ?? (res as any);
+  } catch (e) {
+    console.error(e);
+    error.value = e;
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
@@ -45,7 +62,7 @@ const { data: announcements, error, isLoading } = useAxios<AnnouncementList>("/a
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/Public/announcements/${annId}/edit`"
+                        :to="`/courses/${public_course}/announcements/${annId}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>
@@ -86,7 +103,7 @@ const { data: announcements, error, isLoading } = useAxios<AnnouncementList>("/a
                     <div class="tooltip" data-tip="Edit">
                       <router-link
                         class="btn btn-circle btn-ghost btn-sm"
-                        :to="`/courses/Public/announcements/${annId}/edit`"
+                        :to="`/courses/${public_course}/announcements/${annId}/edit`"
                       >
                         <i-uil-edit class="lg:h-5 lg:w-5" />
                       </router-link>

@@ -20,7 +20,7 @@ defineProps<Props>();
         <div class="mt-2 flex items-center gap-2 text-sm">
           {{
             $t("components.ann.card.postBy", {
-              author: announcement.creator.displayedName,
+              author: announcement.creator.username,
               time: formatTime(announcement.createTime),
             })
           }}

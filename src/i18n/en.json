@@ -1,7 +1,21 @@
 {
   "settings": {
     "title": "Settings",
-    "selectLang": "Select your preferred language"
+    "selectLang": "Select your preferred language",
+    "password": {
+      "change": "Change Password",
+      "success": "Password has been successfully changed",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "current": "Current Password",
+      "placeholder": {
+        "new": "new password",
+        "again": "new password again",
+        "current": "current password"
+      },
+      "submit": "Submit",
+      "required": "Required"
+    }
   },
   "about": {
     "contributor": "Contributor",
@@ -12,6 +26,37 @@
     "swe2019": "Red Team of Software Engineering 2019 Fall"
   },
   "course": {
+    "manage": {
+      "title": "Manage Course",
+      "editCourse": "Edit Course",
+      "courseName": "Course Name",
+      "courseNamePlaceholder": "Enter course name",
+      "teacher": "Teacher",
+      "teacherPlaceholder": "Enter teacher username",
+      "currentTAs": "Current Teacher Assistants",
+      "noTAsAssigned": "No TAs assigned yet.",
+      "addTA": "Add Teacher Assistant",
+      "username": "Username",
+      "enterStudentUsername": "Enter student username",
+      "assignTA": "Assign TA",
+      "submit": "Submit",
+      "deleteCourse": "Delete Course",
+      "generateCourseCode": "Generate course code",
+      "scoreboard": "Scoreboard",
+      "rank": "Rank",
+      "user": "User",
+      "totalScore": "Total Score",
+      "loadingScoreboard": "Loading scoreboard or no data...",
+      "confirmDelete": "Confirm Delete",
+      "course": "Course",
+      "inviteCode": "Invite Code",
+      "areYouSureDelete": "Are you sure you want to delete this",
+      "courseSmall": "course",
+      "inviteCodeSmall": "invite code",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
     "ann": {
       "index": {
         "title": "Announcements",
@@ -182,40 +227,98 @@
       "teacherField": "Teacher",
       "submit": "Submit",
       "unknown-error-occurred": "Unknown error occurred :("
+    },
+    "join": "Join",
+    "joinmsg": "Join with course code",
+    "admin": {
+      "students": "Students",
+      "homeworks": "Homeworks",
+      "submits": "submits",
+      "problems": "Problems"
     }
   },
   "profile": {
     "title": "Profile",
+    "required": "Required",
     "rules": {
       "confirmPassword": {
         "sameAsRef": "Password does not match."
       }
     },
     "username": "Username",
+    "username-placeholder": "username (cannot be changed after confirmation)",
     "dispname": "Display Name",
     "email": "Email",
     "role": "Role",
+    "studentId": "Student ID",
+    "introduction": "Introduction",
+    "realName": "Real Name",
+    "progressBar": "Progress Bar",
+    "heatmap": "Heatmap",
+    "submission": "Submission Count",
+    "acceptance": "Acceptance",
+    "solved": "Solved",
+    "beats": "Beats",
+    "edit": "Edit",
+    "noImage": "No Image",
+    "save": "Save",
+    "cancel": "Cancel",
     "signOut": "Sign out",
-    "pw": {
-      "change": "Change Password",
-      "success": "Password has been successfully changed",
-      "new": "New Password",
-      "confirm": "Confirm New Password",
-      "current": "Current Password",
-      "placeholder": {
-        "new": "new password",
-        "again": "new password again",
-        "current": "current password"
-      },
-      "submit": "Submit"
-    },
+    "password": "Password",
+    "confirm": "Confirm Password",
     "wrongPassword": "Wrong Password",
-    "operationFailed": "Operation failed, please try again later"
+    "operationFailed": "Operation failed, please try again later",
+    "verifyEmail": "Verify Email",
+    "verifyEmailSuccess": "Verification email sent, please check your inbox.",
+    "verifyEmailFailed": "Failed to send verification email.",
+    "emailNotSet": "Please set an email address first.",
+    "emailAlreadyVerified": "Your email is already verified.",
+    "verifyEmailSentTitle": "Verification Email Sent",
+    "verifyEmailSentMessage": "We have sent a verification email to your inbox. Please check it.",
+    "close": "Close"
   },
   "ann": {
     "id": {
       "back": "Back"
     }
+  },
+  "problems": {
+    "title": "Problem List",
+    "loading": "Loading problems...",
+    "filter": {
+      "Courses": "Courses",
+      "Tags": "Tags",
+      "Difficulty": "Difficulty"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "tags": "Tags",
+      "course": "Course",
+      "ac": "AC Ratio (%)"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "reset": "Reset"
+    },
+    "empty": "No problems found.",
+    "search": {
+      "placeholder": "Search problem..."
+    }
+  },
+  "ranking": {
+    "title": "Ranking",
+    "table": {
+      "id": "#",
+      "avatar": "Avatar",
+      "userId": "UserID",
+      "displayName": "Username",
+      "ac": "AC counting"
+    },
+    "loading": "Loading ranking data...",
+    "error": "Failed to load ranking data."
   },
   "components": {
     "ann": {
@@ -280,6 +383,7 @@
         "allowedLangs": "Allowed Languages",
         "testdata": "Testdata",
         "howToPack": "How to pack testdata",
+        "whatischecker": "What is checker",
         "dropFile": "Drop File here or Choose File to upload",
         "subtask": "Subtask {no}",
         "numOfCases": "The number of testcases",
@@ -346,7 +450,8 @@
       "hw": "Homeworks",
       "problems": "Problems",
       "submissions": "Submissions",
-      "members": "Members"
+      "members": "Members",
+      "manage": "Manage"
     },
     "systemAnn": {
       "ann": "Announcements",
@@ -355,23 +460,28 @@
     },
     "loginSection": {
       "welcome": "Welcome back, {user}",
-      "signin": "Sign in",
-      "loginFailed": "Login Failed: Your username/email or password is incorrect",
-      "username": "Username / Email",
+      "signin": "Sign In",
+      "signup": "Sign Up",
+      "loginFailed": "Login Failed: Your username or password is incorrect",
+      "username": "Username",
       "pw": "Password",
       "placeholder": {
-        "username": "username or email",
+        "username": "username",
         "pw": "password"
       },
       "forgot": "Forgot password?",
       "button": "Sign In"
     },
-    "sideBar": {
+    "topBar": {
       "home": "Home",
       "course": "Course",
       "about": "About",
       "admin": "Admin",
-      "profile": "Profile"
+      "profile": "Profile",
+      "ranking": "Ranking",
+      "problems": "Problems",
+      "settings": "Settings",
+      "logout": "Logout"
     },
     "dueCountdown": {
       "days": "days",
@@ -384,6 +494,10 @@
     },
     "dataStatusWrapper": {
       "errorMsg": "Oops! Something went wrong, please refresh the page to try again."
+    },
+    "ai-vtuber": {
+      "inputPlaceholder": "Ask me anything about programming or NOJ...",
+      "sendButton": "Send"
     }
   },
   "admin": {
@@ -427,6 +541,8 @@
   "errorCode": {
     "ERR001": "Login Failed: Your username/email or password is incorrect.",
     "ERR002": "Login Failed: Your account is not activated yet, please go to https://v1.noj.tw to verify your email.",
+    "ERR003": "Signup Failed: Your username is already in use.",
+    "ERR004": "Signup Failed: Your email is already in use.",
     "UNKNOWN": "Unknown Error, please contact teaching assistants or NOJ maintainers, or try again later."
   },
   "password_reset": {
@@ -439,5 +555,9 @@
       "success": "Email sent, please check your inbox."
     },
     "return-home": "Return Home"
+  },
+  "api_key": {
+    "title": "API_KEY",
+    "description": "VIEW MY API KEY DASHBOARD"
   }
 }
