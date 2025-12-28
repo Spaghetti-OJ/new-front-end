@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "@/api";
 import { useTitle } from "@vueuse/core";
 import { useSession } from "@/stores/session";
 import axios from "axios";
+
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -184,21 +187,21 @@ async function addByUsername() {
               <span class="label-text">{{ $t("course.members.sortBy") }}</span>
             </label>
             <select v-model="sortBy" class="select select-bordered w-full max-w-xs">
-              <option :value="MemberTableColumn.USERNAME">Username</option>
-              <option :value="MemberTableColumn.REAL_NAME">Real Name</option>
-              <option :value="MemberTableColumn.ROLE">Role</option>
+              <option :value="MemberTableColumn.USERNAME">{{ t("course.members.username") }}</option>
+              <option :value="MemberTableColumn.REAL_NAME">{{ t("course.members.realName") }}</option>
+              <option :value="MemberTableColumn.ROLE">{{ t("course.members.role") }}</option>
             </select>
           </div>
           <div v-if="canManageMembers" class="form-control w-full max-w-xs">
             <label class="label">
-              <span class="label-text">Add by username</span>
+              <span class="label-text">{{ t("course.members.addByUsername") }}</span>
             </label>
             <div class="flex items-center gap-2">
               <input
                 v-model="addUsername"
                 type="text"
                 class="input input-bordered w-full max-w-xs"
-                placeholder="username"
+                :placeholder="t('course.members.usernamePlaceholder')"
               />
               <button
                 class="btn btn-primary btn-sm h-10 min-w-[3.5rem]"
@@ -206,7 +209,7 @@ async function addByUsername() {
                 :disabled="!addUsername.trim()"
                 @click="addByUsername"
               >
-                Add
+                {{ t("course.members.add") }}
               </button>
               <button
                 v-if="canManageMembers"
@@ -232,9 +235,9 @@ async function addByUsername() {
               <thead>
                 <tr>
                   <th v-if="canManageMembers"></th>
-                  <th>username</th>
-                  <th>real name</th>
-                  <th>role</th>
+                  <th>{{ t("course.members.username") }}</th>
+                  <th>{{ t("course.members.realName") }}</th>
+                  <th>{{ t("course.members.role") }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -274,7 +277,7 @@ async function addByUsername() {
               <code>{{ h }}</code>
             </li>
             <li v-for="h in ['student_id', 'password']" :key="h">
-              <code>{{ h }}</code> (optional)
+              <code>{{ h }}</code> ({{ t("course.members.optional") }})
             </li>
           </ul>
         </div>

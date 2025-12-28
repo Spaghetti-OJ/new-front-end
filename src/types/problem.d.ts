@@ -169,6 +169,8 @@ interface ProblemCreatePayload {
   output_description: string | null;
   sample_input: string | null;
   sample_output: string | null;
+  solution_code?: string;
+  solution_code_language?: number;
   hint: string | null;
   subtask_description: string | null;
   supported_languages?: string[];

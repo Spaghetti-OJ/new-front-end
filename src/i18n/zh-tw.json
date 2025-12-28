@@ -15,6 +15,59 @@
       },
       "submit": "送出",
       "required": "需要輸入"
+    },
+    "apiKeys": {
+      "title": "API 金鑰",
+      "createNewKey": "建立新的密鑰",
+      "noKeysYet": "尚未建立任何 API 金鑰。點擊",
+      "getStarted": "開始使用。",
+      "table": {
+        "name": "名稱",
+        "status": "狀態",
+        "usage": "使用次數",
+        "createdAt": "建立時間",
+        "expiresAt": "過期時間"
+      },
+      "status": {
+        "active": "啟用",
+        "disabled": "停用"
+      },
+      "createModal": {
+        "title": "建立 API 金鑰",
+        "nameLabel": "名稱",
+        "namePlaceholder": "例如：Normal OJ 整合金鑰",
+        "expirationDate": "過期日期"
+      },
+      "generatedModal": {
+        "title": "新的 API 金鑰",
+        "warning": "此金鑰僅會顯示一次，請妥善保存。",
+        "copied": "已複製",
+        "retry": "重試",
+        "copy": "複製",
+        "stored": "我已經儲存了"
+      },
+      "detailModal": {
+        "title": "API 金鑰詳情"
+      },
+      "deleteModal": {
+        "title": "刪除 API 金鑰",
+        "confirm": "您確定要刪除「{name}」嗎？"
+      },
+      "permissions": {
+        "title": "權限",
+        "types": "類型",
+        "read": "讀取",
+        "write": "寫入",
+        "create": "建立",
+        "submissions": "提交記錄",
+        "courses": "課程",
+        "problems": "題目",
+        "user": "使用者"
+      },
+      "close": "關閉",
+      "create": "建立",
+      "delete": "刪除",
+      "cancel": "取消"
     }
   },
   "about": {
@@ -80,6 +133,35 @@
       "new": {
         "title": "新增作業",
         "preview": "預覽"
+      },
+      "stats": {
+        "pageTitle": "作業統計 - {id} - {courseId} | Normal OJ",
+        "statsTitle": "統計 - {name}",
+        "scoreboardTitle": "排行榜",
+        "sort": {
+          "aria": "排序排行榜",
+          "username": "依帳號排序",
+          "scoreDesc": "依分數排序（高到低）",
+          "scoreAsc": "依分數排序（低到高）"
+        },
+        "exportCsv": "匯出 CSV",
+        "exportAria": "匯出排行榜為 CSV",
+        "table": {
+          "rank": "名次",
+          "user": "使用者",
+          "total": "總分",
+          "late": "遲交",
+          "empty": "沒有提交紀錄。"
+        },
+        "csv": {
+          "rank": "rank",
+          "username": "username",
+          "realName": "real_name",
+          "isLate": "is_late",
+          "totalScore": "total_score",
+          "yes": "是",
+          "no": "否"
+        }
       }
     },
     "problem": {
@@ -87,6 +169,19 @@
         "title": "新增題目",
         "preview": "預覽",
         "json": "JSON（供開發人員檢查）"
+      },
+      "edit": {
+        "title": "編輯題目",
+        "content": "內容",
+        "testdata": "測資",
+        "checker": "檢查器",
+        "delete": "刪除",
+        "discardChanges": "捨棄變更",
+        "preview": "預覽",
+        "json": "JSON",
+        "confirmDelete": "你確定要刪除嗎？",
+        "confirmDiscard": "你確定要捨棄變更嗎？",
+        "unknownError": "發生未知錯誤 :("
       },
       "submit": {
         "err": {
@@ -203,6 +298,13 @@
       "sortBy": "排序依據",
       "cancel": "取消",
       "submit": "送出",
+      "username": "使用者名稱",
+      "realName": "真實姓名",
+      "role": "角色",
+      "addByUsername": "透過使用者名稱新增",
+      "usernamePlaceholder": "使用者名稱",
+      "add": "新增",
+      "optional": "選填",
       "csvUploadHint": {
         "header": "上傳一個 csv 檔以批次新增學生，第一列 Headers 應為：",
         "content": "第二列開始每列為一個成員的資料",
@@ -288,7 +390,8 @@
     "filter": {
       "Courses": "課程",
       "Tags": "標籤",
-      "difficulty": "難度"
+      "Difficulty": "難度",
+      "liked": "已按讚"
     },
     "table": {
       "id": "題號",
@@ -401,20 +504,47 @@
           "sample": {
             "input": "範例輸入 ",
             "output": "範例輸出 "
-          }
+          },
+          "appendSample": "新增範例",
+          "removeSample": "移除最後一個範例"
         },
         "testdataRule1": "您需要將所有的輸入輸出檔置於一個 .zip 檔，且必須遵照以下命名規則",
         "testdataRule2": "輸入檔的檔名應為 \"sstt.in\"，其中 \"ss\" 代表是第幾個子任務，而 \"tt\" 代表是該子任務中的第幾筆測資",
         "testdataRule3": "同樣地，輸出檔的檔名應為 \"sstt.out\"，另請注意 \"ss\" 和 \"tt\" 是從零開始編號.",
         "testdataRule4": "舉例來說，一個有 3 個子任務的題目，其子任務的測資數量分別是 3, 5, 15",
         "testdataRule5": "那麼 zip 檔內應該包含這些檔案：",
-        "gotIt": "好的"
+        "gotIt": "好的",
+        "subtaskDescription": "子任務說明",
+        "solution": "解答",
+        "solutionUploadHint": "請上傳正確的解答供學生參考。",
+        "solutionLanguage": "解答語言",
+        "saveSolution": "儲存解答",
+        "llmGenerateTestcase": "LLM 產生測資",
+        "uploadTestcase": "上傳測資",
+        "checker": "檢查器",
+        "whatIsChecker": "什麼是檢查器",
+        "checkerHint": "若教師未上傳檢查器檔案，系統將依據教師的測資來檢查提交。",
+        "chooseFile": "選擇檔案",
+        "noFileChosen": "未選擇任何檔案",
+        "staticAnalysis": "靜態程式分析",
+        "selectAnalysisRules": "選擇分析規則",
+        "allowNetwork": "允許連線到網路",
+        "addDomainPlaceholder": "請新增網域。",
+        "addDomain": "新增網域",
+        "invalidFunctionName": "無效的函數名稱（例如：foo, my_func, printf）",
+        "pleaseSelectSolutionLanguage": "請選擇有效的解答語言。",
+        "aiGenerateTestdata": "AI 產生測資",
+        "generate": "產生",
+        "llmWarning": "LLM 會根據您的解答和說明產生測試案例。AI 可能產生錯誤的輸出，請在發布題目前仔細檢查。",
+        "forbidFunctionHint": "僅允許函數名稱（字母、數字、底線）。",
+        "dropChecker": "拖曳檔案至此，或透過右方按鈕選擇檔案"
       },
       "card": {
         "title": "題目編號 ",
         "quota": "額度",
         "score": "得分",
         "submit": "提交",
+        "editorial": "題解",
         "stats": "數據",
         "desc": "說明",
         "input": "輸入",
@@ -434,7 +564,10 @@
           "score": "配分"
         },
         "noContent": "無",
-        "unlimited": "無限制"
+        "unlimited": "無限制",
+        "copycat": "抄襲偵測",
+        "edit": "編輯",
+        "downloadTestCase": "下載測資"
       },
       "infoCard": {
         "score": "得分",

@@ -28,6 +28,20 @@ function extractSearchItems(raw: ProblemSearchResponseLike | null | undefined): 
 
 const isLoading = ref(true);
 const baseProblems = ref<Problem[]>([]);
+const fullProblems = ref<Problem[]>([]);
+const likedOnly = ref(false);
+
+function mapProblemList(list: RawProblemItem[]): Problem[] {
+  return list.map((p) => ({
+    id: p.id,
+    title: p.title,
+    difficulty: p.difficulty as Problem["difficulty"],
+    tags: Array.isArray(p.tags) ? p.tags.map((t) => (typeof t === "string" ? t : t.name)) : [],
+    courseId: p.course_id != null ? Number(p.course_id) : -1,
+    courseName: typeof p.course_name === "string" ? p.course_name : "-",
+    acceptance: p.acceptance_rate != null ? Number(p.acceptance_rate) / 100 : 0,
+  }));
+}
 
 async function getProblem() {
   isLoading.value = true;
@@ -37,18 +51,28 @@ async function getProblem() {
     const rawData = (res as { data?: ProblemListResponseLike }).data ?? (res as ProblemListResponseLike);
     const list = extractProblemList(rawData);
 
-    baseProblems.value = list.map((p) => ({
-      id: p.id,
-      title: p.title,
-      difficulty: p.difficulty as Problem["difficulty"],
-      tags: Array.isArray(p.tags) ? p.tags.map((t) => (typeof t === "string" ? t : t.name)) : [],
-      courseId: p.course_id != null ? Number(p.course_id) : -1,
-      courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: p.acceptance_rate != null ? Number(p.acceptance_rate) / 100 : 0,
-    }));
+    const mapped = mapProblemList(list);
+    baseProblems.value = mapped;
+    fullProblems.value = mapped;
   } catch (err) {
     console.error("getProblem error:", err);
     baseProblems.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+async function getLikedProblems() {
+  isLoading.value = true;
+  try {
+    const res = await api.Problem.listLiked();
+    const rawData = (res as { data?: ProblemListResponseLike }).data ?? (res as ProblemListResponseLike);
+    const list = extractProblemList(rawData);
+    baseProblems.value = mapProblemList(list);
+  } catch (err) {
+    console.error("getLikedProblems error:", err);
+    baseProblems.value = [];
+    fullProblems.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -62,11 +86,14 @@ const selectedTags = ref<string[]>([]);
 const selectedDifficulties = ref<string[]>([]);
 
 // 由資料動態取出所有標籤（不使用 TAGS_COLOR_REPR）
-const allTags = computed(() => Array.from(new Set(baseProblems.value.flatMap((p) => p.tags))).sort());
+const filterSource = computed(() =>
+  likedOnly.value && fullProblems.value.length ? fullProblems.value : baseProblems.value,
+);
+const allTags = computed(() => Array.from(new Set(filterSource.value.flatMap((p) => p.tags))).sort());
 
 const allCourses = computed(() => {
   const map = new Map<number, string>();
-  baseProblems.value.forEach((p) => {
+  filterSource.value.forEach((p) => {
     if (p.courseId !== -1) {
       map.set(p.courseId, p.courseName);
     }
@@ -109,8 +136,10 @@ function resetFilters() {
   selectedCourses.value = [];
   selectedTags.value = [];
   selectedDifficulties.value = [];
+  likedOnly.value = false;
 }
 async function searchProblems() {
+  if (likedOnly.value) return;
   const keyword = q.value.trim();
   if (!keyword) {
     // 你要：空字串 Enter 就回到原本列表
@@ -124,15 +153,9 @@ async function searchProblems() {
 
     const raw = (res as { data?: ProblemSearchResponseLike }).data ?? (res as ProblemSearchResponseLike);
     const items = extractSearchItems(raw);
-    baseProblems.value = items.map((p) => ({
-      id: p.id,
-      title: p.title,
-      difficulty: p.difficulty as Problem["difficulty"],
-      tags: Array.isArray(p.tags) ? p.tags.map((t) => (typeof t === "string" ? t : t.name)) : [],
-      courseId: p.course_id != null ? Number(p.course_id) : -1,
-      courseName: typeof p.course_name === "string" ? p.course_name : "-",
-      acceptance: p.acceptance_rate != null ? Number(p.acceptance_rate) / 100 : 0, // "50.00" -> 0.5
-    }));
+    const mapped = mapProblemList(items);
+    baseProblems.value = mapped;
+    fullProblems.value = mapped;
   } catch (err) {
     console.error("searchProblems error:", err);
     baseProblems.value = [];
@@ -147,6 +170,7 @@ onMounted(async () => {
 watch(
   q,
   (value) => {
+    if (likedOnly.value) return;
     if (searchTimer.value !== null) {
       window.clearTimeout(searchTimer.value);
     }
@@ -157,6 +181,23 @@ watch(
         getProblem();
       }
     }, 300);
+  },
+  { flush: "post" },
+);
+
+watch(
+  likedOnly,
+  async (value) => {
+    if (value) {
+      await getLikedProblems();
+      return;
+    }
+
+    if (q.value.trim()) {
+      await searchProblems();
+    } else {
+      await getProblem();
+    }
   },
   { flush: "post" },
 );
@@ -175,6 +216,7 @@ onBeforeUnmount(() => {
       <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-lg font-bold">{{ $t("problems.title") }}</h1>
         <label
+          v-if="!likedOnly"
           class="input input-sm flex w-72 items-center gap-2 border border-base-content/30 bg-transparent focus-within:border-primary"
         >
           <input
@@ -226,7 +268,7 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.difficulty") }}</span>
+          <span class="text-sm font-semibold opacity-70">{{ $t("problems.filter.Difficulty") }}</span>
           <button
             v-for="d in allDiffs"
             :key="d.value"
@@ -257,6 +299,17 @@ onBeforeUnmount(() => {
 
           <button class="btn btn-ghost btn-xs" @click="resetFilters">
             {{ $t("problems.difficulty.reset") }}
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            class="btn btn-xs gap-2"
+            :class="likedOnly ? 'btn-primary' : 'btn-outline'"
+            @click="likedOnly = !likedOnly"
+          >
+            <i-uil-heart class="h-3 w-3" />
+            {{ $t("problems.filter.liked") }}
           </button>
         </div>
       </div>

@@ -68,6 +68,9 @@ interface SubmissionListQuery {
   status?: string;
   language_type?: string;
   username?: string;
+  after?: number | string;
+  before?: number | string;
+  ip_prefix?: string;
 }
 
 interface SubmissionInfo {

@@ -4,9 +4,12 @@ import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
 import { LANGUAGE_OPTIONS } from "@/constants";
+import { useI18n } from "vue-i18n";
 
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
+
+const { t } = useI18n();
 
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
@@ -46,7 +49,7 @@ function addForbidFunction() {
   if (!v) return;
 
   if (!fnNameRegex.test(v)) {
-    forbidFnError.value = "Invalid function name (e.g., foo, my_func, printf)";
+    forbidFnError.value = t("components.problem.forms.invalidFunctionName");
     return;
   }
 
@@ -88,7 +91,7 @@ const rules = {
   allowedLanguage: { required, between: between(1, 7) },
   solutionLanguage: {
     validWhenSolutionProvided: helpers.withMessage(
-      "Please select a valid solution language.",
+      t("components.problem.forms.pleaseSelectSolutionLanguage"),
       (value: number) => {
         const solution = problem.value.solution?.trim() ?? "";
         return solution.length === 0 || solutionLanguageValues.includes(Number(value));
@@ -244,7 +247,7 @@ const solutionLanguageOptions = computed(() =>
 );
 const staticAnalysisSummary = computed(() => {
   const picked = problem.value.staticAnalysis?.filter(Boolean) ?? [];
-  return picked.length ? picked.join(", ") : "Select analysis rules";
+  return picked.length ? picked.join(", ") : t("components.problem.forms.selectAnalysisRules");
 });
 const toggleStaticAnalysis = (value: string) => {
   const set = new Set(problem.value.staticAnalysis ?? []);
@@ -401,7 +404,7 @@ const removeDomain = (d: string) => {
     <!--  Subtask description（跟 description 同層級） -->
     <div class="form-control col-span-2">
       <label class="label flex-col items-start gap-1">
-        <span class="text-base font-semibold">Subtask description</span>
+        <span class="text-base font-semibold">{{ t("components.problem.forms.subtaskDescription") }}</span>
         <span class="text-sm text-base-content/70"> </span>
       </label>
 
@@ -425,15 +428,15 @@ const removeDomain = (d: string) => {
     </div>
     <div class="form-control col-span-2">
       <label class="label flex-col items-start gap-1">
-        <span class="text-base font-semibold">Solution</span>
+        <span class="text-base font-semibold">{{ t("components.problem.forms.solution") }}</span>
         <span class="text-sm text-base-content/70">
-          Please upload the correct solution for student reference.<!--待修改-->
+          {{ t("components.problem.forms.solutionUploadHint") }}
         </span>
       </label>
 
       <div class="form-control w-1/2">
         <label class="label">
-          <span class="label-text">Solution Language</span>
+          <span class="label-text">{{ t("components.problem.forms.solutionLanguage") }}</span>
         </label>
         <select
           class="select select-bordered w-full"
@@ -457,7 +460,7 @@ const removeDomain = (d: string) => {
 
           <!-- Save 按鈕 -->
           <button class="btn btn-sm shrink-0 bg-[#02305f] normal-case" @click="$emit('save-solution')">
-            Save Solution
+            {{ t("components.problem.forms.saveSolution") }}
           </button>
         </div>
       </div>
@@ -467,7 +470,7 @@ const removeDomain = (d: string) => {
     <template v-if="problem.type !== 2">
       <section ref="testdataSection" class="col-span-2 scroll-mt-32">
         <label class="label flex items-start gap-1">
-          <span class="text-base font-semibold">Testdata</span>
+          <span class="text-base font-semibold">{{ t("components.problem.forms.testdata") }}</span>
         </label>
 
         <!-- Buttons -->
@@ -477,7 +480,7 @@ const removeDomain = (d: string) => {
             class="btn btn-sm bg-[#02305f] normal-case"
             @click="testdataMode = 'LLMgenerate'"
           >
-            LLM generate testcase
+            {{ t("components.problem.forms.llmGenerateTestcase") }}
           </button>
 
           <button
@@ -485,7 +488,7 @@ const removeDomain = (d: string) => {
             class="btn btn-sm bg-[#02305f] normal-case"
             @click="testdataMode = 'uploadfile'"
           >
-            Upload testcase
+            {{ t("components.problem.forms.uploadTestcase") }}
           </button>
         </div>
 
@@ -537,7 +540,7 @@ const removeDomain = (d: string) => {
 
         <div v-if="testdataMode === 'LLMgenerate'" class="mt-2">
           <div class="mt-4 flex gap-4">
-            <div class="text-lg font-semibold">AI generate testdata</div>
+            <div class="text-lg font-semibold">{{ t("components.problem.forms.aiGenerateTestdata") }}</div>
 
             <button
               type="button"
@@ -545,13 +548,12 @@ const removeDomain = (d: string) => {
               :disabled="!llmMode"
               @click="emits('generate', { llmMode })"
             >
-              GENERATE
+              {{ t("components.problem.forms.generate") }}
             </button>
           </div>
 
           <p class="mb-3 mt-2 text-sm opacity-70">
-            LLM will generate test cases that refer to your solution and description. AI may generate error
-            output. Please double-check before you publish the problem.
+            {{ t("components.problem.forms.llmWarning") }}
           </p>
 
           <p class="mt-2 text-base font-semibold">Mode</p>
@@ -658,14 +660,14 @@ const removeDomain = (d: string) => {
       <section ref="checkerSection" class="col-span-2 scroll-mt-32">
         <label class="label flex-col items-start gap-1">
           <div class="item-start flex justify-start gap-2">
-            <span class="text-base font-semibold">Checker</span>
+            <span class="text-base font-semibold">{{ t("components.problem.forms.checker") }}</span>
             <label for="testdata-description" class="modal-button btn btn-xs">
-              {{ $t("components.problem.forms.whatischecker") }}</label
+              {{ t("components.problem.forms.whatIsChecker") }}</label
             >
           </div>
 
           <span class="mt-2 text-sm text-base-content/70">
-            If teacher do not upload checker file, system will check submission refer to teacher's testdata.<!--待修改-->
+            {{ t("components.problem.forms.checkerHint") }}
           </span>
         </label>
 
@@ -699,7 +701,7 @@ const removeDomain = (d: string) => {
 
         <div class="form-control mt-2 w-1/2">
           <label class="label">
-            <span class="label-text font-semibold">Static program analysis</span>
+            <span class="label-text font-semibold">{{ t("components.problem.forms.staticAnalysis") }}</span>
           </label>
 
           <details ref="staticDropdownRef" class="dropdown w-full">
@@ -775,13 +777,13 @@ const removeDomain = (d: string) => {
             <span v-if="v$.forbidFunctions.$error" class="text-xs text-error">
               {{ v$.forbidFunctions.$errors[0]?.$message }}
             </span>
-            <span class="text-xs opacity-60">Only function name allowed (letters, digits, underscore).</span>
+            <span class="text-xs opacity-60">{{ t("components.problem.forms.forbidFunctionHint") }}</span>
           </div>
         </div>
 
         <div class="form-control mt-2 w-1/2">
           <label class="label">
-            <span class="text-base font-semibold">Allow connect to network</span>
+            <span class="text-base font-semibold">{{ t("components.problem.forms.allowNetwork") }}</span>
           </label>
 
           <!-- 已新增的 domain -->
@@ -805,7 +807,7 @@ const removeDomain = (d: string) => {
                 v-model="domainInput"
                 type="text"
                 :class="['input input-bordered w-full', domainError && 'input-error']"
-                placeholder="Please add domain."
+                :placeholder="t('components.problem.forms.addDomainPlaceholder')"
                 @keydown.enter.prevent="addDomain"
                 @input="domainError = ''"
               />
@@ -815,7 +817,7 @@ const removeDomain = (d: string) => {
                 :class="['btn btn-success', !domainInput.trim() && 'btn-disabled']"
                 @click="addDomain"
               >
-                ADD DOMAIN
+                {{ t("components.problem.forms.addDomain") }}
               </button>
             </div>
             <span v-if="domainError" class="text-xs text-error">{{ domainError }}</span>

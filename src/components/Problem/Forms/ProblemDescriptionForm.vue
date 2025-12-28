@@ -147,7 +147,7 @@ const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
   </template>
 
   <div class="col-span-2 mx-auto">
-    <div class="tooltip" data-tip="append new sample">
+    <div class="tooltip" :data-tip="$t('components.problem.forms.probDescForm.appendSample')">
       <div
         class="btn btn-sm mr-3"
         @click="
@@ -161,7 +161,7 @@ const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
         <i-uil-plus class="mr-1" />
       </div>
     </div>
-    <div class="tooltip" data-tip="remove last sample">
+    <div class="tooltip" :data-tip="$t('components.problem.forms.probDescForm.removeSample')">
       <div
         class="btn btn-sm"
         @click="
