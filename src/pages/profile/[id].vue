@@ -138,7 +138,7 @@ const beatRate = computed(() => {
                 <span
                   class="inline-flex gap-4 rounded-[8px] px-4 py-2 text-sm font-semibold text-black"
                   :class="{
-                    'bg-[#C2DAEE] ': user.role === 'Student',                    
+                    'bg-[#C2DAEE] ': user.role === 'Student',
                     'bg-[#B7D3EA] ': user.role === 'Teacher',
                     'bg-[#A3C4E3] ': user.role === 'Assistant',
                   }"
