@@ -53,6 +53,7 @@ const rules = {
       ),
     },
   },
+  subtaskDescription: { maxLength: maxLength(10000) },
   courses: {},
   tags: { itemMaxLength: (v: string[]) => v.every((d) => d.length <= 16) },
   allowedLanguage: { required, between: between(1, 7) },
@@ -64,7 +65,16 @@ const rules = {
       scoreSum: helpers.withMessage(
         "The sum of all subtasks score should be 100",
         (tasks: ProblemTestCase[]) => {
-          return tasks.reduce((acc: number, cur: ProblemTestCase) => acc + cur.taskScore, 0) === 100;
+          // Allow edits when no meaningful scores are set, but enforce 100 once scores exist
+          const scoredTasks = tasks.filter((cur) => {
+            const value = Number(cur.taskScore);
+            return !Number.isNaN(value);
+          });
+          if (scoredTasks.length === 0) {
+            return true;
+          }
+          const sum = scoredTasks.reduce((acc, cur) => acc + Number(cur.taskScore), 0);
+          return sum === 100;
         },
       ),
     },
@@ -336,7 +346,31 @@ const removeDomain = (d: string) => {
     </div>
 
     <ProblemDescriptionForm :v$="v$" @update="(...args) => update(...args)" />
+    <!--  Subtask description（跟 description 同層級） -->
+    <div class="form-control col-span-2">
+      <label class="label flex-col items-start gap-1">
+        <span class="text-base font-semibold">Subtask description</span>
+        <span class="text-sm text-base-content/70"> </span>
+      </label>
 
+      <textarea
+        :class="[
+      'textarea textarea-bordered w-full',
+      (v$ as any).subtaskDescription?.$error && 'textarea-error',
+    ]"
+        :value="problem.subtaskDescription"
+        rows="4"
+        placeholder=""
+        @input="update('subtaskDescription', ($event.target as HTMLTextAreaElement).value)"
+      />
+
+      <label class="label" v-show="(v$ as any).subtaskDescription?.$error">
+        <span
+          class="label-text-alt text-error"
+          v-text="(v$ as any).subtaskDescription?.$errors?.[0]?.$message"
+        />
+      </label>
+    </div>
     <div class="form-control col-span-2">
       <label class="label flex-col items-start gap-1">
         <span class="text-base font-semibold">Solution</span>
@@ -511,7 +545,7 @@ const removeDomain = (d: string) => {
                   </div>
 
                   <div class="form-control w-full">
-                    <label class="label"><span class="label-text">Memory Limit (KB)</span></label>
+                    <label class="label"><span class="label-text">Memory Limit (MB)</span></label>
                     <input class="input input-bordered w-full" :value="task.memoryLimit" readonly />
                   </div>
 

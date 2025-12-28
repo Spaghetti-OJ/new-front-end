@@ -95,6 +95,7 @@ const newProblem = ref<ProblemForm>({
   solution: "",
   staticAnalysis: [],
   allowedDomains: [],
+  subtaskDescription: "",
 });
 
 function update<K extends keyof ProblemForm>(
@@ -165,7 +166,7 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
     sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
     hint: emptyToNull(p.description.hint),
 
-    subtask_description: null,
+    subtask_description: emptyToNull(p.subtaskDescription),
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
