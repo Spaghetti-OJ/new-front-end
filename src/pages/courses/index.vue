@@ -123,10 +123,10 @@ function getSummary(courseName: string) {
             v-model="joinCode"
             type="text"
             class="input input-bordered input-sm w-52 md:w-64"
-            placeholder="Join with course code"
+            :placeholder="$t('courses.joinmsg')"
           />
           <button type="submit" class="btn btn-success btn-sm min-w-[4rem]" :disabled="joinLoading">
-            <span v-if="!joinLoading">Join</span>
+            <span v-if="!joinLoading">{{ $t("courses.join") }}</span>
             <span v-else class="loading-spinner loading-xs loading" />
           </button>
         </form>

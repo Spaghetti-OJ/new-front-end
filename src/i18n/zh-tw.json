@@ -196,7 +196,9 @@
       "teacherField": "課程教師",
       "submit": "送出",
       "unknown-error-occurred": "發生未知錯誤 :("
-    }
+    },
+    "join": "加入課程",
+    "joinmsg": "以課程代碼加入"
   },
   "profile": {
     "title": "個人資料",

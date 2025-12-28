@@ -196,7 +196,9 @@
       "teacherField": "Teacher",
       "submit": "Submit",
       "unknown-error-occurred": "Unknown error occurred :("
-    }
+    },
+    "join": "join",
+    "joinmsg": "Join with course code"
   },
   "profile": {
     "title": "Profile",
