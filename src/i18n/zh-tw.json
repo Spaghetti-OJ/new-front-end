@@ -146,8 +146,6 @@
         },
         "exportCsv": "匯出 CSV",
         "exportAria": "匯出排行榜為 CSV",
-        "refresh": "重新整理",
-        "refreshAria": "重新整理排行榜資料",
         "table": {
           "rank": "名次",
           "user": "使用者",

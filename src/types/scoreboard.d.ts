@@ -37,7 +37,7 @@ interface HomeworkScoreboardItem {
   is_late: boolean;
   first_ac_time: string | null;
   last_submission_time: string | null;
-  problems: Record<number, HomeworkScoreboardItemProblem>;
+  problems: Record<number, HomeworkScoreboardItemProblem> | HomeworkScoreboardItemProblem[];
 }
 
 interface HomeworkScoreboardData {
