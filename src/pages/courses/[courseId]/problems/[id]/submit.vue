@@ -45,6 +45,7 @@ const testForm = reactive({
   isLoading: false,
   isError: false,
 });
+const testResultMeta = ref<{ timeUsed: number | null; memoryUsed: number | null } | null>(null);
 
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
@@ -79,6 +80,7 @@ watchEffect(() => {
 async function runTest() {
   testForm.isError = false;
   testForm.output = "";
+  testResultMeta.value = null;
 
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
@@ -120,20 +122,13 @@ async function runTest() {
       return;
     }
 
-    const outputParts = [
-      `Status: ${result.status}`,
-      result.message ? `Message: ${result.message}` : "",
-      `Time: ${result.time}s`,
-      `Memory: ${result.memory}KB`,
-      "",
-      "Stdout:",
-      result.stdout || "(empty)",
-      "",
-      "Stderr:",
-      result.stderr || "(empty)",
-    ].filter(Boolean);
-
-    testForm.output = outputParts.join("\n");
+    testForm.output = result.stderr
+      ? `${result.stdout || ""}\n\n[stderr]\n${result.stderr}`
+      : result.stdout || "";
+    testResultMeta.value = {
+      timeUsed: result.compile_info?.time_used ?? result.time ?? null,
+      memoryUsed: result.compile_info?.memory_used ?? result.memory ?? null,
+    };
   } catch (e) {
     testForm.isError = true;
     testForm.output = "Test failed. Please try again.";
@@ -274,13 +269,29 @@ onMounted(loadProblem);
                 <label class="label">
                   <span class="label-text font-semibold">Test output</span>
                 </label>
-                <textarea
-                  v-model="testForm.output"
-                  class="textarea textarea-bordered w-full"
-                  rows="4"
-                  readonly
-                  placeholder="按下TEST，顯示程式輸出"
-                />
+                <div class="flex flex-col gap-3">
+                  <textarea
+                    v-model="testForm.output"
+                    class="textarea textarea-bordered w-full"
+                    rows="4"
+                    readonly
+                    placeholder="按下TEST，顯示程式輸出"
+                  />
+                  <div class="flex flex-wrap items-center gap-4 text-xs text-base-content/70">
+                    <div>
+                      <span class="font-medium text-base-content">Time Used</span>
+                      <span class="ml-2">
+                        {{ testResultMeta?.timeUsed != null ? `${testResultMeta.timeUsed}s` : "-" }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="font-medium text-base-content">Memory Used</span>
+                      <span class="ml-2">
+                        {{ testResultMeta?.memoryUsed != null ? `${testResultMeta.memoryUsed} KB` : "-" }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

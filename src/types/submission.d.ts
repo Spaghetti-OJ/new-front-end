@@ -133,6 +133,10 @@ interface CustomTestSubmitResponse {
 interface CustomTestCompileInfo {
   status: string;
   message: string;
+  stdout?: string;
+  stderr?: string;
+  time_used?: number;
+  memory_used?: number;
 }
 
 interface CustomTestResultData {
