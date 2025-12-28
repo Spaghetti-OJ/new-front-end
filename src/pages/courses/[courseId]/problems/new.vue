@@ -95,6 +95,7 @@ const newProblem = ref<ProblemForm>({
   solution: "",
   staticAnalysis: [],
   allowedDomains: [],
+  forbidFunctions: [],
   subtaskDescription: "",
 });
 
@@ -148,7 +149,6 @@ async function onGenerate(payload: GeneratePayload) {
 
 function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
   const emptyToNull = (s: string | undefined) => (s && s.trim() !== "" ? s : null);
-
   return {
     title: p.problemName,
     description: p.description.description,
@@ -171,6 +171,8 @@ function mapNewProblemToPayload(p: ProblemForm, courseId: string) {
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),
     tags: p.tags.map((t) => Number(t)),
     allowed_domains: p.allowedDomains,
+    static_analysis_rules: p.staticAnalysis ?? [],
+    forbidden_functions: p.forbidFunctions ?? [],
   };
 }
 
@@ -191,7 +193,6 @@ async function submit() {
           "No valid test case files (XXYY.in/out) found in the zip archive.",
       );
     }
-
     const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;

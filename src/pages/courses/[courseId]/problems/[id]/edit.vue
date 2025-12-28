@@ -116,9 +116,10 @@ async function getManage() {
       },
       canViewStdout: true,
       defaultCode: "",
-      staticAnalysis: [],
+      staticAnalysis: problemData.static_analysis_rules ?? [],
       solution: "",
       allowedDomains: [],
+      forbidFunctions: problemData.forbidden_functions ?? [],
     };
   } catch (err) {
     fetchError.value = err;
@@ -182,7 +183,8 @@ function mapProblemFormToPayload(p: ProblemForm): ProblemCreatePayload {
     sample_input: emptyToNull(p.description.sampleInput?.join("\n")),
     sample_output: emptyToNull(p.description.sampleOutput?.join("\n")),
     hint: emptyToNull(p.description.hint),
-
+    static_analysis_rules: p.staticAnalysis ?? [],
+    forbidden_functions: p.forbidFunctions ?? [],
     subtask_description: emptyToNull(p.subtaskDescription),
 
     supported_languages: mapAllowedLanguageToSupportedLanguages(p.allowedLanguage),

@@ -147,6 +147,7 @@ interface ProblemForm {
   subtaskDescription: string;
   staticAnalysis: string[];
   allowedDomains: string[];
+  forbidFunctions: string[];
 }
 interface CreateTestCaseBody {
   subtask_id: number;
@@ -172,6 +173,8 @@ interface ProblemCreatePayload {
   supported_languages?: string[];
   tags: number[];
   allowed_domains?: string[];
+  static_analysis_rules?: string[];
+  forbidden_functions?: string[];
 }
 
 interface ProblemTop10RunTimeItem {

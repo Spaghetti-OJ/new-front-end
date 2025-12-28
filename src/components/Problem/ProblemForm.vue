@@ -34,7 +34,35 @@ const emits = defineEmits<{
   (e: "generate", payload: GeneratePayload): void;
   (e: "update:checker", value: File | null): void;
 }>();
+const hasForbidFunctions = computed(() => (problem.value.staticAnalysis ?? []).includes("forbid-functions"));
 
+const forbidFnInput = ref(""); // 輸入框用
+const forbidFnError = ref("");
+const fnNameRegex = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+function addForbidFunction() {
+  const v = forbidFnInput.value.trim();
+  if (!v) return;
+
+  if (!fnNameRegex.test(v)) {
+    forbidFnError.value = "Invalid function name (e.g., foo, my_func, printf)";
+    return;
+  }
+
+  forbidFnError.value = "";
+  const cur = problem.value.forbidFunctions ?? [];
+  if (!cur.includes(v)) update("forbidFunctions", [...cur, v]);
+
+  forbidFnInput.value = "";
+}
+
+function removeForbidFunction(name: string) {
+  const cur = problem.value.forbidFunctions ?? [];
+  update(
+    "forbidFunctions",
+    cur.filter((x) => x !== name),
+  );
+}
 const rules = {
   problemName: { required, maxLength: maxLength(64) },
   description: {
@@ -84,6 +112,15 @@ const rules = {
   solution: { maxLength: maxLength(20000) },
   staticAnalysis: {},
   allowedDomains: {},
+  forbidFunctions: {
+    requiredWhenEnabled: helpers.withMessage(
+      "Please provide at least one forbidden function.",
+      (v: string[]) => {
+        const enabled = (problem.value.staticAnalysis ?? []).includes("forbid-functions");
+        return !enabled || (Array.isArray(v) && v.length > 0);
+      },
+    ),
+  },
 };
 const v$ = useVuelidate(rules, problem.value);
 
@@ -186,7 +223,8 @@ function updateSubtask(index: number, newTask: ProblemTestCase) {
 }
 
 const staticAnalysisOptions = [
-  { label: "diff", value: "diff" },
+  { label: "forbid-functions", value: "forbid-functions" },
+  { label: "forbid-stl", value: "forbid-stl" },
   { label: "forbid-loops", value: "forbid-loops" },
   { label: "forbid-arrays", value: "forbid-arrays" },
 ];
@@ -664,6 +702,52 @@ const removeDomain = (d: string) => {
               </label>
             </div>
           </details>
+        </div>
+        <!-- 勾選 forbid-functions 才顯示 -->
+        <div v-if="hasForbidFunctions" class="form-control mt-4 w-1/2">
+          <label class="label">
+            <span class="label-text font-semibold">Forbidden functions</span>
+          </label>
+
+          <!-- 已新增的 function -->
+          <div v-if="problem.forbidFunctions?.length" class="mt-2 flex flex-wrap gap-2">
+            <div
+              v-for="fn in problem.forbidFunctions"
+              :key="fn"
+              class="flex items-center gap-1 rounded-md border border-base-300 bg-base-100 px-3 py-1 text-sm"
+            >
+              <span>{{ fn }}</span>
+              <button type="button" class="btn btn-ghost btn-xs" @click="removeForbidFunction(fn)">
+                <i-uil-times />
+              </button>
+            </div>
+          </div>
+
+          <!-- 輸入 -->
+          <div class="mt-2 flex flex-col gap-1">
+            <div class="flex gap-3">
+              <input
+                v-model="forbidFnInput"
+                type="text"
+                :class="['input input-bordered w-full', forbidFnError && 'input-error']"
+                placeholder="e.g., scanf"
+                @keydown.enter.prevent="addForbidFunction"
+                @input="forbidFnError = ''"
+              />
+              <button
+                type="button"
+                :class="['btn btn-success', !forbidFnInput.trim() && 'btn-disabled']"
+                @click="addForbidFunction"
+              >
+                ADD
+              </button>
+            </div>
+            <span v-if="forbidFnError" class="text-xs text-error">{{ forbidFnError }}</span>
+            <span v-if="v$.forbidFunctions.$error" class="text-xs text-error">
+              {{ v$.forbidFunctions.$errors[0]?.$message }}
+            </span>
+            <span class="text-xs opacity-60">Only function name allowed (letters, digits, underscore).</span>
+          </div>
         </div>
 
         <div class="form-control mt-2 w-1/2">
