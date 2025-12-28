@@ -256,20 +256,20 @@ function formatDateTime(value?: string) {
         <table class="table w-full">
           <thead>
             <tr>
-              <th class="text-xs font-semibold text-base-content/70">
-                {{ t("settings.apiKeys.table.name").toUpperCase() }}
+              <th class="text-xs font-semibold uppercase text-base-content/70">
+                {{ t("settings.apiKeys.table.name") }}
               </th>
-              <th class="text-xs font-semibold text-base-content/70">
-                {{ t("settings.apiKeys.table.status").toUpperCase() }}
+              <th class="text-xs font-semibold uppercase text-base-content/70">
+                {{ t("settings.apiKeys.table.status") }}
               </th>
-              <th class="text-xs font-semibold text-base-content/70">
-                {{ t("settings.apiKeys.table.usage").toUpperCase() }}
+              <th class="text-xs font-semibold uppercase text-base-content/70">
+                {{ t("settings.apiKeys.table.usage") }}
               </th>
-              <th class="text-xs font-semibold text-base-content/70">
-                {{ t("settings.apiKeys.table.createdAt").toUpperCase() }}
+              <th class="text-xs font-semibold uppercase text-base-content/70">
+                {{ t("settings.apiKeys.table.createdAt") }}
               </th>
-              <th class="text-xs font-semibold text-base-content/70">
-                {{ t("settings.apiKeys.table.expiresAt").toUpperCase() }}
+              <th class="text-xs font-semibold uppercase text-base-content/70">
+                {{ t("settings.apiKeys.table.expiresAt") }}
               </th>
               <th class="w-20"></th>
             </tr>
