@@ -15,6 +15,59 @@
       },
       "submit": "Submit",
       "required": "Required"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "createNewKey": "Create New Secret Key",
+      "noKeysYet": "No API keys yet. Click",
+      "getStarted": "to get started.",
+      "table": {
+        "name": "Name",
+        "status": "Status",
+        "usage": "Usage",
+        "createdAt": "Created At",
+        "expiresAt": "Expires At"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "createModal": {
+        "title": "Create API Key",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Normal OJ integration key",
+        "expirationDate": "Expiration Date"
+      },
+      "generatedModal": {
+        "title": "New API Key",
+        "warning": "This key will only be shown once. Please store it safely.",
+        "copied": "Copied",
+        "retry": "Retry",
+        "copy": "Copy",
+        "stored": "I have stored it"
+      },
+      "detailModal": {
+        "title": "API Key Details"
+      },
+      "deleteModal": {
+        "title": "Delete API Key",
+        "confirm": "Are you sure you want to delete \"{name}\"?"
+      },
+      "permissions": {
+        "title": "Permissions",
+        "types": "Types",
+        "read": "Read",
+        "write": "Write",
+        "create": "Create",
+        "submissions": "Submissions",
+        "courses": "Courses",
+        "problems": "Problems",
+        "user": "User"
+      },
+      "close": "Close",
+      "create": "Create",
+      "delete": "Delete",
+      "cancel": "Cancel"
     }
   },
   "about": {
@@ -80,6 +133,37 @@
       "new": {
         "title": "New Homework",
         "preview": "Preview"
+      },
+      "stats": {
+        "pageTitle": "Homework Stats - {id} - {courseId} | Normal OJ",
+        "statsTitle": "Stats - {name}",
+        "scoreboardTitle": "Scoreboard",
+        "sort": {
+          "aria": "Sort scoreboard",
+          "username": "Sort by Username",
+          "scoreDesc": "Sort by Score (Desc)",
+          "scoreAsc": "Sort by Score (Asc)"
+        },
+        "exportCsv": "Export CSV",
+        "exportAria": "Export scoreboard as CSV",
+        "refresh": "Refresh",
+        "refreshAria": "Refresh scoreboard data",
+        "table": {
+          "rank": "Rank",
+          "user": "User",
+          "total": "Total",
+          "late": "Late",
+          "empty": "No submissions found."
+        },
+        "csv": {
+          "rank": "rank",
+          "username": "username",
+          "realName": "real_name",
+          "isLate": "is_late",
+          "totalScore": "total_score",
+          "yes": "Yes",
+          "no": "No"
+        }
       }
     },
     "problem": {
@@ -87,6 +171,19 @@
         "title": "New Problem",
         "preview": "Preview",
         "json": "JSON（for developer）"
+      },
+      "edit": {
+        "title": "Edit Problem",
+        "content": "Content",
+        "testdata": "Testdata",
+        "checker": "Checker",
+        "delete": "Delete",
+        "discardChanges": "Discard Changes",
+        "preview": "Preview",
+        "json": "JSON",
+        "confirmDelete": "Are you sure you want to delete?",
+        "confirmDiscard": "Are you sure you want to discard changes?",
+        "unknownError": "Unknown error occurred :("
       },
       "submit": {
         "err": {
@@ -203,6 +300,13 @@
       "sortBy": "Sort By",
       "cancel": "Cancel",
       "submit": "Submit",
+      "username": "Username",
+      "realName": "Real Name",
+      "role": "Role",
+      "addByUsername": "Add by username",
+      "usernamePlaceholder": "username",
+      "add": "Add",
+      "optional": "optional",
       "csvUploadHint": {
         "header": "Please upload a CSV file to add members. The first row (header) of the csv should contain:",
         "content": "From the second row, fill each member's data in each row",
@@ -404,20 +508,47 @@
           "sample": {
             "input": "Sample Input ",
             "output": "Sample Output "
-          }
+          },
+          "appendSample": "Append new sample",
+          "removeSample": "Remove last sample"
         },
         "testdataRule1": "Put all the input/output files in a single `.zip` file, and follow the naming rules below.",
         "testdataRule2": "Name the input file as \"sstt.in\", where \"ss\" represents the number of subtasks it belongs to, and \"tt\" represents which testcase it is in subtask.",
-        "testdataRule3": "Similarly, name the ouput file as \"sstt.out\", NOTE THAT \"ss\" & \"tt\" are zero-indexed.",
+        "testdataRule3": "Similarly, name the output file as \"sstt.out\", NOTE THAT \"ss\" & \"tt\" are zero-indexed.",
         "testdataRule4": "For example, a problem with 3 subtasks, and the number of testcases of each subtask is 3, 5, 15, respectively.",
         "testdataRule5": "The content of zip file is:",
-        "gotIt": "Got it"
+        "gotIt": "Got it",
+        "subtaskDescription": "Subtask description",
+        "solution": "Solution",
+        "solutionUploadHint": "Please upload the correct solution for student reference.",
+        "solutionLanguage": "Solution Language",
+        "saveSolution": "Save Solution",
+        "llmGenerateTestcase": "LLM generate testcase",
+        "uploadTestcase": "Upload testcase",
+        "checker": "Checker",
+        "whatIsChecker": "WHAT IS CHECKER",
+        "checkerHint": "If the teacher does not upload a checker file, the system will check submissions using the teacher's test data.",
+        "chooseFile": "Choose file",
+        "noFileChosen": "No file chosen",
+        "staticAnalysis": "Static program analysis",
+        "selectAnalysisRules": "Select analysis rules",
+        "allowNetwork": "Allow connect to network",
+        "addDomainPlaceholder": "Please add domain.",
+        "addDomain": "ADD DOMAIN",
+        "invalidFunctionName": "Invalid function name (e.g., foo, my_func, printf)",
+        "pleaseSelectSolutionLanguage": "Please select a valid solution language.",
+        "aiGenerateTestdata": "AI generate testdata",
+        "generate": "GENERATE",
+        "llmWarning": "LLM will generate test cases that refer to your solution and description. AI may generate error output. Please double-check before you publish the problem.",
+        "forbidFunctionHint": "Only function name allowed (letters, digits, underscore).",
+        "dropChecker": "Drop file here, or use the button to select file"
       },
       "card": {
         "title": "Problem #",
         "quota": "Quota",
         "score": "Score",
         "submit": "Submit",
+        "editorial": "Editorial",
         "stats": "Stats",
         "desc": "Description",
         "input": "Input",
@@ -437,7 +568,10 @@
           "score": "Score"
         },
         "noContent": "no content",
-        "unlimited": "unlimited"
+        "unlimited": "unlimited",
+        "copycat": "Copycat",
+        "edit": "Edit",
+        "downloadTestCase": "Download test case"
       },
       "infoCard": {
         "score": "Score",
