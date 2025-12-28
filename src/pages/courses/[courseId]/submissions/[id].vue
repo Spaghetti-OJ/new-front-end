@@ -27,9 +27,12 @@ const execute = async () => {
       raw.status = Number(raw.status);
       raw.languageType = Number(raw.languageType);
       const parsedTimestamp = Number(raw.timestamp);
-      raw.timestamp = Number.isNaN(parsedTimestamp)
-        ? new Date(raw.timestamp).getTime() / 1000
-        : parsedTimestamp;
+      if (Number.isNaN(parsedTimestamp)) {
+        const parsedDate = new Date(raw.timestamp).getTime();
+        raw.timestamp = Number.isNaN(parsedDate) ? 0 : parsedDate / 1000;
+      } else {
+        raw.timestamp = parsedTimestamp;
+      }
       if (raw.tasks) {
         raw.tasks.forEach((t: any) => {
           t.status = Number(t.status);
