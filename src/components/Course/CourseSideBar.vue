@@ -65,7 +65,7 @@ const displayedNavs = computed(() => {
   if (session.hasCourseAccess(route.params.courseId as string)) {
     navs.push(
       { name: t("components.courseSideBar.members"), path: "/members" },
-      { name: "Manage", path: "/manage" },
+      { name: t("components.courseSideBar.manage"), path: "/manage" },
     );
   }
 

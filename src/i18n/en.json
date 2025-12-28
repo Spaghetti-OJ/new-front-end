@@ -418,7 +418,8 @@
       "hw": "Homeworks",
       "problems": "Problems",
       "submissions": "Submissions",
-      "members": "Members"
+      "members": "Members",
+      "manage": "Manage"
     },
     "systemAnn": {
       "ann": "Announcements",

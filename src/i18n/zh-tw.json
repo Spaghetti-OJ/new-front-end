@@ -417,7 +417,8 @@
       "hw": "作業",
       "problems": "題目",
       "submissions": "繳交狀態",
-      "members": "成員"
+      "members": "成員",
+      "manage": "管理"
     },
     "systemAnn": {
       "ann": "公告",
