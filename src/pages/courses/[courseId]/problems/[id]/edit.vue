@@ -7,7 +7,6 @@ import axios from "axios";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
-import Manage from "../../manage.vue";
 
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
