@@ -48,7 +48,7 @@ const testForm = reactive({
 
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
-  lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 3)) },
+  lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 4)) },
 };
 const v$ = useVuelidate(rules, form);
 
@@ -91,7 +91,7 @@ async function runTest() {
       stdin: testForm.input || undefined,
     });
 
-    const testId = submitRes.data?.test_id;
+    const testId = submitRes.test_id;
     if (!testId) {
       throw new Error("Missing test id from custom test response.");
     }
@@ -102,7 +102,7 @@ async function runTest() {
 
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       const res = await api.Submission.getCustomTestResult(testId);
-      result = res.data;
+      result = res;
 
       if (result?.status && result.status !== "pending") {
         break;
