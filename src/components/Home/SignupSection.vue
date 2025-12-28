@@ -110,6 +110,9 @@ async function signup() {
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
+          <label class="label">
+            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
+          </label>
           <label class="label" v-if="v$.username.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -125,6 +128,11 @@ async function signup() {
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
+          <label class="label">
+            <span class="label-text-alt opacity-70"
+              >Please enter a valid email address that can receive emails.</span
+            >
+          </label>
           <label class="label" v-if="v$.email.$error">
             <span class="label-text-alt text-error">
               {{ v$.email.required.$invalid ? "Required" : v$.email.email.$invalid ? "Invalid email" : "" }}
@@ -142,6 +150,9 @@ async function signup() {
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
+          <label class="label">
+            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
+          </label>
           <label class="label" v-if="v$.realname.$error">
             <span class="label-text-alt text-error">Required</span>
           </label>
@@ -157,6 +168,9 @@ async function signup() {
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
+          <label class="label">
+            <span class="label-text-alt opacity-70">This field cannot be changed after confirmation.</span>
+          </label>
         </div>
 
         <!-- Password -->
