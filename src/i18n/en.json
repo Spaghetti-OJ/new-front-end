@@ -51,8 +51,7 @@
       },
       "deleteModal": {
         "title": "Delete API Key",
-        "confirm": "Are you sure you want to delete",
-        "question": "?"
+        "confirm": "Are you sure you want to delete \"{name}\"?"
       },
       "permissions": {
         "title": "Permissions",

@@ -468,9 +468,7 @@ function formatDateTime(value?: string) {
     <div class="modal-box max-w-sm">
       <h3 class="text-lg font-bold">{{ t("settings.apiKeys.deleteModal.title") }}</h3>
       <p class="mt-3 text-sm">
-        {{ t("settings.apiKeys.deleteModal.confirm") }}
-        <span class="font-semibold">"{{ selectedKey?.name }}"</span
-        >{{ t("settings.apiKeys.deleteModal.question") }}
+        {{ t("settings.apiKeys.deleteModal.confirm", { name: selectedKey?.name }) }}
       </p>
       <div class="modal-action">
         <button class="btn btn-ghost" @click="showDeleteConfirm = false">

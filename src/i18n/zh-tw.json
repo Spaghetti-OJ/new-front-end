@@ -51,8 +51,7 @@
       },
       "deleteModal": {
         "title": "刪除 API 金鑰",
-        "confirm": "您確定要刪除",
-        "question": "嗎？"
+        "confirm": "您確定要刪除「{name}」嗎？"
       },
       "permissions": {
         "title": "權限",
