@@ -288,7 +288,9 @@
     "filter": {
       "Courses": "課程",
       "Tags": "標籤",
-      "difficulty": "難度"
+      "difficulty": "難度",
+      "Difficulty": "難度",
+      "liked": "已按讚"
     },
     "table": {
       "id": "題號",
