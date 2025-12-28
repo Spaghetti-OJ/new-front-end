@@ -36,6 +36,7 @@ const rules = {
 
 const v$ = useVuelidate(rules, signupForm);
 async function signup() {
+  if (isLoading.value) return;
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
   isLoading.value = true;
@@ -91,7 +92,7 @@ async function signup() {
   <div class="card-container">
     <LoginSection v-if="session.isLogin" />
     <div v-else class="card min-w-full">
-      <div class="card-body space-y-3 pt-0">
+      <form class="card-body space-y-3 pt-0" @submit.prevent="signup">
         <div class="card-title mb-2">Sign up</div>
         <div class="alert alert-error shadow-lg" v-if="signupForm.errorMsg">
           <div>
@@ -189,9 +190,16 @@ async function signup() {
         </div>
 
         <div class="form-control mt-4">
-          <button class="btn btn-primary w-full" @click="signup">SIGN UP</button>
+          <button
+            class="btn btn-primary w-full"
+            :class="isLoading && 'loading'"
+            type="submit"
+            :disabled="isLoading"
+          >
+            SIGN UP
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>

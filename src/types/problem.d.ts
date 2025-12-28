@@ -27,6 +27,7 @@ interface ProblemItem {
   like_count: number;
   view_count: number;
   total_quota: number;
+  highScore?: number;
   description: string;
   input_description: string;
   output_description: string;
@@ -176,6 +177,7 @@ interface ProblemCreatePayload {
 interface ProblemTop10RunTimeItem {
   id: string;
   user: string;
+  username: string;
   execution_time: number;
   score: number;
   status?: string;
@@ -199,6 +201,7 @@ interface Editorial {
 interface ProblemTop10MemoryItem {
   id: string;
   user: string;
+  username: string;
   memory_usage: number;
   score: number;
   status?: string;
