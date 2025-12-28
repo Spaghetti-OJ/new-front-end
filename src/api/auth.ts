@@ -37,11 +37,23 @@ export const Auth = {
   getPublicProfile: (username: string) =>
     fetcher.get<PublicUserProfile>(`/profile/${username}/`).then((r) => r.data ?? r),
   getUserStats: (userId: string) =>
-    fetcher.get<UserStatsResponse>(`/stats/user/${userId}/`).then((r) => r ?? ({} as UserStatsResponse)),
+    fetcher.get<UserStatsResponse>(`/stats/user/${userId}/`).then((r) => {
+      const payload = r as unknown as UserStatsResponse;
+      return {
+        data: payload.data ?? (r as any).data,
+        message: payload.message ?? (r as any).message,
+        status: payload.status ?? (r as any).status,
+      };
+    }),
   getSubmissionsActivity: (userId: string) =>
-    fetcher
-      .get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`)
-      .then((r) => r ?? ({} as SubmissionActivityResponse)),
+    fetcher.get<SubmissionActivityResponse>(`/auth/stats/submission-activity/${userId}/`).then((r) => {
+      const payload = r as unknown as SubmissionActivityResponse;
+      return {
+        data: payload.data ?? (r as any).data,
+        message: payload.message ?? (r as any).message,
+        status: payload.status ?? (r as any).status,
+      };
+    }),
 };
 export const Copycat = {
   detect: (body: { problem_id: number | string }) => fetcher.post("/copycat/", body),
