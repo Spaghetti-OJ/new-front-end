@@ -527,7 +527,7 @@
         "uploadTestcase": "Upload testcase",
         "checker": "Checker",
         "whatIsChecker": "WHAT IS CHECKER",
-        "checkerHint": "If teacher do not upload checker file, system will check submission refer to teacher's testdata.",
+        "checkerHint": "If the teacher does not upload a checker file, the system will check submissions using the teacher's test data.",
         "chooseFile": "Choose file",
         "noFileChosen": "No file chosen",
         "staticAnalysis": "Static program analysis",
