@@ -88,6 +88,19 @@
         "preview": "預覽",
         "json": "JSON（供開發人員檢查）"
       },
+      "edit": {
+        "title": "編輯題目",
+        "content": "內容",
+        "testdata": "測資",
+        "checker": "檢查器",
+        "delete": "刪除",
+        "discardChanges": "捨棄變更",
+        "preview": "預覽",
+        "json": "JSON",
+        "confirmDelete": "你確定要刪除嗎？",
+        "confirmDiscard": "你確定要捨棄變更嗎？",
+        "unknownError": "發生未知錯誤 :("
+      },
       "submit": {
         "err": {
           "code": "請在此貼上你的原始碼以利繳交。",

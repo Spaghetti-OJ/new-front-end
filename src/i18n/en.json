@@ -88,6 +88,19 @@
         "preview": "Preview",
         "json": "JSON（for developer）"
       },
+      "edit": {
+        "title": "Edit Problem",
+        "content": "Content",
+        "testdata": "Testdata",
+        "checker": "Checker",
+        "delete": "Delete",
+        "discardChanges": "Discard Changes",
+        "preview": "Preview",
+        "json": "JSON",
+        "confirmDelete": "Are you sure you want to delete?",
+        "confirmDiscard": "Are you sure you want to discard changes?",
+        "unknownError": "Unknown error occurred :("
+      },
       "submit": {
         "err": {
           "code": "Please paste your source code to submit.",
