@@ -198,7 +198,7 @@ function getSummary(courseName: string) {
                         <i-uil-users-alt class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">{{$t("courses.admin.students")}}</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.students") }}</span>
                         <span class="text-lg font-bold leading-none">{{ getSummary(course).userCount }}</span>
                       </div>
                     </div>
@@ -208,7 +208,7 @@ function getSummary(courseName: string) {
                         <i-uil-file-alt class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">{{$t("courses.admin.homeworks")}}</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.homeworks") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).homeworkCount
                         }}</span>
@@ -220,7 +220,7 @@ function getSummary(courseName: string) {
                         <i-uil-upload class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">{{$t("courses.admin.submits")}}</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.submits") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).submissionCount
                         }}</span>
@@ -232,7 +232,7 @@ function getSummary(courseName: string) {
                         <i-uil-puzzle-piece class="h-5 w-5" />
                       </div>
                       <div class="flex flex-col">
-                        <span class="text-xs opacity-70">{{$t("courses.admin.problems")}}</span>
+                        <span class="text-xs opacity-70">{{ $t("courses.admin.problems") }}</span>
                         <span class="text-lg font-bold leading-none">{{
                           getSummary(course).problemCount
                         }}</span>

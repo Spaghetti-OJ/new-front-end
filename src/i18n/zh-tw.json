@@ -2,7 +2,7 @@
   "settings": {
     "title": "設定",
     "selectLang": "選擇語言",
-    "password":{
+    "password": {
       "change": "變更密碼",
       "success": "密碼已成功變更",
       "new": "新密碼",
@@ -521,7 +521,7 @@
     },
     "return-home": "回到首頁"
   },
-  "api_key":{
+  "api_key": {
     "title": "API 金鑰",
     "description": "查看 API 金鑰"
   }

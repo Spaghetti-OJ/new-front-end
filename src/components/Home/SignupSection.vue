@@ -102,7 +102,9 @@ async function signup() {
         </div>
         <!-- Username -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.username") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.username") }}</span></label
+          >
           <input
             v-model="v$.username.$model"
             type="text"
@@ -117,7 +119,9 @@ async function signup() {
 
         <!-- Email -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.email") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.email") }}</span></label
+          >
           <input
             v-model="v$.email.$model"
             type="email"
@@ -134,7 +138,9 @@ async function signup() {
 
         <!-- Real Name -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.realName") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.realName") }}</span></label
+          >
           <input
             v-model="v$.realname.$model"
             type="text"
@@ -149,7 +155,9 @@ async function signup() {
 
         <!-- Student ID -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.studentId") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.studentId") }}</span></label
+          >
           <input
             v-model="v$.studentID.$model"
             type="text"
@@ -161,7 +169,9 @@ async function signup() {
 
         <!-- Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.password") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.password") }}</span></label
+          >
           <input
             v-model="v$.password.$model"
             type="password"
@@ -176,7 +186,9 @@ async function signup() {
 
         <!-- Confirm Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">{{ $t("profile.confirm") }}</span></label>
+          <label class="label"
+            ><span class="label-text">{{ $t("profile.confirm") }}</span></label
+          >
           <input
             v-model="v$.confirmPassword.$model"
             type="password"
