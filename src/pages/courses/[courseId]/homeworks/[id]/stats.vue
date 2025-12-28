@@ -116,15 +116,15 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
   const itemsByUser = new Map<string, HomeworkScoreboardItem>();
 
   submissions.value.forEach((sub) => {
-    const userId = sub.user?.id || sub.user?.username;
-    if (!userId) return;
+    const userKey = sub.user?.username ?? sub.user?.id;
+    if (!userKey) return;
 
-    let item = itemsByUser.get(userId);
+    let item = itemsByUser.get(userKey);
     if (!item) {
       item = {
         rank: 0,
-        user_id: userId,
-        username: sub.user.username,
+        user_id: sub.user?.id ?? userKey,
+        username: sub.user?.username ?? userKey,
         real_name: sub.user.real_name || "",
         total_score: 0,
         max_total_score: pids.value!.length * maxScorePerProblem,
@@ -133,7 +133,7 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
         last_submission_time: null,
         problems: {},
       };
-      itemsByUser.set(userId, item);
+      itemsByUser.set(userKey, item);
     }
 
     const ts = sub.timestamp ? toUnixSeconds(sub.timestamp) : null;
