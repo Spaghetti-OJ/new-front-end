@@ -116,7 +116,8 @@ async function getManage() {
       canViewStdout: true,
       defaultCode: "",
       staticAnalysis: [],
-      solution: "",
+      solution: problemData.solution_code,
+      solution_code_language:problemData.solution_code_language,
       allowedDomains: [],
     };
   } catch (err) {
@@ -307,8 +308,9 @@ async function delete_() {
   }
 }
 
-function onSaveSolution() {
-  // TODO: connect solution-only API later
+async function onSaveSolution() {
+ const res=await api.Problem.modify(String(route.params.id),{solution_code:edittingProblem.value?.solution,solution_code_language:'c'});
+ console.log(res);
 }
 
 type GeneratedCase = {

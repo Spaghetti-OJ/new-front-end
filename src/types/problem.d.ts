@@ -142,6 +142,7 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
+  solution_code_language:string;
   staticAnalysis: string[];
   allowedDomains: string[];
 }

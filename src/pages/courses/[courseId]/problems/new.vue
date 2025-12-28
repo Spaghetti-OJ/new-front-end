@@ -95,6 +95,7 @@ const newProblem = ref<ProblemForm>({
   solution: "",
   staticAnalysis: [],
   allowedDomains: [],
+  solution_code_language:"",
 });
 
 function update<K extends keyof ProblemForm>(
