@@ -144,6 +144,7 @@ interface ProblemForm {
   canViewStdout: boolean;
   defaultCode: string;
   solution: string;
+  solutionLanguage: number;
   subtaskDescription: string;
   staticAnalysis: string[];
   allowedDomains: string[];
