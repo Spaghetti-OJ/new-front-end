@@ -317,7 +317,7 @@ onMounted(() => {
               >
                 <td>{{ subtask_no }}</td>
                 <td>{{ time_limit_ms }} ms</td>
-                <td>{{ memory_limit_mb }} KB</td>
+                <td>{{ memory_limit_mb }} MB</td>
                 <td>{{ weight }}</td>
               </tr>
             </tbody>
