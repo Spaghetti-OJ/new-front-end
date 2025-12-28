@@ -159,8 +159,11 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
       if (isAccepted && (firstTs == null || ts < firstTs)) {
         item.first_ac_time = new Date(ts * 1000).toISOString();
       }
-      if (endTime != null && ts > endTime) {
-        item.is_late = true;
+      if (endTime != null) {
+        const endTimeSeconds = endTime > 1e11 ? Math.floor(endTime / 1000) : endTime;
+        if (ts > endTimeSeconds) {
+          item.is_late = true;
+        }
       }
     }
 
@@ -175,6 +178,9 @@ const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
     const score = Number(sub.score) || 0;
     if (score > existing.best_score) {
       existing.best_score = score;
+      if (existing.best_score >= maxScorePerProblem) existing.solve_status = "solved";
+      else if (existing.best_score > 0) existing.solve_status = "partial";
+      else existing.solve_status = "unsolved";
     }
     problems[pid] = existing;
   });
