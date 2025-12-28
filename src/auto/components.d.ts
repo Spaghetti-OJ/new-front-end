@@ -38,6 +38,7 @@ declare module 'vue' {
     IUilExclamationCircle: typeof import('~icons/uil/exclamation-circle')['default']
     IUilExclamationTriangle: typeof import('~icons/uil/exclamation-triangle')['default']
     IUilEye: typeof import('~icons/uil/eye')['default']
+    IUilEyeSlash: typeof import('~icons/uil/eye-slash')['default']
     IUilFileAlt: typeof import('~icons/uil/file-alt')['default']
     IUilFileDownload: typeof import('~icons/uil/file-download')['default']
     IUilFileExclamationAlt: typeof import('~icons/uil/file-exclamation-alt')['default']
