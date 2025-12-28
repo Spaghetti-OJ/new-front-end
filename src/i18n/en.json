@@ -187,7 +187,9 @@
         "err": {
           "code": "Please paste your source code to submit.",
           "lang": "Please select the programming language.",
-          "msg": "Oops! Something went wrong when submitting the code. Try again later."
+          "msg": "Oops! Something went wrong when submitting the code. Try again later.",
+          "testRunning": "Test is still running. Please try again in a moment.",
+          "testFailed": "Test failed. Please try again."
         },
         "card": {
           "title": "Submit to problem #",

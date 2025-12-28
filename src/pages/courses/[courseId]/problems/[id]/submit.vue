@@ -100,17 +100,25 @@ async function runTest() {
 
     const maxAttempts = 20;
     const delayMs = 1000;
+    const maxDelayMs = 8000;
     let result: CustomTestResultData | null = null;
 
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       const res = await api.Submission.getCustomTestResult(testId);
-      result = res;
+      const attemptDelay = Math.min(delayMs * 2 ** attempt, maxDelayMs);
+
+      if (res.statusCode === 202) {
+        await new Promise((resolve) => setTimeout(resolve, attemptDelay));
+        continue;
+      }
+
+      result = res.data;
 
       if (result?.status && result.status !== "pending") {
         break;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      await new Promise((resolve) => setTimeout(resolve, attemptDelay));
     }
 
     if (!result) {
@@ -118,7 +126,7 @@ async function runTest() {
     }
 
     if (result.status === "pending") {
-      testForm.output = "Test is still running. Please try again in a moment.";
+      testForm.output = t("course.problem.submit.err.testRunning");
       return;
     }
 
@@ -131,7 +139,7 @@ async function runTest() {
     };
   } catch (e) {
     testForm.isError = true;
-    testForm.output = "Test failed. Please try again.";
+    testForm.output = t("course.problem.submit.err.testFailed");
   } finally {
     testForm.isLoading = false;
   }
