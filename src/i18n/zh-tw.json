@@ -134,6 +134,37 @@
       "new": {
         "title": "新增作業",
         "preview": "預覽"
+      },
+      "stats": {
+        "pageTitle": "作業統計 - {id} - {courseId} | Normal OJ",
+        "statsTitle": "統計 - {name}",
+        "scoreboardTitle": "排行榜",
+        "sort": {
+          "aria": "排序排行榜",
+          "username": "依帳號排序",
+          "scoreDesc": "依分數排序（高到低）",
+          "scoreAsc": "依分數排序（低到高）"
+        },
+        "exportCsv": "匯出 CSV",
+        "exportAria": "匯出排行榜為 CSV",
+        "refresh": "重新整理",
+        "refreshAria": "重新整理排行榜資料",
+        "table": {
+          "rank": "名次",
+          "user": "使用者",
+          "total": "總分",
+          "late": "遲交",
+          "empty": "沒有提交紀錄。"
+        },
+        "csv": {
+          "rank": "rank",
+          "username": "username",
+          "realName": "real_name",
+          "isLate": "is_late",
+          "totalScore": "total_score",
+          "yes": "是",
+          "no": "否"
+        }
       }
     },
     "problem": {

@@ -134,6 +134,37 @@
       "new": {
         "title": "New Homework",
         "preview": "Preview"
+      },
+      "stats": {
+        "pageTitle": "Homework Stats - {id} - {courseId} | Normal OJ",
+        "statsTitle": "Stats - {name}",
+        "scoreboardTitle": "Scoreboard",
+        "sort": {
+          "aria": "Sort scoreboard",
+          "username": "Sort by Username",
+          "scoreDesc": "Sort by Score (Desc)",
+          "scoreAsc": "Sort by Score (Asc)"
+        },
+        "exportCsv": "Export CSV",
+        "exportAria": "Export scoreboard as CSV",
+        "refresh": "Refresh",
+        "refreshAria": "Refresh scoreboard data",
+        "table": {
+          "rank": "Rank",
+          "user": "User",
+          "total": "Total",
+          "late": "Late",
+          "empty": "No submissions found."
+        },
+        "csv": {
+          "rank": "rank",
+          "username": "username",
+          "realName": "real_name",
+          "isLate": "is_late",
+          "totalScore": "total_score",
+          "yes": "Yes",
+          "no": "No"
+        }
       }
     },
     "problem": {

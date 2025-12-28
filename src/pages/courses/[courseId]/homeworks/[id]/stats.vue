@@ -11,9 +11,18 @@ import { CanvasRenderer } from "echarts/renderers";
 import api from "@/api";
 import { useTheme } from "@/stores/theme";
 import dayjs from "dayjs";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
-useTitle(`Homework Stats - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
+const { t } = useI18n();
+useTitle(
+  computed(() =>
+    t("course.hw.stats.pageTitle", {
+      id: route.params.id,
+      courseId: route.params.courseId,
+    }),
+  ),
+);
 const theme = useTheme();
 use([CanvasRenderer, LabelLayout, GridComponent, TooltipComponent, BarChart]);
 
@@ -231,12 +240,12 @@ function exportCSV() {
   if (!sortedScoreboard.value || !pids.value) return;
   const _pids = pids.value;
   const csvHeader: string = [
-    "rank",
-    "username",
-    "real_name",
+    t("course.hw.stats.csv.rank"),
+    t("course.hw.stats.csv.username"),
+    t("course.hw.stats.csv.realName"),
     ..._pids.map(String),
-    "is_late",
-    "total_score",
+    t("course.hw.stats.csv.isLate"),
+    t("course.hw.stats.csv.totalScore"),
   ].join(",");
   const csvBody: string = sortedScoreboard.value
     .map((row) => {
@@ -250,7 +259,7 @@ function exportCSV() {
         row.username,
         row.real_name,
         ...problemScores,
-        row.is_late ? "Yes" : "No",
+        row.is_late ? t("course.hw.stats.csv.yes") : t("course.hw.stats.csv.no"),
         row.total_score,
       ].join(",");
     })
@@ -273,7 +282,7 @@ function exportCSV() {
   <div class="p-2 pb-40">
     <div class="card min-w-full">
       <div class="card-body">
-        <div class="card-title">Stats - {{ hw && hw.name }}</div>
+        <div class="card-title">{{ t("course.hw.stats.statsTitle", { name: hw?.name ?? "-" }) }}</div>
 
         <div class="flex">
           <v-chart
@@ -285,27 +294,27 @@ function exportCSV() {
         </div>
 
         <div class="mb-4 mt-8 flex items-center justify-between">
-          <div class="card-title">Scoreboard</div>
+          <div class="card-title">{{ t("course.hw.stats.scoreboardTitle") }}</div>
           <div class="flex gap-2">
             <select
               v-model="sortBy"
               class="select select-bordered select-sm w-full max-w-xs"
-              aria-label="Sort scoreboard"
+              :aria-label="t('course.hw.stats.sort.aria')"
             >
-              <option :value="Columns.USERNAME">Sort by Username</option>
-              <option :value="Columns.TOTAL_SCORE_DESC">Sort by Score (Desc)</option>
-              <option :value="Columns.TOTAL_SCORE_ASC">Sort by Score (Asc)</option>
+              <option :value="Columns.USERNAME">{{ t("course.hw.stats.sort.username") }}</option>
+              <option :value="Columns.TOTAL_SCORE_DESC">{{ t("course.hw.stats.sort.scoreDesc") }}</option>
+              <option :value="Columns.TOTAL_SCORE_ASC">{{ t("course.hw.stats.sort.scoreAsc") }}</option>
             </select>
-            <button class="btn btn-sm" @click="exportCSV" aria-label="Export scoreboard as CSV">
-              Export CSV
+            <button class="btn btn-sm" @click="exportCSV" :aria-label="t('course.hw.stats.exportAria')">
+              {{ t("course.hw.stats.exportCsv") }}
             </button>
             <button
               class="btn btn-primary btn-sm"
               :class="{ loading: isHWFetching }"
               @click="fetchHomework"
-              aria-label="Refresh scoreboard data"
+              :aria-label="t('course.hw.stats.refreshAria')"
             >
-              Refresh
+              {{ t("course.hw.stats.refresh") }}
             </button>
           </div>
         </div>
@@ -321,10 +330,10 @@ function exportCSV() {
               <table class="table table-compact w-full">
                 <thead>
                   <tr>
-                    <th class="w-16 text-center">Rank</th>
-                    <th>User</th>
+                    <th class="w-16 text-center">{{ t("course.hw.stats.table.rank") }}</th>
+                    <th>{{ t("course.hw.stats.table.user") }}</th>
                     <th class="w-16 text-center" v-for="pid in pids" :key="pid">{{ pid }}</th>
-                    <th class="w-24 text-center">Total</th>
+                    <th class="w-24 text-center">{{ t("course.hw.stats.table.total") }}</th>
                   </tr>
                 </thead>
                 <tbody class="font-mono text-base">
@@ -334,7 +343,9 @@ function exportCSV() {
                       <div class="flex flex-col">
                         <span class="font-bold">{{ row.username }}</span>
                         <span class="text-xs opacity-70">{{ row.real_name }}</span>
-                        <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">Late</span>
+                        <span v-if="row.is_late" class="badge badge-warning badge-xs mt-1">{{
+                          t("course.hw.stats.table.late")
+                        }}</span>
                       </div>
                     </td>
                     <td v-for="pid in pids" :key="pid" class="border-x border-base-200 p-0">
@@ -358,7 +369,7 @@ function exportCSV() {
                   </tr>
                   <tr v-if="sortedScoreboard.length === 0">
                     <td :colspan="(pids?.length || 0) + 3" class="py-8 text-center opacity-50">
-                      No submissions found.
+                      {{ t("course.hw.stats.table.empty") }}
                     </td>
                   </tr>
                 </tbody>
