@@ -12,11 +12,26 @@ const items: ComputedRef<{ [k: string | symbol]: { path: null | string; text: st
     path: `/courses/${route.params.courseId}/announcements`,
     text: t("components.courseSideBar.ann"),
   };
-  const homeworksPage = { path: `/courses/${route.params.courseId}/homeworks`, text: t("components.courseSideBar.hw") };
-  const problemsPage = { path: `/courses/${route.params.courseId}/problems`, text: t("components.courseSideBar.problems") };
-  const submissionsPage = { path: `/courses/${route.params.courseId}/submissions`, text: t("components.courseSideBar.submissions") };
-  const membersPage = { path: `/courses/${route.params.courseId}/members`, text: t("components.courseSideBar.members") };
-  const managePage = { path: `/courses/${route.params.courseId}/manage`, text: t("components.courseSideBar.menage") };
+  const homeworksPage = {
+    path: `/courses/${route.params.courseId}/homeworks`,
+    text: t("components.courseSideBar.hw"),
+  };
+  const problemsPage = {
+    path: `/courses/${route.params.courseId}/problems`,
+    text: t("components.courseSideBar.problems"),
+  };
+  const submissionsPage = {
+    path: `/courses/${route.params.courseId}/submissions`,
+    text: t("components.courseSideBar.submissions"),
+  };
+  const membersPage = {
+    path: `/courses/${route.params.courseId}/members`,
+    text: t("components.courseSideBar.members"),
+  };
+  const managePage = {
+    path: `/courses/${route.params.courseId}/manage`,
+    text: t("components.courseSideBar.menage"),
+  };
 
   return {
     "courses-courseId-announcements": [{ path: null, text: t("components.courseSideBar.ann") }],
