@@ -201,13 +201,14 @@
     "joinmsg": "Join with course code",
     "admin": {
       "students": "Students",
-      "homworks": "Homeworks",
+      "homeworks": "Homeworks",
       "submits": "submits",
       "problems": "Problems"
     }
   },
   "profile": {
     "title": "Profile",
+    "required": "Required",
     "rules": {
       "confirmPassword": {
         "sameAsRef": "Password does not match."
