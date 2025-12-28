@@ -87,11 +87,9 @@ const scoreDistribution = computed(() => {
   stats.value.scoreDistribution.forEach((item) => (counter[String(item.score)] = item.count));
   return counter;
 });
-const top10RunTime = computed(
-  () => stats.value?.top10RunTime?.filter((subm) => Number(subm.score) === 100) || [],
-);
+const top10RunTime = computed(() => stats.value?.top10RunTime?.filter((subm) => subm.score === 100) || []);
 const top10MemoryUsage = computed(
-  () => stats.value?.top10MemoryUsage?.filter((subm) => Number(subm.score) === 100) || [],
+  () => stats.value?.top10MemoryUsage?.filter((subm) => subm.score === 100) || [],
 );
 
 const pieOption = computed(() => ({
