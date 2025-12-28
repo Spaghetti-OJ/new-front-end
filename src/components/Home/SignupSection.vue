@@ -108,7 +108,7 @@ async function signup() {
           <input
             v-model="v$.username.$model"
             type="text"
-            placeholder="username (cannot be changed after confirmation)"
+            :placeholder="t('profile.username-placeholder')"
             class="input input-bordered"
             :class="v$.username.$error && 'input-error'"
           />
@@ -123,7 +123,7 @@ async function signup() {
           <input
             v-model="v$.email.$model"
             type="email"
-            placeholder="email"
+            :placeholder="t('profile.email')"
             class="input input-bordered"
             :class="v$.email.$error && 'input-error'"
           />
@@ -140,7 +140,7 @@ async function signup() {
           <input
             v-model="v$.realname.$model"
             type="text"
-            placeholder="your full name"
+            :placeholder="t('profile.realName')"
             class="input input-bordered"
             :class="v$.realname.$error && 'input-error'"
           />
@@ -155,7 +155,7 @@ async function signup() {
           <input
             v-model="v$.studentID.$model"
             type="text"
-            placeholder="student ID"
+            :placeholder="t('profile.studentId')"
             class="input input-bordered"
             :class="v$.studentID.$error && 'input-error'"
           />
@@ -163,11 +163,11 @@ async function signup() {
 
         <!-- Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Password</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.password") }}</span></label>
           <input
             v-model="v$.password.$model"
             type="password"
-            placeholder="password"
+            :placeholder="t('profile.password')"
             class="input input-bordered"
             :class="v$.password.$error && 'input-error'"
           />
@@ -178,11 +178,11 @@ async function signup() {
 
         <!-- Confirm Password -->
         <div class="form-control">
-          <label class="label"><span class="label-text">Confirm Password</span></label>
+          <label class="label"><span class="label-text">{{ $t("profile.confirm") }}</span></label>
           <input
             v-model="v$.confirmPassword.$model"
             type="password"
-            placeholder="confirm password"
+            :placeholder="t('profile.confirm')"
             class="input input-bordered"
             :class="v$.confirmPassword.$error && 'input-error'"
           />

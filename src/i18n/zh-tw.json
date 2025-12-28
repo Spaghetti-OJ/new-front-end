@@ -214,6 +214,7 @@
       }
     },
     "username": "帳號",
+    "username-placeholder": "帳號名 (無法再次修改)",
     "dispname": "顯示名稱",
     "email": "電子郵件",
     "role": "身份",
