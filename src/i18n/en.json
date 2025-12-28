@@ -32,6 +32,7 @@
       "courseName": "Course Name",
       "courseNamePlaceholder": "Enter course name",
       "teacher": "Teacher",
+      "teacherPlaceholder": "Enter teacher username",
       "currentTAs": "Current Teacher Assistants",
       "noTAsAssigned": "No TAs assigned yet.",
       "addTA": "Add Teacher Assistant",

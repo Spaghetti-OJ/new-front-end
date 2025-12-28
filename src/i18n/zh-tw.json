@@ -32,6 +32,7 @@
       "courseName": "課程名稱",
       "courseNamePlaceholder": "請輸入課程名稱",
       "teacher": "教師",
+      "teacherPlaceholder": "請輸入教師使用者名稱",
       "currentTAs": "目前的助教",
       "noTAsAssigned": "尚未指派助教。",
       "addTA": "新增助教",

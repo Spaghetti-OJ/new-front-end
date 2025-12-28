@@ -256,7 +256,7 @@ onMounted(() => {
                   v-model="courseForm.teacher"
                   type="text"
                   class="input input-bordered w-full"
-                  :placeholder="t('course.manage.teacher')"
+                  :placeholder="t('course.manage.teacherPlaceholder')"
                 />
               </div>
             </div>
