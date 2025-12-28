@@ -60,7 +60,12 @@ function formatSeconds(value: number | null): string {
 
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
-  lang: { betweenValue: helpers.withMessage(t("course.problem.submit.err.lang"), between(0, 4)) },
+  lang: {
+    betweenValue: helpers.withMessage(
+      t("course.problem.submit.err.lang"),
+      between(0, LANGUAGE_OPTIONS.length - 1),
+    ),
+  },
 };
 const v$ = useVuelidate(rules, form);
 
