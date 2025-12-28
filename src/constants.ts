@@ -4,6 +4,7 @@ export const LANGUAGE_OPTIONS: LangOption[] = [
   { value: 0, text: "c", mask: 1 },
   { value: 1, text: "cpp", mask: 2 },
   { value: 2, text: "py", mask: 4 },
+  { value: 4, text: "java", mask: 8 },
 ];
 
 export const ROLE = ["Admin", "Teacher", "Student"];

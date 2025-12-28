@@ -169,6 +169,8 @@ interface ProblemCreatePayload {
   supported_languages?: string[];
   tags: number[];
   allowed_domains?: string[];
+  solution_code?:string;
+  solution_code_language?:string;
 }
 
 interface ProblemTop10RunTimeItem {

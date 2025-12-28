@@ -3,10 +3,12 @@ import { ref, watch, inject, Ref, watchEffect, onMounted, onBeforeUnmount, compu
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength, minValue, between, helpers } from "@vuelidate/validators";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
-
+import api from "@/api";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import ProblemSubtaskItem from "@/components/Problem/ProblemSubtaskItem.vue";
 
+import { useRoute } from "vue-router";
+const route = useRoute();
 // TODO: handling error when `problem` or `problem.value` is undefined
 // This component only renders when `problem` is not undefined
 const problem = inject<Ref<ProblemForm>>("problem") as Ref<ProblemForm>;
@@ -81,7 +83,11 @@ function update(key: keyof ProblemForm, value: ProblemForm[typeof key]) {
   emits("update", key, value);
   v$.value[key].$touch();
 }
-
+async function savesolution(code:string,language:string) {   
+  const res=await api.Problem.modify(String(route.params.id),{solution_code_language:'java',solution_code:code});
+    console.log(res);
+  
+}
 async function submit() {
   const isFormCorrect = await v$.value.$validate();
   if (isFormCorrect) {
@@ -355,7 +361,7 @@ const removeDomain = (d: string) => {
           </div>
 
           <!-- Save 按鈕 -->
-          <button class="btn btn-sm shrink-0 bg-[#02305f] normal-case" @click="$emit('save-solution')">
+          <button class="btn btn-sm shrink-0 bg-[#02305f] normal-case" @click="savesolution(problem.solution)">
             Save Solution
           </button>
         </div>
