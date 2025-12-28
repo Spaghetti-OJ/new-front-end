@@ -202,7 +202,7 @@ async function signup() {
               type="button"
               class="btn btn-ghost btn-xs absolute inset-y-0 right-2 h-full min-h-0 px-2 hover:bg-transparent"
               @click="showConfirmPassword = !showConfirmPassword"
-              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
+              :aria-label="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
             >
               <i-uil-eye-slash v-if="showConfirmPassword" class="h-4 w-4" />
               <i-uil-eye v-else class="h-4 w-4" />
