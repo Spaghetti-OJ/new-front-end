@@ -192,8 +192,6 @@ async function submit() {
           "No valid test case files (XXYY.in/out) found in the zip archive.",
       );
     }
-    if (newProblem.value.staticAnalysis[0] == "forbid-functions") {
-    }
     const payload = mapNewProblemToPayload(newProblem.value, route.params.courseId as string);
     const res = await api.Problem.create(payload);
     const problemId = res.data.problem_id;
