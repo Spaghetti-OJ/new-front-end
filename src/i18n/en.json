@@ -198,7 +198,13 @@
       "unknown-error-occurred": "Unknown error occurred :("
     },
     "join": "join",
-    "joinmsg": "Join with course code"
+    "joinmsg": "Join with course code",
+    "admin": {
+      "students": "Students",
+      "homworks": "Homeworks",
+      "submits": "submits",
+      "problems": "Problems"
+    }
   },
   "profile": {
     "title": "Profile",

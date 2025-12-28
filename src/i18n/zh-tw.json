@@ -198,7 +198,13 @@
       "unknown-error-occurred": "發生未知錯誤 :("
     },
     "join": "加入課程",
-    "joinmsg": "以課程代碼加入"
+    "joinmsg": "以課程代碼加入",
+    "admin": {
+      "students": "學生",
+      "homeworks": "作業",
+      "submits": "提交",
+      "problems": "問題"
+    }
   },
   "profile": {
     "title": "個人資料",
