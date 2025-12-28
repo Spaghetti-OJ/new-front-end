@@ -45,7 +45,12 @@ const testForm = reactive({
   isLoading: false,
   isError: false,
 });
-const testResultMeta = ref<{ timeUsed: number | null; memoryUsed: number | null } | null>(null);
+const testResultMeta = ref<{
+  timeUsed: number | null;
+  memoryUsed: number | null;
+  compileTimeUsed: number | null;
+  compileMemoryUsed: number | null;
+} | null>(null);
 
 const rules = {
   code: { required: helpers.withMessage(t("course.problem.submit.err.code"), required) },
@@ -134,8 +139,10 @@ async function runTest() {
       ? `${result.stdout || ""}\n\n[stderr]\n${result.stderr}`
       : result.stdout || "";
     testResultMeta.value = {
-      timeUsed: result.compile_info?.time_used ?? result.time ?? null,
-      memoryUsed: result.compile_info?.memory_used ?? result.memory ?? null,
+      timeUsed: result.time ?? null,
+      memoryUsed: result.memory ?? null,
+      compileTimeUsed: result.compile_info?.time_used ?? null,
+      compileMemoryUsed: result.compile_info?.memory_used ?? null,
     };
   } catch (e) {
     testForm.isError = true;
@@ -295,6 +302,32 @@ onMounted(loadProblem);
                       <span class="font-medium text-base-content">Memory Used</span>
                       <span class="ml-2">
                         {{ testResultMeta?.memoryUsed != null ? `${testResultMeta.memoryUsed} MB` : "-" }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="
+                        testResultMeta?.compileTimeUsed != null || testResultMeta?.compileMemoryUsed != null
+                      "
+                    >
+                      <span class="font-medium text-base-content">Compile Time</span>
+                      <span class="ml-2">
+                        {{
+                          testResultMeta?.compileTimeUsed != null ? `${testResultMeta.compileTimeUsed}s` : "-"
+                        }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="
+                        testResultMeta?.compileTimeUsed != null || testResultMeta?.compileMemoryUsed != null
+                      "
+                    >
+                      <span class="font-medium text-base-content">Compile Memory</span>
+                      <span class="ml-2">
+                        {{
+                          testResultMeta?.compileMemoryUsed != null
+                            ? `${testResultMeta.compileMemoryUsed} MB`
+                            : "-"
+                        }}
                       </span>
                     </div>
                   </div>
