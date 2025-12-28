@@ -30,6 +30,7 @@
       "title": "管理課程",
       "editCourse": "編輯課程",
       "courseName": "課程名稱",
+      "courseNamePlaceholder": "請輸入課程名稱",
       "teacher": "教師",
       "currentTAs": "目前的助教",
       "noTAsAssigned": "尚未指派助教。",

@@ -30,6 +30,7 @@
       "title": "Manage Course",
       "editCourse": "Edit Course",
       "courseName": "Course Name",
+      "courseNamePlaceholder": "Enter course name",
       "teacher": "Teacher",
       "currentTAs": "Current Teacher Assistants",
       "noTAsAssigned": "No TAs assigned yet.",
