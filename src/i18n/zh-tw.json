@@ -26,6 +26,35 @@
     "swe2019": "2019 年秋季軟體工程「紅隊」組"
   },
   "course": {
+    "manage": {
+      "title": "管理課程",
+      "editCourse": "編輯課程",
+      "courseName": "課程名稱",
+      "teacher": "教師",
+      "currentTAs": "目前的助教",
+      "noTAsAssigned": "尚未指派助教。",
+      "addTA": "新增助教",
+      "username": "使用者名稱",
+      "enterStudentUsername": "輸入學生使用者名稱",
+      "assignTA": "指派助教",
+      "submit": "送出",
+      "deleteCourse": "刪除課程",
+      "generateCourseCode": "產生課程代碼",
+      "scoreboard": "計分板",
+      "rank": "排名",
+      "user": "使用者",
+      "totalScore": "總分",
+      "loadingScoreboard": "載入計分板資料中或無資料...",
+      "confirmDelete": "確認刪除",
+      "course": "課程",
+      "inviteCode": "邀請代碼",
+      "areYouSureDelete": "您確定要刪除此",
+      "courseSmall": "課程",
+      "inviteCodeSmall": "邀請代碼",
+      "cannotUndo": "此操作無法復原。",
+      "cancel": "取消",
+      "delete": "刪除"
+    },
     "ann": {
       "index": {
         "title": "公告",

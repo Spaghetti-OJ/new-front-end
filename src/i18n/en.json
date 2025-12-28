@@ -26,6 +26,35 @@
     "swe2019": "Red Team of Software Engineering 2019 Fall"
   },
   "course": {
+    "manage": {
+      "title": "Manage Course",
+      "editCourse": "Edit Course",
+      "courseName": "Course Name",
+      "teacher": "Teacher",
+      "currentTAs": "Current Teacher Assistants",
+      "noTAsAssigned": "No TAs assigned yet.",
+      "addTA": "Add Teacher Assistant",
+      "username": "Username",
+      "enterStudentUsername": "Enter student username",
+      "assignTA": "Assign TA",
+      "submit": "Submit",
+      "deleteCourse": "Delete Course",
+      "generateCourseCode": "Generate course code",
+      "scoreboard": "Scoreboard",
+      "rank": "Rank",
+      "user": "User",
+      "totalScore": "Total Score",
+      "loadingScoreboard": "Loading scoreboard or no data...",
+      "confirmDelete": "Confirm Delete",
+      "course": "Course",
+      "inviteCode": "Invite Code",
+      "areYouSureDelete": "Are you sure you want to delete this",
+      "courseSmall": "course",
+      "inviteCodeSmall": "invite code",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
     "ann": {
       "index": {
         "title": "Announcements",
