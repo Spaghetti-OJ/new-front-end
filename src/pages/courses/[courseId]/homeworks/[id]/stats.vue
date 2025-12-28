@@ -27,8 +27,10 @@ use([CanvasRenderer, LabelLayout, GridComponent, TooltipComponent, BarChart]);
 
 const hw = ref<Homework | null>(null);
 const hwError = ref<any>(null);
+const submissionsError = ref<unknown>(null);
 const isHWFetching = ref(false);
 const submissions = ref<SubmissionListItem[]>([]);
+const combinedError = computed(() => hwError.value ?? submissionsError.value);
 
 async function fetchHomework() {
   isHWFetching.value = true;
@@ -84,8 +86,10 @@ async function fetchSubmissionsForProblem(problemId: number, after?: number, bef
     const batch = data.results ?? [];
     results.push(...batch);
 
-    const count = data.count ?? results.length;
-    if (results.length >= count || batch.length === 0) break;
+    const rawCount = (data as { count?: unknown }).count;
+    const count =
+      typeof rawCount === "number" && Number.isFinite(rawCount) && rawCount >= 0 ? rawCount : undefined;
+    if ((count != null && results.length >= count) || batch.length === 0 || batch.length < pageSize) break;
     page += 1;
   }
 
@@ -102,10 +106,18 @@ async function fetchSubmissions() {
     return;
   }
 
+  submissionsError.value = null;
   const after = hw.value.start != null ? Number(hw.value.start) : undefined;
   const before = hw.value.end != null ? Number(hw.value.end) : undefined;
-  const results = await Promise.all(pids.value.map((pid) => fetchSubmissionsForProblem(pid, after, before)));
-  submissions.value = results.flat();
+  try {
+    const results = await Promise.all(
+      pids.value.map((pid) => fetchSubmissionsForProblem(pid, after, before)),
+    );
+    submissions.value = results.flat();
+  } catch (err) {
+    submissionsError.value = err;
+    submissions.value = [];
+  }
 }
 
 const scoreboardData = computed<HomeworkScoreboardData | null>(() => {
@@ -364,7 +376,7 @@ function exportCSV() {
           </div>
         </div>
 
-        <data-status-wrapper :error="hwError" :is-loading="isHWFetching && !scoreboardData">
+        <data-status-wrapper :error="combinedError" :is-loading="isHWFetching && !scoreboardData">
           <!-- Show loading state for initial fetch -->
           <template #loading>
             <skeleton-table :col="pids ? pids.length + 4 : 5" :row="10" />
