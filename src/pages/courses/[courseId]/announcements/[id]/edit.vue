@@ -14,12 +14,12 @@ useTitle(`Edit Announcement - ${route.params.id} - ${route.params.courseId} | No
 
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
-const announcement = ref<Announcement | null>(null);
+const announcement = ref<Announcement | AnnouncementListItem | null>(null);
 const edittingAnnouncement = ref<AnnouncementForm | null>(null);
 
 // 載入狀態 & 錯誤（給 data-status-wrapper 用）
 const isFetching = ref(true);
-const fetchError = ref<unknown | null>(null);
+const fetchError = ref<Error | string | null>(null);
 
 // 進頁面時先把公告詳情抓回來：GET /ann/<course_id>/<ann_id>
 onMounted(async () => {
@@ -78,7 +78,7 @@ async function submit() {
 
   try {
     const body = {
-      annId: Number(form.annId ?? route.params.id), // 確保是 number
+      annId: Number((announcement.value as AnnouncementListItem)?.annId ?? route.params.id), // 確保是 number
       title: form.title,
       // 後端文件用 context（Markdown，可改用 content），我們用 context 對齊文件
       content: form.markdown,
