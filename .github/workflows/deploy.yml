@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - main
+      - chore/deploy
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: GCP-frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
