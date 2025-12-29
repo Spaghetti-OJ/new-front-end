@@ -14,12 +14,12 @@ useTitle(`Edit Announcement - ${route.params.id} - ${route.params.courseId} | No
 
 const formElement = ref<InstanceType<typeof AnnouncementForm>>();
 
-const announcement = ref<Announcement | null>(null);
-const edittingAnnouncement = ref<AnnouncementForm | null>(null);
+const announcement = ref<AnnouncementListItem | null>(null);
+const edittingAnnouncement = ref<(AnnouncementForm & { annId?: string }) | null>(null);
 
 // 載入狀態 & 錯誤（給 data-status-wrapper 用）
 const isFetching = ref(true);
-const fetchError = ref<unknown | null>(null);
+const fetchError = ref<string | null>(null);
 
 // 進頁面時先把公告詳情抓回來：GET /ann/<course_id>/<ann_id>
 onMounted(async () => {
