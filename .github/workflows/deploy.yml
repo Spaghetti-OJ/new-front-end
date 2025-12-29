@@ -20,20 +20,23 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install PM2
-        run: npm install -g pm2
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install dependencies
+        run: pnpm install
 
-      - name: Add host key
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Build
+        run: pnpm build
 
-      - name: Deploy
-        run: pm2 deploy ecosystem.config.cjs production update
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+      - name: Install PM2 and serve
+        run: npm install -g pm2 serve
+
+      - name: Stop existing PM2 process
+        run: pm2 delete noj-frontend || true
+
+      - name: Start with PM2
+        run: pm2 start "serve -s dist -l 3000" --name noj-frontend
+
+      - name: Save PM2 process list
+        run: pm2 save
