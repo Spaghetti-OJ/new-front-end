@@ -68,7 +68,7 @@ async function submit() {
       <div class="card-body">
         <div class="card-title mb-3 justify-between">{{ $t("course.hw.new.title") }}</div>
 
-        <data-status-wrapper :error="fetchError" :is-loading="isFetching">
+        <data-status-wrapper :error="fetchError as string | null" :is-loading="isFetching">
           <template #loading>
             <skeleton-card />
           </template>

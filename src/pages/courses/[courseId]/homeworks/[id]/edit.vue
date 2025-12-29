@@ -109,7 +109,7 @@ function discard() {
         </div>
 
         <data-status-wrapper
-          :error="fetchError || fetchProblemError"
+          :error="(fetchError as unknown as string | null) || (fetchProblemError as unknown as string | null)"
           :is-loading="isFetching || isFetchingProblem"
         >
           <template #loading>

@@ -25,6 +25,7 @@ const form = reactive<UserProperties>({
   user_id: "",
   student_id: "",
   email_verified: false,
+  access_course: [],
 });
 
 async function loadProfile() {

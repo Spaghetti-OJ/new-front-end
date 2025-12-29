@@ -8,7 +8,7 @@ const activeTab = ref("signin");
 const session = useSession();
 
 // Refs for tab buttons
-const tabRefs = {
+const tabRefs: Record<string, ReturnType<typeof ref<HTMLButtonElement | null>>> = {
   signin: ref(null),
   signup: ref(null),
 };
@@ -17,18 +17,18 @@ const tabRefs = {
 const tabKeys = ["signin", "signup"];
 
 // Handle keyboard navigation for tabs
-function onTabKeydown(event, currentTab) {
+function onTabKeydown(event: KeyboardEvent, currentTab: string) {
   const idx = tabKeys.indexOf(currentTab);
   if (event.key === "ArrowRight" || event.key === "ArrowDown") {
     event.preventDefault();
     const nextIdx = (idx + 1) % tabKeys.length;
     activeTab.value = tabKeys[nextIdx];
-    tabRefs[tabKeys[nextIdx]].value.focus();
+    tabRefs[tabKeys[nextIdx]].value?.focus();
   } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
     event.preventDefault();
     const prevIdx = (idx - 1 + tabKeys.length) % tabKeys.length;
     activeTab.value = tabKeys[prevIdx];
-    tabRefs[tabKeys[prevIdx]].value.focus();
+    tabRefs[tabKeys[prevIdx]].value?.focus();
   }
 }
 </script>
