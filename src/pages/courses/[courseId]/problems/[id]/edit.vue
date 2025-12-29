@@ -2,11 +2,14 @@
 import { ref, provide, Ref, onMounted, computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import api from "@/api";
 import axios from "axios";
 import { LANGUAGE_OPTIONS } from "@/constants";
 import ProblemFormComponent from "@/components/Problem/ProblemForm.vue";
 import { ZipReader, BlobReader } from "@zip.js/zip.js";
+
+const { t } = useI18n();
 
 type Pair = { ss: number; tt: number; inFile: string; outFile: string };
 
@@ -117,7 +120,7 @@ async function getManage() {
       canViewStdout: true,
       defaultCode: "",
       staticAnalysis: problemData.static_analysis_rules ?? [],
-      solution: "",
+      solution: problemData.solution,
       solutionLanguage: problemData.solution_language ?? 0,
       allowedDomains: [],
       forbidFunctions: problemData.forbidden_functions ?? [],
@@ -141,6 +144,8 @@ const testdata = ref<File | null>(null);
 const checker = ref<File | null>(null);
 
 const openPreview = ref<boolean>(false);
+const showDiscardConfirm = ref(false);
+const showDeleteConfirm = ref(false);
 const mockProblemMeta = {
   id: 0,
   owner: { id: "0", username: "mock", real_name: "Mock User" },
@@ -272,7 +277,8 @@ async function submit() {
     if (axios.isAxiosError(error) && error.response?.data?.message) {
       formElement.value.errorMsg = error.response.data.message;
     } else {
-      formElement.value.errorMsg = error instanceof Error ? error.message : "Unknown error occurred :(";
+      formElement.value.errorMsg =
+        error instanceof Error ? error.message : t("course.problem.edit.unknownError");
     }
     throw error;
   } finally {
@@ -280,13 +286,19 @@ async function submit() {
   }
 }
 async function discard() {
-  if (!confirm("Are u sure?")) return;
+  showDiscardConfirm.value = true;
+}
+async function confirmDiscard() {
+  showDiscardConfirm.value = false;
   router.push(`/courses/${route.params.courseId}/problems`);
 }
 async function delete_() {
+  showDeleteConfirm.value = true;
+}
+async function confirmDelete() {
+  showDeleteConfirm.value = false;
   if (!formElement.value) return;
   formElement.value.isLoading = true;
-  if (!confirm("Are u sure?")) return;
   try {
     const problemId = Number(route.params.id);
     const res = await api.Problem.getTestCases(Number(route.params.id));
@@ -306,7 +318,7 @@ async function delete_() {
     if (axios.isAxiosError(error) && error.response?.data) {
       formElement.value.errorMsg = error.response.data.detail;
     } else {
-      formElement.value.errorMsg = "Unknown error occurred :(";
+      formElement.value.errorMsg = t("course.problem.edit.unknownError");
     }
     throw error;
   } finally {
@@ -314,8 +326,24 @@ async function delete_() {
   }
 }
 
-function onSaveSolution() {
-  // TODO: connect solution-only API later
+async function onSaveSolution() {
+  if (!formElement.value) return;
+  formElement.value.isLoading = true;
+  try {
+    await api.Problem.modify(String(route.params.id), {
+      solution_code: edittingProblem.value?.solution,
+      solution_code_language: edittingProblem.value?.solutionLanguage,
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data) {
+      formElement.value.errorMsg = (error.response.data as any).detail ?? "Unknown error occurred :(";
+    } else {
+      formElement.value.errorMsg = "Unknown error occurred :(";
+    }
+    throw error;
+  } finally {
+    formElement.value.isLoading = false;
+  }
 }
 
 type GeneratedCase = {
@@ -350,30 +378,33 @@ async function onGenerate(payload: GeneratePayload) {
           class="card-title sticky top-[53px] z-50 mb-3 flex h-20 items-center justify-between bg-base-100"
         >
           <div class="flex items-center gap-x-4">
-            <span> Edit Problem: {{ $route.params.id }} - {{ edittingProblem?.problemName }} </span>
+            <span>
+              {{ t("course.problem.edit.title") }}: {{ $route.params.id }} -
+              {{ edittingProblem?.problemName }}
+            </span>
 
             <!-- 三顆 tab 按鈕 -->
             <div class="flex items-center gap-x-4">
               <button
                 class="btn btn-primary"
-                aria-label="Scroll to Content Section"
+                :aria-label="t('course.problem.edit.content')"
                 @click="scrollToSection(contentSection)"
               >
-                Content
+                {{ t("course.problem.edit.content") }}
               </button>
               <button
                 class="btn btn-primary"
-                aria-label="Scroll to Testdata Section"
+                :aria-label="t('course.problem.edit.testdata')"
                 @click="scrollToSection(testdataSection)"
               >
-                Testdata
+                {{ t("course.problem.edit.testdata") }}
               </button>
               <button
                 class="btn btn-primary"
-                aria-label="Scroll to Checker Section"
+                :aria-label="t('course.problem.edit.checker')"
                 @click="scrollToSection(checkerSection)"
               >
-                Checker
+                {{ t("course.problem.edit.checker") }}
               </button>
             </div>
           </div>
@@ -383,13 +414,13 @@ async function onGenerate(payload: GeneratePayload) {
               :class="['btn btn-outline btn-error btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
               @click="delete_"
             >
-              <i-uil-trash-alt class="mr-1 lg:h-5 lg:w-5" /> Delete
+              <i-uil-trash-alt class="mr-1 lg:h-5 lg:w-5" /> {{ t("course.problem.edit.delete") }}
             </button>
             <button
               :class="['btn btn-warning btn-sm lg:btn-md', formElement?.isLoading && 'loading']"
               @click="discard"
             >
-              <i-uil-times-circle class="mr-1 lg:h-5 lg:w-5" /> Discard Changes
+              <i-uil-times-circle class="mr-1 lg:h-5 lg:w-5" /> {{ t("course.problem.edit.discardChanges") }}
             </button>
           </div>
         </div>
@@ -415,7 +446,7 @@ async function onGenerate(payload: GeneratePayload) {
               <div class="divider" />
 
               <div class="card-title mb-3">
-                Preview
+                {{ t("course.problem.edit.preview") }}
                 <input v-model="openPreview" type="checkbox" class="toggle" />
               </div>
 
@@ -443,7 +474,7 @@ async function onGenerate(payload: GeneratePayload) {
               <div class="divider my-4" />
 
               <div class="card-title mb-3">
-                JSON
+                {{ t("course.problem.edit.json") }}
                 <input v-model="openJSON" type="checkbox" class="toggle" />
               </div>
 
@@ -456,4 +487,36 @@ async function onGenerate(payload: GeneratePayload) {
       </div>
     </div>
   </div>
+
+  <div class="modal" :class="{ 'modal-open': showDiscardConfirm }">
+    <div class="modal-box max-w-sm">
+      <h3 class="text-lg font-bold">{{ t("course.problem.edit.discardChanges") }}</h3>
+      <p class="mt-3 text-sm">{{ t("course.problem.edit.confirmDiscard") }}</p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" @click="showDiscardConfirm = false">
+          {{ t("course.problem.edit.cancel") }}
+        </button>
+        <button class="btn btn-warning" @click="confirmDiscard">
+          {{ t("course.problem.edit.discardChanges") }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showDiscardConfirm" class="modal-backdrop" @click="showDiscardConfirm = false" />
+
+  <div class="modal" :class="{ 'modal-open': showDeleteConfirm }">
+    <div class="modal-box max-w-sm">
+      <h3 class="text-lg font-bold">{{ t("course.problem.edit.delete") }}</h3>
+      <p class="mt-3 text-sm">{{ t("course.problem.edit.confirmDelete") }}</p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" @click="showDeleteConfirm = false">
+          {{ t("course.problem.edit.cancel") }}
+        </button>
+        <button class="btn btn-error" :class="formElement?.isLoading && 'loading'" @click="confirmDelete">
+          {{ t("course.problem.edit.delete") }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-if="showDeleteConfirm" class="modal-backdrop" @click="showDeleteConfirm = false" />
 </template>

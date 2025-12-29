@@ -13,6 +13,7 @@ const session = useSession();
 const route = useRoute();
 useTitle(`Submission - ${route.params.id} - ${route.params.courseId} | Normal OJ`);
 const router = useRouter();
+const hasCourseStaffAccess = computed(() => session.hasCourseAccess(route.params.courseId as string));
 
 const submission = ref<SubmissionInfo | null>(null);
 const sourceCode = ref("");
@@ -392,7 +393,7 @@ function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
           </div>
 
           <div
-            v-if="session.isAdmin"
+            v-if="hasCourseStaffAccess"
             :class="['btn md:btn-md', isRejudgeLoading && 'loading']"
             @click="rejudge"
           >
@@ -423,7 +424,7 @@ function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
                       <th>{{ $t("course.submission.general.score") }}</th>
                       <th>{{ $t("course.submission.general.lang") }}</th>
                       <th>{{ $t("course.submission.general.time") }}</th>
-                      <th v-if="session.isAdmin">{{ $t("course.submission.general.ipAddr") }}</th>
+                      <th v-if="hasCourseStaffAccess">{{ $t("course.submission.general.ipAddr") }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -447,7 +448,7 @@ function getCaseStatusCode(taskIndex: number, caseNo: number, task: Task) {
                       <td>{{ submission.score }}</td>
                       <td>{{ LANG[submission.languageType as any] }}</td>
                       <td>{{ formatTime(submission.timestamp as any) }}</td>
-                      <td v-if="session.isAdmin">{{ submission.ipAddr }}</td>
+                      <td v-if="hasCourseStaffAccess">{{ submission.ipAddr }}</td>
                     </tr>
                   </tbody>
                 </table>

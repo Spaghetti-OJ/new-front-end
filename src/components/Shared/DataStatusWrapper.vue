@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 defineOptions({ inheritAttrs: false });
 
 defineProps<{
-  error?: AxiosError | string | null;
+  error?: AxiosError | Error | string | null;
   isLoading?: boolean;
 }>();
 </script>
